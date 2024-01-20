@@ -1,0 +1,74 @@
+@startuml
+
+' Definition of classes
+
+
+class SEntityLink << (S,#FF7700) XSDComplexType >> {
+  EvaluateCommercialScope : boolean
+  IsMulti : boolean
+  IsRequired : boolean
+  Name : string
+  Source : string
+  Target : string
+  TargetsDependent : boolean
+}
+
+
+class Launch_Entity << (S,#FF7700) XSDComplexType >> {
+  Available_End_Date : date[0..1]
+  Available_Start_Date : date[0..1]
+  Business_ID : string[0..1]
+  Category_ID : Category_ID[0..1]
+  Description : string[0..1]
+  Effective_End_Date : date[0..1]
+  Effective_Start_Date : date[0..1]
+  Element_Guid : string[0..1]
+  Element_Type_Guid : string[0..1]
+  Name : string
+}
+
+class Charge_Group << (S,#FF7700) XSDComplexType >> {
+}
+
+class Charge << (S,#FF7700) XSDComplexType >> {
+}
+
+class Discount_Group << (S,#FF7700) XSDComplexType >> {
+}
+
+class Discount << (S,#FF7700) XSDComplexType >> {
+  Unit_Of_Measure : string[0..1]
+}
+
+
+class Product << (S,#FF7700) XSDComplexType >> {
+  Max_Cust_Portfolio_Instances : int[0..1]
+  Min_Cust_Portfolio_Instances : int[0..1]
+  Product_Description : string[0..1]
+  Product_Name : string
+}
+
+class SCost {
+    Currency : string
+}
+
+class SDisco {
+    Currency : string
+}
+
+class SMapRule {
+
+}
+
+Launch_Entity -> "0..*" SEntityLink : +SigmaEntLinks
+Charge --|> Launch_Entity : +XSDExtensions
+Charge_Group --|> Launch_Entity : +XSDExtensions
+Discount --|> Launch_Entity : +XSDExtensions
+Discount_Group --|> Launch_Entity : +XSDExtensions
+Product --|> Launch_Entity : +XSDExtensions
+SCost --|> Launch_Entity : +XSDExtensions
+SDisco --|> Launch_Entity : +XSDExtensions
+
+Launch_Entity -> "0..*" SMapRule : +MappingRules
+
+@enduml

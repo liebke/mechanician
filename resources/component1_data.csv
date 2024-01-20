@@ -1,0 +1,2 @@
+Name, ProductId, ProductCategory, Description, Available_End_Date, Available_Start_Date, Business_ID, Category_ID, Effective_End_Date, Effective_Start_Date, Element_Guid, Element_Type_Guid, Max_Child_Elements, Min_Child_Elements
+"Gold Unlimited Component 1", "COMP_1", "Component", "Gold Unlimted Component Description", 1/31/25, 1/31/24, BID_123, CAT_123, 1/31/24, 1/31/23, "ELEM_GUID", "ELEM_TYPE_GUID", 0, 1
