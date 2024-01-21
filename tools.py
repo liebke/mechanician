@@ -1,15 +1,32 @@
 from pprint import pprint
+from pprint import pformat
+# Import Markdown and Console from rich library for pretty terminal outputs
+from rich.markdown import Markdown
+from rich.console import Console
+
+console = Console()
 
 def print_output(function_name, input, output):
     print('')
-    print("------------------")
-    print("FUNCTION CALLED")
-    print(f"FUNCTION NAME: {function_name}")
-    print("INPUT:")
-    pprint(input)
-    print("OUTPUT:")
-    pprint(output)
-    print("------------------")
+    console.print(Markdown("------------------"))
+    console.print(Markdown("## FUNCTION CALLED"))
+    # print("FUNCTION CALLED")
+    console.print(Markdown(f"* FUNCTION NAME: {function_name}"))
+    # print(f"FUNCTION NAME: {function_name}")
+    # print("INPUT:")
+    console.print(Markdown("## INPUT"))
+    # pprint(input)
+    # for i in input:
+    #     console.print(Markdown(f"``` {i} ```"))
+    console.print(Markdown(f"```\n {input}\n ```"))
+    # print("OUTPUT:")
+    console.print(Markdown("## OUTPUT"))
+    # pprint(output)
+    # for o in output:
+    #     console.print(Markdown(f"``` {o} ```"))
+    console.print(Markdown(f"``` \n{output}\n ```"))
+    # print("------------------")
+    console.print(Markdown("------------------"))
     print('')
     return
 

@@ -24,9 +24,15 @@ console = Console()
 client = OpenAI()
 
 print('\n\n\n')
-markdown = Markdown("""# Product Offer Assistant Proof of Concept""")
+markdown = Markdown("""# Product Offer AI Assistant (Proof of Concept)""")
 console.print(markdown)
-markdown = Markdown("""Hello! I'm your virtual assistant designed to help you create new product offers. With my assistance, you can efficiently build product hierarchies, define pricing entities, and establish relationships between products and associated charges or other products. Whether you are crafting bundles, packages, promotions, or any other product-related entities within Hansen Catalog Manager, I'm here to guide you through the process and provide support wherever needed. If you have any tasks in mind, please let me know, and we can get started on creating a new product offer together! 
+markdown = Markdown("""Hello! I'm your virtual assistant designed to help you create new product offers. 
+                    With my assistance, you can efficiently build product hierarchies, define pricing 
+                    entities, and establish relationships between products and associated charges or 
+                    other products. Whether you are crafting bundles, packages, promotions, or any other 
+                    product-related entities within Hansen Catalog Manager, I'm here to guide you through 
+                    the process and provide support wherever needed. If you have any tasks in mind, 
+                    please let me know, and we can get started on creating a new product offer together! 
                      \n\n""")
 console.print(markdown)
 print('\n\n\n')
