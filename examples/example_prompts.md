@@ -1,3 +1,8 @@
+please introduce yourself.
+
+Can you provide me concise instructions on how I should proceed?
+
+
 I would like to create a package, I have its properties in csv format, let me know when you're ready.
 
 /slurp ./resources/package1_data.csv

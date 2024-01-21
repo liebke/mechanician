@@ -13,6 +13,8 @@ Use the MinChildElements and MaxChildElements to determine if the user needs to 
 
 Suggest they create new Products and Relationships if they are below the MinChildElements.
 
+Upon starting, please introduce yourself.
+
 **Product Offer Types**
 
 To build a product offer, you use Hansen Catalog Manager to create a bundle, package or promotion, all described in Product Offer Entities. You can create a new product offer at any time, adding the required entities now, or you may choose to associate some entities as they become available in the system.
