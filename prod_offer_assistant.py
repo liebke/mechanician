@@ -12,60 +12,16 @@ load_dotenv()
 
 client = OpenAI()
 
-# assistant = client.beta.assistants.create(
-#     name="Math Tutor",
-#     instructions="You are a personal math tutor. Write and run code to answer math questions.",
-#     tools=[{"type": "code_interpreter"}],
-#     model="gpt-4-1106-preview"
-# )
+# with open("./resources/create_entities_activity_diagram.plantuml", 'r') as file:
+#                 activity_diagram = file.read()
+#                 # print(f"ACTIVITY DIAGRAM:\n {activity_diagram}")
+
+with open("./resources/instructions2.md", 'r') as file:
+                instructions = file.read()
+                print(f"INSTRUCTIONS 2:\n {instructions}")
 
 assistant = client.beta.assistants.create(
-  instructions="""
-   You are an assistant the helps create new product offers for a telecomunications company. 
-   Use the provided functions to create product, charges, and relationships between products 
-   and other products and between products and their charges.
-
-   Ask to confirm before calling out to a function tool by showing the parameters of the call before proceeding.
-
-   Your job is to walk through the process of creating new product offers.
-
-   Products are usually created in a hierarchy of Bundles, Packages, and Components.
-
-   Use the MinChildElements and MaxChildElements to determine if the user needs to create more Products and Relationships.
-
-   Suggest they create new Products and Relationships if they are below the MinChildElements.
-
-
-   A Product can be classified as a Bundle, Package, Component, Promotion based on the value of ProductCategory.
-
-   Products can have parent-child relationships to other Products.
-
-   These relationships are defined by the ProductToProductRelationship object.
-
-   The number of Products that can be added to a parent Product is constrained by 
-   the MaxChildElements and MinChildElements properties.
-
-   Products can never have more relationships than MaxChildElements and never less than MinChildElements.
-
-   If a product is suppose to have child products, use the appropriate function to create the child products and relationships.
-
-   Products can have relationships to Charges.
-
-   These relationships are defined by the ProductToChargeRelationship object.
-
-   Bundles are Products that are the parent of Packages.
-
-   Packagaes are Products that are the parent of Components.
-
-   Use the MaxChildElements and MinChildElements to determine if the 
-   user needs to create more Products and Relationships, making sure they don't create two many.
-
-   If after creating a product, determine if it requires child products using the MinChildElement, and suggest that the user 
-    create the child products and relationships.
-
-    Warn the user if they are creating too many child products based on the MaxChildElements.
-
-   """,
+  instructions=instructions,
   model="gpt-4-1106-preview",
   tools = [
         {
@@ -80,9 +36,9 @@ assistant = client.beta.assistants.create(
                             "type": "string",
                             "description": "The Product Category, must be one of the following: Bundle, Package, Component, Promotion, ComponentGroup"
                         },
-                         "ProductId": {
+                         "BusinessId": {
                             "type": "string",
-                            "description": "The Product Id"
+                            "description": """An automatically generated, business-readable ID that labels the entity with a suitable ID that can be used to reference the entity so that longer, internal system identifiers are not needed. Along with Name, you can use this identifier to search for entities, in addition to the other search options."""
                         },
                         "MaxChildElements": {
                             "type": "integer",
@@ -95,12 +51,12 @@ assistant = client.beta.assistants.create(
                         "AvailableEndDate": {
                             "type": "string",
                             "format": "date",
-                            "description": "The available end date"
+                            "description": """The date on which the entity is no longer available to customers, which must fall within the effective date range."""
                         },
                         "AvailableStartDate": {
                             "type": "string",
                             "format": "date",
-                            "description": "The available start date"
+                            "description": """The date on which the entity becomes available to customers, which must fall within the effective date range. This value is required by default."""
                         },
                         "BusinessID": {
                             "type": "string",
@@ -112,17 +68,17 @@ assistant = client.beta.assistants.create(
                         },
                         "Description": {
                             "type": "string",
-                            "description": "The description of the launch entity"
+                            "description": "A description of the entity."
                         },
                         "EffectiveEndDate": {
                             "type": "string",
                             "format": "date",
-                            "description": "The effective end date"
+                            "description": """The date on which the entity should become inactive in your organization. This value is optional to allow for no expiry date."""
                         },
                         "EffectiveStartDate": {
                             "type": "string",
                             "format": "date",
-                            "description": "The effective start date"
+                            "description": """The date on which the entity should become effective and active in your organization. This value is required by default."""
                         },
                         "ElementGuid": {
                             "type": "string",
@@ -134,7 +90,7 @@ assistant = client.beta.assistants.create(
                         },
                         "Name": {
                             "type": "string",
-                            "description": "The name of the launch entity"
+                            "description": """Name: A descriptive name for the entity that must be unique in the category of the product catalog where the entity resides. For example, two components may not share the same name unless they sit in different categories of the catalog. This value is required."""
                         }
                     },
                     "required": ["Name", "ProductCategory", "ProductId"]
@@ -254,6 +210,10 @@ thread = client.beta.threads.create()
 try:
     while True:
         user_input = input("> ")
+
+        if user_input == '':
+            # print("user_input is empty, skipping...")
+            continue
 
         if user_input.startswith('/slurp'):
             filename = user_input.replace('/slurp ', '', 1)
