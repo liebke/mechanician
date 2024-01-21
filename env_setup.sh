@@ -9,3 +9,5 @@ conda activate openai_project
 
 # Install OpenAI library and python-dotenv
 pip install openai python-dotenv
+
+pip install rich

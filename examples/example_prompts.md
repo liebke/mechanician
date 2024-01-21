@@ -16,12 +16,13 @@ please proceed.
 
 # Create Charges for component
 
-yes, please
-
-please assist me
+I would like to add a charge to the component
 
 /slurp ./resources/comp_charge1_data.csv
 
+rate is 10
+
+yes, please proceed
 
 # Add charge relationship
 
@@ -40,11 +41,14 @@ This is the Gold Unlimted Bundle Description
 January 31 2024
 January 31 2025
 
+# CATEGORY ID
+I don't have one
+-or-
+FSI
+
 January 31 2024
 January 31 2025
 
-# CATEGORY ID
-I don't have one
 
 # Max child elements
 3
