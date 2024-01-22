@@ -3,35 +3,35 @@ from pprint import pformat
 # Import Markdown and Console from rich library for pretty terminal outputs
 from rich.markdown import Markdown
 from rich.console import Console
+import json
 
 console = Console()
 
 def print_output(function_name, input, output):
+    input_str = input
+    try:
+        # Try to load JSON data from input
+        input_json = json.loads(input)
+        input_str = json.dumps(input_json, indent=4)
+    except json.JSONDecodeError:
+        print(f"Invalid JSON input: {input}")
+    
+    output_str = json.dumps(output, indent=4)
+    # print(f"INPUT TYPE: {type(input)}") # string
+
     print('')
     console.print(Markdown("------------------"))
     console.print(Markdown("## FUNCTION CALLED"))
-    # print("FUNCTION CALLED")
-    console.print(Markdown(f"* FUNCTION NAME: {function_name}"))
-    # print(f"FUNCTION NAME: {function_name}")
-    # print("INPUT:")
+    console.print(Markdown(f"* FUNCTION NAME: **{function_name}**"))
     console.print(Markdown("## INPUT"))
-    # pprint(input)
-    # for i in input:
-    #     console.print(Markdown(f"``` {i} ```"))
-    console.print(Markdown(f"```\n {input}\n ```"))
-    # print("OUTPUT:")
+    console.print(Markdown(f"```\n {input_str}\n ```"))
     console.print(Markdown("## OUTPUT"))
-    # pprint(output)
-    # for o in output:
-    #     console.print(Markdown(f"``` {o} ```"))
-    console.print(Markdown(f"``` \n{output}\n ```"))
-    # print("------------------")
+    console.print(Markdown(f"``` \n{output_str}\n ```"))
     console.print(Markdown("------------------"))
     print('')
     return
 
 def create_product_offer(function_name, call_id, args):
-    # print("create_product called")
     resp = {
             "tool_call_id": call_id,  # use call_id directly
             "output": "product created",
@@ -40,7 +40,6 @@ def create_product_offer(function_name, call_id, args):
     return resp
 
 def create_charge(function_name, call_id, args):
-    # print("create_charge called")
     resp = {
             "tool_call_id": call_id,  # use call_id directly
             "output": "charge created",
@@ -49,7 +48,6 @@ def create_charge(function_name, call_id, args):
     return resp
 
 def create_product_to_product_relationship(function_name, call_id, args):
-    # print("create_product_to_product_relationship called")
     resp = {
             "tool_call_id": call_id,  # use call_id directly
             "output": "create_product_to_product_relationship created",
@@ -58,7 +56,6 @@ def create_product_to_product_relationship(function_name, call_id, args):
     return resp
 
 def create_product_to_charge_relationship(function_name, call_id, args):
-    # print("create_product_to_charge_relationship called")
     resp = {
             "tool_call_id": call_id,  # use call_id directly
             "output": "create_product_to_charge_relationship created",

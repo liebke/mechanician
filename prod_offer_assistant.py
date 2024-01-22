@@ -59,17 +59,16 @@ try:
         if user_input == '':
             continue
 
-        if user_input.startswith('/slurp'):
-            filename = user_input.replace('/slurp ', '', 1)
+        if user_input.startswith('/file'):
+            filename = user_input.replace('/file ', '', 1)
 
-            # print(f"slurping file: {filename}")
             with open(filename, 'r') as file:
                 user_input = file.read()
                 print('')
-                print("------------------")
-                print("SLURPED FILE")
-                pprint(user_input)
-                print("------------------")
+                console.print(Markdown("------------------"))
+                console.print(Markdown("## INPUT FILE"))
+                console.print(Markdown(f"``` \n{user_input}\n ```"))
+                console.print(Markdown("------------------"))
                 print('')
 
 

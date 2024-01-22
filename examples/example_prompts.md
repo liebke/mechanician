@@ -5,13 +5,13 @@ Can you provide me concise instructions on how I should proceed?
 
 I would like to create a package, I have its properties in csv format, let me know when you're ready.
 
-/slurp ./resources/package1_data.csv
+/file ./resources/package1_data.csv
 
 looks good, please proceed.
 
 yes, I would like to create a child component using csv.
 
-/slurp ./resources/component1_data.csv
+/file ./resources/component1_data.csv
 
 looks good, please proceed.
 
@@ -23,11 +23,9 @@ please proceed.
 
 I would like to add a charge to the component
 
-/slurp ./resources/comp_charge1_data.csv
+/file ./resources/comp_charge1_data.csv
 
 rate is 10
-
-yes, please proceed
 
 # Add charge relationship
 
@@ -65,7 +63,7 @@ yes, please proceed
 
 is a child entity required for this bundle?
 
-/slurp ./resources/component1_data.csv
+/file ./resources/component1_data.csv
 
 
 
