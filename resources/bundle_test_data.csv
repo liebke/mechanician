@@ -1,0 +1,15 @@
+Type, Name, BusinessId, ProductOfferCategory, Description, Available_End_Date, Available_Start_Date, Category_ID, Effective_End_Date,     
+ Effective_Start_Date, Max_Child_Elements, Min_Child_Elements, Charge_Name, Charge_Type, Charge_Rate, Charge_Activation_Start_Date,        
+ Charge_Activation_End_Date                                                                                                                
+ Bundle, "Platinum Suite", "BUNDLE_ID_1", "Bundle", "Complete Platinum Suite with multiple services", 12/31/25, 1/1/24, "CAT_BUNDLE",      
+ 12/31/25, 1/1/24, 3, 1, , , , ,                                                                                                           
+ Package, "Platinum Data Package", "PKG_ID_1", "Package", "High-speed data package", 12/31/25, 1/1/24, "CAT_PACKAGE", 12/31/25, 1/1/24, 2, 
+ 1, "Data Package Charge", "RecurringCharge", "30.00", 1/1/24, 12/31/25                                                                    
+ Component, "Data Component 5GB", "COMP_ID_1", "Component", "5GB Data add-on", 12/31/25, 1/1/24, "CAT_COMPONENT", 12/31/25, 1/1/24, 0, 1,  
+ "5GB Data Charge", "NonRecurringCharge", "10.00", 1/1/24, 12/31/25                                                                        
+ Component, "Data Component 10GB", "COMP_ID_2", "Component", "10GB Data add-on", 12/31/25, 1/1/24, "CAT_COMPONENT", 12/31/25, 1/1/24, 0, 1 
+ "10GB Data Charge", "NonRecurringCharge", "15.00", 1/1/24, 12/31/25                                                                       
+ Package, "Platinum Voice Package", "PKG_ID_2", "Package", "Nationwide voice package", 12/31/25, 1/1/24, "CAT_PACKAGE", 12/31/25, 1/1/24,  
+ 1, "Voice Package Charge", "RecurringCharge", "20.00", 1/1/24, 12/31/25                                                                   
+ Component, "Voice Component 1000min", "COMP_ID_3", "Component", "1000 minutes voice add-on", 12/31/25, 1/1/24, "CAT_COMPONENT", 12/31/25, 
+ 1/1/24, 0, 1, "1000min Voice Charge", "NonRecurringCharge", "5.00", 1/1/24, 12/31/25  

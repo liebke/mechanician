@@ -66,4 +66,31 @@ is a child entity required for this bundle?
 /file ./resources/component1_data.csv
 
 
+## Create test data
 
+can you create CSV data that can be used as test data for creating a Bundle with one or more packages each containing one or more components where the packages and components have Charge objects associated with them?
+
+#I would like to create a bundle with csv data, can you work through the data row by row, creating product offers one at a time, asking me to confirm that everything looks right before calling the create functions and before proceeding to the next row of data?
+
+I have a csv file containing rows for each product offer I want to make, can you build one offer at a time, asking me to confirm before proceeding with the next?
+
+I'll give you a csv with all the data, but only process one row at a time
+
+/file ./resources/bundle_test_data.csv
+
+looks good, please proceeed
+
+looks good, please proceeed
+
+
+## 
+
+I would like to create several product offers, I have csv data, tell me when you're ready.
+
+/file ./resources/bundle_test_data.csv
+
+please proceed
+
+please proceed
+
+please proceed

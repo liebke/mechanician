@@ -1,7 +1,6 @@
-from pprint import pprint
-from pprint import pformat
 # Import Markdown and Console from rich library for pretty terminal outputs
-from rich.markdown import Markdown
+from util import print_markdown
+# from rich.markdown import Markdown
 from rich.console import Console
 import json
 
@@ -20,14 +19,14 @@ def print_output(function_name, input, output):
     # print(f"INPUT TYPE: {type(input)}") # string
 
     print('')
-    console.print(Markdown("------------------"))
-    console.print(Markdown("## FUNCTION CALLED"))
-    console.print(Markdown(f"* FUNCTION NAME: **{function_name}**"))
-    console.print(Markdown("## INPUT"))
-    console.print(Markdown(f"```\n {input_str}\n ```"))
-    console.print(Markdown("## OUTPUT"))
-    console.print(Markdown(f"``` \n{output_str}\n ```"))
-    console.print(Markdown("------------------"))
+    print_markdown(console, "------------------")
+    print_markdown(console, "## FUNCTION CALLED")
+    print_markdown(console, f"* FUNCTION NAME: **{function_name}**")
+    print_markdown(console, "## INPUT")
+    print_markdown(console, f"```json \n {input_str}\n ```")
+    print_markdown(console, "## OUTPUT")
+    print_markdown(console, f"```json \n{output_str}\n ```")
+    print_markdown(console, "------------------")
     print('')
     return
 
@@ -74,6 +73,7 @@ dispatch_dict = {
 
 def call_function(function_name, call_id, args):
     if function_name not in dispatch_dict:
+        print(f"Unknown Function: {function_name}")
         return f"Unknown Function: {function_name}"
     else:
         return dispatch_dict.get(function_name)(function_name, call_id, args)
