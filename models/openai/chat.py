@@ -8,7 +8,7 @@ from util import print_markdown
 import json
 import os
 
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 
@@ -59,12 +59,19 @@ class OpenAIChat(LLMStreamingModel):
     ## PROCESS_TOOL_CALLS_CHUNK
     ###############################################################################
 
-    def process_tool_calls_chunk(self, chunk, tool_calls, tool_calls_index):
+    def process_tool_calls_chunk(self, chunk, tool_calls, tool_calls_index, futures):
         # copy tool_calls so that we don't modify the original
         tool_calls = tool_calls.copy()
         tool_calls_chunk = chunk.choices[0].delta.tool_calls[0]
         if(tool_calls_chunk.index != None):
             if(tool_calls_index < tool_calls_chunk.index):
+                # get current last tool_call if it exists, and call the function handler using the Thread Pool Executor.
+                # This will allow the function handler to run in parallel with the rest of the code.
+                if tool_calls_index >= 0:
+                    if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
+                        with ThreadPoolExecutor() as executor:
+                            futures.append(executor.submit(self.process_tool_call, tool_calls[-1]))
+                    
                 tool_calls_index = tool_calls_chunk.index
                 tool_calls.append({"args": []})
 
@@ -120,6 +127,7 @@ class OpenAIChat(LLMStreamingModel):
         response = []
         tool_calls = []
         tool_calls_index = -1
+        futures = []
         print("\n")
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
@@ -128,7 +136,7 @@ class OpenAIChat(LLMStreamingModel):
                 print(chunk.choices[0].delta.content, end="", flush=True)
 
             elif chunk.choices[0].delta.tool_calls is not None:
-                tool_calls, tool_calls_index = self.process_tool_calls_chunk(chunk, tool_calls, tool_calls_index)
+                tool_calls, tool_calls_index = self.process_tool_calls_chunk(chunk, tool_calls, tool_calls_index, futures)
 
         # if the assistant responded with a message, add it to the message history
         if(response != []):
@@ -139,8 +147,13 @@ class OpenAIChat(LLMStreamingModel):
         elif(tool_calls != []):
             if tool_calls:
                 if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
-                    with ThreadPoolExecutor() as executor:
-                        results = executor.map(self.process_tool_call, tool_calls)
+                    if (len(tool_calls) > len(futures)):
+                        with ThreadPoolExecutor() as executor:
+                            futures.append(executor.submit(self.process_tool_call, tool_calls[-1]))
+                            # results = executor.map(self.process_tool_call, tool_calls)
+
+                    results = [f.result() for f in as_completed(futures)]
+
                 else:
                     results = map(self.process_tool_call, tool_calls)
 
