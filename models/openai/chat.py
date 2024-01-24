@@ -69,8 +69,10 @@ class OpenAIChat(LLMStreamingModel):
                 # This will allow the function handler to run in parallel with the rest of the code.
                 if tool_calls_index >= 0:
                     if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
+                        tc = tool_calls[-1]
+                        print_markdown(self.console, f"### Calling external function: {tc['function_name']}...")
                         with ThreadPoolExecutor() as executor:
-                            futures.append(executor.submit(self.process_tool_call, tool_calls[-1]))
+                            futures.append(executor.submit(self.process_tool_call, tc))
                     
                 tool_calls_index = tool_calls_chunk.index
                 tool_calls.append({"args": []})
@@ -148,9 +150,10 @@ class OpenAIChat(LLMStreamingModel):
             if tool_calls:
                 if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                     if (len(tool_calls) > len(futures)):
+                        tc = tool_calls[-1]
                         with ThreadPoolExecutor() as executor:
-                            futures.append(executor.submit(self.process_tool_call, tool_calls[-1]))
-                            # results = executor.map(self.process_tool_call, tool_calls)
+                            futures.append(executor.submit(self.process_tool_call, tc))
+                            print_markdown(self.console, f"### Calling external function: {tc['function_name']}...")
 
                     results = [f.result() for f in as_completed(futures)]
 
@@ -172,7 +175,6 @@ class OpenAIChat(LLMStreamingModel):
                 # print_markdown(self.console, f"```json \n{tc['args']}\n ```")
 
                 response = None
-
 
         print("\n")
         
