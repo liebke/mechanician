@@ -89,6 +89,9 @@ I would like to create several product offers, I have csv data, tell me when you
 
 /file ./resources/bundle_test_data.csv
 
+please proceed by creating all those product offers and relationships
+
+
 please proceed
 
 please proceed

@@ -1,20 +1,13 @@
-# Import necessary libraries
-from dotenv import load_dotenv
-from models.openai.assistants import init_model, submit_prompt, clean_up
-# from pprint import pprint
-# import os
-import json
 from util import print_markdown
+# from models.openai.assistants import OpenAIAssistant
+# from models.openai.chat import OpenAIChat
+from models.llm_model import LLMModel
+from models.llm_streaming_model import LLMStreamingModel
 
 # Import Markdown and Console from rich library for pretty terminal outputs
-# from rich.markdown import Markdown
 from rich.console import Console
 
-# Load environment variables from a .env file
-load_dotenv()
-# Create a Console object for pretty terminal outputs
 console = Console()
-
 
 ###############################################################################
 ## PREPRCOESS_PROMPT
@@ -44,33 +37,27 @@ def preprocess_prompt(prompt):
 def print_header():
     print('\n\n\n')
     print_markdown(console, """# Product Offer AI Assistant (Proof of Concept)""")
-    print_markdown(console, """Hello! I'm your virtual assistant designed to help you create new product offers. 
-                    With my assistance, you can efficiently build product hierarchies, define pricing 
-                    entities, and establish relationships between products and associated charges or 
-                    other products. Whether you are crafting bundles, packages, promotions, or any other 
-                    product-related entities within Hansen Catalog Manager, I'm here to guide you through 
-                    the process and provide support wherever needed. If you have any tasks in mind, 
-                    please let me know, and we can get started on creating a new product offer together! 
-                    \n\n"""
-                )
     print('\n\n\n')
 
 
 ###############################################################################
-## RUN_REPL
+## RUN_MODEL
 ###############################################################################
 
-def run_repl():
+def run_model(model: LLMModel):
+    print_header()
     # Loop forever, processing user input from the terminal
     try:
         while True:
+            # Get the user's prompt
             prompt = input("> ")
+
             # Skip empty prompts
             if prompt == '':
                 continue
 
             prompt = preprocess_prompt(prompt)
-            response = submit_prompt(model, prompt)
+            response = model.submit_prompt(prompt)
             
             print('')
             print_markdown(console, response)
@@ -81,17 +68,39 @@ def run_repl():
     except EOFError:
         print("Ctrl+D was pressed, exiting...")
     finally:
-        clean_up(model)
+        model.clean_up()
         print("goodbye")
 
 
 ###############################################################################
-## Main program execution
+## RUN_STREAMING_MODEL
 ###############################################################################
 
-model = init_model()
-print_header()
-run_repl()
+def run_streaming_model(model: LLMStreamingModel):
+    print_header()
+    # Loop forever, processing user input from the terminal
+    try:
+        while True:
+            # Get the user's prompt
+            prompt = input("> ")
 
-###############################################################################
-# End of file
+            # Skip empty prompts
+            if prompt == '':
+                continue
+
+            prompt = preprocess_prompt(prompt)
+            stream = model.get_stream(prompt)
+            resp = model.process_stream(stream)
+            # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
+            while resp == None:
+                stream = model.get_stream("")
+                resp = model.process_stream(stream)
+            
+    except KeyboardInterrupt:
+        print("Ctrl+C was pressed, exiting...")
+    except EOFError:
+        print("Ctrl+D was pressed, exiting...")
+    finally:
+        model.clean_up()
+        print("goodbye")
+
