@@ -87,13 +87,11 @@ looks good, please proceeed
 
 I would like to create several product offers, I have csv data, tell me when you're ready.
 
-/file ./resources/bundle_test_data.csv
+/file ./resources/bundle2_test_data.csv
 
 please proceed by creating all those product offers and relationships
 
 
-please proceed
-
-please proceed
+yes, please complete all remaining work
 
 please proceed
