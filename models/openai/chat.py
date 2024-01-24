@@ -95,7 +95,7 @@ class OpenAIChat(LLMStreamingModel):
 
 
     ###############################################################################
-    ## PROCESS_STREAM
+    ## PROCESS_TOOL_CALL
     ###############################################################################
 
     def process_tool_call(self, tc):

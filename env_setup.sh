@@ -11,3 +11,4 @@ conda activate openai_project
 pip install openai python-dotenv
 pip install openai
 pip install rich
+pip install requests
