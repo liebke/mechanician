@@ -21,6 +21,7 @@ class OpenAIChat(StreamingModelAPI):
     def __init__(self):
         self.model = {}
         self.model["MODEL_NAME"] = os.getenv("MODEL_NAME") # "gpt-4-1106-preview"
+        self.model["MAX_THREAD_WORKERS"] = int(os.getenv("MAX_THREAD_WORKERS", "10"))
         self.client = OpenAI()
         self.model["client"] = self.client
 
@@ -70,7 +71,7 @@ class OpenAIChat(StreamingModelAPI):
                     if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                         tc = tool_calls[-1]
                         print_markdown(self.console, f"### Calling external function: {tc['function']['name']}...")
-                        with ThreadPoolExecutor() as executor:
+                        with ThreadPoolExecutor(max_workers=self.model["MAX_THREAD_WORKERS"]) as executor:
                             futures.append(executor.submit(self.process_tool_call, tc))
                     
                 tool_calls_index = tool_calls_chunk.index
@@ -134,7 +135,7 @@ class OpenAIChat(StreamingModelAPI):
             if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                 if (len(tool_calls) > len(futures)):
                     tc = tool_calls[-1]
-                    with ThreadPoolExecutor() as executor:
+                    with ThreadPoolExecutor(max_workers=self.model["MAX_THREAD_WORKERS"]) as executor:
                         futures.append(executor.submit(self.process_tool_call, tc))
                         print_markdown(self.console, f"### Calling external function: {tc['function']['name']}...")
 
