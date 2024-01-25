@@ -1,5 +1,7 @@
 # DandyHare
 
+<img src="https://github.com/liebke/dandyhare/tree/main/docs/images/dandyhare.jpg" alt="DandyHare" width="200" height="200">
+
 ## Overview
 
 [**DandyHare** ](https://github.com/liebke/dandyhare) is a Python library for interacting with Large Language Model APIs, currently only [*OpenAI's Chat API*](https://platform.openai.com/docs/overview) and [*OpenAI's Assistants API*](https://platform.openai.com/docs/overview), and specifically supports [OpenAI's *Function Calling*](https://platform.openai.com/docs/guides/function-calling), a.k.a.```tool_calls```, while [*streaming responses*](https://cookbook.openai.com/examples/how_to_stream_completions) from the *Chat API*. 
