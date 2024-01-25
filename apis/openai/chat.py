@@ -41,7 +41,7 @@ class OpenAIChat(StreamingModelAPI):
 
     def get_stream(self, prompt):
         client = self.model["client"]
-        # Create a new message with user input
+        # Create a new message with user prompt
         self.messages.append({"role": "user", "content": prompt})
 
         stream = client.chat.completions.create(
@@ -74,18 +74,20 @@ class OpenAIChat(StreamingModelAPI):
                             futures.append(executor.submit(self.process_tool_call, tc))
                     
                 tool_calls_index = tool_calls_chunk.index
-                tool_calls.append({"args": []})
-
-            tool_calls[tool_calls_index]["index"] = tool_calls_chunk.index
+                tool_calls.append({"index": tool_calls_index, 
+                                   "id": "", 
+                                   "type": "", 
+                                   "function_name": "", 
+                                   "args": ""})
 
         if(tool_calls_chunk.id != None):
-            tool_calls[tool_calls_index]["id"] = tool_calls_chunk.id
+            tool_calls[tool_calls_index]["id"] += tool_calls_chunk.id
 
         if(tool_calls_chunk.type != None):
-            tool_calls[tool_calls_index]["type"] = tool_calls_chunk.type
+            tool_calls[tool_calls_index]["type"] += tool_calls_chunk.type
 
         if(tool_calls_chunk.function.name != None):
-            tool_calls[tool_calls_index]["function_name"] = tool_calls_chunk.function.name
+            tool_calls[tool_calls_index]["function_name"] += tool_calls_chunk.function.name
 
         if(tool_calls_chunk.function.arguments != None):
             tool_calls[tool_calls_index]["args"] += (tool_calls_chunk.function.arguments)
@@ -98,17 +100,11 @@ class OpenAIChat(StreamingModelAPI):
     ###############################################################################
 
     def process_tool_call(self, tc):
-        # convert args from list to string
-        tc["args"] = ''.join(tc["args"])
-
         msg1 = {"role": "assistant",
-                "tool_calls": [{
-                                "id": tc['id'],
+                "tool_calls": [{"id": tc['id'],
                                 "function": {"name": tc['function_name'],
-                                "arguments": tc['args']
-                                },
-                          "type": tc['type']
-                        }]}
+                                             "arguments": tc['args']},
+                                "type": tc['type']}]}
 
         function_resp = json.dumps(call_function(tc['function_name'], tc['id'], tc['args']))
         msg2 = {"role": "tool", 
@@ -125,7 +121,7 @@ class OpenAIChat(StreamingModelAPI):
 
     def process_stream(self, stream):
         
-        response = []
+        response = ""
         tool_calls = []
         tool_calls_index = -1
         futures = []
@@ -133,50 +129,39 @@ class OpenAIChat(StreamingModelAPI):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 # Collect response to include in message history
-                response.append(chunk.choices[0].delta.content)
+                response += (chunk.choices[0].delta.content)
                 print(chunk.choices[0].delta.content, end="", flush=True)
 
             elif chunk.choices[0].delta.tool_calls is not None:
                 tool_calls, tool_calls_index = self.process_tool_calls_chunk(chunk, tool_calls, tool_calls_index, futures)
 
         # if the assistant responded with a message, add it to the message history
-        if(response != []):
-            self.messages.append({"role": "assistant", "content": ''.join(response)})
+        if(response != ""):
+            self.messages.append({"role": "assistant", "content": response})
 
         # if the assistant responded with tool calls, call the function handler for each tool_call,
         # and add each response to the message history
         elif(tool_calls != []):
-            if tool_calls:
-                if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
-                    if (len(tool_calls) > len(futures)):
-                        tc = tool_calls[-1]
-                        with ThreadPoolExecutor() as executor:
-                            futures.append(executor.submit(self.process_tool_call, tc))
-                            print_markdown(self.console, f"### Calling external function: {tc['function_name']}...")
+            if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
+                if (len(tool_calls) > len(futures)):
+                    tc = tool_calls[-1]
+                    with ThreadPoolExecutor() as executor:
+                        futures.append(executor.submit(self.process_tool_call, tc))
+                        print_markdown(self.console, f"### Calling external function: {tc['function_name']}...")
 
-                    results = [f.result() for f in as_completed(futures)]
+                results = [f.result() for f in as_completed(futures)]
 
-                else:
-                    results = map(self.process_tool_call, tool_calls)
+            else:
+                results = map(self.process_tool_call, tool_calls)
 
-                for result in results:
-                    msg1, msg2 = result
-                    self.messages.append(msg1)
-                    self.messages.append(msg2)
-
-            for tc in tool_calls: 
-                # convert args from list to string
-                tc["args"] = ''.join(tc["args"])
-                # print_markdown(self.console, f"* Function Name: {tc['function_name']}")
-                # print_markdown(self.console, f"* ID: {tc['id']}")
-                # print_markdown(self.console, f"* Index: {tc['index']}")
-                # print_markdown(self.console, f"* Arguments:")
-                # print_markdown(self.console, f"```json \n{tc['args']}\n ```")
-
-                response = None
+            for result in results:
+                msg1, msg2 = result
+                self.messages.append(msg1)
+                self.messages.append(msg2)
+            
+            response = None
 
         print("\n")
-        
         return response
 
 
