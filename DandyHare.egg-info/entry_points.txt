@@ -1,2 +1,0 @@
-[console_scripts]
-dandyhare = dandyhare.main:main

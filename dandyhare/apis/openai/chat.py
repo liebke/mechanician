@@ -1,10 +1,8 @@
 
 from openai import OpenAI
 from rich.console import Console
-from apis.streaming_model_api import StreamingModelAPI
-from apis.openai.tools import call_function
-from apis.openai.tool_schemas import tool_schemas
-from util import print_markdown
+from dandyhare.apis.streaming_model_api import StreamingModelAPI
+from dandyhare.util import print_markdown
 import json
 import os
 
@@ -18,18 +16,21 @@ class OpenAIChat(StreamingModelAPI):
     ## INIT_MODEL
     ###############################################################################
 
-    def __init__(self):
+    def __init__(self, instructions, tool_schemas, function_handler):
         self.model = {}
         self.model["MODEL_NAME"] = os.getenv("MODEL_NAME") # "gpt-4-1106-preview"
         self.model["MAX_THREAD_WORKERS"] = int(os.getenv("MAX_THREAD_WORKERS", "10"))
+        self.model["tool_schemas"] = tool_schemas
+        self.function_handler = function_handler
         self.client = OpenAI()
         self.model["client"] = self.client
+        self.model["instructions"] = instructions
 
-        with open("./resources/instructions.md", 'r') as file:
-            instructions = file.read()
+        # with open("./resources/instructions.md", 'r') as file:
+        #     instructions = file.read()
 
         # Initialize the conversation with a system message
-        self.messages = [{"role": "system", "content": instructions}]
+        self.messages = [{"role": "system", "content": self.model["instructions"]}]
 
         self.console = Console()
 
@@ -48,7 +49,7 @@ class OpenAIChat(StreamingModelAPI):
         stream = client.chat.completions.create(
             model=self.model["MODEL_NAME"],
             messages=self.messages,
-            tools=tool_schemas,
+            tools=self.model["tool_schemas"],
             stream=True,
         )
         return stream
@@ -101,7 +102,7 @@ class OpenAIChat(StreamingModelAPI):
     ###############################################################################
 
     def process_tool_call(self, tc):
-        function_resp = json.dumps(call_function(tc['function']['name'], tc['id'], tc['function']['arguments']))
+        function_resp = json.dumps(self.function_handler(tc['function']['name'], tc['id'], tc['function']['arguments']))
         return tc, function_resp
 
     

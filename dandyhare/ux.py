@@ -1,6 +1,6 @@
-from util import print_markdown
-from apis.model_api import ModelAPI
-from apis.streaming_model_api import StreamingModelAPI
+from dandyhare.util import print_markdown
+from dandyhare.apis.model_api import ModelAPI
+from dandyhare.apis.streaming_model_api import StreamingModelAPI
 
 # Import Markdown and Console from rich library for pretty terminal outputs
 from rich.console import Console
@@ -32,9 +32,9 @@ def preprocess_prompt(prompt):
 ## PRINT_HEADER
 ###############################################################################
 
-def print_header():
+def print_header(name="DandyHare Assistant"):
     print('\n\n\n')
-    print_markdown(console, """# Product Offer AI Assistant (Proof of Concept)""")
+    print_markdown(console, """# {name}""")
     print('\n\n\n')
 
 
@@ -42,8 +42,8 @@ def print_header():
 ## RUN_MODEL
 ###############################################################################
 
-def run_model(api: ModelAPI):
-    print_header()
+def run_model(api: ModelAPI, name="DandyHare Assistant"):
+    print_header(name)
     # Loop forever, processing user input from the terminal
     try:
         while True:
@@ -74,7 +74,7 @@ def run_model(api: ModelAPI):
 ## RUN_STREAMING_MODEL
 ###############################################################################
 
-def run_streaming_model(api: StreamingModelAPI):
+def run_streaming_model(api: StreamingModelAPI, name="DandyHare Assistant"):
     print_header()
     # Loop forever, processing user input from the terminal
     try:

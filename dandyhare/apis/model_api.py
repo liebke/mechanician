@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 class ModelAPI(ABC):
 
     @abstractmethod
-    def __init__(self) -> 'ModelAPI':
+    def __init__(self, instructions, tool_schemas, function_handler) -> 'ModelAPI':
         pass
 
     @abstractmethod

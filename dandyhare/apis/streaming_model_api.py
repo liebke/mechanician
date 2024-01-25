@@ -1,12 +1,12 @@
 
 from abc import abstractmethod
-from apis.model_api import ModelAPI
+from dandyhare.apis.model_api import ModelAPI
 
 
 class StreamingModelAPI(ModelAPI):
 
     @abstractmethod
-    def __init__(self) -> 'ModelAPI':
+    def __init__(self, instructions, tool_schemas, function_handler) -> 'ModelAPI':
         pass
 
     @abstractmethod

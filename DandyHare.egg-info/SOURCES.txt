@@ -1,8 +1,0 @@
-README.md
-setup.py
-DandyHare.egg-info/PKG-INFO
-DandyHare.egg-info/SOURCES.txt
-DandyHare.egg-info/dependency_links.txt
-DandyHare.egg-info/entry_points.txt
-DandyHare.egg-info/requires.txt
-DandyHare.egg-info/top_level.txt

@@ -1,5 +1,5 @@
 # Import Markdown and Console from rich library for pretty terminal outputs
-from util import print_markdown
+from dandyhare.util import print_markdown
 # from rich.markdown import Markdown
 from rich.console import Console
 import json

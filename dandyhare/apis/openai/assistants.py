@@ -1,10 +1,8 @@
 
 from openai import OpenAI
 from rich.console import Console
-from apis.model_api import ModelAPI
-from apis.openai.tools import call_function
-from apis.openai.tool_schemas import tool_schemas
-from util import print_markdown
+from dandyhare.apis.model_api import ModelAPI
+from dandyhare.util import print_markdown
 import time
 import os
 
@@ -15,14 +13,17 @@ class OpenAIAssistant(ModelAPI):
     ## INIT_MODEL
     ###############################################################################
 
-    def __init__(self):
+    def __init__(self, instructions, tool_schemas, function_handler):
         self.model = {}
         self.model["ASSISTANT_ID"] = os.getenv("ASSISTANT_ID")
         self.model["CREATE_NEW_ASSISTANT"] = os.getenv("CREATE_NEW_ASSISTANT") # False
         self.model["DELETE_ASSISTANT_ON_EXIT"] = os.getenv("DELETE_ASSISTANT_ON_EXIT") # False
         self.model["MODEL_NAME"] = os.getenv("MODEL_NAME") # "gpt-4-1106-preview"
+        self.model["tool_schemas"] = tool_schemas
+        self.function_handler = function_handler
         self.client = OpenAI()
         self.model["client"] = self.client
+        self.model["instructions"] = instructions
 
         self.console = Console()
 
@@ -33,16 +34,16 @@ class OpenAIAssistant(ModelAPI):
 
         if self.model["CREATE_NEW_ASSISTANT"] == "True":
             # Open and read the instructions file
-            with open("./resources/instructions.md", 'r') as file:
-                instructions = file.read()
-                # print(f"INSTRUCTIONS:\n {instructions}")
+            # with open("./resources/instructions.md", 'r') as file:
+            #     instructions = file.read()
+            #     # print(f"INSTRUCTIONS:\n {instructions}")
 
             # Create an assistant with the OpenAI client
             print_markdown(self.console, "## Creating a new assistant...")
             self.model["assistant"] = self.client.beta.assistants.create(
-                instructions=instructions,
+                instructions=self.model["instructions"],
                 model=self.model["MODEL_NAME"],
-                tools=tool_schemas
+                tools=self.model["tool_schemas"]
                 )
         else:
             print_markdown(self.console, "## Retrieving existing assistant...")
@@ -103,7 +104,7 @@ class OpenAIAssistant(ModelAPI):
                     # Call the function with the extracted name, ID, and arguments,
                     # and append the output to the tool_outputs list
                     # call_ids.append(call_id)
-                    tool_outputs.append(call_function(function_name, call_id, args))
+                    tool_outputs.append(self.function_handler(function_name, call_id, args))
 
                 # Submit the outputs of the tools to the current run
                 # print(f"tool_outputs: {tool_outputs}")
