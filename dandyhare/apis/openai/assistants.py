@@ -33,11 +33,6 @@ class OpenAIAssistant(ModelAPI):
         print_markdown(self.console, f"* MODEL_NAME: {self.model['MODEL_NAME']}")
 
         if self.model["CREATE_NEW_ASSISTANT"] == "True":
-            # Open and read the instructions file
-            # with open("./resources/instructions.md", 'r') as file:
-            #     instructions = file.read()
-            #     # print(f"INSTRUCTIONS:\n {instructions}")
-
             # Create an assistant with the OpenAI client
             print_markdown(self.console, "## Creating a new assistant...")
             self.model["assistant"] = self.client.beta.assistants.create(

@@ -26,9 +26,6 @@ class OpenAIChat(StreamingModelAPI):
         self.model["client"] = self.client
         self.model["instructions"] = instructions
 
-        # with open("./resources/instructions.md", 'r') as file:
-        #     instructions = file.read()
-
         # Initialize the conversation with a system message
         self.messages = [{"role": "system", "content": self.model["instructions"]}]
 
