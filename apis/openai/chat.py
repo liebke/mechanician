@@ -69,7 +69,7 @@ class OpenAIChat(StreamingModelAPI):
                 if tool_calls_index >= 0:
                     if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                         tc = tool_calls[-1]
-                        print_markdown(self.console, f"### Calling external function: {tc['function_name']}...")
+                        print_markdown(self.console, f"### Calling external function: {tc['function']['name']}...")
                         with ThreadPoolExecutor() as executor:
                             futures.append(executor.submit(self.process_tool_call, tc))
                     
@@ -77,8 +77,8 @@ class OpenAIChat(StreamingModelAPI):
                 tool_calls.append({"index": tool_calls_index, 
                                    "id": "", 
                                    "type": "", 
-                                   "function_name": "", 
-                                   "args": ""})
+                                   "function": {"name": "", 
+                                                "arguments": ""}})
 
         if(tool_calls_chunk.id != None):
             tool_calls[tool_calls_index]["id"] += tool_calls_chunk.id
@@ -87,10 +87,10 @@ class OpenAIChat(StreamingModelAPI):
             tool_calls[tool_calls_index]["type"] += tool_calls_chunk.type
 
         if(tool_calls_chunk.function.name != None):
-            tool_calls[tool_calls_index]["function_name"] += tool_calls_chunk.function.name
+            tool_calls[tool_calls_index]["function"]["name"] += tool_calls_chunk.function.name
 
         if(tool_calls_chunk.function.arguments != None):
-            tool_calls[tool_calls_index]["args"] += (tool_calls_chunk.function.arguments)
+            tool_calls[tool_calls_index]["function"]["arguments"] += (tool_calls_chunk.function.arguments)
 
         return tool_calls, tool_calls_index
 
@@ -100,19 +100,8 @@ class OpenAIChat(StreamingModelAPI):
     ###############################################################################
 
     def process_tool_call(self, tc):
-        msg1 = {"role": "assistant",
-                "tool_calls": [{"id": tc['id'],
-                                "function": {"name": tc['function_name'],
-                                             "arguments": tc['args']},
-                                "type": tc['type']}]}
-
-        function_resp = json.dumps(call_function(tc['function_name'], tc['id'], tc['args']))
-        msg2 = {"role": "tool", 
-                "tool_call_id": tc['id'],
-                "name": tc['function_name'],
-                "content": function_resp}
-        
-        return msg1, msg2
+        function_resp = json.dumps(call_function(tc['function']['name'], tc['id'], tc['function']['arguments']))
+        return tc, function_resp
 
     
     ###############################################################################
@@ -147,18 +136,30 @@ class OpenAIChat(StreamingModelAPI):
                     tc = tool_calls[-1]
                     with ThreadPoolExecutor() as executor:
                         futures.append(executor.submit(self.process_tool_call, tc))
-                        print_markdown(self.console, f"### Calling external function: {tc['function_name']}...")
+                        print_markdown(self.console, f"### Calling external function: {tc['function']['name']}...")
 
                 results = [f.result() for f in as_completed(futures)]
 
             else:
                 results = map(self.process_tool_call, tool_calls)
 
+            assistant_message = {"role": "assistant", "tool_calls": []}
+            tool_resp_messages = []
             for result in results:
-                msg1, msg2 = result
-                self.messages.append(msg1)
-                self.messages.append(msg2)
-            
+                tc, function_resp = result
+                assistant_message['tool_calls'].append(tc)
+                tool_resp_message = {"role": "tool", 
+                                     "tool_call_id": tc['id'],
+                                     "name": tc['function']['name'],
+                                     "content": function_resp }
+                tool_resp_messages.append(tool_resp_message)
+                
+            # Append the assistant message with tool_calls to the message history
+            self.messages.append(assistant_message)
+            # Append the tool response messages to the message history
+            for msg in tool_resp_messages:
+                self.messages.append(msg)
+
             response = None
 
         print("\n")
