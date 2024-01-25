@@ -1,12 +1,14 @@
 # DandyHare
 
 ## Overview
-TODO
 
-## Features
-TODO
+DandyHare is a Python library for interacting with Large Language Model APIs, currently only *OpenAI's Chat API* and *OpenAI's Assistants API*, and specifically supports ```tool_calls``` while streaming responses from the *Chat API*. 
+
+Each ```tool_call``` will be executed in a ```ThreadExecutor``` as soon as it has completely streamed to the client, allowing it to perform IO-bound calls while other ```tool_calls``` continue to stream to the client.
+
 
 ## Prerequisites
+
 - Conda (for environment management)
 - Python 3.8
 
@@ -19,14 +21,19 @@ TODO
    - ```pip install .``` or ```pip install -e .``` installs the dandyhare package in editable mode, which means you can modify the code in the dandyhare package without having to reinstall it.
 
 3. **Environment Variables**:
+   - You will need an **OPENAI_API_KEY**.
+   - See ```dot_env_example``` for examples of the environment variables you will need to set.
    - Create a `.env` file in the project root directory.
-   - Add your OpenAI API key and Assistant ID to the `.env` file as follows:
-     ```
-     OPENAI_API_KEY=your_api_key_here
-     OPENAI_ASSISTANT_ID=your_assistant_id_here
-     ```
-   - Replace `your_api_key_here` and `your_assistant_id_here` with your actual API key and Assistant ID.
+
 
 ## Examples
 
-TODO
+The ```examples``` directory contains an example **DandyHare** project that shows how to:
+
+* Define a ```tools_schema``` that tells the LLM what tools are available to it.
+
+* Define a simple ```function_handler``` containing ```stub``` functions that are invoked when the LLM requests one or more ```tool_calls```
+
+* Define a set of instructions for the LLM that inform it of the tools available to it, and describe it's role as a **Product Offer Management Assistant** that defines product offers consisting of **Bundles**, **Packages**, **Components**, **Charges**, and **Relationships** between those entities.
+
+* ```example_prompts``` provides a variety of approaches to interacting with the LLM in order to construct **Product Offers**.
