@@ -1,6 +1,6 @@
 # DandyHare
 
-<img src="https://github.com/liebke/dandyhare/tree/main/docs/images/dandyhare.jpg" alt="DandyHare" width="200" height="200">
+<img src="docs/images/dandyhare.jpeg" alt="DandyHare" width="200" height="200">
 
 ## Overview
 
