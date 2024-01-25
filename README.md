@@ -27,5 +27,6 @@ TODO
      ```
    - Replace `your_api_key_here` and `your_assistant_id_here` with your actual API key and Assistant ID.
 
-## Usage
+## Examples
+
 TODO
