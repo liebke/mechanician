@@ -1,9 +1,9 @@
 
 from openai import OpenAI
 from rich.console import Console
-from models.llm_streaming_model import LLMStreamingModel
-from models.openai.tools import call_function
-from models.openai.tool_schemas import tool_schemas
+from apis.streaming_model_api import StreamingModelAPI
+from apis.openai.tools import call_function
+from apis.openai.tool_schemas import tool_schemas
 from util import print_markdown
 import json
 import os
@@ -12,7 +12,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 
-class OpenAIChat(LLMStreamingModel):
+class OpenAIChat(StreamingModelAPI):
 
     ###############################################################################
     ## INIT_MODEL
@@ -26,7 +26,6 @@ class OpenAIChat(LLMStreamingModel):
 
         with open("./resources/instructions.md", 'r') as file:
             instructions = file.read()
-            # print(f"INSTRUCTIONS:\n {instructions}")
 
         # Initialize the conversation with a system message
         self.messages = [{"role": "system", "content": instructions}]

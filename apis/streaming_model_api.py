@@ -1,12 +1,12 @@
 
-from abc import ABC, abstractmethod
-from models.llm_model import LLMModel
+from abc import abstractmethod
+from apis.model_api import ModelAPI
 
 
-class LLMStreamingModel(LLMModel):
+class StreamingModelAPI(ModelAPI):
 
     @abstractmethod
-    def __init__(self) -> 'LLMModel':
+    def __init__(self) -> 'ModelAPI':
         pass
 
     @abstractmethod

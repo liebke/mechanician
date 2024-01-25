@@ -2,10 +2,10 @@
 from abc import ABC, abstractmethod
 
 
-class LLMModel(ABC):
+class ModelAPI(ABC):
 
     @abstractmethod
-    def __init__(self) -> 'LLMModel':
+    def __init__(self) -> 'ModelAPI':
         pass
 
     @abstractmethod

@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 from ux import run_model, run_streaming_model
-from models.openai.assistants import OpenAIAssistant
-from models.openai.chat import OpenAIChat
+from apis.openai.assistants import OpenAIAssistant
+from apis.openai.chat import OpenAIChat
 
 
 ###############################################################################

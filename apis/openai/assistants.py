@@ -1,15 +1,15 @@
 
 from openai import OpenAI
 from rich.console import Console
-from models.llm_model import LLMModel
-from models.openai.tools import call_function
-from models.openai.tool_schemas import tool_schemas
+from apis.model_api import ModelAPI
+from apis.openai.tools import call_function
+from apis.openai.tool_schemas import tool_schemas
 from util import print_markdown
 import time
 import os
 
 
-class OpenAIAssistant(LLMModel):
+class OpenAIAssistant(ModelAPI):
 
     ###############################################################################
     ## INIT_MODEL
@@ -84,7 +84,6 @@ class OpenAIAssistant(LLMModel):
                 break
 
             elif run.status == 'requires_action':
-                # print("REQUIRES ACTION...")
                 # The following block of code is responsible for sending requests to an external program
                 # and submitting the outputs of the tools used in the program.
 
@@ -97,7 +96,6 @@ class OpenAIAssistant(LLMModel):
 
                 # Iterate over each tool call
                 for tool_call in tool_calls:
-                    # print(f"tool_call: {tool_call}")
                     call_id = tool_call.id 
                     function_name = tool_call.function.name
                     args = tool_call.function.arguments
