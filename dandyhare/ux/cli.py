@@ -34,7 +34,7 @@ def preprocess_prompt(prompt):
 
 def print_header(name="DandyHare Assistant"):
     print('\n\n\n')
-    print_markdown(console, """# {name}""")
+    print_markdown(console, f"# {name}")
     print('\n\n\n')
 
 
@@ -43,7 +43,7 @@ def print_header(name="DandyHare Assistant"):
 ###############################################################################
 
 def run_model(api: ModelAPI, name="DandyHare Assistant"):
-    print_header(name)
+    print_header(name=name)
     # Loop forever, processing user input from the terminal
     try:
         while True:
@@ -75,7 +75,7 @@ def run_model(api: ModelAPI, name="DandyHare Assistant"):
 ###############################################################################
 
 def run_streaming_model(api: StreamingModelAPI, name="DandyHare Assistant"):
-    print_header()
+    print_header(name=name)
     # Loop forever, processing user input from the terminal
     try:
         while True:

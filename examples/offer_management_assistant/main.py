@@ -1,6 +1,4 @@
-# import sys
-# sys.path.insert(0, '../../')
-from dandyhare.ux import run_model, run_streaming_model
+from dandyhare.ux.cli import run_model, run_streaming_model
 from dotenv import load_dotenv
 # from dandyhare.apis.openai.assistants import OpenAIAssistant
 from dandyhare.apis.openai.chat import OpenAIChat
@@ -18,13 +16,13 @@ from examples.offer_management_assistant.tool_schemas import tool_schemas
 load_dotenv()
 
 with open("./examples/offer_management_assistant/resources/instructions.md", 'r') as file:
-            instructions = file.read()
+    instructions = file.read()
 
 # Initialize the model
 # model = OpenAIAssistant(tool_schemas=tool_schemas, function_handler=call_function)
 model = OpenAIChat(instructions=instructions, tool_schemas=tool_schemas, function_handler=call_function)
 
 # Run the REPL loop
-# run_model(model, "Product Offer AI Assistant (Proof of Concept)"
-run_streaming_model(model, "Product Offer AI Assistant (Proof of Concept)")
+# run_model(model, name="Product Offer AI Assistant (Proof of Concept)"
+run_streaming_model(model, name="Product Offer AI Assistant (Proof of Concept)")
 
