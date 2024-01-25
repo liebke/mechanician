@@ -15,7 +15,7 @@ from examples.offer_management_assistant.tool_schemas import tool_schemas
 # Load environment variables from a .env file
 load_dotenv()
 
-with open("./examples/offer_management_assistant/resources/instructions.md", 'r') as file:
+with open("./examples/offer_management_assistant/instructions.md", 'r') as file:
     instructions = file.read()
 
 # Initialize the model

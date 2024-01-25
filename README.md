@@ -30,10 +30,12 @@ Each ```tool_call``` will be executed in a ```ThreadExecutor``` as soon as it ha
 
 The ```examples``` directory contains an example **DandyHare** project that shows how to:
 
-* Define a ```tools_schema``` that tells the LLM what tools are available to it.
+* ```examples/offer_management_assistant/main.py```: shows how to use **DandyHare** to interact with *OpenAI's Chat API*, providing it with **tools** that can be used by the LLM to makes *callouts* to other programs. 
 
-* Define a simple ```function_handler``` containing ```stub``` functions that are invoked when the LLM requests one or more ```tool_calls```
+* ```tool_schemas.py```: informs the LLM what tools are available to it.
 
-* Define a set of instructions for the LLM that inform it of the tools available to it, and describe it's role as a **Product Offer Management Assistant** that defines product offers consisting of **Bundles**, **Packages**, **Components**, **Charges**, and **Relationships** between those entities.
+* ```tools.py```: is *function_handler* containing ```stub``` functions that are invoked when the LLM makes one or more ```tool_call``` requests.
 
-* ```example_prompts``` provides a variety of approaches to interacting with the LLM in order to construct **Product Offers**.
+* ```examples/offer_management_assistant/instructions.md```: is a set of instructions for the LLM that inform it of the tools available to it, and describe its role as a **Product Offer Management Assistant** that defines product offers consisting of **Bundles**, **Packages**, **Components**, **Charges**, and **Relationships** between those entities.
+
+* ```example_prompts.md```: provides a variety of approaches to interacting with the LLM in order to construct **Product Offers**.
