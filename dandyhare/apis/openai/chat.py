@@ -61,7 +61,7 @@ class OpenAIChat(StreamingModelAPI):
         # copy tool_calls so that we don't modify the original
         tool_calls = tool_calls.copy()
         tool_calls_chunk = chunk.choices[0].delta.tool_calls[0]
-        if(tool_calls_chunk.index != None):
+        if tool_calls_chunk.index is not None :
             if(tool_calls_index < tool_calls_chunk.index):
                 # get current last tool_call if it exists, and call the function handler using the Thread Pool Executor.
                 # This will allow the function handler to run in parallel with the rest of the code.
@@ -79,16 +79,16 @@ class OpenAIChat(StreamingModelAPI):
                                    "function": {"name": "", 
                                                 "arguments": ""}})
 
-        if(tool_calls_chunk.id != None):
+        if tool_calls_chunk.id is not None:
             tool_calls[tool_calls_index]["id"] += tool_calls_chunk.id
 
-        if(tool_calls_chunk.type != None):
+        if tool_calls_chunk.type is not None :
             tool_calls[tool_calls_index]["type"] += tool_calls_chunk.type
 
-        if(tool_calls_chunk.function.name != None):
+        if tool_calls_chunk.function.name is not None:
             tool_calls[tool_calls_index]["function"]["name"] += tool_calls_chunk.function.name
 
-        if(tool_calls_chunk.function.arguments != None):
+        if tool_calls_chunk.function.arguments is not None:
             tool_calls[tool_calls_index]["function"]["arguments"] += (tool_calls_chunk.function.arguments)
 
         return tool_calls, tool_calls_index
@@ -117,7 +117,7 @@ class OpenAIChat(StreamingModelAPI):
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 # Collect response to include in message history
-                response += (chunk.choices[0].delta.content)
+                response += chunk.choices[0].delta.content
                 print(chunk.choices[0].delta.content, end="", flush=True)
 
             elif chunk.choices[0].delta.tool_calls is not None:
@@ -158,6 +158,10 @@ class OpenAIChat(StreamingModelAPI):
             # Append the tool response messages to the message history
             for msg in tool_resp_messages:
                 self.messages.append(msg)
+
+            # DEBUG
+            # print(json.dumps(assistant_message))
+            # print(json.dumps(tool_resp_messages))
 
             response = None
 
