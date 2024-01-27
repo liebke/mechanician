@@ -1,12 +1,14 @@
-# Mechanician
+# Daring Mechanician
+>*"...if they could only have found the point of application for it, they would have constructed a lever capable of raising the earth and rectifying its axis. It was just this deficiency which baffled these **daring mechanicians**." -Jules Verne*
 
-<img src="docs/images/mechanician.png" alt="Mechanician" width="200" height="200">
+<img src="docs/images/mechanician.png" alt="Daring Mechanician" width="200" height="200">
 
-*"...if they could only have found the point of application for it, they would have constructed a lever capable of raising the earth and rectifying its axis. It was just this deficiency which baffled these **daring mechanicians**." -Jules Verne*
+*Building tools that use AI and building tools that AIs use.*
+
 
 ## Overview
 
-[**Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI and building tools that AIs use. 
+[**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI and building tools that AIs use. 
 
 It currently supports [*OpenAI's Chat API*](https://platform.openai.com/docs/overview) and [*OpenAI's Assistants API*](https://platform.openai.com/docs/overview), and specifically supports [OpenAI's *Function Calling*](https://platform.openai.com/docs/guides/function-calling), a.k.a.```tool_calls```, while [*streaming responses*](https://cookbook.openai.com/examples/how_to_stream_completions) from the *Chat API*. 
 
@@ -28,7 +30,6 @@ Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.p
    - ```pip install .``` or ```pip install -e .``` installs the mechanician package in editable mode, which means you can modify the code in the mechanician package without having to reinstall it.
    - ```pip install openai```  so you can run the ```mechanician.openai``` module
    - To run the TMDB example, you'll need the ```requests``` package: ```pip install requests```
-   - ```pip install rich```
 
 3. **Environment Variables**:
    - You will need an [**OPENAI_API_KEY**](https://platform.openai.com/api-keys).
@@ -38,9 +39,9 @@ Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.p
 
 ## Examples
 
-The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains an example **Mechanician** project that shows how to:
+The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains an example **Daring Mechanician** project that shows how to:
 
-* [```examples/offer_management_assistant/main.py```](https://github.com/liebke/mechanician/blob/main/examples/offer_management_assistant/main.py): shows how to use **Mechanician** to interact with *OpenAI's Chat API*, providing it with **tools** that can be used by the LLM to makes *callouts* to other programs. 
+* [```examples/offer_management_assistant/main.py```](https://github.com/liebke/mechanician/blob/main/examples/offer_management_assistant/main.py): shows how to use **Daring Mechanician** to interact with *OpenAI's Chat API*, providing it with **tools** that can be used by the LLM to makes *callouts* to other programs. 
 
 * [```tool_schemas.py```](https://github.com/liebke/mechanician/blob/main/examples/offer_management_assistant/tool_schemas.py): informs the LLM what tools are available to it.
 
