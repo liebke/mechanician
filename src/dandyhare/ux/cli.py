@@ -1,6 +1,6 @@
-from dandyhare.util import print_markdown
-from dandyhare.apis.model_api import ModelAPI
-from dandyhare.apis.streaming_model_api import StreamingModelAPI
+from dandyhare.ux.util import print_markdown
+from dandyhare.service_connectors import LLMServiceConnector
+from dandyhare.service_connectors import StreamingLLMServiceConnector
 from rich.console import Console  
 
 console = Console()
@@ -40,7 +40,7 @@ def print_header(name="DandyHare Assistant"):
 ## RUN_MODEL
 ###############################################################################
 
-def run_model(api: ModelAPI, name="DandyHare Assistant"):
+def run_model(llm_con: LLMServiceConnector, name="DandyHare Assistant"):
     print_header(name=name)
     # Loop forever, processing user input from the terminal
     try:
@@ -53,7 +53,7 @@ def run_model(api: ModelAPI, name="DandyHare Assistant"):
                 continue
 
             prompt = preprocess_prompt(prompt)
-            response = api.submit_prompt(prompt)
+            response = llm_con.submit_prompt(prompt)
             
             print('')
             print_markdown(console, response)
@@ -64,7 +64,7 @@ def run_model(api: ModelAPI, name="DandyHare Assistant"):
     except EOFError:
         print("Ctrl+D was pressed, exiting...")
     finally:
-        api.clean_up()
+        llm_con.clean_up()
         print("goodbye")
 
 
@@ -72,8 +72,8 @@ def run_model(api: ModelAPI, name="DandyHare Assistant"):
 ## RUN_STREAMING_MODEL
 ###############################################################################
 
-def run_streaming_model(api: StreamingModelAPI, name="DandyHare Assistant"):
-    print_markdown(console, f"* MODEL_NAME: {api.model['MODEL_NAME']}")
+def run_streaming_model(llm_con: StreamingLLMServiceConnector, name="DandyHare Assistant"):
+    print_markdown(console, f"* MODEL_NAME: {llm_con.model['MODEL_NAME']}")
     print_header(name=name)
     # Loop forever, processing user input from the terminal
     try:
@@ -87,10 +87,10 @@ def run_streaming_model(api: StreamingModelAPI, name="DandyHare Assistant"):
 
             print('')
             prompt = preprocess_prompt(prompt)
-            resp = api.submit_prompt(prompt)
+            resp = llm_con.submit_prompt(prompt)
             # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
             while resp == None:
-                resp = api.submit_prompt(prompt)
+                resp = llm_con.submit_prompt(prompt)
                 print('\n')
             
     except KeyboardInterrupt:
@@ -98,6 +98,6 @@ def run_streaming_model(api: StreamingModelAPI, name="DandyHare Assistant"):
     except EOFError:
         print("Ctrl+D was pressed, exiting...")
     finally:
-        api.clean_up()
+        llm_con.clean_up()
         print("goodbye")
 

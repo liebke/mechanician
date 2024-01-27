@@ -1,14 +1,14 @@
 
 from openai import OpenAI
 from rich.console import Console
-from dandyhare.apis.model_api import ModelAPI
-from dandyhare.apis.tool_handler import ToolHandler
-from dandyhare.util import print_markdown
+from src.dandyhare.service_connectors import LLMServiceConnector
+from dandyhare.tool_handlers import ToolHandler
+from src.dandyhare.ux.util import print_markdown
 import time
 import os
 
 
-class OpenAIAssistant(ModelAPI):
+class OpenAIAssistantServiceConnector(LLMServiceConnector):
 
     ###############################################################################
     ## INIT_MODEL

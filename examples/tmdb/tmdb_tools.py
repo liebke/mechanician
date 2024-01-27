@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 from pprint import pprint
 import json
-from dandyhare.apis.tool_handler import ToolHandler
+from dandyhare.tool_handlers import ToolHandler
 
 # https://developer.themoviedb.org
 
