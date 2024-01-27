@@ -2,9 +2,13 @@
 
 <img src="docs/images/mechanician.png" alt="Mechanician" width="200" height="200">
 
+*"...if they could only have found the point of application for it, they would have constructed a lever capable of raising the earth and rectifying its axis. It was just this deficiency which baffled these **daring mechanicians**." -Jules Verne*
+
 ## Overview
 
-[**Mechanician** ](https://github.com/liebke/mechanician) is a Python library for interacting with Large Language Model APIs, currently only [*OpenAI's Chat API*](https://platform.openai.com/docs/overview) and [*OpenAI's Assistants API*](https://platform.openai.com/docs/overview), and specifically supports [OpenAI's *Function Calling*](https://platform.openai.com/docs/guides/function-calling), a.k.a.```tool_calls```, while [*streaming responses*](https://cookbook.openai.com/examples/how_to_stream_completions) from the *Chat API*. 
+[**Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI and building tools that AIs use. 
+
+It currently supports [*OpenAI's Chat API*](https://platform.openai.com/docs/overview) and [*OpenAI's Assistants API*](https://platform.openai.com/docs/overview), and specifically supports [OpenAI's *Function Calling*](https://platform.openai.com/docs/guides/function-calling), a.k.a.```tool_calls```, while [*streaming responses*](https://cookbook.openai.com/examples/how_to_stream_completions) from the *Chat API*. 
 
 Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.python.org/3/library/concurrent.futures.html) as soon as it has completely streamed to the client, allowing it to perform *IO-bound* calls while other ```tool_calls``` continue to stream to the client.
 
@@ -23,7 +27,7 @@ Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.p
    - ```cd src```
    - ```pip install .``` or ```pip install -e .``` installs the mechanician package in editable mode, which means you can modify the code in the mechanician package without having to reinstall it.
    - ```pip install openai```  so you can run the ```mechanician.openai``` module
-   - To run the TMDB example, you'll need the ```requests``` package: ```pip install requests``
+   - To run the TMDB example, you'll need the ```requests``` package: ```pip install requests```
    - ```pip install rich```
 
 3. **Environment Variables**:
