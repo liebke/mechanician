@@ -1,7 +1,7 @@
-from dandyhare.ux.cli import run_streaming_model
+from mechanician.ux.cli import run_streaming_model
 from dotenv import load_dotenv
-from dandyhare.openai.chat_service_connector import OpenAIChatServiceConnector
-from dandyhare.ux.stream_printer import SimpleStreamPrinter
+from mechanician.openai.chat_service_connector import OpenAIChatServiceConnector
+from mechanician.ux.stream_printer import SimpleStreamPrinter
 
 from tmdb_tools import TMDbHandler
 from tmdb_tool_schemas import tool_schemas

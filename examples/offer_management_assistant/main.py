@@ -1,7 +1,7 @@
-from dandyhare.ux.cli import run_model, run_streaming_model
+from mechanician.ux.cli import run_model, run_streaming_model
 from dotenv import load_dotenv
-# from dandyhare.apis.openai.assistants_service_connector import OpenAIAssistantServiceConnector
-from dandyhare.openai.chat_service_connector import OpenAIChatServiceConnector
+# from mechanician.apis.openai.assistants_service_connector import OpenAIAssistantServiceConnector
+from mechanician.openai.chat_service_connector import OpenAIChatServiceConnector
 
 from examples.offer_management_assistant.tools import call_function
 from examples.offer_management_assistant.tool_schemas import tool_schemas

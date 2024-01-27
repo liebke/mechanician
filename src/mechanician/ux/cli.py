@@ -1,6 +1,6 @@
-from dandyhare.ux.util import print_markdown
-from dandyhare.service_connectors import LLMServiceConnector
-from dandyhare.service_connectors import StreamingLLMServiceConnector
+from mechanician.ux.util import print_markdown
+from mechanician.service_connectors import LLMServiceConnector
+from mechanician.service_connectors import StreamingLLMServiceConnector
 from rich.console import Console  
 
 console = Console()
@@ -30,7 +30,7 @@ def preprocess_prompt(prompt):
 ## PRINT_HEADER
 ###############################################################################
 
-def print_header(name="DandyHare Assistant"):
+def print_header(name="Mechanician"):
     print('\n\n\n')
     print_markdown(console, f"# {name}")
     print('\n\n\n')
@@ -40,7 +40,7 @@ def print_header(name="DandyHare Assistant"):
 ## RUN_MODEL
 ###############################################################################
 
-def run_model(llm_con: LLMServiceConnector, name="DandyHare Assistant"):
+def run_model(llm_con: LLMServiceConnector, name="Mechanician"):
     print_header(name=name)
     # Loop forever, processing user input from the terminal
     try:
@@ -72,7 +72,7 @@ def run_model(llm_con: LLMServiceConnector, name="DandyHare Assistant"):
 ## RUN_STREAMING_MODEL
 ###############################################################################
 
-def run_streaming_model(llm_con: StreamingLLMServiceConnector, name="DandyHare Assistant"):
+def run_streaming_model(llm_con: StreamingLLMServiceConnector, name="Mechanician"):
     print_markdown(console, f"* MODEL_NAME: {llm_con.model['MODEL_NAME']}")
     print_header(name=name)
     # Loop forever, processing user input from the terminal

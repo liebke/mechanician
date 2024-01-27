@@ -1,7 +1,7 @@
 
 from abc import ABC, abstractmethod
-from dandyhare.ux.stream_printer import StreamPrinter
-from dandyhare.tool_handlers import ToolHandler
+from mechanician.ux.stream_printer import StreamPrinter
+from mechanician.tool_handlers import ToolHandler
 
 
 class LLMServiceConnector(ABC):

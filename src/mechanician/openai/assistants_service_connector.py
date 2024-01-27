@@ -1,9 +1,9 @@
 
 from openai import OpenAI
 from rich.console import Console
-from src.dandyhare.service_connectors import LLMServiceConnector
-from dandyhare.tool_handlers import ToolHandler
-from src.dandyhare.ux.util import print_markdown
+from mechanician.service_connectors import LLMServiceConnector
+from mechanician.tool_handlers import ToolHandler
+from mechanician.ux.util import print_markdown
 import time
 import os
 

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='dandyhare',
+    name='mechanician',
     version='0.1',
     packages=find_packages(),
     install_requires=[
@@ -10,7 +10,7 @@ setup(
     ],
     extras_require={
         'openai': [
-            # List the dependencies for the dandyhare.openai package here
+            # List the dependencies for the mechanician.openai package here
             'openai',
         ]
     },
@@ -19,5 +19,5 @@ setup(
     description='<Your-Project-Description>',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/liebke/dandyhare',
+    url='https://github.com/liebke/mechanician',
 )

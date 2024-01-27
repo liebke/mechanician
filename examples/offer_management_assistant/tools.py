@@ -1,6 +1,6 @@
 # Import Markdown and Console from rich library for pretty terminal outputs
-from dandyhare.util import print_markdown
-from dandyhare.apis.tool_handler import ToolHandler
+from mechanician.util import print_markdown
+from mechanician.apis.tool_handler import ToolHandler
 # from rich.markdown import Markdown
 from rich.console import Console
 import json

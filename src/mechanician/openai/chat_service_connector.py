@@ -1,8 +1,8 @@
 
 from openai import OpenAI
-from dandyhare.service_connectors import StreamingLLMServiceConnector
-from dandyhare.tool_handlers import ToolHandler
-from dandyhare.ux.stream_printer import StreamPrinter
+from mechanician.service_connectors import StreamingLLMServiceConnector
+from mechanician.tool_handlers import ToolHandler
+from mechanician.ux.stream_printer import StreamPrinter
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
