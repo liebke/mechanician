@@ -1,10 +1,10 @@
 from dandyhare.ux.cli import run_model, run_streaming_model
 from dotenv import load_dotenv
 # from dandyhare.apis.openai.assistants import OpenAIAssistant
-from dandyhare.apis.openai.chat import OpenAIChat
+from dandyhare.openai.chat import OpenAIChat
 
-from examples.tmdb.tmdb_tools import TMDbHandler
-from examples.tmdb.tmdb_tool_schemas import tool_schemas
+from tmdb_tools import TMDbHandler
+from tmdb_tool_schemas import tool_schemas
 import os
 
 

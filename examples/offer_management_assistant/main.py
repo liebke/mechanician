@@ -1,7 +1,7 @@
 from dandyhare.ux.cli import run_model, run_streaming_model
 from dotenv import load_dotenv
 # from dandyhare.apis.openai.assistants import OpenAIAssistant
-from dandyhare.apis.openai.chat import OpenAIChat
+from dandyhare.openai.chat import OpenAIChat
 
 from examples.offer_management_assistant.tools import call_function
 from examples.offer_management_assistant.tool_schemas import tool_schemas

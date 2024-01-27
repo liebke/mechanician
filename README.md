@@ -20,8 +20,11 @@ Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.p
 2. **Environment Setup**:
    - ```conda create --name dandyhare_env```
    - ```conda activate dandyhare_env```
+   - ```cd dandyhare_core```
    - ```pip install .``` or ```pip install -e .``` installs the dandyhare package in editable mode, which means you can modify the code in the dandyhare package without having to reinstall it.
-
+   - ```pip install openai```  so you can run the ```dandyhare.openai``` module
+   - To run the TMDB example, you'll need the ```requests``` package: ```pip install requests``
+   
 3. **Environment Variables**:
    - You will need an [**OPENAI_API_KEY**](https://platform.openai.com/api-keys).
    - See ```dot_env_example``` for examples of the environment variables you will need to set.
