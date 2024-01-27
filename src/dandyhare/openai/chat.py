@@ -1,5 +1,5 @@
 
-from dandyhare_openai.dandyhare import OpenAI
+from openai import OpenAI
 from rich.console import Console
 from dandyhare.apis.streaming_model_api import StreamingModelAPI
 from dandyhare.apis.tool_handler import ToolHandler
