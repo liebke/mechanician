@@ -1,9 +1,7 @@
 from dandyhare.util import print_markdown
 from dandyhare.apis.model_api import ModelAPI
 from dandyhare.apis.streaming_model_api import StreamingModelAPI
-
-# Import Markdown and Console from rich library for pretty terminal outputs
-from rich.console import Console
+from rich.console import Console  
 
 console = Console()
 
@@ -75,6 +73,7 @@ def run_model(api: ModelAPI, name="DandyHare Assistant"):
 ###############################################################################
 
 def run_streaming_model(api: StreamingModelAPI, name="DandyHare Assistant"):
+    print_markdown(console, f"* MODEL_NAME: {api.model['MODEL_NAME']}")
     print_header(name=name)
     # Loop forever, processing user input from the terminal
     try:
@@ -86,13 +85,13 @@ def run_streaming_model(api: StreamingModelAPI, name="DandyHare Assistant"):
             if prompt == '':
                 continue
 
+            print('')
             prompt = preprocess_prompt(prompt)
-            stream = api.get_stream(prompt)
-            resp = api.process_stream(stream)
+            resp = api.submit_prompt(prompt)
             # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
             while resp == None:
-                stream = api.get_stream("")
-                resp = api.process_stream(stream)
+                resp = api.submit_prompt(prompt)
+                print('\n')
             
     except KeyboardInterrupt:
         print("Ctrl+C was pressed, exiting...")

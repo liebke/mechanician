@@ -1,12 +1,10 @@
 
 from openai import OpenAI
-from rich.console import Console
 from dandyhare.apis.streaming_model_api import StreamingModelAPI
 from dandyhare.apis.tool_handler import ToolHandler
-from dandyhare.util import print_markdown
+from dandyhare.ux.stream_printer import StreamPrinter
 import json
 import os
-
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
@@ -17,23 +15,22 @@ class OpenAIChat(StreamingModelAPI):
     ## INIT_MODEL
     ###############################################################################
 
-    def __init__(self, instructions, tool_schemas, tool_handler: 'ToolHandler'):
+    def __init__(self, instructions, 
+                 tool_schemas, 
+                 tool_handler: 'ToolHandler', 
+                 stream_printer: 'StreamPrinter'):
         self.model = {}
         self.model["MODEL_NAME"] = os.getenv("MODEL_NAME") # "gpt-4-1106-preview"
         self.model["MAX_THREAD_WORKERS"] = int(os.getenv("MAX_THREAD_WORKERS", "10"))
         self.model["tool_schemas"] = tool_schemas
         self.tool_handler = tool_handler
+        self.stream_printer = stream_printer
         self.client = OpenAI()
         self.model["client"] = self.client
         self.model["instructions"] = instructions
 
         # Initialize the conversation with a system message
         self.messages = [{"role": "system", "content": self.model["instructions"]}]
-
-        self.console = Console()
-
-        print_markdown(self.console, f"* MODEL_NAME: {self.model['MODEL_NAME']}")
-
 
     ###############################################################################
     ## SUBMIT_PROMPT
@@ -69,7 +66,7 @@ class OpenAIChat(StreamingModelAPI):
                 if tool_calls_index >= 0:
                     if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                         tc = tool_calls[-1]
-                        print_markdown(self.console, f"### Calling external function: {tc['function']['name']}...")
+                        self.stream_printer.print(f"Calling external function: {tc['function']['name']}...")
                         with ThreadPoolExecutor(max_workers=self.model["MAX_THREAD_WORKERS"]) as executor:
                             futures.append(executor.submit(self.process_tool_call, tc))
                     
@@ -100,7 +97,9 @@ class OpenAIChat(StreamingModelAPI):
     ###############################################################################
 
     def process_tool_call(self, tc):
-        function_resp = json.dumps(self.tool_handler.call_function(tc['function']['name'], tc['id'], tc['function']['arguments']))
+        function_resp = json.dumps(self.tool_handler.call_function(tc['function']['name'], 
+                                                                   tc['id'], 
+                                                                   tc['function']['arguments']))
         return tc, function_resp
 
     
@@ -114,12 +113,11 @@ class OpenAIChat(StreamingModelAPI):
         tool_calls = []
         tool_calls_index = -1
         futures = []
-        print("\n")
         for chunk in stream:
             if chunk.choices[0].delta.content is not None:
                 # Collect response to include in message history
                 response += chunk.choices[0].delta.content
-                print(chunk.choices[0].delta.content, end="", flush=True)
+                self.stream_printer.print(chunk.choices[0].delta.content, end="", flush=True)
 
             elif chunk.choices[0].delta.tool_calls is not None:
                 tool_calls, tool_calls_index = self.process_tool_calls_chunk(chunk, tool_calls, tool_calls_index, futures)
@@ -136,7 +134,7 @@ class OpenAIChat(StreamingModelAPI):
                     tc = tool_calls[-1]
                     with ThreadPoolExecutor(max_workers=self.model["MAX_THREAD_WORKERS"]) as executor:
                         futures.append(executor.submit(self.process_tool_call, tc))
-                        print_markdown(self.console, f"### Calling external function: {tc['function']['name']}...")
+                        self.stream_printer.print(f"Calling external function: {tc['function']['name']}...")
 
                 results = [f.result() for f in as_completed(futures)]
 
@@ -160,13 +158,8 @@ class OpenAIChat(StreamingModelAPI):
             for msg in tool_resp_messages:
                 self.messages.append(msg)
 
-            # DEBUG
-            # print(json.dumps(assistant_message))
-            # print(json.dumps(tool_resp_messages))
-
             response = None
 
-        print("\n")
         return response
 
 

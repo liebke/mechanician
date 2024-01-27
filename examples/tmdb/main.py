@@ -1,7 +1,7 @@
-from dandyhare.ux.cli import run_model, run_streaming_model
+from dandyhare.ux.cli import run_streaming_model
 from dotenv import load_dotenv
-# from dandyhare.apis.openai.assistants import OpenAIAssistant
 from dandyhare.openai.chat import OpenAIChat
+from dandyhare.ux.stream_printer import SimpleStreamPrinter
 
 from tmdb_tools import TMDbHandler
 from tmdb_tool_schemas import tool_schemas
@@ -22,7 +22,10 @@ with open("./examples/tmdb/instructions.md", 'r') as file:
 tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
 
 # Initialize the model
-model = OpenAIChat(instructions=instructions, tool_schemas=tool_schemas, tool_handler=tmdb_handler)
+model = OpenAIChat(instructions=instructions, 
+                   tool_schemas=tool_schemas, 
+                   tool_handler=tmdb_handler,
+                   stream_printer=SimpleStreamPrinter())
 
 # Run the REPL loop
 run_streaming_model(model, name="TMDB Assistant")

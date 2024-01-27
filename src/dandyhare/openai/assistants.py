@@ -67,7 +67,6 @@ class OpenAIAssistant(ModelAPI):
         run = client.beta.threads.runs.create(
             thread_id=thread.id,
             assistant_id=assistant.id,
-            # instructions="Ask to confirm before calling out to a function tool by showing the parameters of the call before proceeding."
         )
 
         # Wait for the run status to be 'completed'
@@ -89,7 +88,6 @@ class OpenAIAssistant(ModelAPI):
 
                 # Initialize an empty list to store the outputs of the tools
                 tool_outputs = []
-                # call_ids = []
 
                 # Iterate over each tool call
                 for tool_call in tool_calls:
@@ -99,11 +97,9 @@ class OpenAIAssistant(ModelAPI):
 
                     # Call the function with the extracted name, ID, and arguments,
                     # and append the output to the tool_outputs list
-                    # call_ids.append(call_id)
                     tool_outputs.append(self.tool_handler.call_function(function_name, call_id, args))
 
                 # Submit the outputs of the tools to the current run
-                # print(f"tool_outputs: {tool_outputs}")
                 run = client.beta.threads.runs.submit_tool_outputs(
                     thread_id=thread.id,
                     run_id=run.id,
