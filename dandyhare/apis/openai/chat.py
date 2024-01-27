@@ -2,6 +2,7 @@
 from openai import OpenAI
 from rich.console import Console
 from dandyhare.apis.streaming_model_api import StreamingModelAPI
+from dandyhare.apis.tool_handler import ToolHandler
 from dandyhare.util import print_markdown
 import json
 import os
@@ -16,12 +17,12 @@ class OpenAIChat(StreamingModelAPI):
     ## INIT_MODEL
     ###############################################################################
 
-    def __init__(self, instructions, tool_schemas, function_handler):
+    def __init__(self, instructions, tool_schemas, tool_handler: 'ToolHandler'):
         self.model = {}
         self.model["MODEL_NAME"] = os.getenv("MODEL_NAME") # "gpt-4-1106-preview"
         self.model["MAX_THREAD_WORKERS"] = int(os.getenv("MAX_THREAD_WORKERS", "10"))
         self.model["tool_schemas"] = tool_schemas
-        self.function_handler = function_handler
+        self.tool_handler = tool_handler
         self.client = OpenAI()
         self.model["client"] = self.client
         self.model["instructions"] = instructions
@@ -99,7 +100,7 @@ class OpenAIChat(StreamingModelAPI):
     ###############################################################################
 
     def process_tool_call(self, tc):
-        function_resp = json.dumps(self.function_handler(tc['function']['name'], tc['id'], tc['function']['arguments']))
+        function_resp = json.dumps(self.tool_handler.call_function(tc['function']['name'], tc['id'], tc['function']['arguments']))
         return tc, function_resp
 
     

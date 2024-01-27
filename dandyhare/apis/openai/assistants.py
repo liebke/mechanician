@@ -2,6 +2,7 @@
 from openai import OpenAI
 from rich.console import Console
 from dandyhare.apis.model_api import ModelAPI
+from dandyhare.apis.tool_handler import ToolHandler
 from dandyhare.util import print_markdown
 import time
 import os
@@ -13,14 +14,14 @@ class OpenAIAssistant(ModelAPI):
     ## INIT_MODEL
     ###############################################################################
 
-    def __init__(self, instructions, tool_schemas, function_handler):
+    def __init__(self, instructions, tool_schemas, tool_handler: 'ToolHandler'):
         self.model = {}
         self.model["ASSISTANT_ID"] = os.getenv("ASSISTANT_ID")
         self.model["CREATE_NEW_ASSISTANT"] = os.getenv("CREATE_NEW_ASSISTANT") # False
         self.model["DELETE_ASSISTANT_ON_EXIT"] = os.getenv("DELETE_ASSISTANT_ON_EXIT") # False
         self.model["MODEL_NAME"] = os.getenv("MODEL_NAME") # "gpt-4-1106-preview"
         self.model["tool_schemas"] = tool_schemas
-        self.function_handler = function_handler
+        self.tool_handler = tool_handler
         self.client = OpenAI()
         self.model["client"] = self.client
         self.model["instructions"] = instructions
@@ -99,7 +100,7 @@ class OpenAIAssistant(ModelAPI):
                     # Call the function with the extracted name, ID, and arguments,
                     # and append the output to the tool_outputs list
                     # call_ids.append(call_id)
-                    tool_outputs.append(self.function_handler(function_name, call_id, args))
+                    tool_outputs.append(self.tool_handler.call_function(function_name, call_id, args))
 
                 # Submit the outputs of the tools to the current run
                 # print(f"tool_outputs: {tool_outputs}")
