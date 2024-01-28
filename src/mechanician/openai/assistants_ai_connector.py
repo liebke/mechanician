@@ -11,6 +11,8 @@ from pprint import pprint
 
 class OpenAIAssistantAIConnector(AIConnector):
 
+    DEFAULT_MODEL_NAME="gpt-4-1106-preview"
+
     ###############################################################################
     ## INIT_MODEL
     ###############################################################################
@@ -31,7 +33,7 @@ class OpenAIAssistantAIConnector(AIConnector):
         self.model["ASSISTANT_ID"] = assistant_id or os.getenv("ASSISTANT_ID")
         self.model["CREATE_NEW_ASSISTANT"] = create_new_assistant or os.getenv("CREATE_NEW_ASSISTANT") # False
         self.model["DELETE_ASSISTANT_ON_EXIT"] = delete_assistant_on_exit or os.getenv("DELETE_ASSISTANT_ON_EXIT") # False
-        self.model["MODEL_NAME"] = model_name or os.getenv("MODEL_NAME") # "gpt-4-1106-preview"
+        self.model["MODEL_NAME"] = model_name or os.getenv("MODEL_NAME") or self.DEFAULT_MODEL_NAME
         self.model["tool_schemas"] = tool_schemas
         self.tool_handler = tool_handler
         api_key = api_key or os.getenv("OPENAI_API_KEY")

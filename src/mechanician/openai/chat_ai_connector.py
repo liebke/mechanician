@@ -10,7 +10,9 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 class OpenAIChatAIConnector(StreamingAIConnector):
-    
+
+    DEFAULT_MODEL_NAME="gpt-4-1106-preview"
+
     ###############################################################################
     ## INIT_MODEL
     ###############################################################################
@@ -26,7 +28,7 @@ class OpenAIChatAIConnector(StreamingAIConnector):
         self.model = {}
         self.model["STREAMING"] = True
         self.model["ASSISTANT_NAME"] = assistant_name
-        self.model["MODEL_NAME"] = model_name or os.getenv("MODEL_NAME")
+        self.model["MODEL_NAME"] = model_name or os.getenv("MODEL_NAME") or self.DEFAULT_MODEL_NAME
         self.model["MAX_THREAD_WORKERS"] = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
         self.model["tool_schemas"] = tool_schemas
         self.tool_handler = tool_handler
