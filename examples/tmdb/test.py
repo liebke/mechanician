@@ -37,11 +37,11 @@ ai = OpenAIChatAIConnector(instructions=instructions,
 
 # RUN TESTS
 tests = [{"prompt": "What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
-          "expected": "Anya Taylor-Joy", "actual": ""},
+          "expected": "Anya Taylor-Joy"},
          {"prompt": "What is the name of the actor plays Ken in the Barbie movie?", 
-          "expected": "Ryan Gosling", "actual": ""},
+          "expected": "Ryan Gosling"},
          {"prompt": "What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
-          "expected": "The Witch", "actual": ""},]
+          "expected": "The Witch"},]
 
 results = run_tests(ai, tests)
 
