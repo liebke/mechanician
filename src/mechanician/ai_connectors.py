@@ -4,7 +4,7 @@ from mechanician.ux.stream_printer import StreamPrinter
 from mechanician.tool_handlers import ToolHandler
 
 
-class LLMServiceConnector(ABC):
+class AIConnector(ABC):
 
     @abstractmethod
     def __init__(self, instructions, tool_schemas, 
@@ -21,7 +21,7 @@ class LLMServiceConnector(ABC):
 
 
 
-class StreamingLLMServiceConnector(LLMServiceConnector):
+class StreamingAIConnector(AIConnector):
 
     @abstractmethod
     def __init__(self, instructions, tool_schemas, 

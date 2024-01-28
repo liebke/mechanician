@@ -1,7 +1,7 @@
 
 from openai import OpenAI
 from rich.console import Console
-from mechanician.service_connectors import LLMServiceConnector
+from mechanician.ai_connectors import AIConnector
 from mechanician.tool_handlers import ToolHandler
 from mechanician.ux.util import print_markdown
 import time
@@ -9,7 +9,7 @@ import os
 import json
 from pprint import pprint
 
-class OpenAIAssistantServiceConnector(LLMServiceConnector):
+class OpenAIAssistantAIConnector(AIConnector):
 
     ###############################################################################
     ## INIT_MODEL

@@ -1,6 +1,6 @@
 
 from openai import OpenAI
-from mechanician.service_connectors import StreamingLLMServiceConnector
+from mechanician.ai_connectors import StreamingAIConnector
 from mechanician.tool_handlers import ToolHandler
 from mechanician.ux.stream_printer import StreamPrinter, SimpleStreamPrinter
 import json
@@ -9,31 +9,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
 
-class OpenAIChatServiceConnector(StreamingLLMServiceConnector):
-    """
-    A class that represents a connector to the OpenAI chat service.
-
-    Attributes:
-        model (dict): A dictionary containing the model configuration.
-        tool_handler (ToolHandler): An instance of the ToolHandler class.
-        stream_printer (StreamPrinter): An instance of the StreamPrinter class.
-        client (OpenAI): An instance of the OpenAI class.
-        messages (list): A list of messages exchanged during the conversation.
-
-    Methods:
-        __init__(self, instructions, tool_schemas, tool_handler, stream_printer):
-            Initializes the OpenAIChatServiceConnector object.
-        get_stream(self, prompt):
-            Creates a new chat stream with the user prompt.
-        process_tool_calls_chunk(self, chunk, tool_calls, tool_calls_index, futures):
-            Processes a chunk of tool calls in the chat stream.
-        process_tool_call(self, tc):
-            Processes a single tool call.
-        process_stream(self, stream):
-            Processes the chat stream and returns the response.
-        clean_up(self):
-            Cleans up any resources used by the connector.
-    """
+class OpenAIChatAIConnector(StreamingAIConnector):
+    
     ###############################################################################
     ## INIT_MODEL
     ###############################################################################

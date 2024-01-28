@@ -1,6 +1,6 @@
 from mechanician.ux.cli import run
-from mechanician.openai.chat_service_connector import OpenAIChatServiceConnector
-from mechanician.openai.assistants_service_connector import OpenAIAssistantServiceConnector
+from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
+from mechanician.openai.assistants_ai_connector import OpenAIAssistantAIConnector
 from tmdb_tools import TMDbHandler
 from tmdb_tool_schemas import tool_schemas
 from dotenv import load_dotenv
@@ -21,15 +21,15 @@ with open("./examples/tmdb/instructions.md", 'r') as file:
 tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
 
 # Initialize the model
-ai = OpenAIChatServiceConnector(instructions=instructions, 
-                                tool_schemas=tool_schemas, 
-                                tool_handler=tmdb_handler,
-                                assistant_name="TMDB Assistant" )
+ai = OpenAIChatAIConnector(instructions=instructions, 
+                           tool_schemas=tool_schemas, 
+                           tool_handler=tmdb_handler,
+                           assistant_name="TMDB AI" )
 
-# ai = OpenAIAssistantServiceConnector(instructions=instructions, 
-#                                      tool_schemas=tool_schemas, 
-#                                      tool_handler=tmdb_handler,
-#                                      assistant_name="TMDB Assistant")
+# ai = OpenAIAssistantAIConnector(instructions=instructions, 
+#                                 tool_schemas=tool_schemas, 
+#                                 tool_handler=tmdb_handler,
+#                                 assistant_name="TMDB AI")
 
 # Run the REPL loop
 run(ai)

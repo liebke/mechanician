@@ -1,5 +1,5 @@
 .env
 __pycache__
 .DS_Store
-dandyhare.egg-info
-dandyhare.openai.egg-info
+mechanician.egg-info
+mechanician.openai.egg-info

@@ -1,7 +1,7 @@
 from mechanician.ux.cli import run_model, run_streaming_model
 from dotenv import load_dotenv
 # from mechanician.apis.openai.assistants_service_connector import OpenAIAssistantServiceConnector
-from mechanician.openai.chat_service_connector import OpenAIChatServiceConnector
+from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
 
 from examples.offer_management_assistant.tools import call_function
 from examples.offer_management_assistant.tool_schemas import tool_schemas

@@ -1,5 +1,5 @@
 from mechanician.ux.util import print_markdown
-from mechanician.service_connectors import LLMServiceConnector
+from mechanician.ai_connectors import AIConnector
 from rich.console import Console  
 
 console = Console()
@@ -39,7 +39,7 @@ def print_header(name):
 ## RUN
 ###############################################################################
 
-def run(llm_con: LLMServiceConnector):
+def run(llm_con: AIConnector):
     print_markdown(console, f"* MODEL_NAME: {llm_con.model['MODEL_NAME']}")
     print_header(name=llm_con.model['ASSISTANT_NAME'])
     # Loop forever, processing user input from the terminal

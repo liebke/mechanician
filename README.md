@@ -57,16 +57,16 @@ The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) d
 
 ```python
 from mechanician.ux.cli import run
-from mechanician.openai.chat_service_connector import OpenAIChatServiceConnector
+from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
 ```
 
 ### Initialize The Service Connector
 
 ```python
-ai = OpenAIChatServiceConnector(instructions=instructions, 
-                                tool_schemas=tool_schemas, 
-                                tool_handler=tmdb_handler,
-                                name="TMDB Assistant" )
+ai = OpenAIChatAIConnector(instructions=instructions, 
+                           tool_schemas=tool_schemas, 
+                           tool_handler=tmdb_handler,
+                           name="TMDB Assistant" )
 ```
 
 ### Run The AI
