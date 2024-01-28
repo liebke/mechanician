@@ -58,27 +58,29 @@ The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) d
 ```python
 from mechanician.ux.cli import run
 from mechanician.openai.chat_service_connector import OpenAIChatServiceConnector
-from mechanician.tool_handlers import ToolHandler
 ```
 
 ### Initialize The Service Connector
 
 ```python
-connector = OpenAIChatServiceConnector(instructions=instructions, 
-                                       tool_schemas=tool_schemas, 
-                                       tool_handler=tmdb_handler,
-                                       name="TMDB Assistant" )
+ai = OpenAIChatServiceConnector(instructions=instructions, 
+                                tool_schemas=tool_schemas, 
+                                tool_handler=tmdb_handler,
+                                name="TMDB Assistant" )
 ```
 
 ### Run The AI
 
 ```python
-run(connector, name="TMDB Assistant")
+run(ai)
 ```
 
 ### Tool Handler
 
 ```python
+from mechanician.tool_handlers import ToolHandler
+import requests
+
 class TMDbHandler(ToolHandler):
     """Class for interacting with the TMDb API."""
 
@@ -135,19 +137,19 @@ You are an assistant that answers questions about movies and cast members using 
 
 ```bash
 # OPENAI API KEY
-OPENAI_API_KEY=<your_api_key_here>
+OPENAI_API_KEY=<YOUR_OPENAI_API_KEY_HERE>
 
 # OPENAI MODEL NAME
 MODEL_NAME=gpt-4-1106-preview
 
 # ENVIRONMENT VARIABLES FOR THE ASSISTANT
-ASSISTANT_ID=<your_assistant_id_here>
+ASSISTANT_ID=<YOUR_ASSISTANT_ID_HERE>
 CREATE_NEW_ASSISTANT=False
 DELETE_ASSISTANT_ON_EXIT=False
 
 # ENVIRONMENT VARIABLES FOR THE STREAMING CHAT API
 CALL_TOOLS_IN_PARALLEL=True
-MAX_THREAD_WORKERS=50
+MAX_THREAD_WORKERS=10
 ```
 
 ## Offer Management Assistant Example

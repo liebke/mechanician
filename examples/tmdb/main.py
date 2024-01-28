@@ -21,16 +21,16 @@ with open("./examples/tmdb/instructions.md", 'r') as file:
 tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
 
 # Initialize the model
-connector = OpenAIChatServiceConnector(instructions=instructions, 
-                                       tool_schemas=tool_schemas, 
-                                       tool_handler=tmdb_handler,
-                                       assistant_name="TMDB Assistant" )
+ai = OpenAIChatServiceConnector(instructions=instructions, 
+                                tool_schemas=tool_schemas, 
+                                tool_handler=tmdb_handler,
+                                assistant_name="TMDB Assistant" )
 
-# connector = OpenAIAssistantServiceConnector(instructions=instructions, 
-#                                             tool_schemas=tool_schemas, 
-#                                             tool_handler=tmdb_handler,
-#                                             assistant_name="TMDB Assistant")
+# ai = OpenAIAssistantServiceConnector(instructions=instructions, 
+#                                      tool_schemas=tool_schemas, 
+#                                      tool_handler=tmdb_handler,
+#                                      assistant_name="TMDB Assistant")
 
 # Run the REPL loop
-run(connector)
+run(ai)
 
