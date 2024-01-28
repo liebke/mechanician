@@ -89,6 +89,7 @@ def run_tests(llm_con: AIConnector, tests):
     print_header(name=llm_con.model['ASSISTANT_NAME'])
     # Loop forever, processing user input from the terminal
     llm_con.model["RUNNING"] = True
+    results = []
     try:
         for test in tests:
             prompt = test["prompt"]
@@ -120,12 +121,14 @@ def run_tests(llm_con: AIConnector, tests):
             eval_prompt += f"* EXPECTED RESPONSE: \"{test['expected']}\"\n\n"
             eval_prompt += f"* ACTUAL RESPONSE: \"{test['actual']}\"\n"
             resp = llm_con.submit_prompt(eval_prompt)
+            test["grade"] = resp
+            results.append(test)
 
             print('\n\n')
 
 
         print(f"Exiting {llm_con.model['ASSISTANT_NAME']}...")
-        return llm_con
+        return results
             
     except KeyboardInterrupt:
         print("Ctrl+C was pressed, exiting...")

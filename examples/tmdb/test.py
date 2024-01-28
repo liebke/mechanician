@@ -1,10 +1,13 @@
-from mechanician.ux.cli import run, run_tests
+from mechanician.ux.cli import run_tests
 from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
 from mechanician.openai.assistants_ai_connector import OpenAIAssistantAIConnector
 from tmdb_tools import TMDbHandler
 from tmdb_tool_schemas import tool_schemas
 from dotenv import load_dotenv
 import os
+from pprint import pprint
+from mechanician.ux.util import print_markdown
+from rich.console import Console
 
 
 
@@ -34,11 +37,15 @@ ai = OpenAIChatAIConnector(instructions=instructions,
 
 # RUN TESTS
 tests = [{"prompt": "What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
-          "expected": "Anya Taylor-Joy", "actual": "", "pass": False},
+          "expected": "Anya Taylor-Joy", "actual": ""},
          {"prompt": "What is the name of the actor plays Ken in the Barbie movie?", 
-          "expected": "Ryan Gosling", "actual": "", "pass": False},
+          "expected": "Ryan Gosling", "actual": ""},
          {"prompt": "What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
-          "expected": "The Witch", "actual": "", "pass": False},]
+          "expected": "The Witch", "actual": ""},]
 
-run_tests(ai, tests)
+results = run_tests(ai, tests)
+
+console = Console()
+print_markdown(console, "## TEST RESULTS")
+pprint(results)
 
