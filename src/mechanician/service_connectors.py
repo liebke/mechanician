@@ -7,7 +7,8 @@ from mechanician.tool_handlers import ToolHandler
 class LLMServiceConnector(ABC):
 
     @abstractmethod
-    def __init__(self, instructions, tool_schemas, function_handler):
+    def __init__(self, instructions, tool_schemas, 
+                 function_handler : 'ToolHandler', name):
         pass
 
     @abstractmethod
@@ -24,8 +25,9 @@ class StreamingLLMServiceConnector(LLMServiceConnector):
 
     @abstractmethod
     def __init__(self, instructions, tool_schemas, 
-                 function_handler : ToolHandler, 
-                 stream_printer : 'StreamPrinter'):
+                 function_handler : 'ToolHandler', 
+                 stream_printer : 'StreamPrinter',
+                 name: str):
         pass
 
     @abstractmethod

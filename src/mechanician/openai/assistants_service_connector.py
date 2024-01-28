@@ -6,7 +6,8 @@ from mechanician.tool_handlers import ToolHandler
 from mechanician.ux.util import print_markdown
 import time
 import os
-
+import json
+from pprint import pprint
 
 class OpenAIAssistantServiceConnector(LLMServiceConnector):
 
@@ -14,8 +15,10 @@ class OpenAIAssistantServiceConnector(LLMServiceConnector):
     ## INIT_MODEL
     ###############################################################################
 
-    def __init__(self, instructions, tool_schemas, tool_handler: 'ToolHandler'):
+    def __init__(self, instructions, tool_schemas, tool_handler: 'ToolHandler', name="Mechanician Assistant"):
         self.model = {}
+        self.model["STREAMING"] = False
+        self.model["ASSISTANT_NAME"] = name
         self.model["ASSISTANT_ID"] = os.getenv("ASSISTANT_ID")
         self.model["CREATE_NEW_ASSISTANT"] = os.getenv("CREATE_NEW_ASSISTANT") # False
         self.model["DELETE_ASSISTANT_ON_EXIT"] = os.getenv("DELETE_ASSISTANT_ON_EXIT") # False
@@ -37,6 +40,7 @@ class OpenAIAssistantServiceConnector(LLMServiceConnector):
             # Create an assistant with the OpenAI client
             print_markdown(self.console, "## Creating a new assistant...")
             self.model["assistant"] = self.client.beta.assistants.create(
+                name="Mechanician Assistant",
                 instructions=self.model["instructions"],
                 model=self.model["MODEL_NAME"],
                 tools=self.model["tool_schemas"]
@@ -97,7 +101,8 @@ class OpenAIAssistantServiceConnector(LLMServiceConnector):
 
                     # Call the function with the extracted name, ID, and arguments,
                     # and append the output to the tool_outputs list
-                    tool_outputs.append(self.tool_handler.call_function(function_name, call_id, args))
+                    tool_outputs.append({"tool_call_id": call_id,
+                                         "output": json.dumps(self.tool_handler.call_function(function_name, call_id, args))})
 
                 # Submit the outputs of the tools to the current run
                 run = client.beta.threads.runs.submit_tool_outputs(

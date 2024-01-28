@@ -2,7 +2,7 @@
 from openai import OpenAI
 from mechanician.service_connectors import StreamingLLMServiceConnector
 from mechanician.tool_handlers import ToolHandler
-from mechanician.ux.stream_printer import StreamPrinter
+from mechanician.ux.stream_printer import StreamPrinter, SimpleStreamPrinter
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -41,8 +41,11 @@ class OpenAIChatServiceConnector(StreamingLLMServiceConnector):
     def __init__(self, instructions, 
                  tool_schemas, 
                  tool_handler: 'ToolHandler', 
-                 stream_printer: 'StreamPrinter'):
+                 stream_printer = SimpleStreamPrinter(),
+                 name="Mechanician Assistant"):
         self.model = {}
+        self.model["STREAMING"] = True
+        self.model["ASSISTANT_NAME"] = name
         self.model["MODEL_NAME"] = os.getenv("MODEL_NAME") # "gpt-4-1106-preview"
         self.model["MAX_THREAD_WORKERS"] = int(os.getenv("MAX_THREAD_WORKERS", "10"))
         self.model["tool_schemas"] = tool_schemas

@@ -1,6 +1,5 @@
 from mechanician.ux.util import print_markdown
 from mechanician.service_connectors import LLMServiceConnector
-from mechanician.service_connectors import StreamingLLMServiceConnector
 from rich.console import Console  
 
 console = Console()
@@ -37,42 +36,10 @@ def print_header(name="Mechanician"):
 
 
 ###############################################################################
-## RUN_MODEL
+## RUN
 ###############################################################################
 
-def run_model(llm_con: LLMServiceConnector, name="Mechanician"):
-    print_header(name=name)
-    # Loop forever, processing user input from the terminal
-    try:
-        while True:
-            # Get the user's prompt
-            prompt = input("> ")
-
-            # Skip empty prompts
-            if prompt == '':
-                continue
-
-            prompt = preprocess_prompt(prompt)
-            response = llm_con.submit_prompt(prompt)
-            
-            print('')
-            print_markdown(console, response)
-            print('')
-
-    except KeyboardInterrupt:
-        print("Ctrl+C was pressed, exiting...")
-    except EOFError:
-        print("Ctrl+D was pressed, exiting...")
-    finally:
-        llm_con.clean_up()
-        print("goodbye")
-
-
-###############################################################################
-## RUN_STREAMING_MODEL
-###############################################################################
-
-def run_streaming_model(llm_con: StreamingLLMServiceConnector, name="Mechanician"):
+def run(llm_con: LLMServiceConnector, name="Daring Mechanician"):
     print_markdown(console, f"* MODEL_NAME: {llm_con.model['MODEL_NAME']}")
     print_header(name=name)
     # Loop forever, processing user input from the terminal
@@ -88,6 +55,11 @@ def run_streaming_model(llm_con: StreamingLLMServiceConnector, name="Mechanician
             print('')
             prompt = preprocess_prompt(prompt)
             resp = llm_con.submit_prompt(prompt)
+
+            if llm_con.model["STREAMING"] == False:
+                print_markdown(console, resp)
+                print('')
+
             # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
             while resp == None:
                 resp = llm_con.submit_prompt(prompt)
