@@ -67,11 +67,35 @@ cd examples/tmdb
 ./install.sh
 ```
 
+
+### Set Environment Variables
+
+```bash
+export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY_HERE>
+```
+
 ### Run the Example
 
 ```bash
 python main.py
 ```
+
+### Example Interaction
+
+```markdown
+> what was the first movie that the actor that plays Furiosa in the upcoming movie Furiosa star in?
+
+Calling external function: search_movie...
+Calling external function: get_movie_by_id...
+Calling external function: get_movie_credits...
+Calling external function: get_actor_credits...
+
+
+The first movie that Anya Taylor-Joy, the actor who plays Furiosa in the upcoming movie "Furiosa: A Mad Max Saga," starred in was "The Witch," where she played the character Thomasin. The film was released in 2015.
+
+> 
+```
+
 
 ### Import Statements
 
