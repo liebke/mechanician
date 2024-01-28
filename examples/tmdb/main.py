@@ -24,13 +24,13 @@ tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
 connector = OpenAIChatServiceConnector(instructions=instructions, 
                                        tool_schemas=tool_schemas, 
                                        tool_handler=tmdb_handler,
-                                       name="TMDB Assistant" )
+                                       assistant_name="TMDB Assistant" )
 
 # connector = OpenAIAssistantServiceConnector(instructions=instructions, 
 #                                             tool_schemas=tool_schemas, 
 #                                             tool_handler=tmdb_handler,
-#                                             name="TMDB Assistant")
+#                                             assistant_name="TMDB Assistant")
 
 # Run the REPL loop
-run(connector, name="TMDB Assistant")
+run(connector)
 

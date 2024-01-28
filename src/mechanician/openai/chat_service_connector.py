@@ -42,16 +42,20 @@ class OpenAIChatServiceConnector(StreamingLLMServiceConnector):
                  tool_schemas, 
                  tool_handler: 'ToolHandler', 
                  stream_printer = SimpleStreamPrinter(),
-                 name="Mechanician Assistant"):
+                 assistant_name="Mechanician Assistant",
+                 model_name=None,
+                 api_key=None,
+                 max_thread_workers=None):
         self.model = {}
         self.model["STREAMING"] = True
-        self.model["ASSISTANT_NAME"] = name
-        self.model["MODEL_NAME"] = os.getenv("MODEL_NAME") # "gpt-4-1106-preview"
-        self.model["MAX_THREAD_WORKERS"] = int(os.getenv("MAX_THREAD_WORKERS", "10"))
+        self.model["ASSISTANT_NAME"] = assistant_name
+        self.model["MODEL_NAME"] = model_name or os.getenv("MODEL_NAME")
+        self.model["MAX_THREAD_WORKERS"] = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
         self.model["tool_schemas"] = tool_schemas
         self.tool_handler = tool_handler
         self.stream_printer = stream_printer
-        self.client = OpenAI()
+        api_key = api_key or os.getenv("OPENAI_API_KEY")
+        self.client = OpenAI(api_key=api_key)
         self.model["client"] = self.client
         self.model["instructions"] = instructions
 

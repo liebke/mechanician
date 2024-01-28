@@ -15,17 +15,27 @@ class OpenAIAssistantServiceConnector(LLMServiceConnector):
     ## INIT_MODEL
     ###############################################################################
 
-    def __init__(self, instructions, tool_schemas, tool_handler: 'ToolHandler', name="Mechanician Assistant"):
+    def __init__(self, instructions, 
+                 tool_schemas, 
+                 tool_handler: 'ToolHandler', 
+                 assistant_name="Mechanician Assistant",
+                 model_name=None,
+                 api_key=None,
+                 assistant_id=None,
+                 create_new_assistant=None,
+                 delete_assistant_on_exit=None):
+
         self.model = {}
         self.model["STREAMING"] = False
-        self.model["ASSISTANT_NAME"] = name
-        self.model["ASSISTANT_ID"] = os.getenv("ASSISTANT_ID")
-        self.model["CREATE_NEW_ASSISTANT"] = os.getenv("CREATE_NEW_ASSISTANT") # False
-        self.model["DELETE_ASSISTANT_ON_EXIT"] = os.getenv("DELETE_ASSISTANT_ON_EXIT") # False
-        self.model["MODEL_NAME"] = os.getenv("MODEL_NAME") # "gpt-4-1106-preview"
+        self.model["ASSISTANT_NAME"] = assistant_name
+        self.model["ASSISTANT_ID"] = assistant_id or os.getenv("ASSISTANT_ID")
+        self.model["CREATE_NEW_ASSISTANT"] = create_new_assistant or os.getenv("CREATE_NEW_ASSISTANT") # False
+        self.model["DELETE_ASSISTANT_ON_EXIT"] = delete_assistant_on_exit or os.getenv("DELETE_ASSISTANT_ON_EXIT") # False
+        self.model["MODEL_NAME"] = model_name or os.getenv("MODEL_NAME") # "gpt-4-1106-preview"
         self.model["tool_schemas"] = tool_schemas
         self.tool_handler = tool_handler
-        self.client = OpenAI()
+        api_key = api_key or os.getenv("OPENAI_API_KEY")
+        self.client = OpenAI(api_key=api_key)
         self.model["client"] = self.client
         self.model["instructions"] = instructions
 

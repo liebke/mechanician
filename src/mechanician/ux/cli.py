@@ -29,7 +29,7 @@ def preprocess_prompt(prompt):
 ## PRINT_HEADER
 ###############################################################################
 
-def print_header(name="Mechanician"):
+def print_header(name):
     print('\n\n\n')
     print_markdown(console, f"# {name}")
     print('\n\n\n')
@@ -39,9 +39,9 @@ def print_header(name="Mechanician"):
 ## RUN
 ###############################################################################
 
-def run(llm_con: LLMServiceConnector, name="Daring Mechanician"):
+def run(llm_con: LLMServiceConnector):
     print_markdown(console, f"* MODEL_NAME: {llm_con.model['MODEL_NAME']}")
-    print_header(name=name)
+    print_header(name=llm_con.model['ASSISTANT_NAME'])
     # Loop forever, processing user input from the terminal
     try:
         while True:
