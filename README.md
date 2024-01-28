@@ -15,45 +15,17 @@ It currently supports [*OpenAI's Chat API*](https://platform.openai.com/docs/ove
 
 Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.python.org/3/library/concurrent.futures.html) as soon as it has completely streamed to the client, allowing it to perform *IO-bound* calls while other ```tool_calls``` continue to stream to the client.
 
+## Getting Started
 
-## Prerequisites
-
-- [*Conda*](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-python) (for environment management)
-- [*Python*](https://www.python.org) >= 3.8
-
-## Setup
-1. **Clone the Repository**: Clone this repository to your local machine.
-
-2. **Environment Setup**:
-   - ```conda create --name mechanician_env```
-   - ```conda activate mechanician_env```
-   - ```cd src```
-   - ```pip install .``` or ```pip install -e .``` installs the mechanician package in editable mode, which means you can modify the code in the mechanician package without having to reinstall it.
-   - ```cd ../```
-   - ```pip install openai```  so you can run the ```mechanician.openai``` module
-   - To run the TMDB example, you'll need the ```requests``` package: ```pip install requests```
-
-3. **Environment Variables**:
-   - You will need an [**OPENAI_API_KEY**](https://platform.openai.com/api-keys).
-   - See ```dot_env_example``` for examples of the environment variables you will need to set.
-   - Create a `.env` file in the project root directory.
+The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains examples of **Daring Mechanician** projects.
 
 
 ## The Movie Database (TMDb) Example
 
-The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains an example **Daring Mechanician** project.
 
-* [```examples/tmdb/main.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/main.py): shows how to use **Daring Mechanician** to interact with *OpenAI's Chat API*, providing it with **tools** that can be used by the LLM to makes *callouts* to other programs. 
+### Create a Virtual Environment (optional)
 
-* [```tmdb_tool_schemas.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_tool_schemas.py): informs the LLM what tools are available to it.
-
-* [```tmdb_tools.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_tools.py): is *function_handler* containing ```stub``` functions that are invoked when the LLM makes one or more ```tool_call``` requests.
-
-* [```examples/tmdb/instructions.md```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/instructions.md): is a set of instructions for the LLM that inform it of the tools available to it, and describe its role as a **Movie Database Assistant** that answers questions about movies and their casts and crews.
-
-* [```tmdb_example_prompts.md```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_example_prompts.md): provides a variety of approaches to interacting with the LLM.
-
-### Create a Virtual Environment
+Using [*Conda*](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-python) for environment management:
 
 ```bash
 conda create --name mechanician_env
@@ -69,6 +41,8 @@ cd examples/tmdb
 
 
 ### Set Environment Variables
+
+You will need an [**OPENAI_API_KEY**](https://platform.openai.com/api-keys).
 
 ```bash
 export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY_HERE>
@@ -95,6 +69,19 @@ The first movie that Anya Taylor-Joy, the actor who plays Furiosa in the upcomin
 
 > 
 ```
+
+### TMDb Example Code
+
+* [```examples/tmdb/main.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/main.py): shows how to use **Daring Mechanician** to interact with *OpenAI's Chat API*, providing it with **tools** that can be used by the LLM to makes *callouts* to other programs. 
+
+* [```tmdb_tool_schemas.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_tool_schemas.py): informs the LLM what tools are available to it.
+
+* [```tmdb_tools.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_tools.py): is *function_handler* containing ```stub``` functions that are invoked when the LLM makes one or more ```tool_call``` requests.
+
+* [```examples/tmdb/instructions.md```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/instructions.md): is a set of instructions for the LLM that inform it of the tools available to it, and describe its role as a **Movie Database Assistant** that answers questions about movies and their casts and crews.
+
+* [```tmdb_example_prompts.md```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_example_prompts.md): provides a variety of approaches to interacting with the LLM.
+
 
 
 ### Import Statements
