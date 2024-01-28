@@ -70,6 +70,47 @@ The first movie that Anya Taylor-Joy, the actor who plays Furiosa in the upcomin
 > 
 ```
 
+### Run AI Self Evaluation Tests
+
+```python
+from mechanician.ux.cli import run_tests
+
+tests = [{"prompt": "What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
+          "expected": "Anya Taylor-Joy", "actual": ""},
+         {"prompt": "What is the name of the actor plays Ken in the Barbie movie?", 
+          "expected": "Ryan Gosling", "actual": ""},
+         {"prompt": "What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
+          "expected": "The Witch", "actual": ""},]
+
+results = run_tests(ai, tests)
+pprint(results)
+
+```
+
+#### Test Results
+
+```python
+[{'actual': 'The actor playing the titular character in the upcoming movie '
+            '"Furiosa: A Mad Max Saga" is Anya Taylor-Joy.',
+  'expected': 'Anya Taylor-Joy',
+  'grade': 'PASS',
+  'prompt': 'What is the name of the actor playing the titular character in '
+            'the upcoming Furiosa movie?'},
+
+ {'actual': 'The actor who plays Ken in the Barbie movie is Ryan Gosling.',
+  'expected': 'Ryan Gosling',
+  'grade': 'PASS',
+  'prompt': 'What is the name of the actor plays Ken in the Barbie movie?'},
+
+ {'actual': 'The first movie in which Anya Taylor-Joy, the actor playing the '
+            'titular character in the upcoming "Furiosa" movie, appeared is '
+            '"The Witch." She played the character Thomasin.',
+  'expected': 'The Witch',
+  'grade': 'PASS',
+  'prompt': 'What is the first movie that the actor that plays the titual '
+            'character in the upcoming Furiosa movie?'}]
+```
+
 ### TMDb Example Code
 
 * [```examples/tmdb/main.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/main.py): shows how to use **Daring Mechanician** to interact with *OpenAI's Chat API*, providing it with **tools** that can be used by the LLM to makes *callouts* to other programs. 
