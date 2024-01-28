@@ -1,9 +1,10 @@
 # Daring Mechanician
->*"...if they could only have found the point of application for it, they would have constructed a lever capable of raising the earth and rectifying its axis. It was just this deficiency which baffled these **daring mechanicians**." -Jules Verne*
+**Building tools that use AI and building tools that AIs use.**
 
 <img src="docs/images/mechanician.png" alt="Daring Mechanician" width="200" height="200">
 
-*Building tools that use AI and building tools that AIs use.*
+>*"...if they could only have found the point of application for it, they would have constructed a lever capable of raising the earth and rectifying its axis. It was just this deficiency which baffled these **daring mechanicians**." -Jules Verne*
+
 
 
 ## Overview
@@ -37,9 +38,96 @@ Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.p
    - Create a `.env` file in the project root directory.
 
 
-## Examples
+## The Movie Database (TMDb) Example
 
-The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains an example **Daring Mechanician** project that shows how to:
+The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains an example **Daring Mechanician** project.
+
+* [```examples/tmdb/main.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/main.py): shows how to use **Daring Mechanician** to interact with *OpenAI's Chat API*, providing it with **tools** that can be used by the LLM to makes *callouts* to other programs. 
+
+* [```tmdb_tool_schemas.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_tool_schemas.py): informs the LLM what tools are available to it.
+
+* [```tmdb_tools.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_tools.py): is *function_handler* containing ```stub``` functions that are invoked when the LLM makes one or more ```tool_call``` requests.
+
+* [```examples/tmdb/instructions.md```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/instructions.md): is a set of instructions for the LLM that inform it of the tools available to it, and describe its role as a **Movie Database Assistant** that answers questions about movies and their casts and crews.
+
+* [```tmdb_example_prompts.md```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_example_prompts.md): provides a variety of approaches to interacting with the LLM.
+
+
+### Import Statements
+
+```python
+from mechanician.ux.cli import run
+from mechanician.openai.chat_service_connector import OpenAIChatServiceConnector
+from mechanician.tool_handlers import ToolHandler
+```
+
+### Initialize The Service Connector
+
+```python
+connector = OpenAIChatServiceConnector(instructions=instructions, 
+                                       tool_schemas=tool_schemas, 
+                                       tool_handler=tmdb_handler,
+                                       name="TMDB Assistant" )
+```
+
+### Run The AI
+
+```python
+run(connector, name="TMDB Assistant")
+```
+
+### Tool Handler
+
+```python
+class TMDbHandler(ToolHandler):
+    """Class for interacting with the TMDb API."""
+
+    def __init__(self, api_key):
+        self.api_key = api_key
+        self.base_url = "https://api.themoviedb.org/3"
+        self.headers = {'Authorization': f'Bearer {self.api_key}'}
+
+    def search_movie(self, query_params):
+        """Search for a movie by title and optionally by year."""
+        query, year = query_params.get('query', None), query_params.get('year', None)
+        url = f"{self.base_url}/search/movie"
+        params = {
+            "query": query
+        }
+        if year: params["year"] = year
+        response = requests.get(url, headers=self.headers, params=params)
+        return response.json()
+```
+
+### Tool Schemas
+
+```json
+{
+   "type": "function",
+   "function": {
+         "name": "search_movie",
+         "description": "Returns a list of movies matching the search criteria",
+         "parameters": {
+            "type": "object",
+            "properties": {
+               "query": {
+                     "type": "string",
+                     "description": "the search query"
+               },
+               "year": {
+                     "type": "integer",
+                     "description": "year of release"
+               }
+            },
+            "required": ["query"]
+         }
+   }
+}
+```
+
+## Offer Management Assistant Example
+
+The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains an example **Daring Mechanician** project.
 
 * [```examples/offer_management_assistant/main.py```](https://github.com/liebke/mechanician/blob/main/examples/offer_management_assistant/main.py): shows how to use **Daring Mechanician** to interact with *OpenAI's Chat API*, providing it with **tools** that can be used by the LLM to makes *callouts* to other programs. 
 
