@@ -46,7 +46,8 @@ class OpenAIChatAIConnector(StreamingAIConnector):
     def get_stream(self, prompt):
         client = self.model["client"]
         # Create a new message with user prompt
-        self.messages.append({"role": "user", "content": prompt})
+        if prompt is not None:
+            self.messages.append({"role": "user", "content": prompt})
 
         stream = client.chat.completions.create(
             model=self.model["MODEL_NAME"],
@@ -169,6 +170,13 @@ class OpenAIChatAIConnector(StreamingAIConnector):
 
         return response
 
+
+    ###############################################################################
+    ## GET_MESSAGE_HISTORY
+    ###############################################################################
+    def get_message_history(self):
+        return self.messages
+    
 
     ###############################################################################
     ## CLEAN UP

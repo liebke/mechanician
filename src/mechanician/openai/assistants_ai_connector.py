@@ -38,6 +38,7 @@ class OpenAIAssistantAIConnector(AIConnector):
         self.client = OpenAI(api_key=api_key)
         self.model["client"] = self.client
         self.model["instructions"] = instructions
+        self.messages = []
 
         self.console = Console()
 
@@ -132,13 +133,22 @@ class OpenAIAssistantAIConnector(AIConnector):
                 break
 
         # Retrieve and print the last message
-        messages = client.beta.threads.messages.list(
-            thread_id=thread.id
-        )
+        messages = client.beta.threads.messages.list(thread_id=thread.id)
 
         # Convert messages to a list
         messages_list = list(messages)
         return messages_list[0].content[0].text.value
+
+
+    ###############################################################################
+    ## GET_MESSAGE_HISTORY
+    ###############################################################################
+    def get_message_history(self):
+        client = self.model["client"]
+        thread = self.model["thread"]
+        messages = client.beta.threads.messages.list(thread_id=thread.id)
+        messages_list = list(messages)
+        return messages_list
 
 
     ###############################################################################
