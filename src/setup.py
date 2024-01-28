@@ -16,8 +16,8 @@ setup(
     },
     author='David Edgar Liebke',
     author_email='david@liebke.ai',
-    description='<Your-Project-Description>',
-    long_description=open('README.md').read(),
+    description='Building tools that use AI and building tools that AIs use.',
+    long_description=open('../README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/liebke/mechanician',
 )

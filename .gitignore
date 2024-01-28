@@ -1,5 +1,5 @@
 .env
 __pycache__
 .DS_Store
-mechanician.egg-info
-mechanician.openai.egg-info
+src/mechanician.egg-info
+src/mechanician.egg-info/SOURCES.txt

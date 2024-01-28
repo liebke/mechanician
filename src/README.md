@@ -1,1 +1,0 @@
-# DandyHare Core Library
