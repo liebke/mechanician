@@ -131,6 +131,25 @@ class TMDbHandler(ToolHandler):
 You are an assistant that answers questions about movies and cast members using The Movie Database (TMDB), you have access to functions that will let you search for movies and people in movies, and you have 'get' functions that provide more details on the movies and people but you will need to get the 'id' from the search function results to pass to the 'get' functions.
 `
 
+### Environment Variables
+
+```bash
+# OPENAI API KEY
+OPENAI_API_KEY=<your_api_key_here>
+
+# OPENAI MODEL NAME
+MODEL_NAME=gpt-4-1106-preview
+
+# ENVIRONMENT VARIABLES FOR THE ASSISTANT
+ASSISTANT_ID=<your_assistant_id_here>
+CREATE_NEW_ASSISTANT=False
+DELETE_ASSISTANT_ON_EXIT=False
+
+# ENVIRONMENT VARIABLES FOR THE STREAMING CHAT API
+CALL_TOOLS_IN_PARALLEL=True
+MAX_THREAD_WORKERS=50
+```
+
 ## Offer Management Assistant Example
 
 The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains an example **Daring Mechanician** project.
