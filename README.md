@@ -29,6 +29,7 @@ Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.p
    - ```conda activate mechanician_env```
    - ```cd src```
    - ```pip install .``` or ```pip install -e .``` installs the mechanician package in editable mode, which means you can modify the code in the mechanician package without having to reinstall it.
+   - ```cd ../```
    - ```pip install openai```  so you can run the ```mechanician.openai``` module
    - To run the TMDB example, you'll need the ```requests``` package: ```pip install requests```
 
@@ -52,6 +53,25 @@ The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) d
 
 * [```tmdb_example_prompts.md```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_example_prompts.md): provides a variety of approaches to interacting with the LLM.
 
+### Create a Virtual Environment
+
+```bash
+conda create --name mechanician_env
+conda activate mechanician_env
+```
+
+### Install Dependencies
+
+```bash
+cd examples/tmdb
+./install.sh
+```
+
+### Run the Example
+
+```bash
+python main.py
+```
 
 ### Import Statements
 

@@ -15,7 +15,7 @@ import os
 # Load environment variables from a .env file
 load_dotenv()
 
-with open("./examples/tmdb/instructions.md", 'r') as file:
+with open("./instructions.md", 'r') as file:
     instructions = file.read()
 
 tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
