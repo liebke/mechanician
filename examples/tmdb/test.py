@@ -1,57 +1,40 @@
 from mechanician.testing import Test, run_tests
-from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
-from mechanician.openai.assistants_ai_connector import OpenAIAssistantAIConnector
-from tmdb_tools import TMDbHandler
-from tmdb_tool_schemas import tool_schemas
-from dotenv import load_dotenv
-import os
-from pprint import pprint
-from mechanician.ux.util import print_markdown
-from rich.console import Console
 import unittest
-
+from main import ai_connector
+from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
 
 
 ###############################################################################
-## Main program execution
+## AI_EVALUATOR
 ###############################################################################
 
-# Load environment variables from a .env file
-load_dotenv()
+def ai_evaluator():
+    instructions = """You are a test-evaluator for an AI assistant. You are given a question and an answer. Your job is to determine if the answer is correct. If the answer is correct, respond with PASS. If the answer is incorrect, respond with FAIL."""
+    tool_schemas = None
+    tool_handler = None
+    return OpenAIChatAIConnector(instructions=instructions, 
+                                 tool_schemas=tool_schemas, 
+                                 tool_handler=tool_handler,
+                                 assistant_name="Test Evaluator")
+
+
+###############################################################################
+## TEST
+###############################################################################
 
 class TestAI(unittest.TestCase):
 
     def test_ai_responses(self):
-        with open("./instructions.md", 'r') as file:
-            instructions = file.read()
-
-        tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
-
-        # Initialize the model
-        ai = OpenAIChatAIConnector(instructions=instructions, 
-                                tool_schemas=tool_schemas, 
-                                tool_handler=tmdb_handler,
-                                assistant_name="TMDB AI" )
-
-        # ai = OpenAIAssistantAIConnector(instructions=instructions, 
-        #                                 tool_schemas=tool_schemas, 
-        #                                 tool_handler=tmdb_handler,
-        #                                 assistant_name="TMDB AI")
-
-
-        # RUN TESTS
+        ai = ai_connector()
         tests = [Test(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
                       expected="Anya Taylor-Joy"),
-                Test(prompt="What is the name of the actor plays Ken in the Barbie movie?",
-                     expected="Ryan Gosling"),
-                Test(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
-                     expected="The Witch")]
-
-        results = run_tests(ai, tests)
-
-        # console = Console()
-        # print_markdown(console, "## TEST RESULTS")
-        # pprint([r.to_dict() for r in results])
+                 Test(prompt="What is the name of the actor plays Ken in the Barbie movie?",
+                      expected="Ryan Gosling"),
+                 Test(prompt="Who played Barbie?",
+                      expected="Margot Robbie"),
+                 Test(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
+                      expected="The Witch")]
+        results = run_tests(ai, tests, ai_evaluator())
 
         for result in results:
             self.assertEqual(result.evaluation, "PASS")

@@ -3,8 +3,9 @@ from mechanician.ai_connectors import AIConnector
 from rich.console import Console
 from typing import List
 
-console = Console()
-
+###############################################################################
+## TEST CLASS
+###############################################################################
 
 class Test:
     prompt = None
@@ -29,32 +30,37 @@ class Test:
 ## RUN_TESTS
 ###############################################################################
 
-def run_tests(llm_con: AIConnector, tests: List[Test]):
-    # print_markdown(console, f"* MODEL_NAME: {llm_con.model['MODEL_NAME']}")
-    # print_header(name=llm_con.model['ASSISTANT_NAME'])
-    # Loop forever, processing user input from the terminal
+def run_tests(ai: AIConnector, tests: List[Test], ai_evaluator=None):
+    # If ai_evaluator is None, have the ai self-evaluate
+    if ai_evaluator is None:
+        ai_evaluator = ai()
+
     results = []
+    console = Console()
+
     try:
         for test in tests:
             prompt = test.prompt
             print_markdown(console, "------------------")
             print_markdown(console, "## TEST")
             print_markdown(console, f"```{prompt}```")
-            resp = llm_con.submit_prompt(test.prompt)
+            resp = ai.submit_prompt(test.prompt)
 
-            if llm_con.model["STREAMING"] == False:
+            if ai.model["STREAMING"] == False:
                 print_markdown(console, resp)
                 print('')
 
             # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
             while resp == None:
-                resp = llm_con.submit_prompt(None)
+                resp = ai.submit_prompt(None)
                 print('')
 
             # Record the response as the ACTUAL response
             test.actual = resp
             # Print the Evaluation Prompt
-            eval_instructions = "Below is your response. Does it include expected answer? Respond with PASS or FAIL."
+            # eval_instructions = "Below is your response. Does it include expected answer? Respond with PASS or FAIL."
+            eval_instructions = """Below is an EXPECTED response to a question and an ACTUAL response given by a test taker to the same question. Does the ACTUAL response provide the expected answer? Respond with PASS or FAIL only."""
+
             print_markdown(console, f"* EVAL INSTRUCTIONS: ```{eval_instructions}```")
             print_markdown(console, f"* EXPECTED: ```{test.expected}```")
             print_markdown(console, f"* ACTUAL: ```{test.actual}```")
@@ -64,14 +70,17 @@ def run_tests(llm_con: AIConnector, tests: List[Test]):
             eval_prompt = eval_instructions
             eval_prompt += f"* EXPECTED RESPONSE: \"{test.expected}\"\n\n"
             eval_prompt += f"* ACTUAL RESPONSE: \"{test.actual}\"\n"
-            resp = llm_con.submit_prompt(eval_prompt)
+            # submit evaluation prompt to ai_evaluator
+            resp = ai_evaluator.submit_prompt(eval_prompt)
             test.evaluation = resp
             results.append(test)
             print()
             print_markdown(console, "------------------")
             print('\n')
 
-        print(f"Exiting {llm_con.model['ASSISTANT_NAME']}...")
+        print(f"Exiting {ai.model['ASSISTANT_NAME']}...")
+        print(f"Exiting {ai_evaluator.model['ASSISTANT_NAME']}...")
+
         return results
             
     except KeyboardInterrupt:
@@ -79,6 +88,6 @@ def run_tests(llm_con: AIConnector, tests: List[Test]):
     except EOFError:
         print("Ctrl+D was pressed, exiting...")
     finally:
-        llm_con.clean_up()
+        ai.clean_up()
         print("goodbye")
 

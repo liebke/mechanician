@@ -12,26 +12,29 @@ import os
 ## Main program execution
 ###############################################################################
 
-# Load environment variables from a .env file
-load_dotenv()
+def ai_connector():
+    # Load environment variables from a .env file
+    load_dotenv()
 
-with open("./instructions.md", 'r') as file:
-    instructions = file.read()
+    with open("./instructions.md", 'r') as file:
+        instructions = file.read()
 
-tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
+    tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
 
-# Initialize the model
-ai = OpenAIChatAIConnector(instructions=instructions, 
-                           tool_schemas=tool_schemas, 
-                           tool_handler=tmdb_handler,
-                           assistant_name="TMDB AI" )
+    # Initialize the connection to the AI assistant
+    ai = OpenAIChatAIConnector(instructions=instructions, 
+                            tool_schemas=tool_schemas, 
+                            tool_handler=tmdb_handler,
+                            assistant_name="TMDB AI" )
 
-# ai = OpenAIAssistantAIConnector(instructions=instructions, 
-#                                 tool_schemas=tool_schemas, 
-#                                 tool_handler=tmdb_handler,
-#                                 assistant_name="TMDB AI")
+    # ai = OpenAIAssistantAIConnector(instructions=instructions, 
+    #                                 tool_schemas=tool_schemas, 
+    #                                 tool_handler=tmdb_handler,
+    #                                 assistant_name="TMDB AI")
 
-# Run the REPL loop
-run(ai)
+    return ai
 
+def main():
+    ai = ai_connector()
+    run(ai)
 

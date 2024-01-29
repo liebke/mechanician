@@ -39,13 +39,13 @@ def print_header(name):
 ## RUN
 ###############################################################################
 
-def run(llm_con: AIConnector):
+def run(ai: AIConnector):
     # print_markdown(console, f"* MODEL_NAME: {llm_con.model['MODEL_NAME']}")
-    print_header(name=llm_con.model['ASSISTANT_NAME'])
+    print_header(name=ai.model['ASSISTANT_NAME'])
     # Loop forever, processing user input from the terminal
-    llm_con.model["RUNNING"] = True
+    ai.model["RUNNING"] = True
     try:
-        while llm_con.model["RUNNING"] is True:
+        while ai.model["RUNNING"] is True:
             # Get the user's prompt
             prompt = input("> ")
 
@@ -55,28 +55,28 @@ def run(llm_con: AIConnector):
 
             print('')
             prompt = preprocess_prompt(prompt)
-            resp = llm_con.submit_prompt(prompt)
+            resp = ai.submit_prompt(prompt)
 
-            if llm_con.model["STREAMING"] == False:
+            if ai.model["STREAMING"] == False:
                 print_markdown(console, resp)
                 print('')
 
             # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
             # This should never happen with the Assistant API, just in the Chat API
             while resp == None:
-                resp = llm_con.submit_prompt(None)
+                resp = ai.submit_prompt(None)
 
             print('\n')
 
-        print(f"Exiting {llm_con.model['ASSISTANT_NAME']}...")
-        return llm_con
+        print(f"Exiting {ai.model['ASSISTANT_NAME']}...")
+        return ai
             
     except KeyboardInterrupt:
         print("Ctrl+C was pressed, exiting...")
     except EOFError:
         print("Ctrl+D was pressed, exiting...")
     finally:
-        llm_con.clean_up()
+        ai.clean_up()
         print("goodbye")
 
 
