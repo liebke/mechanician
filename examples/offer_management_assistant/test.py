@@ -1,4 +1,4 @@
-from mechanician.testing import Test, run_task_evaluation
+from mechanician.testing import run_task_evaluation
 import unittest
 from main import ai_connector
 from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
@@ -12,7 +12,11 @@ def ai_evaluator():
      instructions = """
       Your role is to act like a product manager that has access to an AI assistant that can create Product Offers on your behalf.
         Below you will find CSV data representing Product Offers that have not yet been created and that you would like to create with the help of the AI assistant.
-        The AI assistant will start by offering to help you create a bundle of product offers.
+        
+        You will receive a prompt with a single word: "START".
+
+        Once you have received the START prompt, you will need to instruct the AI assistant to create the Product Offers in the CSV data.
+
         Be CONCISE and SPECIFIC in your instructions to the AI assistant.
 
         The Product Offers in the DATA HAS NOT BEEN CREATED YET, so you will need to instruct the AI assistant to create them. 
@@ -34,7 +38,7 @@ def ai_evaluator():
      return OpenAIChatAIConnector(instructions=instructions, 
                                   tool_schemas=None, 
                                   tool_handler=None,
-                                  assistant_name="Test Evaluator")
+                                  assistant_name="Task Test Evaluator")
 
 
 ###############################################################################
@@ -44,9 +48,9 @@ def ai_evaluator():
 class TestAI(unittest.TestCase):
      def test_ai_responses(self):
           ai = ai_connector()
-          seed_prompt = "Can you help me create a bundle of product offers. Please be concise and specific in your instructions."
+          start_prompt = "START"
           print("\n")
-          evaluation, messsages = run_task_evaluation(ai, seed_prompt, ai_evaluator())
+          evaluation, messsages = run_task_evaluation(ai, start_prompt, ai_evaluator())
           print("\n\n")
           print(f"EVALUATION: {evaluation}")
           print("DATABASE DATA:")

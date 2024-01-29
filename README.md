@@ -7,7 +7,7 @@
 
 <!-- <img src="docs/images/mechanician.png" alt="Daring Mechanician" width="200" height="200">
  -->
-<img src="docs/images/daring_mechanician3.png" alt="Daring Mechanician" width="800" height="400" style="float: right;">
+<img src="docs/images/daring_mechanician3.png" alt="Daring Mechanician"  style="max-width: 100%; height: auto float: right;">
 
 <!--
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">"...if they could only have found the point of application for it, they would have constructed a lever capable of raising the earth and rectifying its axis. It was just this deficiency which baffled these <b>daring mechanicians</b>." -Jules Verne</p>

@@ -7,7 +7,7 @@ from typing import List
 ## TEST CLASS
 ###############################################################################
 
-class Test:
+class QandATest:
     prompt = None
     expected = None
     actual = None
@@ -23,14 +23,14 @@ class Test:
         return {"prompt": self.prompt, "expected": self.expected, "actual": self.actual, "evaluation": self.evaluation}
     
     def __repr__(self):
-        return f"Test(prompt={self.prompt}, expected={self.expected}, actual={self.actual}, evaluation={self.evaluation})"
+        return f"QandATest(prompt={self.prompt}, expected={self.expected}, actual={self.actual}, evaluation={self.evaluation})"
     
 
 ###############################################################################
 ## RUN_TESTS
 ###############################################################################
 
-def run_q_and_a_evaluations(ai: AIConnector, tests: List[Test], ai_evaluator=None):
+def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluator=None):
     # If ai_evaluator is None, have the ai self-evaluate
     if ai_evaluator is None:
         ai_evaluator = ai
@@ -97,34 +97,21 @@ def run_q_and_a_evaluations(ai: AIConnector, tests: List[Test], ai_evaluator=Non
 ## RUN_EVALUATION
 ###############################################################################
 
-def run_task_evaluation(ai: AIConnector, seed_prompt, ai_evaluator):
+def run_task_evaluation(ai: AIConnector, start_prompt, ai_evaluator):
     messages = []
     console = Console()
-    prompt = seed_prompt
+    prompt = start_prompt
     RUNNING = True
-    print(f"SEED PROMPT > {seed_prompt}")
+    print(f"START PROMPT > {start_prompt}")
     EVALUATION = None
     try:
         while RUNNING is True:
             print("\n\n")
-            print("ASSISTANT:")
-            resp = ai.submit_prompt(prompt)
-            messages.append(f"ASSISTANT: {resp}")
-
-            if ai.model["STREAMING"] == False:
-                print_markdown(console, resp)
-                print('')
-
-            # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
-            while resp == None:
-                resp = ai.submit_prompt(None)
-                print('')
-
-            print('\n')
             print("EVALUATOR:")
-            eval_resp = ai_evaluator.submit_prompt(resp)
+            eval_resp = ai_evaluator.submit_prompt(prompt)
             messages.append(f"EVALUATOR: {eval_resp}")
             print("\n\n")
+
             # Exit if the evaluator says "/bye"
             if eval_resp.startswith("PASS"):
                 RUNNING = False
@@ -133,7 +120,24 @@ def run_task_evaluation(ai: AIConnector, seed_prompt, ai_evaluator):
                 RUNNING = False
                 EVALUATION = "FAIL"
 
-            prompt = eval_resp
+            print("ASSISTANT:")
+            assist_resp = ai.submit_prompt(eval_resp)
+            messages.append(f"ASSISTANT: {assist_resp}")
+
+            if ai.model["STREAMING"] == False:
+                print_markdown(console, resp)
+                print('')
+
+            # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
+            while assist_resp == None:
+                assist_resp = ai.submit_prompt(None)
+                print('')
+
+            print('\n')
+            messages.append(f"ASSISTANT: {assist_resp}")
+            print("\n\n")
+        
+            prompt = assist_resp
             
         return EVALUATION, messages
     
