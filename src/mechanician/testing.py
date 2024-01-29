@@ -30,7 +30,7 @@ class Test:
 ## RUN_TESTS
 ###############################################################################
 
-def run_tests(ai: AIConnector, tests: List[Test], ai_evaluator=None):
+def run_q_and_a_evaluations(ai: AIConnector, tests: List[Test], ai_evaluator=None):
     # If ai_evaluator is None, have the ai self-evaluate
     if ai_evaluator is None:
         ai_evaluator = ai
@@ -97,13 +97,13 @@ def run_tests(ai: AIConnector, tests: List[Test], ai_evaluator=None):
 ## RUN_EVALUATION
 ###############################################################################
 
-def run_evaluation(ai: AIConnector, seed_prompt, ai_evaluator):
+def run_task_evaluation(ai: AIConnector, seed_prompt, ai_evaluator):
     messages = []
     console = Console()
     prompt = seed_prompt
     RUNNING = True
     print(f"SEED PROMPT > {seed_prompt}")
-
+    EVALUATION = None
     try:
         while RUNNING is True:
             print("\n\n")
@@ -126,12 +126,17 @@ def run_evaluation(ai: AIConnector, seed_prompt, ai_evaluator):
             messages.append(f"EVALUATOR: {eval_resp}")
             print("\n\n")
             # Exit if the evaluator says "/bye"
-            if eval_resp.startswith("/bye"):
+            if eval_resp.startswith("PASS"):
                 RUNNING = False
+                EVALUATION = "PASS"
+            elif eval_resp.startswith("FAIL"):
+                RUNNING = False
+                EVALUATION = "FAIL"
 
             prompt = eval_resp
             
-            
+        return EVALUATION, messages
+    
     except KeyboardInterrupt:
         print("Ctrl+C was pressed, exiting...")
     except EOFError:

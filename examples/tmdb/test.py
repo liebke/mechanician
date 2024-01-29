@@ -1,4 +1,4 @@
-from mechanician.testing import Test, run_tests
+from mechanician.testing import Test, run_q_and_a_evaluations
 import unittest
 from main import ai_connector
 from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
@@ -36,7 +36,7 @@ class TestAI(unittest.TestCase):
                       expected="The Witch")]
         
         # AI Evaluator
-        results = run_tests(ai, tests, ai_evaluator())
+        results = run_q_and_a_evaluations(ai, tests, ai_evaluator())
         # AI Self-Evaluation
         # results = run_tests(ai, tests)
 

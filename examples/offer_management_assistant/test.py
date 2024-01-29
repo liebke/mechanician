@@ -1,4 +1,4 @@
-from mechanician.testing import Test, run_tests, run_evaluation
+from mechanician.testing import Test, run_task_evaluation
 import unittest
 from main import ai_connector
 from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
@@ -19,7 +19,7 @@ def ai_evaluator():
      
         Once all the Product Offers have been created, ask the AI assistant to retrieve all objects from the database and respond with the database data and printn a report containing all the objects created.
        
-       ONCE YOU ARE SATISFIED BY THE FINAL REPORT, RESPOND WITH ONE A SINGLE COMMAND: /bye
+       Once you have seen the final report, evaulate it and respond with only a single word: PASS or FAIL.
 
       [PRODUCT OFFER DATA]
       """
@@ -46,10 +46,12 @@ class TestAI(unittest.TestCase):
           ai = ai_connector()
           seed_prompt = "Can you help me create a bundle of product offers. Please be concise and specific in your instructions."
           print("\n")
-          results = run_evaluation(ai, seed_prompt, ai_evaluator())
+          evaluation, messsages = run_task_evaluation(ai, seed_prompt, ai_evaluator())
           print("\n\n")
+          print(f"EVALUATION: {evaluation}")
           print("DATABASE DATA:")
           print(json.dumps(ai.tool_handler.db, indent=4))
+          self.assertEqual(evaluation, "PASS")
 
 
 if __name__ == '__main__':
