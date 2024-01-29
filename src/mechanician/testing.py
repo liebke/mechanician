@@ -57,8 +57,6 @@ def run_tests(ai: AIConnector, tests: List[Test], ai_evaluator=None):
 
             # Record the response as the ACTUAL response
             test.actual = resp
-            # Print the Evaluation Prompt
-            # eval_instructions = "Below is your response. Does it include expected answer? Respond with PASS or FAIL."
             eval_instructions = """Below is an EXPECTED response to a question and an ACTUAL response given by a test taker to the same question. Does the ACTUAL response provide the expected answer? Respond with PASS or FAIL only."""
 
             print_markdown(console, f"* EVAL INSTRUCTIONS: ```{eval_instructions}```")
