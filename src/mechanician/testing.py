@@ -33,7 +33,7 @@ class Test:
 def run_tests(ai: AIConnector, tests: List[Test], ai_evaluator=None):
     # If ai_evaluator is None, have the ai self-evaluate
     if ai_evaluator is None:
-        ai_evaluator = ai()
+        ai_evaluator = ai
 
     results = []
     console = Console()
@@ -78,8 +78,8 @@ def run_tests(ai: AIConnector, tests: List[Test], ai_evaluator=None):
             print_markdown(console, "------------------")
             print('\n')
 
-        print(f"Exiting {ai.model['ASSISTANT_NAME']}...")
-        print(f"Exiting {ai_evaluator.model['ASSISTANT_NAME']}...")
+        print(f"Examinee Exiting ({ai.model['ASSISTANT_NAME']})...")
+        print(f"Evaluator Exiting ({ai_evaluator.model['ASSISTANT_NAME']})...")
 
         return results
             

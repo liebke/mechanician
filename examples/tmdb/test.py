@@ -34,7 +34,11 @@ class TestAI(unittest.TestCase):
                       expected="Margot Robbie"),
                  Test(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
                       expected="The Witch")]
+        
+        # AI Evaluator
         results = run_tests(ai, tests, ai_evaluator())
+        # AI Self-Evaluation
+        # results = run_tests(ai, tests)
 
         for result in results:
             self.assertEqual(result.evaluation, "PASS")
