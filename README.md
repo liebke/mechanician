@@ -82,7 +82,7 @@ tests = [{"prompt": "What is the name of the actor playing the titular character
          {"prompt": "What is the name of the actor plays Ken in the Barbie movie?", 
           "expected": "Ryan Gosling"},
          {"prompt": "What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
-          "expected": "The Witch"},]
+          "expected": "The Witch"}]
 
 results = run_tests(ai, tests)
 pprint(results)
