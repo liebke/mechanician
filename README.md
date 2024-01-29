@@ -279,20 +279,29 @@ goodbye
 ### AI Self Evaluation Tests Code
 
 ```python
+from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
 from mechanician.testing import Test, run_tests
 
-...instantiate ai...
+with open("./instructions.md", 'r') as file:
+    instructions = file.read()
 
-tests = [{"prompt": "What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
-          "expected": "Anya Taylor-Joy"},
-         {"prompt": "What is the name of the actor plays Ken in the Barbie movie?", 
-          "expected": "Ryan Gosling"},
-         {"prompt": "What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
-          "expected": "The Witch"}]
+tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
+
+ai = OpenAIChatAIConnector(instructions=instructions, 
+                           tool_schemas=tool_schemas, 
+                           tool_handler=tmdb_handler,
+                           assistant_name="TMDB AI" )
+
+tests = []
+tests.append(Test(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
+                  expected="Anya Taylor-Joy"))
+tests.append(Test(prompt="What is the name of the actor plays Ken in the Barbie movie?",
+                  expected="Ryan Gosling"))
+tests.append(Test(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
+                  expected="The Witch"))
 
 results = run_tests(ai, tests)
-pprint(results)
-
+print([r.to_dict() for r in results])
 ```
 
 
