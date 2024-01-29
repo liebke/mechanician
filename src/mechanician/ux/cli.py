@@ -8,7 +8,7 @@ console = Console()
 ## PREPRCOESS_PROMPT
 ###############################################################################
 
-def preprocess_prompt(prompt):
+def preprocess_prompt(ai, prompt):
 
     if prompt.startswith('/file'):
         filename = prompt.replace('/file ', '', 1)
@@ -21,6 +21,10 @@ def preprocess_prompt(prompt):
             print_markdown(console, f"``` \n{prompt}\n ```")
             print_markdown(console, "------------------")
             print('')
+
+    elif prompt.startswith('/bye'):
+        ai.model["RUNNING"] = False
+        prompt = ''
 
     return prompt
 
@@ -50,11 +54,15 @@ def run(ai: AIConnector):
             prompt = input("> ")
 
             # Skip empty prompts
-            if prompt == '':
+            if prompt is '':
                 continue
 
             print('')
-            prompt = preprocess_prompt(prompt)
+            prompt = preprocess_prompt(ai, prompt)
+            # If preprocessed prompt is None, we should skip it
+            if prompt is '':
+                continue
+
             resp = ai.submit_prompt(prompt)
 
             if ai.model["STREAMING"] == False:

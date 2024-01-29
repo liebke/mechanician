@@ -5,13 +5,13 @@ Can you provide me concise instructions on how I should proceed?
 
 I would like to create a package, I have its properties in csv format, let me know when you're ready.
 
-/file ./examples/offer_management_assistant/resources/package1_data.csv
+/file ./resources/package1_data.csv
 
 looks good, please proceed.
 
 yes, I would like to create a child component using csv.
 
-/file ./examples/offer_management_assistant/resources/component1_data.csv
+/file ./resources/component1_data.csv
 
 looks good, please proceed.
 
@@ -23,7 +23,7 @@ please proceed.
 
 I would like to add a charge to the component
 
-/file ./examples/offer_management_assistant/resources/comp_charge1_data.csv
+/file ./resources/comp_charge1_data.csv
 
 rate is 10
 
@@ -63,7 +63,7 @@ yes, please proceed
 
 is a child entity required for this bundle?
 
-/file ./examples/offer_management_assistant/resources/component1_data.csv
+/file ./resources/component1_data.csv
 
 
 ## Create test data
@@ -76,7 +76,7 @@ I have a csv file containing rows for each product offer I want to make, can you
 
 I'll give you a csv with all the data, but only process one row at a time
 
-/file ./examples/offer_management_assistant/resources/bundle_test_data.csv
+/file ./resources/bundle_test_data.csv
 
 looks good, please proceeed
 
@@ -87,7 +87,7 @@ looks good, please proceeed
 
 I would like to create several product offers, I have csv data, tell me when you're ready.
 
-/file ./examples/offer_management_assistant/resources/bundle2_test_data.csv
+/file ./resources/bundle2_test_data.csv
 
 please proceed by creating all those product offers and relationships
 
@@ -95,3 +95,12 @@ please proceed by creating all those product offers and relationships
 yes, please complete all remaining work
 
 please proceed
+
+
+## QUERIES
+
+can you describe the bundle that product offer PKG_ID_4 is associated with?
+
+can you list the charges associated with PKG_ID_4 and the charges associated with all its children?
+
+what about for PKG_ID_3?

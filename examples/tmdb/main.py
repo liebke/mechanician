@@ -9,7 +9,7 @@ import os
 
 
 ###############################################################################
-## Main program execution
+## AI Connector
 ###############################################################################
 
 def ai_connector():
@@ -21,20 +21,26 @@ def ai_connector():
 
     tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
 
+    # return OpenAIAssistantAIConnector(instructions=instructions, 
+    #                                   tool_schemas=tool_schemas, 
+    #                                   tool_handler=tmdb_handler,
+    #                                   assistant_name="TMDB AI")
+
     # Initialize the connection to the AI assistant
     ai = OpenAIChatAIConnector(instructions=instructions, 
-                            tool_schemas=tool_schemas, 
-                            tool_handler=tmdb_handler,
-                            assistant_name="TMDB AI" )
-
-    # ai = OpenAIAssistantAIConnector(instructions=instructions, 
-    #                                 tool_schemas=tool_schemas, 
-    #                                 tool_handler=tmdb_handler,
-    #                                 assistant_name="TMDB AI")
-
+                               tool_schemas=tool_schemas, 
+                               tool_handler=tmdb_handler,
+                               assistant_name="TMDB AI" )
     return ai
+
+###############################################################################
+## Main program execution
+###############################################################################
 
 def main():
     ai = ai_connector()
     run(ai)
+
+if __name__ == '__main__':
+    main()
 

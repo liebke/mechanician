@@ -1,18 +1,19 @@
 # Import Markdown and Console from rich library for pretty terminal outputs
-from mechanician.util import print_markdown
-from mechanician.apis.tool_handler import ToolHandler
+from mechanician.ux.util import print_markdown
+from mechanician.tool_handlers import ToolHandler
 # from rich.markdown import Markdown
 from rich.console import Console
 import json
+from pprint import pprint
 
 console = Console()
 
 def print_output(function_name, input, output):
-    input_str = input
+    # input_str = input
     try:
         # Try to load JSON data from input
-        input_json = json.loads(input)
-        input_str = json.dumps(input_json, indent=4)
+        # input_json = json.loads(input)
+        input_str = json.dumps(input, indent=4)
     except json.JSONDecodeError:
         print(f"Invalid JSON input: {input}")
     
@@ -34,50 +35,118 @@ def print_output(function_name, input, output):
 
 class OfferManagementToolHandler(ToolHandler):
 
-    def create_product_offer(function_name, call_id, args):
-        resp = {
-                "tool_call_id": call_id,  # use call_id directly
-                "output": "product created",
-        }
-        print_output(function_name, args, resp)
-        return resp
+    db = {}
 
-    def create_charge(function_name, call_id, args):
-        resp = {
-                "tool_call_id": call_id,  # use call_id directly
-                "output": "charge created",
-        }
-        print_output(function_name, args, resp)
-        return resp
+    def __init__(self):
+        self.db['product_offers'] = {}
+        self.db['charges'] = {}
+        self.db['parent_to_child_relationships'] = {}
+        self.db['child_to_parent_relationships'] = {}
+        self.db['product_to_charge_relationships'] = {}
+        self.db['charge_to_product_relationships'] = {}
 
-    def create_product_to_product_relationship(function_name, call_id, args):
-        resp = {
-                "tool_call_id": call_id,  # use call_id directly
-                "output": "create_product_to_product_relationship created",
-        }
-        print_output(function_name, args, resp)
-        return resp
 
-    def create_product_to_charge_relationship(function_name, call_id, args):
-        resp = {
-                "tool_call_id": call_id,  # use call_id directly
-                "output": "create_product_to_charge_relationship created",
-        }
-        print_output(function_name, args, resp)
+    def load_db(self, db_filename):
+        with open(db_filename, 'r') as file:
+            self.db = json.load(file)
+
+        print(f"Loaded DB from {db_filename}")
+        pprint(self.db)
+        return
+
+
+    def create_product_offer(self, product_offer):
+        business_id = product_offer["business_id"]
+        self.db['product_offers'][business_id] = product_offer
+        resp = f"Product Offer created: {business_id}"
+        print_output("create_product_offer", product_offer, resp)
         return resp
 
 
-# # Create a dictionary that maps parameter values to functions
-# dispatch_dict = {
-#     'createProductOffer': create_product_offer,
-#     'createCharge': create_charge,
-#     'createProductToProductRelationship': create_product_to_product_relationship,
-#     'createProductToChargeRelationship': create_product_to_charge_relationship,
-# }
+    def create_charge(self, charge):
+        charge_id = charge["charge_id"]
+        self.db['charges'][charge_id] = charge
+        resp = f"Charge created: {charge_id}"
+        print_output("create_charge", charge, resp)
+        return resp
 
-# def call_function(function_name, call_id, args):
-#     if function_name not in dispatch_dict:
-#         print(f"Unknown Function: {function_name}")
-#         return f"Unknown Function: {function_name}"
-#     else:
-#         return dispatch_dict.get(function_name)(function_name, call_id, args)
+
+    def create_product_to_product_relationship(self, relationship):
+        parent = relationship["parent_product_offer"]
+        child = relationship["child_product_offer"]
+        if parent not in self.db['parent_to_child_relationships']:
+            self.db['parent_to_child_relationships'][parent] = [child]
+        else:
+            self.db['parent_to_child_relationships'][parent].append(child)
+
+        if child not in self.db['child_to_parent_relationships']:
+            self.db['child_to_parent_relationships'][child] = [parent]
+        else:
+            self.db['child_to_parent_relationships'][child].append(parent)
+
+        resp = f"Product to Product relationship created: {relationship}"
+        print_output("create_product_to_product_relationship", relationship, resp)
+        return resp
+
+
+    def create_product_to_charge_relationship(self, relationship):
+        product = relationship["product_id"]
+        charge = relationship["charge_id"]
+        if product not in self.db['product_to_charge_relationships']:
+            self.db['product_to_charge_relationships'][product] = [charge]
+        else:
+            self.db['product_to_charge_relationships'][product].append(charge)
+
+        if charge not in self.db['charge_to_product_relationships']:
+            self.db['charge_to_product_relationships'][charge] = [product]
+        else:
+            self.db['charge_to_product_relationships'][charge].append(product)
+
+        resp = f"Product to Charge relationship created: {relationship}"
+        print_output("create_product_to_charge_relationship", relationship, resp)
+        return resp
+
+
+    def get_product_offer(self, query):
+        business_id = query["business_id"]
+        resp = self.db['product_offers'].get(business_id)
+        if resp is None:
+            resp = "No Product Offer found for {}".format(business_id)
+        print_output("get_product_offer", business_id, resp)
+        return resp
+    
+
+    def get_charge(self, query):
+        charge_id = query["charge_id"]
+        resp = self.db['charges'].get(charge_id)
+        if resp is None:
+            resp = "No Charge found for {}".format(charge_id)
+        print_output("get_charge", charge_id, resp)
+        return resp
+    
+    
+    def get_child_relationships(self, query):
+        parent_business_id = query["parent_business_id"]
+        resp = self.db['parent_to_child_relationships'].get(parent_business_id)
+        if resp is None:
+            resp = "No child relationships found for {}".format(parent_business_id)
+        print_output("get_child_relationships", parent_business_id, resp)
+        return resp
+    
+
+    def get_parent_relationships(self, query):
+        child_business_id = query["child_business_id"]
+        resp = self.db['child_to_parent_relationships'].get(child_business_id)
+        if resp is None:
+            resp = "No parent relationships found for {}".format(child_business_id)
+        print_output("get_parent_relationship", child_business_id, resp)
+        return resp
+
+
+    def get_charge_relationships(self, query):
+        business_id = query["business_id"]
+        resp = self.db['product_to_charge_relationships'].get(business_id)
+        if resp is None:
+            resp = "No Charge relationships found for {}".format(business_id)
+        print_output("get_charge_relationships", business_id, resp)
+        return resp
