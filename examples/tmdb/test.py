@@ -40,13 +40,12 @@ class TestAI(unittest.TestCase):
 
 
         # RUN TESTS
-        tests = []
-        tests.append(Test(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
-                        expected="Anya Taylor-Joy"))
-        tests.append(Test(prompt="What is the name of the actor plays Ken in the Barbie movie?",
-                        expected="Ryan Gosling"))
-        tests.append(Test(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
-                        expected="The Witch"))
+        tests = [Test(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
+                      expected="Anya Taylor-Joy"),
+                Test(prompt="What is the name of the actor plays Ken in the Barbie movie?",
+                     expected="Ryan Gosling"),
+                Test(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
+                     expected="The Witch")]
 
         results = run_tests(ai, tests)
 
@@ -59,4 +58,4 @@ class TestAI(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=2)
