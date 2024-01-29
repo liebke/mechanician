@@ -1,14 +1,15 @@
 
-<!-- Title Header in Copperplate font, colored black -->
+<!-- 
 <h1 style="margin-bottom: 0; font-family: 'Copperplate', serif; color: black;">Daring Mechanician</h1>
 
-<!-- Tagline in Copperplate font, colored dark grey -->
 <p style="margin-top: 0; font-family: 'Didot', serif; color: darkgrey;">Building tools that use AI and building tools that AIs use.</p>
+-->
 
+<!-- <img src="docs/images/mechanician.png" alt="Daring Mechanician" width="200" height="200">
+ -->
+<img src="docs/images/daring_mechanician2.png" alt="Daring Mechanician" width="800" height="400" style="float: right;">
 
-<img src="docs/images/mechanician.png" alt="Daring Mechanician" width="200" height="200">
-
-><p style="margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">"...if they could only have found the point of application for it, they would have constructed a lever capable of raising the earth and rectifying its axis. It was just this deficiency which baffled these <b>daring mechanicians</b>." -Jules Verne</p>
+<p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">"...if they could only have found the point of application for it, they would have constructed a lever capable of raising the earth and rectifying its axis. It was just this deficiency which baffled these <b>daring mechanicians</b>." -Jules Verne</p>
 
 
 
