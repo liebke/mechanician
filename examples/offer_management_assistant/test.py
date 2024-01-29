@@ -36,9 +36,7 @@ def ai_evaluator():
       """
 
      return OpenAIChatAIConnector(instructions=instructions, 
-                                  tool_schemas=None, 
-                                  tool_handler=None,
-                                  assistant_name="Task Test Evaluator")
+                                  assistant_name="Task Evaluator")
 
 
 ###############################################################################
