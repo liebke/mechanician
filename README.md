@@ -74,6 +74,94 @@ The first movie that Anya Taylor-Joy, the actor who plays Furiosa in the upcomin
 
 ### Run AI Self Evaluation Tests
 
+```bash
+> python test.py
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+                                                             TEST                                                             
+What is the name of the actor playing the titular character in the upcoming Furiosa movie?                                    
+Calling external function: search_movie...
+Calling external function: get_movie_credits...
+
+The name of the actor playing the titular character, Furiosa, in the upcoming movie "Furiosa: A Mad Max Saga" is Anya Taylor-Joy.
+
+ • EVAL INSTRUCTIONS: Below is your response. Does it include expected answer? Respond with PASS or FAIL.                     
+
+ • EXPECTED: Anya Taylor-Joy                                                                                                  
+
+ • ACTUAL: The name of the actor playing the titular character, Furiosa, in the upcoming movie "Furiosa: A Mad Max Saga" is   
+   Anya Taylor-Joy.                                                                                                           
+
+
+PASS
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+                                                             TEST                                                             
+What is the name of the actor plays Ken in the Barbie movie?                                                                  
+Calling external function: search_movie...
+Calling external function: get_movie_credits...
+
+The actor who plays Ken in the "Barbie" movie is Ryan Gosling.
+
+ • EVAL INSTRUCTIONS: Below is your response. Does it include expected answer? Respond with PASS or FAIL.                     
+
+ • EXPECTED: Ryan Gosling                                                                                                     
+
+ • ACTUAL: The actor who plays Ken in the "Barbie" movie is Ryan Gosling.                                                     
+
+
+PASS
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+                                                             TEST                                                             
+What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?                         
+Calling external function: get_actor_credits...
+The first movie featuring Anya Taylor-Joy, the actor playing the titular character in the upcoming "Furiosa" movie, is "The Witch," where she played the character Thomasin.
+
+ • EVAL INSTRUCTIONS: Below is your response. Does it include expected answer? Respond with PASS or FAIL.                     
+
+ • EXPECTED: The Witch                                                                                                        
+
+ • ACTUAL: The first movie featuring Anya Taylor-Joy, the actor playing the titular character in the upcoming "Furiosa" movie,
+   is "The Witch," where she played the character Thomasin.                                                                   
+
+
+PASS
+────────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+Exiting TMDB AI...
+goodbye
+
+                                                         TEST RESULTS                                                         
+[{'actual': 'The name of the actor playing the titular character, Furiosa, in '
+            'the upcoming movie "Furiosa: A Mad Max Saga" is Anya Taylor-Joy.',
+  'evaluation': 'PASS',
+  'expected': 'Anya Taylor-Joy',
+  'prompt': 'What is the name of the actor playing the titular character in '
+            'the upcoming Furiosa movie?'},
+ {'actual': 'The actor who plays Ken in the "Barbie" movie is Ryan Gosling.',
+  'evaluation': 'PASS',
+  'expected': 'Ryan Gosling',
+  'prompt': 'What is the name of the actor plays Ken in the Barbie movie?'},
+ {'actual': 'The first movie featuring Anya Taylor-Joy, the actor playing the '
+            'titular character in the upcoming "Furiosa" movie, is "The '
+            'Witch," where she played the character Thomasin.',
+  'evaluation': 'PASS',
+  'expected': 'The Witch',
+  'prompt': 'What is the first movie that the actor that plays the titual '
+            'character in the upcoming Furiosa movie?'}]
+```
+
+### AI Self Evaluation Tests Code
+
 ```python
 from mechanician.ux.cli import run_tests
 
@@ -89,26 +177,6 @@ pprint(results)
 
 ```
 
-#### Test Results
-
-```python
-[{'actual': 'The actor playing the titular character in the upcoming movie '
-            '"Furiosa: A Mad Max Saga" is Anya Taylor-Joy.',
-  'evaluation': 'PASS',
-  'expected': 'Anya Taylor-Joy',
-  'prompt': 'What is the name of the actor playing the titular character in '
-            'the upcoming Furiosa movie?'},
- {'actual': 'The actor playing Ken in the "Barbie" movie is Ryan Gosling.',
-  'evaluation': 'PASS',
-  'expected': 'Ryan Gosling',
-  'prompt': 'What is the name of the actor plays Ken in the Barbie movie?'},
- {'actual': 'The first movie that Anya Taylor-Joy appeared in is "The Witch," '
-            'where she played the character Thomasin.',
-  'evaluation': 'PASS',
-  'expected': 'The Witch',
-  'prompt': 'What is the first movie that the actor that plays the titual '
-            'character in the upcoming Furiosa movie?'}]
-```
 
 ### TMDb Example Code
 

@@ -37,7 +37,9 @@ def run_tests(llm_con: AIConnector, tests: List[Test]):
     try:
         for test in tests:
             prompt = test.prompt
-            print_markdown(console, f"## {prompt}")
+            print_markdown(console, "------------------")
+            print_markdown(console, "## TEST")
+            print_markdown(console, f"```{prompt}```")
             resp = llm_con.submit_prompt(test.prompt)
 
             if llm_con.model["STREAMING"] == False:
@@ -46,18 +48,16 @@ def run_tests(llm_con: AIConnector, tests: List[Test]):
 
             # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
             while resp == None:
-                resp = llm_con.submit_prompt(prompt)
-                print('\n')
+                resp = llm_con.submit_prompt(None)
+                print('')
 
             # Record the response as the ACTUAL response
             test.actual = resp
             # Print the Evaluation Prompt
-            print('\n\n')
-            eval_instructions = "Below is your response. Does it include expected answer? Respond with PASS or FAIL\n\n"
-            print_markdown(console, f"``` \n{eval_instructions}\n ```\n")
-            print_markdown(console, f"* EXPECTED: ```{test.expected}```\n")
-            print('\n')
-            print_markdown(console, f"* ACTUAL: \n\"{test.actual}\"\n")
+            eval_instructions = "Below is your response. Does it include expected answer? Respond with PASS or FAIL."
+            print_markdown(console, f"* EVAL INSTRUCTIONS: ```{eval_instructions}```")
+            print_markdown(console, f"* EXPECTED: ```{test.expected}```")
+            print_markdown(console, f"* ACTUAL: ```{test.actual}```")
             print('\n')
 
             # Submit the evaluation prompt
@@ -67,9 +67,9 @@ def run_tests(llm_con: AIConnector, tests: List[Test]):
             resp = llm_con.submit_prompt(eval_prompt)
             test.evaluation = resp
             results.append(test)
-
-            print('\n\n')
-
+            print()
+            print_markdown(console, "------------------")
+            print('\n')
 
         print(f"Exiting {llm_con.model['ASSISTANT_NAME']}...")
         return results
