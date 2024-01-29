@@ -89,3 +89,53 @@ def run_tests(ai: AIConnector, tests: List[Test], ai_evaluator=None):
         ai.clean_up()
         print("goodbye")
 
+
+
+
+
+###############################################################################
+## RUN_EVALUATION
+###############################################################################
+
+def run_evaluation(ai: AIConnector, seed_prompt, ai_evaluator):
+    messages = []
+    console = Console()
+    prompt = seed_prompt
+    RUNNING = True
+    print(f"SEED PROMPT > {seed_prompt}")
+
+    try:
+        while RUNNING is True:
+            print("\n\n")
+            print("ASSISTANT:")
+            resp = ai.submit_prompt(prompt)
+            messages.append(f"ASSISTANT: {resp}")
+
+            if ai.model["STREAMING"] == False:
+                print_markdown(console, resp)
+                print('')
+
+            # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
+            while resp == None:
+                resp = ai.submit_prompt(None)
+                print('')
+
+            print('\n')
+            print("EVALUATOR:")
+            eval_resp = ai_evaluator.submit_prompt(resp)
+            messages.append(f"EVALUATOR: {eval_resp}")
+            print("\n\n")
+            # Exit if the evaluator says "/bye"
+            if eval_resp.startswith("/bye"):
+                RUNNING = False
+
+            prompt = eval_resp
+            
+            
+    except KeyboardInterrupt:
+        print("Ctrl+C was pressed, exiting...")
+    except EOFError:
+        print("Ctrl+D was pressed, exiting...")
+    finally:
+        ai.clean_up()
+        print("goodbye")

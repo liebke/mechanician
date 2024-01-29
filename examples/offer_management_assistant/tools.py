@@ -11,14 +11,11 @@ console = Console()
 def print_output(function_name, input, output):
     # input_str = input
     try:
-        # Try to load JSON data from input
-        # input_json = json.loads(input)
         input_str = json.dumps(input, indent=4)
     except json.JSONDecodeError:
         print(f"Invalid JSON input: {input}")
     
     output_str = json.dumps(output, indent=4)
-    # print(f"INPUT TYPE: {type(input)}") # string
 
     print('')
     print_markdown(console, "------------------")
@@ -56,51 +53,63 @@ class OfferManagementToolHandler(ToolHandler):
 
 
     def create_product_offer(self, product_offer):
-        business_id = product_offer["business_id"]
-        self.db['product_offers'][business_id] = product_offer
-        resp = f"Product Offer created: {business_id}"
+        if product_offer is None:
+            resp = "No Product Offer found in request body"
+        else:
+            business_id = product_offer.get("business_id")
+            self.db['product_offers'][business_id] = product_offer
+            resp = f"Product Offer created: {business_id}"
         print_output("create_product_offer", product_offer, resp)
         return resp
 
 
     def create_charge(self, charge):
-        charge_id = charge["charge_id"]
-        self.db['charges'][charge_id] = charge
-        resp = f"Charge created: {charge_id}"
+        if charge is None:
+            resp = "No Charge found in request body"
+        else:
+            charge_id = charge.get("charge_id")
+            self.db['charges'][charge_id] = charge
+            resp = f"Charge created: {charge_id}"
         print_output("create_charge", charge, resp)
         return resp
 
 
     def create_product_to_product_relationship(self, relationship):
-        parent = relationship["parent_product_offer"]
-        child = relationship["child_product_offer"]
-        if parent not in self.db['parent_to_child_relationships']:
-            self.db['parent_to_child_relationships'][parent] = [child]
+        if relationship is None:
+            resp = "No Product to Product relationship found in request body"
         else:
-            self.db['parent_to_child_relationships'][parent].append(child)
+            parent = relationship.get("parent_product_offer")
+            child = relationship.get("child_product_offer")
+            if parent not in self.db['parent_to_child_relationships']:
+                self.db['parent_to_child_relationships'][parent] = [child]
+            else:
+                self.db['parent_to_child_relationships'][parent].append(child)
 
-        if child not in self.db['child_to_parent_relationships']:
-            self.db['child_to_parent_relationships'][child] = [parent]
-        else:
-            self.db['child_to_parent_relationships'][child].append(parent)
+            if child not in self.db['child_to_parent_relationships']:
+                self.db['child_to_parent_relationships'][child] = [parent]
+            else:
+                self.db['child_to_parent_relationships'][child].append(parent)
 
-        resp = f"Product to Product relationship created: {relationship}"
+            resp = f"Product to Product relationship created: {relationship}"
         print_output("create_product_to_product_relationship", relationship, resp)
         return resp
 
 
     def create_product_to_charge_relationship(self, relationship):
-        product = relationship["product_id"]
-        charge = relationship["charge_id"]
-        if product not in self.db['product_to_charge_relationships']:
-            self.db['product_to_charge_relationships'][product] = [charge]
+        if relationship is None:
+            resp = "No Product to Charge relationship found in request body"
         else:
-            self.db['product_to_charge_relationships'][product].append(charge)
+            product = relationship.get("product_id")
+            charge = relationship.get("charge_id")
+            if product not in self.db.get('product_to_charge_relationships'):
+                self.db['product_to_charge_relationships'][product] = [charge]
+            else:
+                self.db['product_to_charge_relationships'][product].append(charge)
 
-        if charge not in self.db['charge_to_product_relationships']:
-            self.db['charge_to_product_relationships'][charge] = [product]
-        else:
-            self.db['charge_to_product_relationships'][charge].append(product)
+            if charge not in self.db['charge_to_product_relationships']:
+                self.db['charge_to_product_relationships'][charge] = [product]
+            else:
+                self.db['charge_to_product_relationships'][charge].append(product)
 
         resp = f"Product to Charge relationship created: {relationship}"
         print_output("create_product_to_charge_relationship", relationship, resp)
@@ -108,45 +117,60 @@ class OfferManagementToolHandler(ToolHandler):
 
 
     def get_product_offer(self, query):
-        business_id = query["business_id"]
-        resp = self.db['product_offers'].get(business_id)
-        if resp is None:
-            resp = "No Product Offer found for {}".format(business_id)
+        if query is None:
+            resp = "No query found in request body"
+        else:
+            business_id = query.get("business_id")
+            resp = self.db['product_offers'].get(business_id)
+            if resp is None:
+                resp = "No Product Offer found for {}".format(business_id)
         print_output("get_product_offer", business_id, resp)
         return resp
     
 
     def get_charge(self, query):
-        charge_id = query["charge_id"]
-        resp = self.db['charges'].get(charge_id)
-        if resp is None:
-            resp = "No Charge found for {}".format(charge_id)
+        if query is None:
+            resp = "No query found in request body"
+        else:
+            charge_id = query.get("charge_id")
+            resp = self.db['charges'].get(charge_id)
+            if resp is None:
+                resp = "No Charge found for {}".format(charge_id)
         print_output("get_charge", charge_id, resp)
         return resp
     
     
     def get_child_relationships(self, query):
-        parent_business_id = query["parent_business_id"]
-        resp = self.db['parent_to_child_relationships'].get(parent_business_id)
-        if resp is None:
-            resp = "No child relationships found for {}".format(parent_business_id)
+        if query is None:
+            resp = "No query found in request body"
+        else:
+            parent_business_id = query.get("parent_business_id")
+            resp = self.db['parent_to_child_relationships'].get(parent_business_id)
+            if resp is None:
+                resp = "No child relationships found for {}".format(parent_business_id)
         print_output("get_child_relationships", parent_business_id, resp)
         return resp
     
 
     def get_parent_relationships(self, query):
-        child_business_id = query["child_business_id"]
-        resp = self.db['child_to_parent_relationships'].get(child_business_id)
-        if resp is None:
-            resp = "No parent relationships found for {}".format(child_business_id)
+        if query is None:
+            resp = "No query found in request body"
+        else:
+            child_business_id = query.get("child_business_id")
+            resp = self.db['child_to_parent_relationships'].get(child_business_id)
+            if resp is None:
+                resp = "No parent relationships found for {}".format(child_business_id)
         print_output("get_parent_relationship", child_business_id, resp)
         return resp
 
 
     def get_charge_relationships(self, query):
-        business_id = query["business_id"]
-        resp = self.db['product_to_charge_relationships'].get(business_id)
-        if resp is None:
-            resp = "No Charge relationships found for {}".format(business_id)
+        if query is None:
+            resp = "No query found in request body"
+        else:
+            business_id = query.get("business_id")
+            resp = self.db['product_to_charge_relationships'].get(business_id)
+            if resp is None:
+                resp = "No Charge relationships found for {}".format(business_id)
         print_output("get_charge_relationships", business_id, resp)
         return resp
