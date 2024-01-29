@@ -1,6 +1,6 @@
 
 <!-- Title Header in Copperplate font, colored black -->
-<h1 style="margin-bottom: 0; font-family: 'Didot', serif; color: black;">Daring Mechanician</h1>
+<h1 style="margin-bottom: 0; font-family: 'Copperplate', serif; color: black;">Daring Mechanician</h1>
 
 <!-- Tagline in Copperplate font, colored dark grey -->
 <p style="margin-top: 0; font-family: 'Didot', serif; color: darkgrey;">Building tools that use AI and building tools that AIs use.</p>
