@@ -267,27 +267,33 @@ OK
 ```python
 from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
 from mechanician.testing import Test, run_tests
+import unittest
 
-with open("./instructions.md", 'r') as file:
-    instructions = file.read()
+class TestAI(unittest.TestCase):
 
-tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
+    def test_ai_responses(self):
+        with open("./instructions.md", 'r') as file:
+            instructions = file.read()
 
-ai = OpenAIChatAIConnector(instructions=instructions, 
-                           tool_schemas=tool_schemas, 
-                           tool_handler=tmdb_handler,
-                           assistant_name="TMDB AI" )
+        tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
 
-tests = []
-tests.append(Test(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
-                  expected="Anya Taylor-Joy"))
-tests.append(Test(prompt="What is the name of the actor plays Ken in the Barbie movie?",
-                  expected="Ryan Gosling"))
-tests.append(Test(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
-                  expected="The Witch"))
+        ai = OpenAIChatAIConnector(instructions=instructions, 
+                                tool_schemas=tool_schemas, 
+                                tool_handler=tmdb_handler,
+                                assistant_name="TMDB AI" )
 
-results = run_tests(ai, tests)
-print([r.to_dict() for r in results])
+        tests = []
+        tests.append(Test(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
+                        expected="Anya Taylor-Joy"))
+        tests.append(Test(prompt="What is the name of the actor plays Ken in the Barbie movie?",
+                        expected="Ryan Gosling"))
+        tests.append(Test(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
+                        expected="The Witch"))
+
+        results = run_tests(ai, tests)
+
+        for result in results:
+            self.assertEqual(result.evaluation, "PASS")
 ```
 
 
