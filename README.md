@@ -279,7 +279,7 @@ goodbye
 ### AI Self Evaluation Tests Code
 
 ```python
-from mechanician.ux.cli import run_tests
+from mechanician.testing import Test, run_tests
 
 ...instantiate ai...
 
