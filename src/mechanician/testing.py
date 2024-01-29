@@ -10,19 +10,19 @@ class Test:
     prompt = None
     expected = None
     actual = None
-    grade = None
+    evaluation = None
 
     def __init__(self, prompt, expected):
         self.prompt = prompt
         self.expected = expected
         self.actual = None
-        self.grade = None
+        self.evaluation = None
 
     def to_dict(self):
-        return {"prompt": self.prompt, "expected": self.expected, "actual": self.actual, "grade": self.grade}
+        return {"prompt": self.prompt, "expected": self.expected, "actual": self.actual, "evaluation": self.evaluation}
     
     def __repr__(self):
-        return f"Test(prompt={self.prompt}, expected={self.expected}, actual={self.actual}, grade={self.grade})"
+        return f"Test(prompt={self.prompt}, expected={self.expected}, actual={self.actual}, evaluation={self.evaluation})"
     
 
 ###############################################################################
@@ -65,7 +65,7 @@ def run_tests(llm_con: AIConnector, tests: List[Test]):
             eval_prompt += f"* EXPECTED RESPONSE: \"{test.expected}\"\n\n"
             eval_prompt += f"* ACTUAL RESPONSE: \"{test.actual}\"\n"
             resp = llm_con.submit_prompt(eval_prompt)
-            test.grade = resp
+            test.evaluation = resp
             results.append(test)
 
             print('\n\n')

@@ -94,21 +94,18 @@ pprint(results)
 ```python
 [{'actual': 'The actor playing the titular character in the upcoming movie '
             '"Furiosa: A Mad Max Saga" is Anya Taylor-Joy.',
+  'evaluation': 'PASS',
   'expected': 'Anya Taylor-Joy',
-  'grade': 'PASS',
   'prompt': 'What is the name of the actor playing the titular character in '
             'the upcoming Furiosa movie?'},
-
- {'actual': 'The actor who plays Ken in the Barbie movie is Ryan Gosling.',
+ {'actual': 'The actor playing Ken in the "Barbie" movie is Ryan Gosling.',
+  'evaluation': 'PASS',
   'expected': 'Ryan Gosling',
-  'grade': 'PASS',
   'prompt': 'What is the name of the actor plays Ken in the Barbie movie?'},
-
- {'actual': 'The first movie in which Anya Taylor-Joy, the actor playing the '
-            'titular character in the upcoming "Furiosa" movie, appeared is '
-            '"The Witch." She played the character Thomasin.',
+ {'actual': 'The first movie that Anya Taylor-Joy appeared in is "The Witch," '
+            'where she played the character Thomasin.',
+  'evaluation': 'PASS',
   'expected': 'The Witch',
-  'grade': 'PASS',
   'prompt': 'What is the first movie that the actor that plays the titual '
             'character in the upcoming Furiosa movie?'}]
 ```
