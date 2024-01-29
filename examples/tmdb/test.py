@@ -8,6 +8,7 @@ import os
 from pprint import pprint
 from mechanician.ux.util import print_markdown
 from rich.console import Console
+import unittest
 
 
 
@@ -18,42 +19,44 @@ from rich.console import Console
 # Load environment variables from a .env file
 load_dotenv()
 
-with open("./instructions.md", 'r') as file:
-    instructions = file.read()
+class TestAI(unittest.TestCase):
 
-tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
+    def test_ai_responses(self):
+        with open("./instructions.md", 'r') as file:
+            instructions = file.read()
 
-# Initialize the model
-ai = OpenAIChatAIConnector(instructions=instructions, 
-                           tool_schemas=tool_schemas, 
-                           tool_handler=tmdb_handler,
-                           assistant_name="TMDB AI" )
+        tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
 
-# ai = OpenAIAssistantAIConnector(instructions=instructions, 
-#                                 tool_schemas=tool_schemas, 
-#                                 tool_handler=tmdb_handler,
-#                                 assistant_name="TMDB AI")
+        # Initialize the model
+        ai = OpenAIChatAIConnector(instructions=instructions, 
+                                tool_schemas=tool_schemas, 
+                                tool_handler=tmdb_handler,
+                                assistant_name="TMDB AI" )
+
+        # ai = OpenAIAssistantAIConnector(instructions=instructions, 
+        #                                 tool_schemas=tool_schemas, 
+        #                                 tool_handler=tmdb_handler,
+        #                                 assistant_name="TMDB AI")
 
 
-# RUN TESTS
-tests = [{"prompt": "What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
-          "expected": "Anya Taylor-Joy"},
-         {"prompt": "What is the name of the actor plays Ken in the Barbie movie?", 
-          "expected": "Ryan Gosling"},
-         {"prompt": "What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
-          "expected": "The Witch"},]
+        # RUN TESTS
+        tests = []
+        tests.append(Test(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
+                        expected="Anya Taylor-Joy"))
+        tests.append(Test(prompt="What is the name of the actor plays Ken in the Barbie movie?",
+                        expected="Ryan Gosling"))
+        tests.append(Test(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
+                        expected="The Witch"))
 
-tests = []
-tests.append(Test(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
-                  expected="Anya Taylor-Joy"))
-tests.append(Test(prompt="What is the name of the actor plays Ken in the Barbie movie?",
-                  expected="Ryan Gosling"))
-tests.append(Test(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
-                  expected="The Witch"))
+        results = run_tests(ai, tests)
 
-results = run_tests(ai, tests)
+        # console = Console()
+        # print_markdown(console, "## TEST RESULTS")
+        # pprint([r.to_dict() for r in results])
 
-console = Console()
-print_markdown(console, "## TEST RESULTS")
-pprint([r.to_dict() for r in results])
+        for result in results:
+            self.assertEqual(result.evaluation, "PASS")
 
+
+if __name__ == '__main__':
+    unittest.main()
