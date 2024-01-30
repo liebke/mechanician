@@ -22,7 +22,7 @@ def ai_evaluator():
 ## TEST
 ###############################################################################
 
-class QandATestAI(unittest.QandATestCase):
+class TestTMDbAI(unittest.TestCase):
 
     def test_ai_responses(self):
         ai = ai_connector()

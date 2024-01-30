@@ -18,8 +18,8 @@ class OpenAIAssistantAIConnector(AIConnector):
     ###############################################################################
 
     def __init__(self, instructions, 
-                 tool_schemas, 
-                 tool_handler: 'ToolHandler', 
+                 tool_schemas=None, 
+                 tool_handler: 'ToolHandler'=None, 
                  assistant_name="Mechanician Assistant",
                  model_name=None,
                  api_key=None,

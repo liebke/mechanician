@@ -82,11 +82,11 @@ tool_schemas = [
                     "properties": {
                         "parent_product_offer": {
                             "type": "string",
-                            "description": "The ID of the parent product offer"
+                            "description": "The Business ID of the parent product offer"
                         },
                         "child_product_offer": {
                             "type": "string",
-                            "description": "The ID of the child product offer"
+                            "description": "The Business ID of the child product offer"
                         },
                         
                     },
@@ -104,11 +104,11 @@ tool_schemas = [
                     "properties": {
                         "product_id": {
                             "type": "string",
-                            "description": "The ID of the Product"
+                            "description": "The Business ID of the Product"
                         },
                         "charge_id": {
                             "type": "string",
-                            "description": "The ID of the Charge"
+                            "description": "The Charge ID of the Charge"
                         },
                         
                     },
@@ -134,20 +134,6 @@ tool_schemas = [
                                                 * StandAloneNonRecurringCharge, 
                                                 * RecurringCostBasedCharge, 
                                                 * NonRecurringCostBasedCharge."""
-                        },
-                        "available_end_date": {
-                            "type": "string",
-                            "format": "date",
-                            "description": "The available end date"
-                        },
-                        "available_start_date": {
-                            "type": "string",
-                            "format": "date",
-                            "description": "The available start date"
-                        },
-                        "business_id": {
-                            "type": "string",
-                            "description": "The business identifier"
                         },
                         "category_id": {
                             "type": "string",

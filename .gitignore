@@ -3,3 +3,5 @@ __pycache__
 .DS_Store
 src/mechanician.egg-info
 src/mechanician.egg-info/SOURCES.txt
+examples/offer_management_assistant/resources/_test_data
+test_results

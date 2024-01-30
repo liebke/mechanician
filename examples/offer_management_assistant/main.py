@@ -33,7 +33,7 @@ def ai_connector():
 
 def main():
     ai = ai_connector()
-    ai.tool_handler.load_db("./resources/db.json")
+    ai.tool_handler.load_db("./resources/db1.json")
     run(ai)
     db = ai.tool_handler.db
     print(json.dumps(db, indent=4))

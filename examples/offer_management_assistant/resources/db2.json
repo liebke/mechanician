@@ -1,174 +1,193 @@
 {
     "product_offers": {
-        "BUNDLE_ID_1": {
+        "BUNDLE_ID_2": {
             "product_offer_type": "Bundle",
-            "business_id": "BUNDLE_ID_1",
-            "name": "Platinum Suite",
-            "description": "Complete Platinum Suite with multiple services",
-            "category_id": "CAT_BUNDLE",
-            "available_start_date": "2024-01-01",
-            "available_end_date": "2025-12-31",
-            "effective_start_date": "2024-01-01",
-            "effective_end_date": "2025-12-31",
+            "business_id": "BUNDLE_ID_2",
             "max_child_elements": 3,
-            "min_child_elements": 1
+            "min_child_elements": 1,
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_BUNDLE",
+            "description": "Complete Gold Suite with multiple services",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "name": "Gold Suite"
         },
-        "PKG_DATA_ID": {
+        "PKG_ID_3": {
             "product_offer_type": "Package",
-            "business_id": "PKG_DATA_ID",
-            "name": "Platinum Data Package",
-            "description": "High-tier data package with multiple options",
-            "category_id": "CAT_PKG",
-            "available_start_date": "2024-01-01",
-            "available_end_date": "2025-12-31",
-            "effective_start_date": "2024-01-01",
-            "effective_end_date": "2025-12-31"
+            "business_id": "PKG_ID_3",
+            "max_child_elements": 2,
+            "min_child_elements": 1,
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_PACKAGE",
+            "description": "Medium-speed data package",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "name": "Gold Data Package"
         },
-        "PKG_VOICE_ID": {
+        "COMP_ID_4": {
+            "product_offer_type": "Component",
+            "business_id": "COMP_ID_4",
+            "max_child_elements": 1,
+            "min_child_elements": 0,
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_COMPONENT",
+            "description": "3GB Data add-on",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "name": "Data Component 3GB"
+        },
+        "COMP_ID_5": {
+            "product_offer_type": "Component",
+            "business_id": "COMP_ID_5",
+            "max_child_elements": 1,
+            "min_child_elements": 0,
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_COMPONENT",
+            "description": "6GB Data add-on",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "name": "Data Component 6GB"
+        },
+        "PKG_ID_4": {
             "product_offer_type": "Package",
-            "business_id": "PKG_VOICE_ID",
-            "name": "Platinum Voice Package",
-            "description": "Premium voice package with extensive minutes",
-            "category_id": "CAT_PKG",
-            "available_start_date": "2024-01-01",
-            "available_end_date": "2025-12-31",
-            "effective_start_date": "2024-01-01",
-            "effective_end_date": "2025-12-31"
+            "business_id": "PKG_ID_4",
+            "max_child_elements": 1,
+            "min_child_elements": 1,
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_PACKAGE",
+            "description": "Regional voice package",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "name": "Gold Voice Package"
         },
-        "CO_DATA5GB_ID": {
+        "COMP_ID_6": {
             "product_offer_type": "Component",
-            "business_id": "CO_DATA5GB_ID",
-            "name": "Data Component 5GB",
-            "description": "5GB data component for data packages",
-            "category_id": "CAT_CO_DATA",
-            "available_start_date": "2024-01-01",
-            "available_end_date": "2025-12-31",
-            "effective_start_date": "2024-01-01",
-            "effective_end_date": "2025-12-31"
-        },
-        "CO_DATA10GB_ID": {
-            "product_offer_type": "Component",
-            "business_id": "CO_DATA10GB_ID",
-            "name": "Data Component 10GB",
-            "description": "10GB data component for premium data usage",
-            "category_id": "CAT_CO_DATA",
-            "available_start_date": "2024-01-01",
-            "available_end_date": "2025-12-31",
-            "effective_start_date": "2024-01-01",
-            "effective_end_date": "2025-12-31"
-        },
-        "CO_VOICE1000MIN_ID": {
-            "product_offer_type": "Component",
-            "business_id": "CO_VOICE1000MIN_ID",
-            "name": "Voice Component 1000min",
-            "description": "Voice component with 1000 minutes included",
-            "category_id": "CAT_CO_VOICE",
-            "available_start_date": "2024-01-01",
-            "available_end_date": "2025-12-31",
-            "effective_start_date": "2024-01-01",
-            "effective_end_date": "2025-12-31"
+            "business_id": "COMP_ID_6",
+            "max_child_elements": 1,
+            "min_child_elements": 0,
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_COMPONENT",
+            "description": "500 minutes voice add-on",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "name": "Voice Component 500min"
         }
     },
     "charges": {
-        "CHG_RC_PKG_DATA": {
+        "CHARGE_ID_6": {
+            "charge_id": "CHARGE_ID_6",
+            "name": "Data Package Charge",
             "charge_type": "RecurringCharge",
-            "name": "Platinum Data Package Charge",
-            "charge_id": "CHG_RC_PKG_DATA",
-            "rate": "40.00",
-            "activation_start_date": "2024-01-01",
-            "activation_end_date": "2025-12-31"
-        },
-        "CHG_RC_PKG_VOICE": {
-            "charge_type": "RecurringCharge",
-            "name": "Platinum Voice Package Charge",
-            "charge_id": "CHG_RC_PKG_VOICE",
-            "rate": "30.00",
-            "activation_start_date": "2024-01-01",
-            "activation_end_date": "2025-12-31"
-        },
-        "CHG_RC_CO_DATA10GB": {
-            "charge_type": "RecurringCharge",
-            "name": "Data Component 10GB Charge",
-            "charge_id": "CHG_RC_CO_DATA10GB",
+            "description": "Recurring charge for Gold Data Package",
             "rate": "25.00",
-            "activation_start_date": "2024-01-01",
-            "activation_end_date": "2025-12-31"
+            "activation_start_date": "2025-01-01",
+            "activation_end_date": "2026-12-31"
         },
-        "CHG_RC_CO_DATA5GB": {
-            "charge_type": "RecurringCharge",
-            "name": "Data Component 5GB Charge",
-            "charge_id": "CHG_RC_CO_DATA5GB",
-            "rate": "15.00",
-            "activation_start_date": "2024-01-01",
-            "activation_end_date": "2025-12-31"
+        "CHARGE_ID_7": {
+            "charge_type": "NonRecurringCharge",
+            "activation_start_date": "2025-01-01",
+            "activation_end_date": "2026-12-31",
+            "description": "One-time charge for 3GB Data add-on",
+            "name": "3GB Data Charge",
+            "charge_id": "CHARGE_ID_7",
+            "rate": "8.00"
         },
-        "CHG_RC_CO_VOICE1000MIN": {
+        "CHARGE_ID_8": {
+            "charge_type": "NonRecurringCharge",
+            "activation_start_date": "2025-01-01",
+            "activation_end_date": "2026-12-31",
+            "description": "One-time charge for 6GB Data add-on",
+            "name": "6GB Data Charge",
+            "charge_id": "CHARGE_ID_8",
+            "rate": "12.00"
+        },
+        "CHARGE_ID_9": {
             "charge_type": "RecurringCharge",
-            "name": "Voice Component 1000min Charge",
-            "charge_id": "CHG_RC_CO_VOICE1000MIN",
-            "rate": "20.00",
-            "activation_start_date": "2024-01-01",
-            "activation_end_date": "2025-12-31"
+            "activation_start_date": "2025-01-01",
+            "activation_end_date": "2026-12-31",
+            "description": "Monthly charge for Regional voice package",
+            "name": "Voice Package Charge",
+            "charge_id": "CHARGE_ID_9",
+            "rate": "15.00"
+        },
+        "CHARGE_ID_10": {
+            "charge_type": "NonRecurringCharge",
+            "activation_start_date": "2025-01-01",
+            "description": "One-time charge for 500 minutes voice add-on",
+            "activation_end_date": "2026-12-31",
+            "name": "500min Voice Charge",
+            "charge_id": "CHARGE_ID_10",
+            "rate": "3.00"
         }
     },
     "parent_to_child_relationships": {
-        "BUNDLE_ID_1": [
-            "PKG_DATA_ID",
-            "PKG_VOICE_ID"
+        "BUNDLE_ID_2": [
+            "PKG_ID_3",
+            "PKG_ID_4"
         ],
-        "PKG_DATA_ID": [
-            "CO_DATA5GB_ID",
-            "CO_DATA10GB_ID"
+        "PKG_ID_3": [
+            "COMP_ID_4",
+            "COMP_ID_5"
         ],
-        "PKG_VOICE_ID": [
-            "CO_VOICE1000MIN_ID"
+        "PKG_ID_4": [
+            "COMP_ID_6"
         ]
     },
     "child_to_parent_relationships": {
-        "PKG_DATA_ID": [
-            "BUNDLE_ID_1"
+        "PKG_ID_3": [
+            "BUNDLE_ID_2"
         ],
-        "PKG_VOICE_ID": [
-            "BUNDLE_ID_1"
+        "COMP_ID_4": [
+            "PKG_ID_3"
         ],
-        "CO_DATA5GB_ID": [
-            "PKG_DATA_ID"
+        "COMP_ID_5": [
+            "PKG_ID_3"
         ],
-        "CO_DATA10GB_ID": [
-            "PKG_DATA_ID"
+        "PKG_ID_4": [
+            "BUNDLE_ID_2"
         ],
-        "CO_VOICE1000MIN_ID": [
-            "PKG_VOICE_ID"
+        "COMP_ID_6": [
+            "PKG_ID_4"
         ]
     },
     "product_to_charge_relationships": {
-        "BUNDLE_ID_1": [
-            "CHG_RC_PKG_DATA",
-            "CHG_RC_PKG_VOICE"
+        "PKG_ID_3": [
+            "CHARGE_ID_6"
         ],
-        "PKG_DATA_ID": [
-            "CHG_RC_CO_DATA5GB",
-            "CHG_RC_CO_DATA10GB"
+        "COMP_ID_4": [
+            "CHARGE_ID_7"
         ],
-        "PKG_VOICE_ID": [
-            "CHG_RC_CO_VOICE1000MIN"
+        "COMP_ID_5": [
+            "CHARGE_ID_8"
+        ],
+        "PKG_ID_4": [
+            "CHARGE_ID_9"
+        ],
+        "COMP_ID_6": [
+            "CHARGE_ID_10"
         ]
     },
     "charge_to_product_relationships": {
-        "CHG_RC_PKG_DATA": [
-            "BUNDLE_ID_1"
+        "CHARGE_ID_6": [
+            "PKG_ID_3"
         ],
-        "CHG_RC_PKG_VOICE": [
-            "BUNDLE_ID_1"
+        "CHARGE_ID_7": [
+            "COMP_ID_4"
         ],
-        "CHG_RC_CO_DATA5GB": [
-            "PKG_DATA_ID"
+        "CHARGE_ID_8": [
+            "COMP_ID_5"
         ],
-        "CHG_RC_CO_DATA10GB": [
-            "PKG_DATA_ID"
+        "CHARGE_ID_9": [
+            "PKG_ID_4"
         ],
-        "CHG_RC_CO_VOICE1000MIN": [
-            "PKG_VOICE_ID"
+        "CHARGE_ID_10": [
+            "COMP_ID_6"
         ]
     }
 }

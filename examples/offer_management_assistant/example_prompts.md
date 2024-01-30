@@ -76,7 +76,7 @@ I have a csv file containing rows for each product offer I want to make, can you
 
 I'll give you a csv with all the data, but only process one row at a time
 
-/file ./resources/bundle_test_data.csv
+/file ./resources/bundle1_test_data.csv
 
 looks good, please proceeed
 

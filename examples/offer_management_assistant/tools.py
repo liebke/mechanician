@@ -57,6 +57,8 @@ class OfferManagementToolHandler(ToolHandler):
             resp = "No Product Offer found in request body"
         else:
             business_id = product_offer.get("business_id")
+            if business_id is None:
+                return "No business_id found in request body"
             self.db['product_offers'][business_id] = product_offer
             resp = f"Product Offer created: {business_id}"
         print_output("create_product_offer", product_offer, resp)
@@ -68,6 +70,8 @@ class OfferManagementToolHandler(ToolHandler):
             resp = "No Charge found in request body"
         else:
             charge_id = charge.get("charge_id")
+            if charge_id is None:
+                return "No charge_id found in request body"
             self.db['charges'][charge_id] = charge
             resp = f"Charge created: {charge_id}"
         print_output("create_charge", charge, resp)
@@ -80,6 +84,8 @@ class OfferManagementToolHandler(ToolHandler):
         else:
             parent = relationship.get("parent_product_offer")
             child = relationship.get("child_product_offer")
+            if parent is None or child is None:
+                return "No parent or child found in request body"
             if parent not in self.db['parent_to_child_relationships']:
                 self.db['parent_to_child_relationships'][parent] = [child]
             else:

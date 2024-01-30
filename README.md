@@ -195,6 +195,20 @@ CALL_TOOLS_IN_PARALLEL=True
 MAX_THREAD_WORKERS=10
 ```
 
+## Testing AI-Drive Programs is Interesting
+
+TODO
+
+### AI Q and A Program Tests
+
+TODO
+
+### AI Self Evaluation Tests
+
+### AI Task Evaluations
+
+
+```markdown
 ### Run AI Self Evaluation Tests
 
 ```bash
