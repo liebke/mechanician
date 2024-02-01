@@ -53,6 +53,23 @@ tool_schemas = [
         {
             "type": "function",
             "function": {
+                "name": "display_movie_poster",
+                "description": "Displays the movie poster for a movie given its ID that can be retrieved from the search_movie function",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "movie_id": {
+                            "type": "integer",
+                            "description": "The ID of the movie"
+                        }
+                    },
+                    "required": ["movie_id"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
                 "name": "search_movie",
                 "description": "Returns a list of movies matching the search criteria",
                 "parameters": {

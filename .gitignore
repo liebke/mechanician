@@ -5,3 +5,4 @@ src/mechanician.egg-info
 src/mechanician.egg-info/SOURCES.txt
 examples/offer_management_assistant/resources/_test_data
 test_results
+examples/tmdb/src/mechanician_tmdb.egg-info

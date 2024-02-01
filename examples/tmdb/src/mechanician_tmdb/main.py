@@ -1,8 +1,8 @@
 from mechanician.ux.cli import run
 from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
 from mechanician.openai.assistants_ai_connector import OpenAIAssistantAIConnector
-from tmdb_tools import TMDbHandler
-from tmdb_tool_schemas import tool_schemas
+from mechanician_tmdb.tmdb_tools import TMDbHandler
+from mechanician_tmdb.tmdb_tool_schemas import tool_schemas
 from dotenv import load_dotenv
 import os
 
@@ -16,7 +16,7 @@ def ai_connector():
     # Load environment variables from a .env file
     load_dotenv()
 
-    with open("./instructions.md", 'r') as file:
+    with open("./resources/instructions.md", 'r') as file:
         instructions = file.read()
 
     tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))

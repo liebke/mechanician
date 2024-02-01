@@ -36,7 +36,7 @@ class TestTMDbAI(unittest.TestCase):
                            expected="The Witch")]
         
         # AI Evaluator
-        results = run_q_and_a_evaluations(ai, tests, ai_evaluator())
+        results, messages = run_q_and_a_evaluations(ai, tests, ai_evaluator())
         # AI Self-Evaluation
         # results = run_tests(ai, tests)
 

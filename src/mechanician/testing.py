@@ -27,7 +27,7 @@ class QandATest:
     
 
 ###############################################################################
-## RUN_TESTS
+## RUN_Q_AND_A_EVALUATIONS
 ###############################################################################
 
 def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluator=None):
@@ -35,6 +35,7 @@ def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluato
     if ai_evaluator is None:
         ai_evaluator = ai
 
+    messages = []
     results = []
     console = Console()
 
@@ -44,6 +45,7 @@ def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluato
             print_markdown(console, "------------------")
             print_markdown(console, "## TEST")
             print_markdown(console, f"```{prompt}```")
+            messages.append(f"EVALUATOR: {prompt}")
             resp = ai.submit_prompt(test.prompt)
 
             if ai.model["STREAMING"] == False:
@@ -57,6 +59,7 @@ def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluato
 
             # Record the response as the ACTUAL response
             test.actual = resp
+            messages.append(f"ASSISTANT: {resp}")
             eval_instructions = """Below is an EXPECTED response to a question and an ACTUAL response given by a test taker to the same question. Does the ACTUAL response provide the expected answer? Respond with PASS or FAIL only."""
 
             print_markdown(console, f"* EVAL INSTRUCTIONS: ```{eval_instructions}```")
@@ -79,7 +82,7 @@ def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluato
         print(f"Examinee Exiting ({ai.model['ASSISTANT_NAME']})...")
         print(f"Evaluator Exiting ({ai_evaluator.model['ASSISTANT_NAME']})...")
 
-        return results
+        return results, messages
             
     except KeyboardInterrupt:
         print("Ctrl+C was pressed, exiting...")
@@ -94,7 +97,7 @@ def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluato
 
 
 ###############################################################################
-## RUN_EVALUATION
+## RUN_TASK_EVALUATION
 ###############################################################################
 
 def run_task_evaluation(ai: AIConnector, start_prompt, ai_evaluator):

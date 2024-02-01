@@ -195,17 +195,67 @@ CALL_TOOLS_IN_PARALLEL=True
 MAX_THREAD_WORKERS=10
 ```
 
-## Testing AI-Drive Programs is Interesting
+## Testing AI-Drive Programs Can Be... Interesting
 
-TODO
+Testing system that require user interaction can benefit from AI-driven testing. 
+
+An Evaluator AI can be used to interact with the AI System Under Test (AISUT), eliciting responses that can be evaluated against a rubric.
+
+Evaluating natural language responses against a rubric can be challenging, and it helps to use an AI to evaluate the responses.
+
+If an AI is intended to solve a task involving many steps, it can be useful to use an Evaluator AI automate the interaction with the AISUT, and to evaluate the responses against a rubric.
+
+If the task is expected to result in structured data matching a known outcome, normal testing procedures can be applied once the strucutred output has been completed through the Evaluators AI's interaction with the AISUT.
+
+Once automation of the interaction with the AI has been implemented, you will be able to perform prompt-engineering to refine the interactions and responses of the AI.
+
 
 ### AI Q and A Program Tests
 
-TODO
+```python
+from mechanician.testing import QandATest, run_q_and_a_evaluations
+import unittest
+
+class TestAI(unittest.TestCase):
+
+   def test_ai(self):
+      ai = init_ai()
+      evaluator_at = init_evaluator_ai()
+      tests = [QandATest(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
+                        expected="Anya Taylor-Joy"),
+               QandATest(prompt="What is the name of the actor plays Ken in the Barbie movie?",
+                        expected="Ryan Gosling"),
+               QandATest(prompt="Who played Barbie?",
+                        expected="Margot Robbie"),
+               QandATest(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
+                        expected="The Witch")]
+            
+      results, messages = run_q_and_a_evaluations(ai, tests, evaluator_ai)
+
+      for result in results:
+         self.assertEqual(result.evaluation, "PASS")
+```
 
 ### AI Self Evaluation Tests
 
+TODO
+
 ### AI Task Evaluations
+
+```python
+from mechanician.testing import run_task_evaluation
+import unittest
+
+class TestAI(unittest.TestCase):
+
+   def test_ai(self):
+      ai = init_ai()
+      evaluator_at = init_evaluator_ai()
+      start_prompt = "START"
+      evaluation, messages = run_task_evaluation(ai, start_prompt, evaluator_ai)
+
+      self.assertEqual(evaluation, "PASS")
+```
 
 
 ```markdown

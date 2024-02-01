@@ -14,3 +14,4 @@ what other movies has Margot Robbie been in?
 
 what was the movie Barbie about?
 
+can you show me the movie poster for Furiosa?
