@@ -1,0 +1,48 @@
+from mechanician.ux.cli import run
+from dotenv import load_dotenv
+from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
+
+from document_tool_handler import DocumentManagerToolHandler
+from doc_mgr_tool_schema import tool_schemas
+
+from arango import ArangoClient
+
+import json
+import os
+
+
+###############################################################################
+## AI Connector
+###############################################################################
+
+def ai_connector(tool_handler):
+
+    with open("./instructions.md", 'r') as file:
+        instructions = file.read()
+
+   
+    return OpenAIChatAIConnector(instructions=instructions, 
+                                 tool_schemas=tool_schemas, 
+                                 tool_handler=tool_handler)
+
+
+###############################################################################
+## Main program execution
+###############################################################################
+
+def main():
+    try: 
+        load_dotenv()
+        # Initialize the ArangoDB client
+        arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
+        # Initialize the model
+        doc_tool_handler = DocumentManagerToolHandler(arango_client, 
+                                                    database_name="test_db")
+        ai = ai_connector(doc_tool_handler)
+        run(ai)
+        
+    finally:
+        doc_tool_handler.doc_mgr.delete_database("test_db")
+
+if __name__ == '__main__':
+    main()
