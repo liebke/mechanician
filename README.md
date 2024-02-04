@@ -57,8 +57,8 @@ The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) d
 Using [*Conda*](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-python) for environment management:
 
 ```bash
-conda create --name mechanician_env
-conda activate mechanician_env
+conda create --name mechanician_tmdb_env
+conda activate mechanician_tmdb_env
 ```
 
 ### Install Dependencies
@@ -82,7 +82,7 @@ export TMDB_READ_ACCESS_TOKEN=<YOUR_TMDB_READ_ACCESS_TOKEN_HERE>
 ### Run the Example
 
 ```bash
-python main.py
+./run.sh
 ```
 
 ### Example Interaction
