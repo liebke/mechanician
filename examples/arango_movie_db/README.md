@@ -1,5 +1,3 @@
-# Daring Mechanician TMDb Example Application
-
 # Daring Mechanician Arango Movie Database
 
 ## Install
@@ -7,8 +5,8 @@
 Create a virtual environment and install the requirements.
 
 ```bash
-conda create -n tmdb_env python=3.11
-conda activate tmdb_env
+conda create -n arango_movie_db_env python=3.11
+conda activate arango_movie_db_env
 ```
 
 Install the requirements.
@@ -33,5 +31,5 @@ Install the requirements.
 
 ```bash
 conda deactivate
-conda remove --name tmdb_env --all
+conda remove --name arango_movie_db_env --all
 ```

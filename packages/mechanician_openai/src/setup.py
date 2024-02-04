@@ -5,10 +5,8 @@ setup(
     version='0.1',
     packages=find_packages(),
     install_requires=[
-        'mechanician_core',
-        'openai',
-        'rich',
-        'python-dotenv',
+        'mechanician>=0.1.0',
+        'openai>=1.11.0,<2.0.0',
     ],
     author='David Edgar Liebke',
     author_email='david@liebke.ai',

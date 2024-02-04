@@ -1,23 +1,44 @@
 
-<!-- 
-<h1 style="margin-bottom: 0; font-family: 'Copperplate', serif; color: black;">Daring Mechanician</h1>
 
-<p style="margin-top: 0; font-family: 'Didot', serif; color: darkgrey;">Building tools that use AI and building tools that AIs use.</p>
--->
-
-<!-- <img src="docs/images/mechanician.png" alt="Daring Mechanician" width="200" height="200">
- -->
-<img src="docs/images/daring_mechanician3.png" alt="Daring Mechanician"  style="max-width: 100%; height: auto float: right;">
-
-<!--
-<p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">"...if they could only have found the point of application for it, they would have constructed a lever capable of raising the earth and rectifying its axis. It was just this deficiency which baffled these <b>daring mechanicians</b>." -Jules Verne</p>
--->
+<img src="docs/images/daring_mechanician_banner.png" alt="Daring Mechanician"  style="max-width: 100%; height: auto float: right;">
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
 ## Overview
 
-[**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI and building tools that AIs use. 
+[**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI by building tools that AIs use.
+
+
+## Create Tool Sets that be orchstrated by AI-Driven Programs 
+
+* AIs can take structured output from search-oriented tools and reason over it providing natural language responses to users.
+
+* Write tools that provide natural language error messages to the AI so it can learn from its mistakes and correct its reasoning.
+
+* Write tools that provide sufficient feedback even during non-error responses so the AI can learn from its successes as well as its mistakes, allowing it to improve its understanding of how the tools work.
+
+* Discover how an AI can reason across multiple tools, and how to write tools that provide feedback to the AI so it can learn from its mistakes.
+
+* Build tool combinations that an AI can orchestrate to solve multi-step tasks.
+
+
+## Evaluator AIs to Test AI-Driven Programs
+
+* Using an Evaluator AI to evaluate natural-language responses from a Q & A oriented AI-Driven Program
+
+* Using an Evaluator AI to automate the interaction with a task-oriented AI-Driven Program
+
+* Using an Evaluator AI to speed up the process of Prompt Engineering for an AI-Driven Programs
+  
+  * Prompt Engineering is the process of refining the prompts used to interact with an AI-Driven Program to improve the quality of the responses.
+
+  * Will end up refining the prompts for both the Evaluator AI and the AI-Driven Program, improving your understanding of the task and the AI's understanding of the task.
+
+
+
+
+
+## Parallel Tool Calls and Streaming Responses
 
 It currently supports [*OpenAI's Chat API*](https://platform.openai.com/docs/overview) and [*OpenAI's Assistants API*](https://platform.openai.com/docs/overview), and specifically supports [OpenAI's *Function Calling*](https://platform.openai.com/docs/guides/function-calling), a.k.a.```tool_calls```, while [*streaming responses*](https://cookbook.openai.com/examples/how_to_stream_completions) from the *Chat API*. 
 

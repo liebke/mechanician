@@ -1,7 +1,7 @@
 from mechanician.testing import QandATest, run_q_and_a_evaluations
 import unittest
 from main import ai_connector
-from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
+from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
 
 
 ###############################################################################

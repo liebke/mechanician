@@ -1,8 +1,8 @@
 from mechanician.ux.cli import run
-from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
-from mechanician.openai.assistants_ai_connector import OpenAIAssistantAIConnector
-from mechanician_tmdb.tmdb_tools import TMDbHandler
-from mechanician_tmdb.tmdb_tool_schemas import tool_schemas
+from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
+# from mechanician_openai.assistants_ai_connector import OpenAIAssistantAIConnector
+from tmdb_tools import TMDbHandler
+from tmdb_tool_schemas import tool_schemas
 from dotenv import load_dotenv
 import os
 
