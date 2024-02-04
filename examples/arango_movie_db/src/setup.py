@@ -14,7 +14,7 @@ setup(
     author='David Edgar Liebke',
     author_email='david@liebke.ai',
     description='Daring Mechanician ArangoDB Movie Database example.',
-    long_description=open('README.md').read(),
+    long_description=open('../README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/liebke/mechanician',
 )
