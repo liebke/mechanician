@@ -4,12 +4,135 @@
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
-## Overview
 
-[**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI by building tools that AIs use.
+[**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI by building tools that AI use. 
+
+
+### Tool Augmented Generation (TAG)
+
+We describe an approach of providing AIs with external tools, databases, and interfaces to enhance their knowledge, capabilities, and interaction with other systems as **Tool Augmented Generation** (**TAG**); and a Generative AI that uses tools as a **Tool Augmented Generative AI** (**TAG AI**).
+
+This approach leverages the "Function Calling" or "Tool Calling" capabilities of several Large Language Models and is meant to complement other approaches to augmenting Foundation Models, like **Fine Tuning** (FT) and **Retrieval Augmented Generation** (RAG).
+
+This strategy broadens the knowledge base of the AI beyond its initial training data and also introduces a dynamic aspect to its learning and interaction capabilities, allowing for real-time data retrieval, analysis, and interaction with a wide range of digital environments.
+
+Foundation Models are limited by the scope of their training data and the static nature of that data, Tool Augmented Generative AI can access up-to-date information, perform computations, generate visual content, and execute code in a controlled environment; extending Generative AIs from pure knowledge repositories to active participants in information processing and generation.
+
+The Tool Augmentation means that the AI can, for example, use a web browsing tool to fetch the latest news or scientific research, interact with data visualization software to create complex graphs, or utilize a code execution environment to verify programming solutions. 
+
+This approach enhances the AI's problem-solving skills, creativity, and ability to provide accurate, up-to-date information.
+
+
+## Dual AI Co-Development (DACD)
+
+* Dueling AIs Development Process (DADP)
+* Dueting AIs Development Process (DADP)
+* Collaborating AIs Development Process (CADP)
+
+Daring Mechanician supports an approach to development and testing of *Tool Augmented Generative AIs* involving the use of an **Evaluator AI** that interacts with and evaluates the *AI under development* in order to enhance the efficiency and effectiveness of AI training and refinement processes. 
+
+The Evaluator AI is designed to assess, critique, and potentially guide the development of another AI (the AI under development). This creates an interactive feedback loop that can speed up the iterative process of AI enhancement.
+
+----
+This approach integrates a secondary AI system, referred to as the Evaluator AI, into the development cycle of a primary AI system (the AI under development). The Evaluator AI's role is to assess the responses and behaviors of the primary AI, providing feedback that can be used to identify areas for improvement, refine the AI's responses to prompts, and optimize its interaction models. This process facilitates a more efficient and targeted development cycle by automating the evaluation phase.
+
+**Facilitate the Discover of Bugs and Inaccuracies**: The Evaluator AI can systematically test the AI under development, identifying bugs, inaccuracies, or areas lacking in the AI's capabilities. This automated evaluation process accelerates the identification of issues, reducing the need for manual review and enabling quicker iterations.
+
+**Facilitate the Discover of Emergent Behaviors**: The Evaluator AI can identify emergent behaviors in the AI under development, providing insights into how the AI processes prompts and generates responses. This information can guide the refinement of the AI's interaction models and prompt engineering strategies.
+
+**Automated Evaluation**: The Evaluator AI automates the process of testing and evaluation, enabling quicker identification of bugs, inaccuracies, or areas lacking in the AI under development. This reduces the need for manual review and accelerates iterations.
+
+**Prompt Engineering Feedback**: By interacting with the AI under development, the Evaluator AI provides direct feedback on how well the AI responds to various prompts. This information is crucial for refining prompt engineering strategies, aiming to enhance the accuracy and relevance of the AI’s responses.
+
+**Synergistic Development Process**: The development of both the Evaluator AI and the AI under development should proceed in parallel, ensuring that improvements in one are reflected in the testing and evaluation methodologies of the other. This synergy is essential for the effective evolution of both systems.
+
+**Interaction Model Insights**: The feedback loop between the two AIs offers insights into the effectiveness of the AI under development's interaction model. This includes how it processes and understands prompts, which can inform adjustments to make its interactions more natural and effective.
+
+### Implementation Considerations
+* Developers should ensure that the criteria used by the Evaluator AI for assessment are comprehensive and align with the goals of the AI under development.
+
+* It's important to continuously update the evaluation metrics and methods to reflect the evolving capabilities of the AI under development and to capture a broad range of interaction scenarios.
+
+* Data generated from the evaluations should be systematically analyzed to guide the refinement process, focusing on both enhancing strengths and addressing weaknesses.
+
+----
+
+### Synergistic Development
+
+The concurrent development of the AI under development and the Evaluator AI necessitates a synergistic approach, ensuring that both AIs evolve in tandem to support each other’s improvement. This synergy can lead to innovations in AI interaction models, making them more robust and versatile.
+
+
+
+
+## Tool Types
+
+* Data Retrieval Tools (DRT)
+
+* Data Management Tools (DMT)
+
+* Information Modeling Tools (IMT)
+
+* Data Transformation Tools (DTT)
+
+* Data Analysis Tools (DAT)
+
+* Data Visualization Tools (DVT)
+
+* Data Reporting Tools (DRT)
+
+* Data Security Tools (DST)
+
+* Data Quality Tools (DQT)
+
+* Data Governance Tools (DGT)
+
+* Data Integration Tools (DIT)
+
+* Data Storage Tools (DST)
+
+* Data Processing Tools (DPT)
+
+* Data Orchestration Tools (DOT)
+
+* Data Monitoring Tools (DMT)
+
+* Data Testing Tools (DTT)
+
+* Data Evaluation Tools (DET)
+
+* Data Training Tools (DTT)
+
+* Data Deployment Tools (DDT)
+
+
+## Learning within the Context Window
+
+* **Like the Evaluator AI used in DACD, well written tools can provide essential feedback to the AI so it can learn how to use them effectively.**
+
+**Watching as the AI learns to use the tools effectively, within a context window, through mistakes and errors can be used to improve the prompts and the tools themselves.**
+
+By designing tools that can offer structured feedback, AIs are equipped to interpret the outcomes of their actions, understand the ramifications of errors, and recognize the success of correct executions. This feedback, especially when provided in a format that AI systems can parse and learn from, becomes a cornerstone for iterative learning.
+
+### Adaptive Behavior and Problem Solving
+
+The capacity for AI to learn (within the context window) from tool feedback paves the way for more adaptive problem-solving strategies. As AIs engage with a variety of tools, they accumulate experience that informs their future interactions. This experience enables the AI to choose the most effective tool for a given task, apply tools in novel combinations to solve complex problems, and even identify when no existing tool is adequate, potentially signaling the need for new tool development.
+
+**Again all of this learning only occurs within a given context window, and it must be captured by improved instructions through prompt engineering and tool development in order to be retained and utilized in future interactions**
+
+
+### Error Handling and Correction
+
+Well-crafted error messages from tools serve a dual purpose: they highlight the nature of the mistake and guide the AI towards the correct course of action. This feedback is crucial for developing robust error handling and correction mechanisms within AI systems. Over time, AIs can learn to anticipate potential errors before they occur, apply learned corrections to similar future scenarios, and develop more nuanced understandings of task requirements and constraints.
+
+### Conclusion
+
+Incorporating feedback mechanisms within tools transforms them from static instruments into dynamic agents of learning in the AI ecosystem.
+
 
 
 ## Create Tool Sets that be orchstrated by AI-Driven Programs 
+
+
 
 * AIs can take structured output from search-oriented tools and reason over it providing natural language responses to users.
 
@@ -34,8 +157,20 @@
 
   * Will end up refining the prompts for both the Evaluator AI and the AI-Driven Program, improving your understanding of the task and the AI's understanding of the task.
 
+  * Apply normal testing procedures to the program output once the AI-Driven Program has been refined through the Evaluator AI's interaction with it.
 
 
+## Development Process
+
+* Interactive prompting with the AI-Driven Program to refine the prompts used to interact with the AI-Driven Program.
+
+* Create an Evaluator AI to automate the interaction with the AI-Driven Program, and to evaluate the responses against a rubric.
+
+* Apply normal testing procedures to the program output once the AI-Driven Program has been refined through the Evaluator AI's interaction with it.
+
+* Use the Evaluator to speed up the process of Prompt Engineering for the AI-Driven Program.
+
+* Use the Evaluator to discover changes to the underlying models that effect the program's effectiveness and performance.
 
 
 ## Parallel Tool Calls and Streaming Responses
