@@ -106,6 +106,7 @@ class TestOfferMgmtAI(unittest.TestCase):
             ## Evaluate Results
             self.assertEqual(evaluation, "PASS")
 
+        finally:
             print(f"\n\n\nDocument Collections:")
             doc_collections = doc_tool_handler.doc_mgr.list_document_collections(doc_tool_handler.database)
             pprint(doc_collections)
@@ -119,9 +120,7 @@ class TestOfferMgmtAI(unittest.TestCase):
             print(f"\n\n\Link Data:")
             for collection in link_collections:
                 pprint(doc_tool_handler.doc_mgr.list_links(doc_tool_handler.database, collection))
-
-
-        finally:
+            # CLEAN UP
             doc_tool_handler.doc_mgr.delete_database("test_db")
 
 

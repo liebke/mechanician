@@ -128,6 +128,11 @@ Well-crafted error messages from tools serve a dual purpose: they highlight the 
 
 Incorporating feedback mechanisms within tools transforms them from static instruments into dynamic agents of learning in the AI ecosystem.
 
+The Evaluator AI is primarily used during a testing process of an another AI, the responses from that evaluation process can be used to improve the instructions provided to the AI Under Development and the Evaluator AI. Since the LLMs are not undergoing training, they will only learn within the context window where feedback is received by them from either the evaluator or the tools they use. The long term learning is indirect through the learning process of the developer observing the interactions of the two AIs, and capturing and improving the instructions for both AIs.
+
+**This begs the question, in addition to an evaluator AI meant to act the role of a human user of the AI system, can we create an Instructor AI meant to observe the interaction and improve the instructions for one or both AIs under observation? If so, how do we create the instructions for that Instructor AI?**
+
+
 
 
 ## Create Tool Sets that be orchstrated by AI-Driven Programs 

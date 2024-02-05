@@ -1,7 +1,9 @@
 from mechanician.ux.cli import run
 from dotenv import load_dotenv
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
-from mechanician_arangodb.doc_mgr_instructions import instructions
+
+# from mechanician_arangodb.doc_mgr_instructions import instructions
+from revised_instructions import instructions
 
 from mechanician_arangodb.document_tool_handler import DocumentManagerToolHandler
 from mechanician_arangodb.doc_mgr_tool_schema import tool_schemas
