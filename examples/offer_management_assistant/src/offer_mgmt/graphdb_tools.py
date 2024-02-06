@@ -9,6 +9,10 @@ from pprint import pprint
 import os
 from arango import ArangoClient
 from mechanician_arangodb.document_manager import DocumentManager
+import logging
+
+logger = logging.getLogger('mechanician_offer_mgmt.graphdb_tools')
+logger.setLevel(level=logging.INFO)
 
 
 console = Console()
@@ -18,7 +22,7 @@ def print_output(function_name, input, output):
     try:
         input_str = json.dumps(input, indent=4)
     except json.JSONDecodeError:
-        print(f"Invalid JSON input: {input}")
+        logging.error(f"Invalid JSON input: {input}")
     
     output_str = json.dumps(output, indent=4)
 
@@ -56,7 +60,7 @@ class OfferManagementToolHandler(ToolHandler):
         except Exception as e:
             message = str(e)
             resp = f"ERROR: {message}"
-            print(resp)
+            logging.error(resp)
             return resp
 
 
@@ -74,7 +78,7 @@ class OfferManagementToolHandler(ToolHandler):
         try:
             if product_offer is None:
                 resp = "No Product Offer found in request body"
-                print(resp)
+                logging.info(resp)
                 return resp
             else:
                 business_id = product_offer.get("business_id")
@@ -83,20 +87,20 @@ class OfferManagementToolHandler(ToolHandler):
 
                 if business_id is None:
                     resp = "No business_id found in request body"
-                    print(resp)
+                    logging.info(resp)
                     return resp
                 elif product_offer_type is None:
                     resp = "No product_offer_type found in request body"
-                    print(resp)
+                    logging.info(resp)
                     return resp
                 elif name is None:
                     resp = "No name found in request body"
-                    print(resp)
+                    logging.info(resp)
                     return resp
                 
                 if product_offer_type.lower() not in ("bundle", "package", "component"):
                     resp = "Invalid product_offer_type"
-                    print(resp)
+                    logging.info(resp)
                     return resp
                 
                 self.doc_mgr.create_document(self.database, self.product_collection_name, business_id, product_offer)
@@ -106,10 +110,10 @@ class OfferManagementToolHandler(ToolHandler):
             return resp
         except Exception as e:
             message = str(e)
-            print("EXCEPTION:")
+            logging.error("EXCEPTION:")
             traceback.print_exc()
             resp = f"ERROR: {message}"
-            print(resp)
+            logging.error(resp)
             return resp
 
 
@@ -117,18 +121,18 @@ class OfferManagementToolHandler(ToolHandler):
         try:
             if charge is None:
                 resp = "No Charge found in request body"
-                print(resp)
+                logging.info(resp)
                 return resp
             else:
                 charge_id = charge.get("charge_id")
                 name = charge.get("name")
                 if charge_id is None:
                     resp = "No charge_id found in request body"
-                    print(resp)
+                    logging.info(resp)
                     return resp
                 elif name is None:
                     resp = "No name found in request body"
-                    print(resp)
+                    logging.info(resp)
                     return resp
 
                 self.doc_mgr.create_document(self.database, self.charge_collection_name, charge_id, charge)
@@ -138,7 +142,7 @@ class OfferManagementToolHandler(ToolHandler):
         except Exception as e:
             message = str(e)
             resp = f"ERROR: {message}"
-            print(resp)
+            logging.info(resp)
             return resp
 
 
@@ -146,14 +150,14 @@ class OfferManagementToolHandler(ToolHandler):
         try:
             if relationship is None:
                 resp = "No Product to Product relationship found in request body"
-                print(resp)
+                logging.info(resp)
                 return resp
             else:
                 parent_id = relationship.get("parent_product_offer")
                 child_id = relationship.get("child_product_offer")
                 if parent_id is None or child_id is None:
                     resp = "No parent or child found in request body"
-                    print(resp)
+                    logging.info(resp)
                     return resp
                 
                 self.doc_mgr.link_documents(self.database,
@@ -169,7 +173,7 @@ class OfferManagementToolHandler(ToolHandler):
         except Exception as e:
             message = str(e)
             resp = f"ERROR: {message}"
-            print(resp)
+            logging.info(resp)
             return resp
 
 
@@ -177,7 +181,7 @@ class OfferManagementToolHandler(ToolHandler):
         try:
             if relationship is None:
                 resp = "No Product to Charge relationship found in request body"
-                print(resp)
+                logging.info(resp)
                 return resp
             else:
                 product_id = relationship.get("product_id")
@@ -196,7 +200,7 @@ class OfferManagementToolHandler(ToolHandler):
         except Exception as e:
             message = str(e)
             resp = f"ERROR: {message}"
-            print(resp)
+            logging.info(resp)
             return resp
 
 
@@ -204,7 +208,7 @@ class OfferManagementToolHandler(ToolHandler):
         try:
             if query is None:
                 resp = "No query found in request body"
-                print(resp)
+                logging.info(resp)
                 return resp
             else:
                 business_id = query.get("business_id")
@@ -216,7 +220,7 @@ class OfferManagementToolHandler(ToolHandler):
         except Exception as e:
             message = str(e)
             resp = f"ERROR: {message}"
-            print(resp)
+            logging.info(resp)
             return resp
     
 
@@ -224,7 +228,7 @@ class OfferManagementToolHandler(ToolHandler):
         try:
             if query is None:
                 resp = "No query found in request body"
-                print(resp)
+                logging.info(resp)
                 return resp
             else:
                 charge_id = query.get("charge_id")
@@ -236,7 +240,7 @@ class OfferManagementToolHandler(ToolHandler):
         except Exception as e:
             message = str(e)
             resp = f"ERROR: {message}"
-            print(resp)
+            logging.info(resp)
             return resp
     
     
@@ -244,7 +248,7 @@ class OfferManagementToolHandler(ToolHandler):
         try:
             if query is None:
                 resp = "No query found in request body"
-                print(resp)
+                logging.info(resp)
                 return resp
             else:
                 parent_business_id = query.get("parent_business_id")
@@ -261,7 +265,7 @@ class OfferManagementToolHandler(ToolHandler):
         except Exception as e:
             message = str(e)
             resp = f"ERROR: {message}"
-            print(resp)
+            logging.info(resp)
             return resp
     
 
@@ -269,7 +273,7 @@ class OfferManagementToolHandler(ToolHandler):
         try:
             if query is None:
                 resp = "No query found in request body"
-                print(resp)
+                logging.info(resp)
                 return resp
             else:
                 child_business_id = query.get("child_business_id")
@@ -285,7 +289,7 @@ class OfferManagementToolHandler(ToolHandler):
         except Exception as e:
             message = str(e)
             resp = f"ERROR: {message}"
-            print(resp)
+            logging.info(resp)
             return resp
 
 

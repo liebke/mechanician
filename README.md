@@ -20,7 +20,7 @@ This approach leverages the "**Function Calling**", or "**Tool Calling**", capab
 
 In contrast to **Retrieval Augmented Generation** (RAG), which uses a knowledge base to retrieve information and augment the prompt sent to the AI, **Tool Augmented Generation** (TAG) provides the AI with tools so that it can retrieve information itself, and also perform actions across multiple systems, databases, and interfaces.
 
->NOTE: You can combine a RAG application with TAG AI to create a **RAGTAG AI**.
+>NOTE: You can build a RAG application using a TAG AI to create a **RAGTAG AI** Application.
 
 *Tool Augmented Generation* broadens the knowledge base of the AI beyond its initial training data and also introduces a dynamic aspect to its learning and interaction capabilities, allowing for real-time data retrieval, analysis, and interaction with a wide range of digital environments.
 
@@ -37,7 +37,7 @@ TAG AIs can be observed learning to use tools effectively through feedback provi
 AIs will learn from their mistakes and successes, if the tools provide feedback that the AI can learn from.
 
 
-# Instruction Tuning (IT)
+## Instruction Tuning (IT)
 
 TAG AIs can be observed learning from both feedback provided by the tools they use, and through the feedback they receive from the users.
 

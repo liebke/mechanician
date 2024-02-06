@@ -2,6 +2,10 @@
 from abc import ABC, abstractmethod
 from mechanician.ux.stream_printer import StreamPrinter
 from mechanician.tool_handlers import ToolHandler
+import logging
+
+logger = logging.getLogger('mechanician.ai_connectors')
+logger.setLevel(level=logging.INFO)
 
 
 class AIConnector(ABC):

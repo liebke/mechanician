@@ -6,8 +6,11 @@ from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
 # from offer_mgmt.tools import OfferManagementToolHandler
 from offer_mgmt.graphdb_tools import OfferManagementToolHandler
 from offer_mgmt.tool_schemas import tool_schemas
-
 import json
+import logging
+
+logger = logging.getLogger('mechanician_offer_mgmt.main')
+logger.setLevel(level=logging.INFO)
 
 
 ###############################################################################

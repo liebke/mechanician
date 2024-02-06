@@ -1,5 +1,9 @@
 from arango import ArangoClient
 import os
+import logging
+
+logger = logging.getLogger('mechanician_arangodb.document_manager')
+logger.setLevel(level=logging.INFO)
 
 class DocumentManager:
 

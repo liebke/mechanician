@@ -1,5 +1,10 @@
 from abc import ABC, abstractmethod
 import json
+import logging
+
+logger = logging.getLogger('mechanician.tool_handlers')
+logger.setLevel(level=logging.INFO)
+
 
 class ToolHandler(ABC):
 

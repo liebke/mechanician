@@ -6,11 +6,12 @@ from mechanician.ux.stream_printer import StreamPrinter, SimpleStreamPrinter
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import logging
 
-
+logger = logging.getLogger('mechanician_openai.chat_ai_connector')
+logger.setLevel(level=logging.INFO)
 
 class OpenAIChatAIConnector(StreamingAIConnector):
-
     DEFAULT_MODEL_NAME="gpt-4-1106-preview"
 
     ###############################################################################

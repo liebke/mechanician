@@ -5,6 +5,10 @@ from pprint import pprint
 import json
 from mechanician.tool_handlers import ToolHandler
 import webbrowser
+import logging
+
+logger = logging.getLogger('mechanician_tmdb.tmdb_tools')
+logger.setLevel(level=logging.INFO)
 
 # https://developer.themoviedb.org
 

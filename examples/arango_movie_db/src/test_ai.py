@@ -3,12 +3,14 @@ import unittest
 from main import ai_connector
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
 import os
-
 from mechanician_arangodb.document_tool_handler import DocumentManagerToolHandler
 from arango import ArangoClient
-
 from dotenv import load_dotenv
 from pprint import pprint
+import logging
+
+logger = logging.getLogger('mechanician_arangodb.test_ai')
+logger.setLevel(level=logging.INFO)
 
 ###############################################################################
 ## AI_EVALUATOR
@@ -107,19 +109,19 @@ class TestOfferMgmtAI(unittest.TestCase):
             self.assertEqual(evaluation, "PASS")
 
         finally:
-            print(f"\n\n\nDocument Collections:")
+            logging.info(f"\n\n\nDocument Collections:")
             doc_collections = doc_tool_handler.doc_mgr.list_document_collections(doc_tool_handler.database)
-            pprint(doc_collections)
-            print(f"\n\n\nLink Collections:")
+            logging.info(doc_collections)
+            logging.info(f"\n\n\nLink Collections:")
             link_collections = doc_tool_handler.doc_mgr.list_link_collections(doc_tool_handler.database)
-            pprint(link_collections)
+            logging.info(link_collections)
 
-            print(f"\n\n\nDocument Data:")
+            logging.info(f"\n\n\nDocument Data:")
             for collection in doc_collections:
-                pprint(doc_tool_handler.doc_mgr.list_documents(doc_tool_handler.database, collection))
-            print(f"\n\n\Link Data:")
+                logging.info(doc_tool_handler.doc_mgr.list_documents(doc_tool_handler.database, collection))
+            logging.info(f"\n\n\Link Data:")
             for collection in link_collections:
-                pprint(doc_tool_handler.doc_mgr.list_links(doc_tool_handler.database, collection))
+                logging.info(doc_tool_handler.doc_mgr.list_links(doc_tool_handler.database, collection))
             # CLEAN UP
             doc_tool_handler.doc_mgr.delete_database("test_db")
 

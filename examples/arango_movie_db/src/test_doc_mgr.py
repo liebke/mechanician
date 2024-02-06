@@ -2,9 +2,12 @@
 from dotenv import load_dotenv
 import random
 from pprint import pprint
-
 from arango import ArangoClient
 from mechanician_arangodb.document_manager import DocumentManager
+import logging
+
+logger = logging.getLogger('mechanician_arango_movie_db.test_doc_mgr')
+logger.setLevel(level=logging.INFO)
 
 
 

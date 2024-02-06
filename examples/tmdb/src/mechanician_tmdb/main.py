@@ -5,6 +5,10 @@ from tmdb_tools import TMDbHandler
 from tmdb_tool_schemas import tool_schemas
 from dotenv import load_dotenv
 import os
+import logging
+
+logger = logging.getLogger('mechanician_tmdb.main')
+logger.setLevel(level=logging.INFO)
 
 
 

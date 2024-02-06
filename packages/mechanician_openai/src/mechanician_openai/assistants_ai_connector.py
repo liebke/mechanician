@@ -8,6 +8,10 @@ import time
 import os
 import json
 from pprint import pprint
+import logging
+
+logger = logging.getLogger('mechanician_openai.assistants_ai_connector')
+logger.setLevel(level=logging.INFO)
 
 class OpenAIAssistantAIConnector(AIConnector):
 

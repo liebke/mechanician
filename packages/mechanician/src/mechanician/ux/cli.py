@@ -1,6 +1,10 @@
 from mechanician.ux.util import print_markdown
 from mechanician.ai_connectors import AIConnector
 from rich.console import Console  
+import logging
+
+logger = logging.getLogger('mechanician.ux.cli')
+logger.setLevel(level=logging.INFO)
 
 console = Console()
 
@@ -76,15 +80,15 @@ def run(ai: AIConnector):
 
             print('\n')
 
-        print(f"Exiting {ai.model['ASSISTANT_NAME']}...")
+        logging.info(f"Exiting {ai.model['ASSISTANT_NAME']}...")
         return ai
             
     except KeyboardInterrupt:
-        print("Ctrl+C was pressed, exiting...")
+        logging.info("Ctrl+C was pressed, exiting...")
     except EOFError:
-        print("Ctrl+D was pressed, exiting...")
+        logging.info("Ctrl+D was pressed, exiting...")
     finally:
         ai.clean_up()
-        print("goodbye")
+        logging.info("goodbye")
 
 

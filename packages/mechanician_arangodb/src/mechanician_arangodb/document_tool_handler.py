@@ -2,6 +2,10 @@ from mechanician.tool_handlers import ToolHandler
 from arango import ArangoClient
 import json
 from mechanician_arangodb.document_manager import DocumentManager
+import logging
+
+logger = logging.getLogger('mechanician_arangodb.document_tool_handler')
+logger.setLevel(level=logging.INFO)
 
 class DocumentManagerToolHandler(ToolHandler):
     def __init__(self, 

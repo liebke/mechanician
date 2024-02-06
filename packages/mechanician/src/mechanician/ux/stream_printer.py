@@ -1,4 +1,8 @@
 from abc import ABC, abstractmethod
+import logging
+
+logger = logging.getLogger('mechanician.ux.stream_printer')
+logger.setLevel(level=logging.INFO)
 
 class StreamPrinter(ABC):
 

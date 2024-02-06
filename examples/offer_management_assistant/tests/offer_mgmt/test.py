@@ -4,6 +4,10 @@ from offer_mgmt.main import ai_connector
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
 import json
 import os
+import logging
+
+logger = logging.getLogger('mechanician_offer_mgmt.test')
+logger.setLevel(level=logging.INFO)
 
 
 def compare_dicts_ignore_order(dict1, dict2):
