@@ -50,7 +50,7 @@ def main():
         arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
         # Initialize the model
         doc_tool_handler = DocumentManagerToolHandler(arango_client, 
-                                                    database_name="test_db")
+                                                      database_name="test_db")
         ai = ai_connector(doc_tool_handler)
         run(ai)
         

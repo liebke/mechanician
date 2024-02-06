@@ -8,7 +8,7 @@ import os
 
 def compare_dicts_ignore_order(dict1, dict2):
      if isinstance(dict1, dict) and isinstance(dict2, dict):
-          if dict1.keys() != dict2.keys():
+          if set(dict1.keys()) != set(dict2.keys()):
                print(f"dict1.keys() != dict2.keys(): {dict1.keys()} != {dict2.keys()}")
                return False
           for key in dict1:
@@ -88,39 +88,110 @@ class TestOfferMgmtAI(unittest.TestCase):
      maxDiff = None
 
      def test_ai_responses(self):
-          ai = ai_connector()
-          start_prompt = "START"
-          print("\n")
-          evaluation, messages = run_task_evaluation(ai, start_prompt, ai_evaluator())
-          print("\n\n")
-          print(f"EVALUATION: {evaluation}")
-          
+          try:
+               database_name = "offer_mgmt_test_db"
+               ai = ai_connector(database_name)
+               start_prompt = "START"
+               print("\n")
+               evaluation, messages = run_task_evaluation(ai, start_prompt, ai_evaluator())
+               print("\n\n")
+               print(f"EVALUATION: {evaluation}")
+               
 
-          # Write Results to File
-          # Define the directory and file paths
-          dir_path = "./test_results"
-          generated_db_path = os.path.join(dir_path, "generated_db.txt")
-          test_messages_path = os.path.join(dir_path, "test_messages.txt")
+               # Write Results to File
+               # Define the directory and file paths
+               dir_path = "./test_results"
+               generated_db_path = os.path.join(dir_path, "generated_db.json")
+               test_messages_path = os.path.join(dir_path, "test_messages.txt")
 
-          # Create the directory if it doesn't exist
-          os.makedirs(dir_path, exist_ok=True)
+               # Create the directory if it doesn't exist
+               os.makedirs(dir_path, exist_ok=True)
 
-          print("DATABASE DATA:")
-          print(json.dumps(ai.tool_handler.db, indent=4))
-          # Now you can write to the file
-          with open(generated_db_path, 'w') as file:
-               file.write(json.dumps(ai.tool_handler.db, indent=4))
+               # Load the expected database state from the test_db.json file
+               with open("./resources/test_db.json", 'r') as file:
+                    db_expected = json.loads(file.read())
 
-          with open(test_messages_path, 'w') as file:
-               file.writelines(f"{message}\n" for message in messages)
+               # Create a dict representing the current state of the database
+               gen_db = {"products": {},
+                         "charges": {},
+                         "product_relationships": {},
+                         "charge_relationships": {}}
+               keys_to_remove = ["_rev", "_id", "_key"]
 
-          ## Evaluate Results
-          self.assertEqual(evaluation, "PASS")
+               for product in ai.tool_handler.list_product_offers():
+                    gen_db["products"][product.get("_id")] = {k: v for k, v in product.items() 
+                                                              if k not in keys_to_remove}
 
-          with open("./resources/db2.json", 'r') as file:
+               for charge in ai.tool_handler.list_charges():
+                    gen_db["charges"][charge.get("_id")] = {k: v for k, v in charge.items() 
+                                                            if k not in keys_to_remove}
+
+               for rel in ai.tool_handler.list_product_relationships():
+                    gen_db["product_relationships"][rel.get("_id")] = {k: v for k, v in rel.items() 
+                                                                        if k not in keys_to_remove}
+
+               for rel in ai.tool_handler.list_charge_relationships():
+                    gen_db["charge_relationships"][rel.get("_id")] = {k: v for k, v in rel.items() 
+                                                                      if k not in keys_to_remove}
+
+               print("GENERATED DB:")
+               print(json.dumps(gen_db, indent=4))
+
+               # Now you can write to the file
+               with open(generated_db_path, 'w') as file:
+                    file.write(json.dumps(gen_db, indent=4))
+
+               with open(test_messages_path, 'w') as file:
+                    file.writelines(f"{message}\n" for message in messages)
+
+               ## Evaluate Results
+               self.assertEqual(evaluation, "PASS")
+
+               # dir_path = "./test_results"
+               # generated_db_path = os.path.join(dir_path, "generated_db.json")
+               self.test_generated_db(generated_db_path, "./resources/test_db.json")
+
+          finally:
+               # Delete test database
+                ai.tool_handler.doc_mgr.delete_database(database_name)
+
+
+
+     def test_generated_db(self, 
+                             generated_db_path="./test_results/generated_db.json", 
+                             expected_db_path="./resources/test_db.json"):
+          with open(generated_db_path, 'r') as file:
+               gen_db = json.loads(file.read())
+
+          with open(expected_db_path, 'r') as file:
                db_expected = json.loads(file.read())
 
-          self.assertEqual(compare_dicts_ignore_order(ai.tool_handler.db, db_expected), True)
+
+          if gen_db["products"] == db_expected["products"]:
+               print("PRODUCTS: PASS")
+
+          # Remove description field from gen_db since it is optional and not usually generated
+          for c in gen_db["charges"].values():
+               c.pop("description", None)
+
+          if gen_db["charges"] == db_expected["charges"]:
+               print("CHARGES: PASS")
+
+          gen_prod_rels = {(m.get("_from"), m.get("_to")): m for m in gen_db.get("product_relationships").values()}
+          actual_prod_rels = {(m.get("_from"), m.get("_to")): m for m in db_expected.get("product_relationships").values()}
+          if gen_prod_rels == actual_prod_rels:
+               print("PRODUCT RELATIONSHIPS: PASS")
+
+          gen_charge_rels = {(m.get("_from"), m.get("_to")): m for m in gen_db.get("charge_relationships").values()}
+          actual_charge_rels = {(m.get("_from"), m.get("_to")): m for m in db_expected.get("charge_relationships").values()}
+          if gen_charge_rels == actual_charge_rels:
+               print("CHARGE RELATIONSHIPS: PASS")
+
+
+          self.assertEqual(gen_db["products"], db_expected["products"])
+          self.assertEqual(gen_db["charges"], db_expected["charges"])
+          self.assertEqual(gen_prod_rels, actual_prod_rels)
+          self.assertEqual(gen_charge_rels, actual_charge_rels)
 
 
 if __name__ == '__main__':

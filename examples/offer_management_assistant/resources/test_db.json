@@ -1,0 +1,178 @@
+{
+    "products": {
+        "products/BUNDLE_ID_2": {
+            "product_offer_type": "Bundle",
+            "business_id": "BUNDLE_ID_2",
+            "name": "Gold Suite",
+            "description": "Complete Gold Suite with multiple services",
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_BUNDLE",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "max_child_elements": 3,
+            "min_child_elements": 1
+        },
+        "products/PKG_ID_3": {
+            "product_offer_type": "Package",
+            "business_id": "PKG_ID_3",
+            "name": "Gold Data Package",
+            "description": "Medium-speed data package",
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_PACKAGE",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "max_child_elements": 2,
+            "min_child_elements": 1
+        },
+        "products/COMP_ID_4": {
+            "product_offer_type": "Component",
+            "business_id": "COMP_ID_4",
+            "name": "Data Component 3GB",
+            "description": "3GB Data add-on",
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_COMPONENT",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "max_child_elements": 1,
+            "min_child_elements": 0
+        },
+        "products/COMP_ID_5": {
+            "product_offer_type": "Component",
+            "business_id": "COMP_ID_5",
+            "name": "Data Component 6GB",
+            "description": "6GB Data add-on",
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_COMPONENT",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "max_child_elements": 1,
+            "min_child_elements": 0
+        },
+        "products/PKG_ID_4": {
+            "product_offer_type": "Package",
+            "business_id": "PKG_ID_4",
+            "name": "Gold Voice Package",
+            "description": "Regional voice package",
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_PACKAGE",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "max_child_elements": 1,
+            "min_child_elements": 1
+        },
+        "products/COMP_ID_6": {
+            "product_offer_type": "Component",
+            "business_id": "COMP_ID_6",
+            "name": "Voice Component 500min",
+            "description": "500 minutes voice add-on",
+            "available_end_date": "2026-12-31",
+            "available_start_date": "2025-01-01",
+            "category_id": "CAT_COMPONENT",
+            "effective_end_date": "2026-12-31",
+            "effective_start_date": "2025-01-01",
+            "max_child_elements": 1,
+            "min_child_elements": 0
+        }
+    },
+    "charges": {
+        "charges/CHARGE_ID_6": {
+            "charge_type": "RecurringCharge",
+            "charge_id": "CHARGE_ID_6",
+            "name": "Data Package Charge",
+            "rate": "25.00",
+            "activation_start_date": "2025-01-01",
+            "activation_end_date": "2026-12-31"
+        },
+        "charges/CHARGE_ID_7": {
+            "charge_type": "NonRecurringCharge",
+            "charge_id": "CHARGE_ID_7",
+            "name": "3GB Data Charge",
+            "rate": "8.00",
+            "activation_start_date": "2025-01-01",
+            "activation_end_date": "2026-12-31"
+        },
+        "charges/CHARGE_ID_8": {
+            "charge_type": "NonRecurringCharge",
+            "charge_id": "CHARGE_ID_8",
+            "name": "6GB Data Charge",
+            "rate": "12.00",
+            "activation_start_date": "2025-01-01",
+            "activation_end_date": "2026-12-31"
+        },
+        "charges/CHARGE_ID_9": {
+            "charge_type": "RecurringCharge",
+            "charge_id": "CHARGE_ID_9",
+            "name": "Voice Package Charge",
+            "rate": "15.00",
+            "activation_start_date": "2025-01-01",
+            "activation_end_date": "2026-12-31"
+        },
+        "charges/CHARGE_ID_10": {
+            "charge_type": "NonRecurringCharge",
+            "charge_id": "CHARGE_ID_10",
+            "name": "500min Voice Charge",
+            "rate": "3.00",
+            "activation_start_date": "2025-01-01",
+            "activation_end_date": "2026-12-31"
+        }
+    },
+    "product_relationships": {
+        "product_relationships/138366": {
+            "_from": "products/PKG_ID_3",
+            "_to": "products/BUNDLE_ID_2",
+            "relation": "child_of"
+        },
+        "product_relationships/138394": {
+            "_from": "products/COMP_ID_4",
+            "_to": "products/PKG_ID_3",
+            "relation": "child_of"
+        },
+        "product_relationships/138429": {
+            "_from": "products/COMP_ID_5",
+            "_to": "products/PKG_ID_3",
+            "relation": "child_of"
+        },
+        "product_relationships/138469": {
+            "_from": "products/PKG_ID_4",
+            "_to": "products/BUNDLE_ID_2",
+            "relation": "child_of"
+        },
+        "product_relationships/138505": {
+            "_from": "products/COMP_ID_6",
+            "_to": "products/PKG_ID_4",
+            "relation": "child_of"
+        }
+    },
+    "charge_relationships": {
+        "charge_to_offer_relationships/138380": {
+            "_from": "charges/CHARGE_ID_6",
+            "_to": "products/PKG_ID_3",
+            "relation": "charge_of"
+        },
+        "charge_to_offer_relationships/138408": {
+            "_from": "charges/CHARGE_ID_7",
+            "_to": "products/COMP_ID_4",
+            "relation": "charge_of"
+        },
+        "charge_to_offer_relationships/138455": {
+            "_from": "charges/CHARGE_ID_8",
+            "_to": "products/COMP_ID_5",
+            "relation": "charge_of"
+        },
+        "charge_to_offer_relationships/138487": {
+            "_from": "charges/CHARGE_ID_9",
+            "_to": "products/PKG_ID_4",
+            "relation": "charge_of"
+        },
+        "charge_to_offer_relationships/138523": {
+            "_from": "charges/CHARGE_ID_10",
+            "_to": "products/COMP_ID_6",
+            "relation": "charge_of"
+        }
+    }
+}

@@ -68,7 +68,7 @@ tool_schemas = [
                             "description": """name: A descriptive name for the entity that must be unique in the category of the product catalog where the entity resides. For example, two components may not share the same name unless they sit in different categories of the catalog. This value is required."""
                         }
                     },
-                    "required": ["name", "product_category", "product_id"]
+                    "required": ["name", "product_offer_type", "business_id"]
                 }
             }
         },
@@ -207,7 +207,7 @@ tool_schemas = [
     {
         "type": "function",
         "function": {
-            "name": "get_child_relationships",
+            "name": "list_child_products",
             "description": "Returns all the child product offers of a parent product offer",
             "parameters": {
                 "type": "object",
@@ -224,7 +224,7 @@ tool_schemas = [
     {
         "type": "function",
         "function": {
-            "name": "get_parent_relationships",
+            "name": "list_parent_products",
             "description": "Returns all the parent product offers of a child product offer",
             "parameters": {
                 "type": "object",
@@ -241,7 +241,7 @@ tool_schemas = [
     {
         "type": "function",
         "function": {
-            "name": "get_charge_relationships",
+            "name": "list_related_charges",
             "description": "Returns all the Charge Relationship of a product offer",
             "parameters": {
                 "type": "object",
