@@ -1,10 +1,10 @@
 from mechanician.ux.cli import run
 from dotenv import load_dotenv
 # from mechanician.apis.openai.assistants_service_connector import OpenAIAssistantServiceConnector
-from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
+from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
 
-from tools import OfferManagementToolHandler
-from tool_schemas import tool_schemas
+from offer_mgmt.tools import OfferManagementToolHandler
+from offer_mgmt.tool_schemas import tool_schemas
 
 import json
 

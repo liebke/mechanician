@@ -5,22 +5,28 @@
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
 
-[**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI by building tools that AI use. 
+[**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI by building tools that AIs use. 
+
+We describe this approach as **Tool Augmented Generation** (TAG) and the AIs that support this approach as **Tool Augmented Generative AIs** (TAG AIs).
+
+*Daring Mechanician* provides tools for building and testing *TAG AIs*, building and testing the tools that these AIs use, and supports a process for *tuning* the instructions for AIs that we call **Instruction Auto-Tuning** (IAT) that uses an **Instructor AI** to revise the instructions for the TAG AI based on its interactions with users.
 
 
 # Tool Augmented Generation (TAG)
 
-**Tool Augmented Generation** (**TAG**) describes an approach of providing AIs with external tools, databases, and interfaces to enhance their knowledge, capabilities, and interaction with other systems.
+The **Tool Augmented Generation** (**TAG**) approach provides AIs with external tools, databases, and interfaces to enhance their knowledge, capabilities, and interaction with other systems.
 
-**Tool Augmented Generative AI** (**TAG AI**) describes a Generative AI that uses tools to complete tasks.
+This approach leverages the "**Function Calling**", or "**Tool Calling**", capabilities of several Large Language Models and is meant to complement other approaches to augmenting Foundation Models, like **Fine Tuning** (FT) and **Retrieval Augmented Generation** (RAG). 
 
-This approach leverages the "Function Calling", or "Tool Calling", capabilities of several Large Language Models and is meant to complement other approaches to augmenting Foundation Models, like **Fine Tuning** (FT) and **Retrieval Augmented Generation** (RAG). You can combine a RAG application with TAG AI to create a RAGTAG AI. :)
+In contrast to **Retrieval Augmented Generation** (RAG), which uses a knowledge base to retrieve information and augment the prompt sent to the AI, **Tool Augmented Generation** (TAG) provides the AI with tools so that it can retrieve information itself, and also perform actions across multiple systems, databases, and interfaces.
+
+>NOTE: You can combine a RAG application with TAG AI to create a **RAGTAG AI**.
 
 *Tool Augmented Generation* broadens the knowledge base of the AI beyond its initial training data and also introduces a dynamic aspect to its learning and interaction capabilities, allowing for real-time data retrieval, analysis, and interaction with a wide range of digital environments.
 
 Foundation Models are inherently limited by the scope of their training data and the static nature of that data, *Tool Augmented Generative AI* can access up-to-date information, perform computations, generate visual content, and execute code in a controlled environment; extending Generative AIs from pure knowledge repositories to active participants in information processing and generation.
 
-The *Tool Augmentated Generation* means that the AI can, for example, use a web browsing tool to fetch the latest news or scientific research, interact with data visualization software to create complex graphs, or utilize a code execution environment to verify programming solutions. 
+*Tool Augmentated Generation* means that the AI can, for example, use a web browsing tool to fetch the latest news or scientific research, interact with data visualization software to create complex graphs, or utilize a code execution environment to verify programming solutions. 
 
 This approach enhances the AI's problem-solving skills, creativity, and ability to provide accurate, up-to-date information.
 
@@ -49,11 +55,74 @@ In order to speed up this process, it is useful to use an **Evaluator AI** that 
 
 By observing these interactions, the developer can further refine the instructions provided to the AI, the feedback provided by the tools, and also the instructions provided to the Evaluator AI.
 
-The question then becomes, can we create an **Instructor AI** meant to observe these interactions and improve the instructions for one or both AIs under observation?
+The question then becomes, can we create an **Instructor AI** meant to observe interactions between an AI Assistant and a user (or a user surrogate AI) and improve the instructions for the Assistant (as well as the user surrogate AI), improve the descriptions and responses of the tools the AI has access to?
 
-We can provide the Instructor AI the current set of system instructions, the transcript of interactions between the AI and the Evaluator AI, the tools used by the AI, and any available objective performance metric for the tasks the assistant is performing, and then ask the Instructor AI to improve and refine the instructions for both the AI under development and the Evaluator AI.
+We can provide the Instructor AI the current set of system instructions, descriptions of the tools used by the AI, the transcript of interactions between the AI and the User (or Evaluator AI), assessment results for the tasks the assistant is performing, including the AI tool calls and responses, and then ask the Instructor AI to improve and refine the instructions for the Assistant AI, improve and refine the descriptions for each tool and its parameters, suggest improvements for the responses from tools, and either create or revise the instructions for an Evaluator AI.
 
 Daring Mechanician provides tools to perform this **Instruction Auto-Tuning**.
+
+
+## Instruction Auto-Tuning: Instructor Prompt
+
+```
+Evaluations:
+1. Evaluate the quality of the tool and parameter descriptions.
+2. Evaluate the performance of the AI in each session.
+3. Evaluate the quality of the tool responses.
+4. Evaluate the assessments results of each session.
+
+Revisions:
+1. Revise the assistant instructions to improve the AI's performance.
+2. Revise the tool and parameter descriptions to improve the AI's performance.
+
+Generate:
+1. Generate instructions for an Evaluator AI to act as a user surrogate for assessment sessions.
+```
+
+### Instruction Auto-Tuning: Training Session Data
+
+```
+[Revision 0: Training Sessions 1-10]
+
+[Session 1]
+[ASSISTANT Instructions]
+...
+[END of ASSISTANT Instructions]
+[Tool and Parameter Descriptions]
+[Tool 1]
+Name: ...
+Description: ...
+Parameter Name and Description: ...
+Parameter Name and Description: ...
+Parameter Name and Description: ...
+[End of Tool 1]
+...
+[END of Tool and Parameter Descriptions]
+[Session Transcript]
+USER: ...
+AI: ...
+USER: ...
+AI TOOL CALL: ...
+TOOL RESPONSE: ...
+AI: ...
+...
+[END of Session Transcript]
+[Assessment Results]
+...
+[END of Assessment Results]
+[END of Session 1]
+...
+[Session 10]
+[END of Session 10]
+
+[END of Revision 0]
+
+...
+[Revision 1: Training Sessions 11-20]
+...
+[END of Revision 1]
+```
+
 
 
 ## Getting Started

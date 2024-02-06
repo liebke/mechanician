@@ -1,7 +1,7 @@
 from mechanician.testing import run_task_evaluation
 import unittest
-from main import ai_connector
-from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
+from offer_mgmt.main import ai_connector
+from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
 import json
 import os
 
