@@ -53,7 +53,7 @@ def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluato
             messages.append(f"EVALUATOR: {prompt}")
             resp = ai.submit_prompt(test.prompt)
 
-            if ai.model["STREAMING"] == False:
+            if ai.STREAMING == False:
                 print_markdown(console, resp)
                 print('')
 
@@ -132,7 +132,7 @@ def run_task_evaluation(ai: AIConnector, start_prompt, ai_evaluator):
             assist_resp = ai.submit_prompt(eval_resp)
             messages.append(f"ASSISTANT: {assist_resp}")
 
-            if ai.model["STREAMING"] == False:
+            if ai.STREAMING == False:
                 print_markdown(console, resp)
                 print('')
 

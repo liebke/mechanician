@@ -1,3 +1,14 @@
+hello
+
+I'd like to create a bundle called "Platinum Suite" containing two packages, Platinum Data Package and Platinum Voice Package.
+
+/file ./resources/bundle1_test_data.csv
+
+can you show me a full report for all the objects your created?
+
+Add the Data Component 3GB and 6GB components to the Gold Data Package and add the Voice Component 500min to the Gold Voice Package
+
+------
 please introduce yourself.
 
 Can you provide me concise instructions on how I should proceed?

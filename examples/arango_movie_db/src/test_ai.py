@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 from pprint import pprint
 import logging
 
+from mechanician.training.instruction_auto_tuning import InstructionAutoTuning
+
 logger = logging.getLogger('mechanician_arangodb.test_ai')
 logger.setLevel(level=logging.INFO)
 
@@ -17,7 +19,8 @@ logger.setLevel(level=logging.INFO)
 ###############################################################################
 
 instructions = """
-      Your role is to act like a movie reviewer that has access to an AI assistant that can help you record your movie reviews.
+
+      For this training session, your specific role is to act like a movie reviewer that has access to an AI assistant that can help you record your movie reviews.
 
         Below you will find a list of movies that you have watched and would like to review with the help of the AI assistant.
 
@@ -45,22 +48,17 @@ instructions = """
 
       [MOVIE REVIEW DATA]
 
-      Movie: id: matrix, title: "The Matrix", year: 1999, genre: "Science Fiction".
-      Cast: id: keanu_reeves, name: "Keanu Reeves", role: "Neo".
-      Cast: id: laurence_fishburne, name: "Laurence Fishburne", role: "Morpheus".
-      Cast: id: carrie_anne_moss, name: "Carrie-Anne Moss", role: "Trinity".
-      Review: id: matrix_review, movie_id: matrix, rating: 5, review: "This is a great movie!".
-      Review: id: keanu_reeves_review, cast_id: keanu_reeves, rating: 5, review: "Keanu Reeves is a great actor!".
-      Review: id: laurence_fishburne_review, cast_id: laurence_fishburne, rating: 5, review: "Laurence Fishburne is a great actor!".
-      Review: id: carrie_anne_moss_review, cast_id: carrie_anne_moss, rating: 5, review: "Carrie-Anne Moss is a great actor!".
+      Create documents for each of the following movies, include attributes about the movie like its title, genre, release year, a summary;
 
-      Movie: id: inception, title: "Inception", year: 2010, genre: "Science Fiction".
-      Cast: id: leonardo_dicaprio, name: "Leonardo DiCaprio", role: "Cobb".
-      Cast: id: ellen_page, name: "Ellen Page", role: "Ariadne".
-      Review: id: inception_review, movie_id: inception, rating: 5, review: "This is a great movie!".
-      Review: id: leonardo_dicaprio_review, cast_id: leonardo_dicaprio, rating: 5, review: "Leonardo DiCaprio is a great actor!".
-      Review: id: elliot_page_review, cast_id: elliot_page, rating: 5, review: "Elliot Page is a great actor!".
-      
+      Then create documents for the directors of each movie;
+       
+      Then create documents for the top three cast members of each movie,
+       
+         and then provide reviews for the movies, the directors, and the cast members you selected.
+
+      * The Matrix (1999) - Science Fiction
+      * Inception (2010) - Science Fiction
+
      [END MOVIE REVIEW DATA]
 
       """
@@ -82,6 +80,11 @@ class TestOfferMgmtAI(unittest.TestCase):
         try:
                 
             load_dotenv()
+            # Define the directory and file paths
+            dir_path = "./test_results"
+            test_messages_path = os.path.join(dir_path, "test_messages.txt")
+            # Create the directory if it doesn't exist
+            os.makedirs(dir_path, exist_ok=True)
 
             arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
             # Initialize the model
@@ -95,13 +98,6 @@ class TestOfferMgmtAI(unittest.TestCase):
             
 
             # Write Results to File
-            # Define the directory and file paths
-            dir_path = "./test_results"
-            test_messages_path = os.path.join(dir_path, "test_messages.txt")
-
-            # Create the directory if it doesn't exist
-            os.makedirs(dir_path, exist_ok=True)
-
             with open(test_messages_path, 'w') as file:
                 file.writelines(f"{message}\n" for message in messages)
 
@@ -109,6 +105,17 @@ class TestOfferMgmtAI(unittest.TestCase):
             self.assertEqual(evaluation, "PASS")
 
         finally:
+            iat = InstructionAutoTuning(ai)
+            print("Generating Instruction Auto Tuning...")
+            # print("#################################")
+            # print(iat.get_training_session_data())
+            training_transcript_path = os.path.join(dir_path, "training_transcript.json")
+            iat.write_training_session_data(training_transcript_path)
+
+            iat_prompt_path = os.path.join(dir_path, "iat_prompt.txt")
+            iat.write_iat_prompt(training_transcript_path, iat_prompt_path)
+            # print("#################################")
+
             logging.info(f"\n\n\nDocument Collections:")
             doc_collections = doc_tool_handler.doc_mgr.list_document_collections(doc_tool_handler.database)
             logging.info(doc_collections)

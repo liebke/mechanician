@@ -6,6 +6,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         'rich>=10.0.0',
+        'pyyaml>=5.4.1',
     ],
     author='David Edgar Liebke',
     author_email='david@liebke.ai',

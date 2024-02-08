@@ -255,4 +255,56 @@ tool_schemas = [
             }
         }
     },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_product_offers",
+            "description": "Returns all the available product offers",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                },
+                "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_charges",
+            "description": "Returns all existing Charges",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                },
+                "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_product_relationships",
+            "description": "Returns all the existing product relationships",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                },
+                "required": []
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
+            "name": "list_charge_relationships",
+            "description": "Returns all the existing charge relationships",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                },
+                "required": []
+            }
+        }
+    },
     ]

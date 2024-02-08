@@ -12,6 +12,7 @@ import logging
 logger = logging.getLogger('mechanician_offer_mgmt.main')
 logger.setLevel(level=logging.INFO)
 
+DELETE_DB_ON_EXIT = False
 
 ###############################################################################
 ## AI Connector
@@ -41,10 +42,11 @@ def main():
         ai = ai_connector(database_name)
         # ai.tool_handler.load_db("./resources/db1.json")
         run(ai)
-        db = ai.tool_handler.db
-        print(json.dumps(db, indent=4))
+        # db = ai.tool_handler.db
+        # print(json.dumps(db, indent=4))
     finally:
-        ai.tool_handler.doc_mgr.delete_database(database_name)
+        if DELETE_DB_ON_EXIT:
+            ai.tool_handler.doc_mgr.delete_database(database_name)
 
 
 if __name__ == '__main__':

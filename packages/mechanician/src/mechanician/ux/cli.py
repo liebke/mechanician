@@ -69,7 +69,7 @@ def run(ai: AIConnector):
 
             resp = ai.submit_prompt(prompt)
 
-            if ai.model["STREAMING"] == False:
+            if ai.STREAMING == False:
                 print_markdown(console, resp)
                 print('')
 

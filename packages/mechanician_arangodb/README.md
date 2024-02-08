@@ -1,4 +1,6 @@
 
+## Run ArangoDB in Docker
+
 ```bash
 docker pull arangodb/arangodb
 ```

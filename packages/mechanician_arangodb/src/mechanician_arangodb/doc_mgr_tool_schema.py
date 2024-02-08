@@ -87,6 +87,40 @@ tool_schemas = [
     {
       "type": "function",
       "function": {
+        "name": "delete_document",
+        "description": "Deletes an existing document.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "document_id": {
+              "type": "string",
+              "description": "The ID of the document to delete."
+            }
+          },
+          "required": ["document_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "delete_link",
+        "description": "Deletes an existing link.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "link_id": {
+              "type": "string",
+              "description": "The ID of the link to delete."
+            }
+          },
+          "required": ["link_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
         "name": "create_document",
         "description": "Creates a new document in a collection.",
         "parameters": {

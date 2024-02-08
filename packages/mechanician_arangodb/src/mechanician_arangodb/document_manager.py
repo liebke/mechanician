@@ -21,50 +21,64 @@ class DocumentManager:
     def create_database(self, db_name: str):
 
         if not self.sys_db.has_database(db_name):
-            print(f"Creating database '{db_name}'...")
+            logger.info(f"Creating database '{db_name}'...")
             if self.sys_db.create_database(db_name) is True:
-                print(f"Database '{db_name}' created.")
+                logger.info(f"Database '{db_name}' created.")
                 return self.client.db(db_name, username=self.username, password=self.password)
             
         else:
-            print(f"Database '{db_name}' already exists.")
+            logger.info(f"Database '{db_name}' already exists.")
             return self.client.db(db_name, username=self.username, password=self.password)
 
 
     def delete_database(self, db_name: str):
         if self.sys_db.has_database(db_name):
             self.sys_db.delete_database(db_name)
-            print(f"Database '{db_name}' deleted.")
+            logger.info(f"Database '{db_name}' deleted.")
         else:
-            print(f"Database '{db_name}' does not exist.")
+            logger.info(f"Database '{db_name}' does not exist.")
 
 
     def create_document_collection(self, database, collection_name):
         if not database.has_collection(collection_name):
             collection = database.create_collection(collection_name)
-            print(f"Collection '{collection_name}' created.")
+            logger.info(f"Collection '{collection_name}' created.")
         else:
             collection = database.collection(collection_name)
-            print(f"Collection '{collection_name}' already exists.")
+            logger.info(f"Collection '{collection_name}' already exists.")
         return collection
+    
+
+    def delete_document(self, database, collection_name, document_id):
+        collection = database.collection(collection_name)
+        if collection.has(document_id):
+            collection.delete(document_id)
+            logger.info(f"Document '{document_id}' deleted.")
+
+
+    def delete_link(self, database, collection_name, link_id):
+        collection = database.collection(collection_name)
+        if collection.has(link_id):
+            collection.delete(link_id)
+            logger.info(f"Link '{link_id}' deleted.")
 
 
     def create_link_collection(self, database, link_collection_name):
         if not database.has_collection(link_collection_name):
             link_collection = database.create_collection(link_collection_name, edge=True)
-            print(f"Link collection '{link_collection_name}' created.")
+            logger.info(f"Link collection '{link_collection_name}' created.")
         else:
             link_collection = database.collection(link_collection_name)
-            print(f"Link collection '{link_collection_name}' already exists.")
+            logger.info(f"Link collection '{link_collection_name}' already exists.")
         return link_collection
 
 
     def delete_collection(self, database, collection_name):
         if database.has_collection(collection_name):
             database.delete_collection(collection_name)
-            print(f"Collection '{collection_name}' deleted.")
+            logger.info(f"Collection '{collection_name}' deleted.")
         else:
-            print(f"Collection '{collection_name}' does not exist.")
+            logger.info(f"Collection '{collection_name}' does not exist.")
 
 
     def create_document(self, database, collection_name, document_id: str, document: dict):
@@ -110,9 +124,9 @@ class DocumentManager:
                                 target_collection_name,
                                 target_document_id):
             link = link_collection.insert(link)
-            print(f"Link created from {source_document_id} to {target_document_id}.")
+            logger.info(f"Link created from {source_document_id} to {target_document_id}.")
         else:
-            print(f"Link from {source_document_id} to {target_document_id} already exists.")
+            logger.info(f"Link from {source_document_id} to {target_document_id} already exists.")
         
 
     def get_document(self, database, collection_name, obj_id: int):
@@ -192,7 +206,7 @@ class DocumentManager:
         FOR edge IN OUTBOUND '{source_collection_name}/{source_document_id}' {link_collection_name}
             RETURN edge
         """
-        print(query)
+        logger.info(query)
         cursor = database.aql.execute(query)
         return list(cursor)
 

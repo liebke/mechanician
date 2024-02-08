@@ -10,6 +10,10 @@ logger.setLevel(level=logging.INFO)
 
 class AIConnector(ABC):
 
+    messages = []
+    instructions = None
+    tool_schemas = None
+
     @abstractmethod
     def __init__(self, instructions, tool_schemas, 
                  function_handler : 'ToolHandler', name):
@@ -22,6 +26,9 @@ class AIConnector(ABC):
     @abstractmethod
     def clean_up(self) -> None:
         pass
+
+    def get_messages(self):
+        return self.messages
 
 
 

@@ -41,8 +41,6 @@ def print_output(function_name, input, output):
 
 class OfferManagementToolHandler(ToolHandler):
 
-    db = {}
-
     def __init__(self, database_name="offer_mgmt_db"):
         try:
             self.database_name = database_name
@@ -317,7 +315,7 @@ class OfferManagementToolHandler(ToolHandler):
             return resp
         
 
-    def list_product_offers(self):
+    def list_product_offers(self, params=None):
         try:
             resp = self.doc_mgr.list_documents(self.database, self.product_collection_name)
             return resp
@@ -328,7 +326,7 @@ class OfferManagementToolHandler(ToolHandler):
             return resp
         
 
-    def list_charges(self):
+    def list_charges(self, params=None):
         try:
             resp = self.doc_mgr.list_documents(self.database, self.charge_collection_name)
             return resp
@@ -339,9 +337,10 @@ class OfferManagementToolHandler(ToolHandler):
             return resp
         
 
-    def list_product_relationships(self):
+    def list_product_relationships(self, params=None):
         try:
             resp = self.doc_mgr.list_links(self.database, self.product_link_collection_name)
+            logger.info(resp)
             return resp
         except Exception as e:
             message = str(e)
@@ -350,7 +349,7 @@ class OfferManagementToolHandler(ToolHandler):
             return resp
         
 
-    def list_charge_relationships(self):
+    def list_charge_relationships(self, params=None):
         try:
             resp = self.doc_mgr.list_links(self.database, self.charge_link_collection_name)
             return resp

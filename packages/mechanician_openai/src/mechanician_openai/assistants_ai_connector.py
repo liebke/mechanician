@@ -32,18 +32,17 @@ class OpenAIAssistantAIConnector(AIConnector):
                  delete_assistant_on_exit=None):
 
         self.model = {}
-        self.model["STREAMING"] = False
+        self.STREAMING = False
         self.model["ASSISTANT_NAME"] = assistant_name
         self.model["ASSISTANT_ID"] = assistant_id or os.getenv("ASSISTANT_ID")
-        self.model["CREATE_NEW_ASSISTANT"] = create_new_assistant or os.getenv("CREATE_NEW_ASSISTANT") # False
-        self.model["DELETE_ASSISTANT_ON_EXIT"] = delete_assistant_on_exit or os.getenv("DELETE_ASSISTANT_ON_EXIT") # False
+        self.CREATE_NEW_ASSISTANT = create_new_assistant or os.getenv("CREATE_NEW_ASSISTANT") # False
+        self.DELETE_ASSISTANT_ON_EXIT = delete_assistant_on_exit or os.getenv("DELETE_ASSISTANT_ON_EXIT") # False
         self.model["MODEL_NAME"] = model_name or os.getenv("MODEL_NAME") or self.DEFAULT_MODEL_NAME
-        self.model["tool_schemas"] = tool_schemas
+        self.tool_schemas = tool_schemas
         self.tool_handler = tool_handler
         api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key)
-        self.model["client"] = self.client
-        self.model["instructions"] = instructions
+        self.instructions = instructions
         self.messages = []
 
         self.console = Console()
@@ -53,18 +52,18 @@ class OpenAIAssistantAIConnector(AIConnector):
         print_markdown(self.console, f"* DELETE_ASSISTANT_ON_EXIT: {self.model['DELETE_ASSISTANT_ON_EXIT']}")
         print_markdown(self.console, f"* MODEL_NAME: {self.model['MODEL_NAME']}")
 
-        if self.model["CREATE_NEW_ASSISTANT"] == "True":
+        if self.CREATE_NEW_ASSISTANT == "True":
             # Create an assistant with the OpenAI client
             print_markdown(self.console, "## Creating a new assistant...")
-            self.model["assistant"] = self.client.beta.assistants.create(
+            self.assistant = self.client.beta.assistants.create(
                 name="Mechanician Assistant",
-                instructions=self.model["instructions"],
+                instructions=self.instructions,
                 model=self.model["MODEL_NAME"],
-                tools=self.model["tool_schemas"]
+                tools=self.tool_schemas
                 )
         else:
             print_markdown(self.console, "## Retrieving existing assistant...")
-            self.model["assistant"] = self.client.beta.assistants.retrieve(self.model["ASSISTANT_ID"])
+            self.assistant = self.client.beta.assistants.retrieve(self.model["ASSISTANT_ID"])
 
         self.model["thread"] = self.client.beta.threads.create()
 
@@ -74,8 +73,8 @@ class OpenAIAssistantAIConnector(AIConnector):
     ###############################################################################
 
     def submit_prompt(self, prompt):
-        client = self.model["client"]
-        assistant = self.model["assistant"]
+        client = self.client
+        assistant = self.assistant
         thread = self.model["thread"]
         # Create a new message with user input
         message = client.beta.threads.messages.create(
@@ -150,7 +149,7 @@ class OpenAIAssistantAIConnector(AIConnector):
     ## GET_MESSAGE_HISTORY
     ###############################################################################
     def get_message_history(self):
-        client = self.model["client"]
+        client = self.client
         thread = self.model["thread"]
         messages = client.beta.threads.messages.list(thread_id=thread.id)
         messages_list = list(messages)
@@ -162,7 +161,7 @@ class OpenAIAssistantAIConnector(AIConnector):
     ###############################################################################
 
     def clean_up(self):
-        client = self.model["client"]
+        client = self.client
         client.beta.threads.delete(self.model["thread"].id)
-        if self.model["DELETE_ASSISTANT_ON_EXIT"] == "True":
-            client.beta.assistants.delete(self.model["assistant"].id)
+        if self.DELETE_ASSISTANT_ON_EXIT == "True":
+            client.beta.assistants.delete(self.assistant.id)

@@ -93,6 +93,40 @@ class DocumentManagerToolHandler(ToolHandler):
         except Exception as e:
             message = str(e)
             return f"ERROR: {message}"
+        
+
+    def delete_document(self, input: dict):
+        try:
+            collection_name = input.get('collection_name')
+            document_id = input.get('document_id')
+            if not collection_name or not document_id:
+                return "collection_name and document_id are required."
+            
+            doc = self.doc_mgr.delete_document(self.database, collection_name, document_id)
+            resp = f"Document '{document_id}' has been deleted from collection '{collection_name}'."
+            # DEBUG
+            print(resp)
+            return resp
+        except Exception as e:
+            message = str(e)
+            return f"ERROR: {message}"
+        
+    
+    def delete_link(self, input: dict):
+        try:
+            collection_name = input.get('collection_name')
+            link_id = input.get('link_id')
+            if not collection_name or not link_id:
+                return "collection_name and link_id are required."
+            
+            doc = self.doc_mgr.delete_document(self.database, collection_name, link_id)
+            resp = f"Link '{link_id}' has been deleted from collection '{collection_name}'."
+            # DEBUG
+            print(resp)
+            return resp
+        except Exception as e:
+            message = str(e)
+            return f"ERROR: {message}"
     
 
     def get_document(self, input: dict):

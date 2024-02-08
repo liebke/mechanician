@@ -27,27 +27,27 @@ class OpenAIChatAIConnector(StreamingAIConnector):
                  api_key=None,
                  max_thread_workers=None):
         self.model = {}
-        self.model["STREAMING"] = True
+        self.STREAMING = True
         self.model["ASSISTANT_NAME"] = assistant_name
         self.model["MODEL_NAME"] = model_name or os.getenv("MODEL_NAME") or self.DEFAULT_MODEL_NAME
-        self.model["MAX_THREAD_WORKERS"] = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
-        self.model["tool_schemas"] = tool_schemas
+        self.MAX_THREAD_WORKERS = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
+        self.tool_schemas = tool_schemas
         self.tool_handler = tool_handler
         self.stream_printer = stream_printer
         api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key)
-        self.model["client"] = self.client
-        self.model["instructions"] = instructions
+        self.client = self.client
+        self.instructions = instructions
 
         # Initialize the conversation with a system message
-        self.messages = [{"role": "system", "content": self.model["instructions"]}]
+        self.messages = [{"role": "system", "content": self.instructions}]
 
     ###############################################################################
     ## SUBMIT_PROMPT
     ###############################################################################
 
     def get_stream(self, prompt):
-        client = self.model["client"]
+        client = self.client
         # Create a new message with user prompt
         if prompt is not None:
             self.messages.append({"role": "user", "content": prompt})
@@ -55,7 +55,7 @@ class OpenAIChatAIConnector(StreamingAIConnector):
         stream = client.chat.completions.create(
             model=self.model["MODEL_NAME"],
             messages=self.messages,
-            tools=self.model["tool_schemas"],
+            tools=self.tool_schemas,
             stream=True,
         )
         return stream
@@ -78,7 +78,7 @@ class OpenAIChatAIConnector(StreamingAIConnector):
                     if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                         tc = tool_calls[-1]
                         self.stream_printer.print(f"Calling external function: {tc['function']['name']}...")
-                        with ThreadPoolExecutor(max_workers=self.model["MAX_THREAD_WORKERS"]) as executor:
+                        with ThreadPoolExecutor(max_workers=self.MAX_THREAD_WORKERS) as executor:
                             futures.append(executor.submit(self.process_tool_call, tc))
                     
                 tool_calls_index = tool_calls_chunk.index
@@ -143,7 +143,7 @@ class OpenAIChatAIConnector(StreamingAIConnector):
             if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                 if (len(tool_calls) > len(futures)):
                     tc = tool_calls[-1]
-                    with ThreadPoolExecutor(max_workers=self.model["MAX_THREAD_WORKERS"]) as executor:
+                    with ThreadPoolExecutor(max_workers=self.MAX_THREAD_WORKERS) as executor:
                         futures.append(executor.submit(self.process_tool_call, tc))
                         self.stream_printer.print(f"Calling external function: {tc['function']['name']}...")
 
