@@ -1,4 +1,4 @@
-tool_schemas = [
+tool_instructions = [
     # {
     #   "type": "function",
     #   "function": {
@@ -136,10 +136,39 @@ tool_schemas = [
             },
             "document": {
               "type": "object",
-              "description": "The document to create."
+              "description": "The document to create, this is a JSON object with many fields as described by the user."
             }
           },
           "required": ["collection_name", "document_id", "document"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "add_field_to_document",
+        "description": "Adds a new field, with a specified value, to a document in a collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection."
+            },
+            "document_id": {
+              "type": "string",
+              "description": "The id of the document to create."
+            },
+            "field_name": {
+              "type": "object",
+              "description": "The name of the field to create."
+            },
+            "field_value": {
+              "type": "object",
+              "description": "The value of the field to be created."
+            }
+          },
+          "required": ["collection_name", "document_id", "field_name", "field_value"]
         }
       }
     },

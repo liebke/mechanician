@@ -1,18 +1,22 @@
 from mechanician.testing import run_task_evaluation
 import unittest
-from main import ai_connector
+from main import init_ai
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
+from mechanician.tag_ai import TAGAI
 import os
-from mechanician_arangodb.document_tool_handler import DocumentManagerToolHandler
-from arango import ArangoClient
 from dotenv import load_dotenv
-from pprint import pprint
+# from pprint import pprint
+import pprint
 import logging
 
 from mechanician.training.instruction_auto_tuning import InstructionAutoTuning
 
-logger = logging.getLogger('mechanician_arangodb.test_ai')
-logger.setLevel(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
 
 ###############################################################################
 ## AI_EVALUATOR
@@ -20,14 +24,15 @@ logger.setLevel(level=logging.INFO)
 
 instructions = """
 
-      For this training session, your specific role is to act like a movie reviewer that has access to an AI assistant that can help you record your movie reviews.
+      Your specific role is to act like a movie reviewer creating documents representing the details of movies, directors, cast member, and reviews of each.
+      You NEED to record each document in a document database with help of an AI Document Manager Assistant that RECORD your movie reviews.
 
-        Below you will find a list of movies that you have watched and would like to review with the help of the AI assistant.
+        Below you will find a list of movies that you have watched and would like to review and RECORD into a database with the help of the Document Manager AI assistant.
 
         Ask the assistant to create documents for each movie 
-         * then review the documents to ensure that the AI assistant has correctly recorded the movie details correctly.
+         * then review the documents to ensure that the AI assistant has correctly recorded ALL the movie details you specified.
 
-        You will ask the assistant to LINK a Credit to the movie
+        You will ask the assistant to LINK each Credit to the correct movie
          * then review the documents to ensure that the AI assistant has correctly recorded the cast member details correctly.
 
         You will then ask the assistant to LINK your review of movie.
@@ -38,7 +43,7 @@ instructions = """
 
         Perform one step at a time.
 
-        Verify after each step.
+        Verify after each step, documents should contain ALL the information you provided the ASSISTANT, MAKE SURE the assistant added all the requested FIELDS in each document.
 
         One you have completed creating ALL the data below and have validated that all the information has been created correctly by the AI Assistant, you will respond with a ONLY A SINGLE WORD, "PASS".
 
@@ -57,15 +62,20 @@ instructions = """
          and then provide reviews for the movies, the directors, and the cast members you selected.
 
       * The Matrix (1999) - Science Fiction
-      * Inception (2010) - Science Fiction
 
      [END MOVIE REVIEW DATA]
 
       """
 
+#       * Inception (2010) - Science Fiction
+
+
 def ai_evaluator():
-     return OpenAIChatAIConnector(instructions=instructions, 
-                                  assistant_name="Task Evaluator")
+     return TAGAI(OpenAIChatAIConnector(),
+                  system_instructions=instructions, 
+                  name="Task Evaluator")
+                                    
+
 
 
 ###############################################################################
@@ -86,17 +96,15 @@ class TestOfferMgmtAI(unittest.TestCase):
             # Create the directory if it doesn't exist
             os.makedirs(dir_path, exist_ok=True)
 
-            arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
-            # Initialize the model
-            doc_tool_handler = DocumentManagerToolHandler(arango_client, database_name="test_db")
-            ai = ai_connector(doc_tool_handler)
-            start_prompt = "START"
-            print("\n")
-            evaluation, messages = run_task_evaluation(ai, start_prompt, ai_evaluator())
-            print("\n\n")
-            print(f"EVALUATION: {evaluation}")
+            # Initialize AI
+            ai = init_ai("test_db")
+            logger.info("\n")
             
-
+            # Run Task Evaluation
+            evaluation, messages = run_task_evaluation(ai, ai_evaluator())
+            logger.info("\n\n")
+            logger.info(f"EVALUATION: {evaluation}")
+            
             # Write Results to File
             with open(test_messages_path, 'w') as file:
                 file.writelines(f"{message}\n" for message in messages)
@@ -105,32 +113,32 @@ class TestOfferMgmtAI(unittest.TestCase):
             self.assertEqual(evaluation, "PASS")
 
         finally:
-            iat = InstructionAutoTuning(ai)
-            print("Generating Instruction Auto Tuning...")
-            # print("#################################")
-            # print(iat.get_training_session_data())
+            iat = InstructionAutoTuning(OpenAIChatAIConnector())
+            logger.info("Generating Instruction Auto Tuning...")
             training_transcript_path = os.path.join(dir_path, "training_transcript.json")
             iat.write_training_session_data(training_transcript_path)
 
             iat_prompt_path = os.path.join(dir_path, "iat_prompt.txt")
             iat.write_iat_prompt(training_transcript_path, iat_prompt_path)
-            # print("#################################")
 
-            logging.info(f"\n\n\nDocument Collections:")
-            doc_collections = doc_tool_handler.doc_mgr.list_document_collections(doc_tool_handler.database)
-            logging.info(doc_collections)
-            logging.info(f"\n\n\nLink Collections:")
-            link_collections = doc_tool_handler.doc_mgr.list_link_collections(doc_tool_handler.database)
-            logging.info(link_collections)
-
-            logging.info(f"\n\n\nDocument Data:")
+            logger.info(f"\n\n\nDocument Collections:")
+            doc_collections = ai.tools.list_document_collections()
+            
+            logger.info(pprint.pformat(doc_collections))
+            logger.info(f"\n\n\nLink Collections:")
+            link_collections = ai.tools.list_link_collections()
+            logger.info(pprint.pformat(link_collections))
+            
+            logger.info(f"\n\n\nDocument Data:")
             for collection in doc_collections:
-                logging.info(doc_tool_handler.doc_mgr.list_documents(doc_tool_handler.database, collection))
-            logging.info(f"\n\n\Link Data:")
+                resp = ai.tools.list_documents({"collection_name": collection})
+                logger.info(pprint.pformat(resp))
+            logger.info(f"\n\n\nLink Data:")
             for collection in link_collections:
-                logging.info(doc_tool_handler.doc_mgr.list_links(doc_tool_handler.database, collection))
+                resp = ai.tools.list_links({"link_collection_name": collection})
+                logger.info(pprint.pformat(resp))
             # CLEAN UP
-            doc_tool_handler.doc_mgr.delete_database("test_db")
+            ai.tools.doc_mgr.delete_database("test_db")
 
 
 if __name__ == '__main__':

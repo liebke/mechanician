@@ -1,18 +1,27 @@
-from mechanician.tool_handlers import ToolHandler
+from mechanician.ai_tools import AITools
 from arango import ArangoClient
 import json
 from mechanician_arangodb.document_manager import DocumentManager
 import logging
+import pprint
 
-logger = logging.getLogger('mechanician_arangodb.document_tool_handler')
-logger.setLevel(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.DEBUG)
 
-class DocumentManagerToolHandler(ToolHandler):
+handler = logging.StreamHandler()
+handler.setLevel(logging.DEBUG)
+logger.addHandler(handler)
+
+
+class DocumentManagerAITools(AITools):
+
     def __init__(self, 
                  client: ArangoClient, 
                  database_name: str,
                  username: str = 'root' , 
                  password: str = None):
+        
+        logger.info(f"Initializing DocumentManagerToolHandler with database_name: {database_name}")
         self.doc_mgr = DocumentManager(client, username, password)
         self.database_name = database_name
         self.database = self.doc_mgr.create_database(database_name)
@@ -38,10 +47,11 @@ class DocumentManagerToolHandler(ToolHandler):
             collection = self.doc_mgr.create_document_collection(self.database, collection_name)
             resp = f"Collection '{collection_name}' created."
             # DEBUG
-            print(resp)
+            logger.debug(pprint.pformat(resp))
             return resp
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
     
 
@@ -54,10 +64,11 @@ class DocumentManagerToolHandler(ToolHandler):
             link_collection = self.doc_mgr.create_link_collection(self.database, link_collection_name)
             resp = f"Link collection '{link_collection_name}' created."
             # DEBUG
-            print(resp)
+            logger.debug(pprint.pformat(resp))
             return resp
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
     
 
@@ -70,10 +81,11 @@ class DocumentManagerToolHandler(ToolHandler):
             self.doc_mgr.delete_collection(self.database, collection_name)
             resp = f"Collection '{collection_name}' deleted."
             # DEBUG
-            print(resp)
+            logger.debug(pprint.pformat(resp))
             return resp
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
     
 
@@ -88,12 +100,32 @@ class DocumentManagerToolHandler(ToolHandler):
             doc = self.doc_mgr.create_document(self.database, collection_name, document_id, document)
             resp = f"Document '{document_id}' created in collection '{collection_name}': {json.dumps(doc, indent=2)}."
             # DEBUG
-            print(resp)
+            logger.debug(pprint.pformat(resp))
             return resp
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
         
+
+    def add_field_to_document(self, input: dict):
+        try:
+            collection_name = input.get('collection_name')
+            document_id = input.get('document_id')
+            field_name = input.get('field_name')
+            field_value = input.get('field_value')
+            if not collection_name or not document_id or not field_name or not field_value:
+                return "collection_name, document_id, field_name, and field_value are required."
+            
+            doc = self.doc_mgr.add_field_to_document(self.database, collection_name, document_id, field_name, field_value)
+            resp = f"Document '{document_id}' updated in collection '{collection_name}' with field {field_name} = {field_value}."
+            # DEBUG
+            logger.debug(pprint.pformat(resp))
+            return resp
+        except Exception as e:
+            message = str(e)
+            logger.error(f"ERROR: {message}")
+            return f"ERROR: {message}"
 
     def delete_document(self, input: dict):
         try:
@@ -105,10 +137,11 @@ class DocumentManagerToolHandler(ToolHandler):
             doc = self.doc_mgr.delete_document(self.database, collection_name, document_id)
             resp = f"Document '{document_id}' has been deleted from collection '{collection_name}'."
             # DEBUG
-            print(resp)
+            logger.debug(pprint.pformat(resp))
             return resp
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
         
     
@@ -122,10 +155,11 @@ class DocumentManagerToolHandler(ToolHandler):
             doc = self.doc_mgr.delete_document(self.database, collection_name, link_id)
             resp = f"Link '{link_id}' has been deleted from collection '{collection_name}'."
             # DEBUG
-            print(resp)
+            logger.debug(pprint.pformat(resp))
             return resp
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
     
 
@@ -136,9 +170,10 @@ class DocumentManagerToolHandler(ToolHandler):
             if not collection_name or not document_id:
                 return "collection_name and document_id are required."
             doc = self.doc_mgr.get_document(self.database, collection_name, document_id)
-            return json.dumps(doc, indent=2)
+            return doc
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
     
 
@@ -153,10 +188,11 @@ class DocumentManagerToolHandler(ToolHandler):
                 return "source_collection_name, source_document_id, target_collection_name, target_document_id, and link_collection_name are required."
             link = self.doc_mgr.link_documents(self.database, source_collection_name, source_document_id, target_collection_name, target_document_id, link_collection_name)
             # DEBUG
-            print(link)
-            return json.dumps(link, indent=2)
+            logger.debug(pprint.pformat(link))
+            return link
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
         
 
@@ -169,9 +205,10 @@ class DocumentManagerToolHandler(ToolHandler):
             if not target_collection_name or not target_document_id or not from_collection_name or not link_collection_name:
                 return "target_collection_name, target_document_id, from_collection_name, and link_collection_name are required."
             docs = self.doc_mgr.list_documents_linked_to(self.database, target_collection_name, target_document_id, from_collection_name, link_collection_name)
-            return json.dumps(docs, indent=2)
+            return docs
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
     
 
@@ -184,9 +221,10 @@ class DocumentManagerToolHandler(ToolHandler):
             if not source_collection_name or not source_document_id or not target_collection_name or not link_collection_name:
                 return "source_collection_name, source_document_id, target_collection_name, and link_collection_name are required."
             docs = self.doc_mgr.list_documents_linked_from(self.database, source_collection_name, source_document_id, target_collection_name, link_collection_name)
-            return json.dumps(docs, indent=2)
+            return docs
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
     
 
@@ -196,9 +234,10 @@ class DocumentManagerToolHandler(ToolHandler):
             if not collection_name:
                 return "collection_name is required."
             docs = self.doc_mgr.list_documents(self.database, collection_name)
-            return json.dumps(docs, indent=2)
+            return docs
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
     
 
@@ -208,9 +247,10 @@ class DocumentManagerToolHandler(ToolHandler):
             if not collection_name:
                 return "link collection_name is required."
             docs = self.doc_mgr.list_links(self.database, collection_name)
-            return json.dumps(docs, indent=2)
+            return docs
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
     
 
@@ -224,6 +264,7 @@ class DocumentManagerToolHandler(ToolHandler):
             links = self.doc_mgr.list_inbound_links(self.database, target_collection_name, target_document_id, link_collection_name)
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
 
     def list_inbound_links(self, input: dict):
@@ -234,9 +275,10 @@ class DocumentManagerToolHandler(ToolHandler):
             if not target_collection_name or not target_document_id or not link_collection_name:
                 return "target_collection_name, target_document_id, and link_collection_name are required."
             links = self.doc_mgr.list_inbound_links(self.database, target_collection_name, target_document_id, link_collection_name)
-            return json.dumps(links, indent=2)
+            return links
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
     
 
@@ -248,34 +290,38 @@ class DocumentManagerToolHandler(ToolHandler):
             if not source_collection_name or not source_document_id or not link_collection_name:
                 return "source_collection_name, source_document_id, and link_collection_name are required."
             links = self.doc_mgr.list_outbound_links(self.database, source_collection_name, source_document_id, link_collection_name)
-            return json.dumps(links, indent=2)
+            return links
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
         
 
-    def list_document_collections(self, input: dict):
+    def list_document_collections(self, input: dict = None):
         try:
             collections = self.doc_mgr.list_document_collections(self.database)
-            return json.dumps(collections, indent=2)
+            return collections
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
     
 
-    def list_link_collections(self, input: dict):
+    def list_link_collections(self, input: dict = None):
         try:
             collections = self.doc_mgr.list_link_collections(self.database)
-            return json.dumps(collections, indent=2)
+            return collections
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"
 
 
-    def list_collections(self, input: dict):
+    def list_collections(self, input: dict = None):
         try:
             collections = self.doc_mgr.list_collections(self.database)
-            return json.dumps(collections, indent=2)
+            return collections
         except Exception as e:
             message = str(e)
+            logger.error(f"ERROR: {message}")
             return f"ERROR: {message}"

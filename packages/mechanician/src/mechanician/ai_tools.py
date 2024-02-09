@@ -2,11 +2,9 @@ from abc import ABC, abstractmethod
 import json
 import logging
 
-logger = logging.getLogger('mechanician.tool_handlers')
-logger.setLevel(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-
-class ToolHandler(ABC):
+class AITools(ABC):
 
     def call_function(self, function_name, call_id, args):
         # get method by name if it exists

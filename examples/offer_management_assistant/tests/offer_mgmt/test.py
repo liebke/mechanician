@@ -6,9 +6,7 @@ import json
 import os
 import logging
 
-logger = logging.getLogger('mechanician_offer_mgmt.test')
-logger.setLevel(level=logging.INFO)
-
+logger = logging.getLogger(__name__)
 
 def compare_dicts_ignore_order(dict1, dict2):
      if isinstance(dict1, dict) and isinstance(dict2, dict):
@@ -78,7 +76,7 @@ def ai_evaluator():
           [END OF PRODUCT OFFER DATA]
       """
 
-     return OpenAIChatAIConnector(instructions=instructions, 
+     return OpenAIChatAIConnector(system_instructions=instructions, 
                                   assistant_name="Task Evaluator")
 
 
@@ -95,9 +93,8 @@ class TestOfferMgmtAI(unittest.TestCase):
           try:
                database_name = "offer_mgmt_test_db"
                ai = ai_connector(database_name)
-               start_prompt = "START"
                print("\n")
-               evaluation, messages = run_task_evaluation(ai, start_prompt, ai_evaluator())
+               evaluation, messages = run_task_evaluation(ai, ai_evaluator())
                print("\n\n")
                print(f"EVALUATION: {evaluation}")
                
@@ -122,19 +119,19 @@ class TestOfferMgmtAI(unittest.TestCase):
                          "charge_relationships": {}}
                keys_to_remove = ["_rev", "_id", "_key"]
 
-               for product in ai.tool_handler.list_product_offers():
+               for product in ai.tools.list_product_offers():
                     gen_db["products"][product.get("_id")] = {k: v for k, v in product.items() 
                                                               if k not in keys_to_remove}
 
-               for charge in ai.tool_handler.list_charges():
+               for charge in ai.tools.list_charges():
                     gen_db["charges"][charge.get("_id")] = {k: v for k, v in charge.items() 
                                                             if k not in keys_to_remove}
 
-               for rel in ai.tool_handler.list_product_relationships():
+               for rel in ai.tools.list_product_relationships():
                     gen_db["product_relationships"][rel.get("_id")] = {k: v for k, v in rel.items() 
                                                                         if k not in keys_to_remove}
 
-               for rel in ai.tool_handler.list_charge_relationships():
+               for rel in ai.tools.list_charge_relationships():
                     gen_db["charge_relationships"][rel.get("_id")] = {k: v for k, v in rel.items() 
                                                                       if k not in keys_to_remove}
 
@@ -157,7 +154,7 @@ class TestOfferMgmtAI(unittest.TestCase):
 
           finally:
                # Delete test database
-                ai.tool_handler.doc_mgr.delete_database(database_name)
+                ai.tools.doc_mgr.delete_database(database_name)
 
 
 

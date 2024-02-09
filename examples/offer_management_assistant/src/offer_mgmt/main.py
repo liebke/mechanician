@@ -9,8 +9,7 @@ from offer_mgmt.tool_schemas import tool_schemas
 import json
 import logging
 
-logger = logging.getLogger('mechanician_offer_mgmt.main')
-logger.setLevel(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 DELETE_DB_ON_EXIT = False
 
@@ -27,8 +26,8 @@ def ai_connector(database_name):
 
     # Initialize the model
     # model = OpenAIAssistant(tool_schemas=tool_schemas, function_handler=call_function)
-    return OpenAIChatAIConnector(instructions=instructions, 
-                                 tool_schemas=tool_schemas, 
+    return OpenAIChatAIConnector(system_instructions=instructions, 
+                                 tool_instructions=tool_schemas, 
                                  tool_handler=OfferManagementToolHandler(database_name))
 
 
@@ -46,7 +45,7 @@ def main():
         # print(json.dumps(db, indent=4))
     finally:
         if DELETE_DB_ON_EXIT:
-            ai.tool_handler.doc_mgr.delete_database(database_name)
+            ai.tools.doc_mgr.delete_database(database_name)
 
 
 if __name__ == '__main__':

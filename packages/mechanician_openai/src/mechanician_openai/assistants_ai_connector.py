@@ -2,7 +2,7 @@
 from openai import OpenAI
 from rich.console import Console
 from mechanician.ai_connectors import AIConnector
-from mechanician.tool_handlers import ToolHandler
+from mechanician.ai_tools import AITools
 from mechanician.ux.util import print_markdown
 import time
 import os
@@ -10,8 +10,7 @@ import json
 from pprint import pprint
 import logging
 
-logger = logging.getLogger('mechanician_openai.assistants_ai_connector')
-logger.setLevel(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class OpenAIAssistantAIConnector(AIConnector):
 
@@ -21,51 +20,73 @@ class OpenAIAssistantAIConnector(AIConnector):
     ## INIT_MODEL
     ###############################################################################
 
-    def __init__(self, instructions, 
-                 tool_schemas=None, 
-                 tool_handler: 'ToolHandler'=None, 
-                 assistant_name="Mechanician Assistant",
+    def __init__(self, 
                  model_name=None,
                  api_key=None,
                  assistant_id=None,
                  create_new_assistant=None,
                  delete_assistant_on_exit=None):
 
-        self.model = {}
         self.STREAMING = False
-        self.model["ASSISTANT_NAME"] = assistant_name
-        self.model["ASSISTANT_ID"] = assistant_id or os.getenv("ASSISTANT_ID")
+        self.assistant = None
+        self.thread = None
+        self.assistant_id = assistant_id or os.getenv("ASSISTANT_ID")
         self.CREATE_NEW_ASSISTANT = create_new_assistant or os.getenv("CREATE_NEW_ASSISTANT") # False
         self.DELETE_ASSISTANT_ON_EXIT = delete_assistant_on_exit or os.getenv("DELETE_ASSISTANT_ON_EXIT") # False
-        self.model["MODEL_NAME"] = model_name or os.getenv("MODEL_NAME") or self.DEFAULT_MODEL_NAME
-        self.tool_schemas = tool_schemas
-        self.tool_handler = tool_handler
+        self.model_name = model_name or os.getenv("MODEL_NAME") or self.DEFAULT_MODEL_NAME
+        
         api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key)
-        self.instructions = instructions
+        self.tool_instructions = None
+        self.system_instructions = None
+        self.tools = None
         self.messages = []
 
-        self.console = Console()
 
-        print_markdown(self.console, f"* ASSISTANT_ID: {self.model['ASSISTANT_ID']}")
-        print_markdown(self.console, f"* CREATE_NEW_ASSISTANT: {self.model['CREATE_NEW_ASSISTANT']}")
-        print_markdown(self.console, f"* DELETE_ASSISTANT_ON_EXIT: {self.model['DELETE_ASSISTANT_ON_EXIT']}")
-        print_markdown(self.console, f"* MODEL_NAME: {self.model['MODEL_NAME']}")
+    ###############################################################################
+    ## INSTRUCT
+    ###############################################################################
+
+    def _instruct(self, system_instructions=None, 
+                 tool_instructions=None,
+                 tools: 'AITools'=None):
+        if system_instructions is not None:
+            self.system_instructions = system_instructions
+
+        if tool_instructions is not None:
+            self.tool_instructions = tool_instructions
+
+        if tools is not None:
+            self.tools = tools
+
+        
+    ###############################################################################
+    ## CONNECT
+    ###############################################################################
+
+    def _connect(self):
+
+        self.console = Console()
+        print_markdown(self.console, f"* ASSISTANT_ID: {self.assistant_id}")
+        print_markdown(self.console, f"* CREATE_NEW_ASSISTANT: {self.CREATE_NEW_ASSISTANT}")
+        print_markdown(self.console, f"* DELETE_ASSISTANT_ON_EXIT: {self.DELETE_ASSISTANT_ON_EXIT}")
+        print_markdown(self.console, f"* MODEL_NAME: {self.model_name}")
 
         if self.CREATE_NEW_ASSISTANT == "True":
             # Create an assistant with the OpenAI client
             print_markdown(self.console, "## Creating a new assistant...")
             self.assistant = self.client.beta.assistants.create(
                 name="Mechanician Assistant",
-                instructions=self.instructions,
-                model=self.model["MODEL_NAME"],
-                tools=self.tool_schemas
+                instructions=self.system_instructions,
+                model=self.model_name,
+                tools=self.tool_instructions
                 )
         else:
             print_markdown(self.console, "## Retrieving existing assistant...")
-            self.assistant = self.client.beta.assistants.retrieve(self.model["ASSISTANT_ID"])
+            self.assistant = self.client.beta.assistants.retrieve(self.assistant_id)
 
-        self.model["thread"] = self.client.beta.threads.create()
+        self.thread = self.client.beta.threads.create()
+        return self.assistant
 
 
     ###############################################################################
@@ -75,7 +96,10 @@ class OpenAIAssistantAIConnector(AIConnector):
     def submit_prompt(self, prompt):
         client = self.client
         assistant = self.assistant
-        thread = self.model["thread"]
+        if assistant is None:
+            assistant = self._connect()
+            
+        thread = self.thread
         # Create a new message with user input
         message = client.beta.threads.messages.create(
             thread_id=thread.id,
@@ -118,14 +142,15 @@ class OpenAIAssistantAIConnector(AIConnector):
                     # Call the function with the extracted name, ID, and arguments,
                     # and append the output to the tool_outputs list
                     tool_outputs.append({"tool_call_id": call_id,
-                                         "output": json.dumps(self.tool_handler.call_function(function_name, call_id, args))})
+                                         "output": json.dumps(self.tools.call_function(function_name, call_id, args))})
 
                 # Submit the outputs of the tools to the current run
-                run = client.beta.threads.runs.submit_tool_outputs(
-                    thread_id=thread.id,
-                    run_id=run.id,
-                    tool_outputs=tool_outputs
-                )
+                if tool_outputs:
+                    run = client.beta.threads.runs.submit_tool_outputs(
+                        thread_id=thread.id,
+                        run_id=run.id,
+                        tool_outputs=tool_outputs
+                    )
 
             elif run.status == 'pending':
                 print("PENDING...")
@@ -149,9 +174,7 @@ class OpenAIAssistantAIConnector(AIConnector):
     ## GET_MESSAGE_HISTORY
     ###############################################################################
     def get_message_history(self):
-        client = self.client
-        thread = self.model["thread"]
-        messages = client.beta.threads.messages.list(thread_id=thread.id)
+        messages = self.client.beta.threads.messages.list(thread_id=self.thread.id)
         messages_list = list(messages)
         return messages_list
 
@@ -162,6 +185,6 @@ class OpenAIAssistantAIConnector(AIConnector):
 
     def clean_up(self):
         client = self.client
-        client.beta.threads.delete(self.model["thread"].id)
+        client.beta.threads.delete(self.thread.id)
         if self.DELETE_ASSISTANT_ON_EXIT == "True":
             client.beta.assistants.delete(self.assistant.id)

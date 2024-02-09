@@ -1,18 +1,17 @@
 from mechanician.ux.util import print_markdown
-from mechanician.ai_connectors import AIConnector
+from mechanician.tag_ai import TAGAI
+# from mechanician.ai_connectors import AIConnector
 from rich.console import Console  
 import logging
 
-logger = logging.getLogger('mechanician.ux.cli')
-logger.setLevel(level=logging.INFO)
-
+logger = logging.getLogger(__name__)
 console = Console()
 
 ###############################################################################
 ## PREPRCOESS_PROMPT
 ###############################################################################
 
-def preprocess_prompt(ai, prompt):
+def preprocess_prompt(ai: 'TAGAI', prompt: str):
 
     if prompt.startswith('/file'):
         filename = prompt.replace('/file ', '', 1)
@@ -27,7 +26,7 @@ def preprocess_prompt(ai, prompt):
             print('')
 
     elif prompt.startswith('/bye'):
-        ai.model["RUNNING"] = False
+        ai.RUNNING = False
         prompt = ''
 
     return prompt
@@ -47,13 +46,12 @@ def print_header(name):
 ## RUN
 ###############################################################################
 
-def run(ai: AIConnector):
-    # print_markdown(console, f"* MODEL_NAME: {llm_con.model['MODEL_NAME']}")
-    print_header(name=ai.model['ASSISTANT_NAME'])
-    # Loop forever, processing user input from the terminal
-    ai.model["RUNNING"] = True
+def run(ai: TAGAI):
+    print_header(name=ai.name)
+    # Loop while RUNNING is True, processing user input from the terminal
+    ai.RUNNING = True
     try:
-        while ai.model["RUNNING"] is True:
+        while ai.RUNNING is True:
             # Get the user's prompt
             prompt = input("> ")
 
@@ -69,7 +67,7 @@ def run(ai: AIConnector):
 
             resp = ai.submit_prompt(prompt)
 
-            if ai.STREAMING == False:
+            if not ai.streaming_connector():
                 print_markdown(console, resp)
                 print('')
 
@@ -80,7 +78,7 @@ def run(ai: AIConnector):
 
             print('\n')
 
-        logging.info(f"Exiting {ai.model['ASSISTANT_NAME']}...")
+        logging.info(f"Exiting {ai.name}...")
         return ai
             
     except KeyboardInterrupt:

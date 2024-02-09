@@ -6,9 +6,49 @@ from mechanician.ai_connectors import AIConnector
 iat_instructions = """
 Below is training session data recording during the interactive session between a EVALUATOR AI and an AI ASSISTANT, it includes:
 
-sys_instructions: Instructions provided to the AI describing it role
+system_instructions: Instructions provided to the AI describing it role
 transcript: a transcript of the interaction between the ASSISTANT, the EVALUATOR, and the TOOLS the ASSISTANT used
-tool_schemas: A description of each tool and its parameters
+tool_instructions: A description of each tool and its parameters
+test_results: If any where available
+
+Please identify any errors made by the Assistant, as revealed through feedback within the transcript or from tool outcomes. 
+Also, highlight behaviors or responses that were useful or explicitly requested by the user.
+
+"""
+
+iat_instructions_v2 = """
+Below is training session data recording during the interactive session between a EVALUATOR AI and an AI ASSISTANT, it includes:
+
+system_instructions: Instructions provided to the AI describing it role
+transcript: a transcript of the interaction between the ASSISTANT, the EVALUATOR, and the TOOLS the ASSISTANT used
+tool_instructions: A description of each tool and its parameters
+test_results: If any where available
+
+Your task is to refine and improve the instructions for the ASSISTANT based on an analysis of a 
+provided interaction transcript, original system instructions, and tool instructions. 
+
+Identify any errors made by the Assistant, as revealed through feedback within the transcript or 
+from tool outcomes. 
+
+Also, highlight behaviors or responses that were useful or explicitly requested by the user. 
+
+Use these insights to create enhanced instructions that clearly articulate how the Assistant 
+should address identified issues, incorporate user preferences, and replicate successful strategies. 
+
+Provide the revised instructions in a structured, clear format with examples where applicable.
+
+Please provide revised and improved system_instructions to the AI so that it can 
+perform its role better, please start your response with "[system_instructions]", only include 
+the revised instructions and no other comments, and when complete end with "[end system_instructions]" 
+and no other words.
+"""
+
+iat_instructions_v1 = """
+Below is training session data recording during the interactive session between a EVALUATOR AI and an AI ASSISTANT, it includes:
+
+system_instructions: Instructions provided to the AI describing it role
+transcript: a transcript of the interaction between the ASSISTANT, the EVALUATOR, and the TOOLS the ASSISTANT used
+tool_instructions: A description of each tool and its parameters
 test_results: If any where available
 
 1. I would like you to evaluate the ASSISTANT AI's performance based on the instructions it was provided using the training transcript.
@@ -19,24 +59,24 @@ test_results: If any where available
 
 4. I would like you to improve the tool descriptions and suggest if the output of each tool can be improved.
 
-5. Lastly, I would like you to provide revised and improved sys_instructions to the AI so that it can perform its role better, please start your response with "[sys_instructions]",
-  only include the revised instructions and no other comments, and when complete end with "[end sys_instructions]" and no other words.
+5. Lastly, I would like you to provide revised and improved system_instructions to the AI so that it can perform its role better, please start your response with "[system_instructions]",
+  only include the revised instructions and no other comments, and when complete end with "[end system_instructions]" and no other words.
 
 """
 
 
 class InstructionAutoTuning():
 
-    def __init__(self, ai: AIConnector):
-        self.ai = ai
+    def __init__(self, ai_connector: AIConnector):
+        self.ai_connector = ai_connector
         self.iat_instructions = iat_instructions
 
 
 
     # def get_tool_descriptions(self):
-    #     tool_schemas = self.ai.tool_schemas
+    #     tool_instructions = self.ai.tool_instructions
     #     func_descriptions = []
-    #     for tool_schema in tool_schemas:
+    #     for tool_schema in tool_instructions:
     #         func = tool_schema.get("function")
     #         params_desc = [
     #             {"name": name, "description": details["description"]}
@@ -78,12 +118,10 @@ class InstructionAutoTuning():
     
     def get_training_session_data(self):
         training_session_data = {}
-        # training_session_data["tool_descriptions"] = self.get_tool_descriptions()
-        training_session_data["tool_schemas"] = self.ai.tool_schemas
-        training_session_data["sys_instructions"] = self.ai.instructions
-        training_session_data["transcript"] = self.ai.messages
+        training_session_data["tool_instructions"] = self.ai_connector.tool_instructions
+        training_session_data["system_instructions"] = self.ai_connector.system_instructions
+        training_session_data["transcript"] = self.ai_connector.get_message_history()
         training_session_data["test_results"] = None
-        # return yaml.dump(training_session_data, default_flow_style=False)
         return json.dumps(training_session_data, indent=2)
     
 
@@ -99,8 +137,8 @@ class InstructionAutoTuning():
     def get_iat_prompt(self, training_session_path): 
         instructions = self.iat_instructions
         transcript = self.read_training_session_data(training_session_path)
-        training_session_data = {"sys_instructions": transcript.get("sys_instructions"),
-                                "tool_schemas": transcript.get("tool_schemas"),
+        training_session_data = {"system_instructions": transcript.get("system_instructions"),
+                                "tool_instructions": transcript.get("tool_instructions"),
                                 "transcript": transcript.get("transcript"),
                                 "test_results": transcript.get("test_results")}
         
@@ -121,6 +159,6 @@ class InstructionAutoTuning():
 
 
     def revise_instructions(self, revised_instructions):
-        self.ai.instructions = revised_instructions
-        return self.ai.instructions
+        self.ai_connector.instructions = revised_instructions
+        return self.ai_connector.instructions
     

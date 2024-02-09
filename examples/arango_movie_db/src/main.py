@@ -1,41 +1,35 @@
 from mechanician.ux.cli import run
 from dotenv import load_dotenv
+from mechanician.tag_ai import TAGAI
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
-from revised_instructions import instructions
-from mechanician_arangodb.document_tool_handler import DocumentManagerToolHandler
-from mechanician_arangodb.doc_mgr_tool_schema import tool_schemas
+from revised_instructions import system_instructions
+from mechanician_arangodb.document_ai_tools import DocumentManagerAITools
+from mechanician_arangodb.doc_mgr_tool_instructions import tool_instructions
 from arango import ArangoClient
 import os
 import logging
+# FOR TESTING
+from mechanician_openai.assistants_ai_connector import OpenAIAssistantAIConnector
 
-logger = logging.getLogger('mechanician_arangodb.main')
-logger.setLevel(level=logging.INFO)
 
-
-# instructions = f"""
-# You are an Document Manager Assistant with access to tools that can help you manage JSON documents.
-
-# You can create 
-# * JSON Document Databases, 
-# * and within those databases you can create Collections that will contain JSON Documents.
-# * You can create JSON Documents.
-# * You can create special collections containing Links which are used to link documents together.
-# * You can Link Documents together, using links that you create in the special Link Collections.
-# """
+logger = logging.getLogger(__name__)
 
 ###############################################################################
 ## AI Connector
 ###############################################################################
 
-def ai_connector(tool_handler):
-
-    # with open("./instructions.md", 'r') as file:
-    #     instructions = file.read()
-
-   
-    return OpenAIChatAIConnector(instructions=instructions, 
-                                 tool_schemas=tool_schemas, 
-                                 tool_handler=tool_handler)
+def init_ai(database_name="test_db"):
+    arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
+    doc_tools = DocumentManagerAITools(arango_client, 
+                                       database_name=database_name)
+    # ai_connector = OpenAIChatAIConnector()
+    ai_connector = OpenAIAssistantAIConnector()
+    ai = TAGAI(ai_connector=ai_connector, 
+               system_instructions=system_instructions, 
+               tool_instructions=tool_instructions,
+               tools=doc_tools,
+               name="Movie Document Manager AI")
+    return ai
 
 
 ###############################################################################
@@ -45,16 +39,12 @@ def ai_connector(tool_handler):
 def main():
     try: 
         load_dotenv()
-        # Initialize the ArangoDB client
-        arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
-        # Initialize the model
-        doc_tool_handler = DocumentManagerToolHandler(arango_client, 
-                                                      database_name="test_db")
-        ai = ai_connector(doc_tool_handler)
+        database_name = "test_db"
+        ai = init_ai(database_name)
         run(ai)
         
     finally:
-        doc_tool_handler.doc_mgr.delete_database("test_db")
+        ai.tools.doc_mgr.delete_database(database_name)
 
 if __name__ == '__main__':
     main()

@@ -1,12 +1,11 @@
 from mechanician.ux.util import print_markdown
-from mechanician.ai_connectors import AIConnector
+# from mechanician.ai_connectors import AIConnector
+from mechanician.tag_ai import TAGAI
 from rich.console import Console
 from typing import List
 import logging
 
-logger = logging.getLogger('mechanician.testing')
-logger.setLevel(level=logging.INFO)
-
+logger = logging.getLogger(__name__)
 
 ###############################################################################
 ## TEST CLASS
@@ -35,7 +34,7 @@ class QandATest:
 ## RUN_Q_AND_A_EVALUATIONS
 ###############################################################################
 
-def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluator=None):
+def run_q_and_a_evaluations(ai: TAGAI, tests: List[QandATest], ai_evaluator:TAGAI=None):
     # If ai_evaluator is None, have the ai self-evaluate
     if ai_evaluator is None:
         ai_evaluator = ai
@@ -53,7 +52,7 @@ def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluato
             messages.append(f"EVALUATOR: {prompt}")
             resp = ai.submit_prompt(test.prompt)
 
-            if ai.STREAMING == False:
+            if not ai.streaming_connector():
                 print_markdown(console, resp)
                 print('')
 
@@ -84,8 +83,8 @@ def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluato
             print_markdown(console, "------------------")
             print('\n')
 
-        logging.info(f"Examinee Exiting ({ai.model['ASSISTANT_NAME']})...")
-        logging.info(f"Evaluator Exiting ({ai_evaluator.model['ASSISTANT_NAME']})...")
+        logging.info(f"Examinee Exiting ({ai.name})...")
+        logging.info(f"Evaluator Exiting ({ai_evaluator.name})...")
 
         return results, messages
             
@@ -105,7 +104,7 @@ def run_q_and_a_evaluations(ai: AIConnector, tests: List[QandATest], ai_evaluato
 ## RUN_TASK_EVALUATION
 ###############################################################################
 
-def run_task_evaluation(ai: AIConnector, start_prompt, ai_evaluator):
+def run_task_evaluation(ai: TAGAI, ai_evaluator: TAGAI, start_prompt: str="START"):
     messages = []
     console = Console()
     prompt = start_prompt
@@ -132,8 +131,8 @@ def run_task_evaluation(ai: AIConnector, start_prompt, ai_evaluator):
             assist_resp = ai.submit_prompt(eval_resp)
             messages.append(f"ASSISTANT: {assist_resp}")
 
-            if ai.STREAMING == False:
-                print_markdown(console, resp)
+            if (not ai.streaming_connector()) and (assist_resp is not None):
+                print_markdown(console, f"**ASSISTANT** {assist_resp}")
                 print('')
 
             # resp = None, tool_calls were processed and we need to get a new stream to see the model's response

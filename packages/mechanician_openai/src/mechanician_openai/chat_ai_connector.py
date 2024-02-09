@@ -1,15 +1,14 @@
 
 from openai import OpenAI
 from mechanician.ai_connectors import StreamingAIConnector
-from mechanician.tool_handlers import ToolHandler
+from mechanician.ai_tools import AITools
 from mechanician.ux.stream_printer import StreamPrinter, SimpleStreamPrinter
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
 
-logger = logging.getLogger('mechanician_openai.chat_ai_connector')
-logger.setLevel(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class OpenAIChatAIConnector(StreamingAIConnector):
     DEFAULT_MODEL_NAME="gpt-4-1106-preview"
@@ -18,29 +17,53 @@ class OpenAIChatAIConnector(StreamingAIConnector):
     ## INIT_MODEL
     ###############################################################################
 
-    def __init__(self, instructions, 
-                 tool_schemas=None, 
-                 tool_handler: 'ToolHandler'=None, 
+    def __init__(self, 
                  stream_printer = SimpleStreamPrinter(),
-                 assistant_name="Mechanician AI",
                  model_name=None,
                  api_key=None,
                  max_thread_workers=None):
-        self.model = {}
+        
         self.STREAMING = True
-        self.model["ASSISTANT_NAME"] = assistant_name
-        self.model["MODEL_NAME"] = model_name or os.getenv("MODEL_NAME") or self.DEFAULT_MODEL_NAME
+        self.model_name = model_name or os.getenv("MODEL_NAME") or self.DEFAULT_MODEL_NAME
         self.MAX_THREAD_WORKERS = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
-        self.tool_schemas = tool_schemas
-        self.tool_handler = tool_handler
         self.stream_printer = stream_printer
         api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key)
-        self.client = self.client
-        self.instructions = instructions
 
+        self.tool_instructions = None
+        self.system_instructions = None
+        self.tools = None
+        self.messages = []
+
+
+    ###############################################################################
+    ## INSTRUCT
+    ###############################################################################
+
+    def _instruct(self, system_instructions=None, 
+                  tool_instructions=None,
+                  tools: 'AITools'=None):
+        self.system_instructions = None
+        self.tool_instructions = None
+        self.tools = None
+
+        if system_instructions is not None:
+            self.system_instructions = system_instructions
+
+        if tool_instructions is not None:
+            self.tool_instructions = tool_instructions
+
+        if tools is not None:
+            self.tools = tools
+        
+
+    ###############################################################################
+    ## CONNECT
+    ###############################################################################
+
+    def _connect(self):
         # Initialize the conversation with a system message
-        self.messages = [{"role": "system", "content": self.instructions}]
+            self.messages = [{"role": "system", "content": self.system_instructions}]
 
     ###############################################################################
     ## SUBMIT_PROMPT
@@ -53,9 +76,9 @@ class OpenAIChatAIConnector(StreamingAIConnector):
             self.messages.append({"role": "user", "content": prompt})
 
         stream = client.chat.completions.create(
-            model=self.model["MODEL_NAME"],
+            model=self.model_name,
             messages=self.messages,
-            tools=self.tool_schemas,
+            tools=self.tool_instructions,
             stream=True,
         )
         return stream
@@ -108,7 +131,7 @@ class OpenAIChatAIConnector(StreamingAIConnector):
     ###############################################################################
 
     def process_tool_call(self, tc):
-        function_resp = json.dumps(self.tool_handler.call_function(tc['function']['name'], 
+        function_resp = json.dumps(self.tools.call_function(tc['function']['name'], 
                                                                    tc['id'], 
                                                                    tc['function']['arguments']))
         return tc, function_resp

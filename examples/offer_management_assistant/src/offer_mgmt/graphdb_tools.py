@@ -1,7 +1,7 @@
 # Import Markdown and Console from rich library for pretty terminal outputs
 import traceback
 from mechanician.ux.util import print_markdown
-from mechanician.tool_handlers import ToolHandler
+from mechanician.ai_tools import AITools
 # from rich.markdown import Markdown
 from rich.console import Console
 import json
@@ -11,9 +11,7 @@ from arango import ArangoClient
 from mechanician_arangodb.document_manager import DocumentManager
 import logging
 
-logger = logging.getLogger('mechanician_offer_mgmt.graphdb_tools')
-logger.setLevel(level=logging.INFO)
-
+logger = logging.getLogger(__name__)
 
 console = Console()
 
@@ -39,7 +37,7 @@ def print_output(function_name, input, output):
     return
 
 
-class OfferManagementToolHandler(ToolHandler):
+class OfferManagementToolHandler(AITools):
 
     def __init__(self, database_name="offer_mgmt_db"):
         try:

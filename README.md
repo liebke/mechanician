@@ -361,8 +361,7 @@ class TestAI(unittest.TestCase):
    def test_ai(self):
       ai = init_ai()
       evaluator_at = init_evaluator_ai()
-      start_prompt = "START"
-      evaluation, messages = run_task_evaluation(ai, start_prompt, evaluator_ai)
+      evaluation, messages = run_task_evaluation(ai, evaluator_ai)
 
       self.assertEqual(evaluation, "PASS")
 ```

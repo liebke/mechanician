@@ -4,9 +4,7 @@ from main import ai_connector
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
 import logging
 
-logger = logging.getLogger('mechanician_tmdb.test')
-logger.setLevel(level=logging.INFO)
-
+logger = logging.getLogger(__name__)
 
 ###############################################################################
 ## AI_EVALUATOR
@@ -16,8 +14,8 @@ def ai_evaluator():
     instructions = """You are a test-evaluator for an AI assistant. You are given a question and an answer. Your job is to determine if the answer is correct. If the answer is correct, respond with PASS. If the answer is incorrect, respond with FAIL."""
     tool_schemas = None
     tool_handler = None
-    return OpenAIChatAIConnector(instructions=instructions, 
-                                 tool_schemas=tool_schemas, 
+    return OpenAIChatAIConnector(system_instructions=instructions, 
+                                 tool_instructions=tool_schemas, 
                                  tool_handler=tool_handler,
                                  assistant_name="QandA Test Evaluator")
 

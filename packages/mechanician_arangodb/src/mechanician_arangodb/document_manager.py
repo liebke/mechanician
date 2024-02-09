@@ -2,8 +2,7 @@ from arango import ArangoClient
 import os
 import logging
 
-logger = logging.getLogger('mechanician_arangodb.document_manager')
-logger.setLevel(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class DocumentManager:
 
@@ -231,3 +230,9 @@ class DocumentManager:
                                  if database.collection(col.get('name')).properties().get('edge')
                                     and not col['name'].startswith('_')]
         return edge_collection_names
+    
+    def add_field_to_document(self, database, collection_name, document_id, field_name, field_value):
+        collection = database.collection(collection_name)
+        document = collection.get(document_id)
+        document[field_name] = field_value
+        return collection.update(document)

@@ -7,9 +7,7 @@ from dotenv import load_dotenv
 import os
 import logging
 
-logger = logging.getLogger('mechanician_tmdb.main')
-logger.setLevel(level=logging.INFO)
-
+logger = logging.getLogger(__name__)
 
 
 ###############################################################################
@@ -31,8 +29,8 @@ def ai_connector():
     #                                   assistant_name="TMDB AI")
 
     # Initialize the connection to the AI assistant
-    ai = OpenAIChatAIConnector(instructions=instructions, 
-                               tool_schemas=tool_schemas, 
+    ai = OpenAIChatAIConnector(system_instructions=instructions, 
+                               tool_instructions=tool_schemas, 
                                tool_handler=tmdb_handler,
                                assistant_name="TMDB AI" )
     return ai

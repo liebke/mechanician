@@ -1,9 +1,9 @@
-from mechanician.tool_handlers import ToolHandler
+from mechanician.ai_tools import AITools
 from arango import ArangoClient
 import json
 from mechanician_arangodb.document_manager import DocumentManager
 
-class DocumentManagerToolHandler(ToolHandler):
+class DocumentManagerToolHandler(AITools):
     def __init__(self, 
                  client: ArangoClient, 
                  database_name: str,

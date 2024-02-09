@@ -1,12 +1,10 @@
 
 from abc import ABC, abstractmethod
 from mechanician.ux.stream_printer import StreamPrinter
-from mechanician.tool_handlers import ToolHandler
+from mechanician.ai_tools import AITools
 import logging
 
-logger = logging.getLogger('mechanician.ai_connectors')
-logger.setLevel(level=logging.INFO)
-
+logger = logging.getLogger(__name__)
 
 class AIConnector(ABC):
 
@@ -16,7 +14,7 @@ class AIConnector(ABC):
 
     @abstractmethod
     def __init__(self, instructions, tool_schemas, 
-                 function_handler : 'ToolHandler', name):
+                 function_handler : 'AITools', name):
         pass
 
     @abstractmethod
@@ -36,7 +34,7 @@ class StreamingAIConnector(AIConnector):
 
     @abstractmethod
     def __init__(self, instructions, tool_schemas, 
-                 function_handler : 'ToolHandler', 
+                 function_handler : 'AITools', 
                  stream_printer : 'StreamPrinter',
                  name: str):
         pass

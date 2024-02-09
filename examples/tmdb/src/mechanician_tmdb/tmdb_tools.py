@@ -3,18 +3,17 @@ from dotenv import load_dotenv
 import os
 from pprint import pprint
 import json
-from mechanician.tool_handlers import ToolHandler
+from mechanician.ai_tools import AITools
 import webbrowser
 import logging
 
-logger = logging.getLogger('mechanician_tmdb.tmdb_tools')
-logger.setLevel(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # https://developer.themoviedb.org
 
 load_dotenv()
 
-class TMDbHandler(ToolHandler):
+class TMDbHandler(AITools):
     """Class for interacting with the TMDb API."""
 
     def __init__(self, api_key):
