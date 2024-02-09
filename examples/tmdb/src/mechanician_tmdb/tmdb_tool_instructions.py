@@ -1,4 +1,4 @@
-tool_schemas = [
+tool_instructions = [
         {
             "type": "function",
             "function": {

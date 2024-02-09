@@ -1,8 +1,9 @@
 from mechanician.ux.cli import run
+from mechanician.tag_ai import TAGAI
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
 # from mechanician_openai.assistants_ai_connector import OpenAIAssistantAIConnector
-from tmdb_tools import TMDbHandler
-from tmdb_tool_schemas import tool_schemas
+from tmdb_ai_tools import TMDbAITools
+from tmdb_tool_instructions import tool_instructions
 from dotenv import load_dotenv
 import os
 import logging
@@ -14,25 +15,21 @@ logger = logging.getLogger(__name__)
 ## AI Connector
 ###############################################################################
 
-def ai_connector():
+def init_ai():
     # Load environment variables from a .env file
     load_dotenv()
 
     with open("./resources/instructions.md", 'r') as file:
         instructions = file.read()
 
-    tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
-
-    # return OpenAIAssistantAIConnector(instructions=instructions, 
-    #                                   tool_schemas=tool_schemas, 
-    #                                   tool_handler=tmdb_handler,
-    #                                   assistant_name="TMDB AI")
-
+    tmdb_tools = TMDbAITools(os.getenv("TMDB_READ_ACCESS_TOKEN"))
     # Initialize the connection to the AI assistant
-    ai = OpenAIChatAIConnector(system_instructions=instructions, 
-                               tool_instructions=tool_schemas, 
-                               tool_handler=tmdb_handler,
-                               assistant_name="TMDB AI" )
+    ai_connector = OpenAIChatAIConnector()
+    ai = TAGAI(ai_connector,
+               system_instructions=instructions, 
+               tool_instructions=tool_instructions, 
+               tools=tmdb_tools,
+               name="TMDB AI" )
     return ai
 
 ###############################################################################
@@ -40,7 +37,7 @@ def ai_connector():
 ###############################################################################
 
 def main():
-    ai = ai_connector()
+    ai = init_ai()
     run(ai)
 
 if __name__ == '__main__':

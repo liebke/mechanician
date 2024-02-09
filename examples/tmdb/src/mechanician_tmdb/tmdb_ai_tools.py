@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 load_dotenv()
 
-class TMDbHandler(AITools):
+class TMDbAITools(AITools):
     """Class for interacting with the TMDb API."""
 
     def __init__(self, api_key):
@@ -127,7 +127,7 @@ def test():
     # Example usage
     api_key = os.getenv("TMDB_API_KEY")
     api_key = os.getenv("TMDB_READ_ACCESS_TOKEN")
-    tmdb = TMDbHandler(api_key)
+    tmdb = TMDbAITools(api_key)
 
     # # Search for a movie
     # movie_title = "Inception"

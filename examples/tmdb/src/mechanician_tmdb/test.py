@@ -1,7 +1,8 @@
 from mechanician.testing import QandATest, run_q_and_a_evaluations
 import unittest
-from main import ai_connector
+from main import init_ai
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
+from mechanician.tag_ai import TAGAI
 import logging
 
 logger = logging.getLogger(__name__)
@@ -12,12 +13,10 @@ logger = logging.getLogger(__name__)
 
 def ai_evaluator():
     instructions = """You are a test-evaluator for an AI assistant. You are given a question and an answer. Your job is to determine if the answer is correct. If the answer is correct, respond with PASS. If the answer is incorrect, respond with FAIL."""
-    tool_schemas = None
-    tool_handler = None
-    return OpenAIChatAIConnector(system_instructions=instructions, 
-                                 tool_instructions=tool_schemas, 
-                                 tool_handler=tool_handler,
-                                 assistant_name="QandA Test Evaluator")
+    ai_connector = OpenAIChatAIConnector()
+    return TAGAI(ai_connector,
+                 system_instructions=instructions, 
+                 name="QandA Test Evaluator")
 
 
 ###############################################################################
@@ -27,7 +26,7 @@ def ai_evaluator():
 class TestTMDbAI(unittest.TestCase):
 
     def test_ai_responses(self):
-        ai = ai_connector()
+        ai = init_ai()
         tests = [QandATest(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
                            expected="Anya Taylor-Joy"),
                  QandATest(prompt="What is the name of the actor plays Ken in the Barbie movie?",
