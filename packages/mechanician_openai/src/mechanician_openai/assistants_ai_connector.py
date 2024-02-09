@@ -141,9 +141,16 @@ class OpenAIAssistantAIConnector(AIConnector):
 
                     # Call the function with the extracted name, ID, and arguments,
                     # and append the output to the tool_outputs list
+                    logger.info(f"Calling external function: {function_name}...")
+                    resp = self.tools.call_function(function_name, call_id, args)
+                    if resp is not None:
+                        resp_str = json.dumps(resp)
+                    else:
+                        resp_str = ""
+                    
                     tool_outputs.append({"tool_call_id": call_id,
-                                         "output": json.dumps(self.tools.call_function(function_name, call_id, args))})
-
+                                            "output": resp_str})
+                    
                 # Submit the outputs of the tools to the current run
                 if tool_outputs:
                     run = client.beta.threads.runs.submit_tool_outputs(
@@ -153,7 +160,7 @@ class OpenAIAssistantAIConnector(AIConnector):
                     )
 
             elif run.status == 'pending':
-                print("PENDING...")
+                logger.info("PENDING...")
                 time.sleep(0.5)  # wait for 1 seconds before the next check
 
             elif run.status == 'failed':

@@ -22,8 +22,12 @@ def init_ai(database_name="test_db"):
     arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
     doc_tools = DocumentManagerAITools(arango_client, 
                                        database_name=database_name)
-    # ai_connector = OpenAIChatAIConnector()
-    ai_connector = OpenAIAssistantAIConnector()
+    
+    if os.getenv("USE_ASSISTANT_API", "False") == "True":
+        ai_connector = OpenAIAssistantAIConnector()
+    else:
+        ai_connector = OpenAIChatAIConnector()
+
     ai = TAGAI(ai_connector=ai_connector, 
                system_instructions=system_instructions, 
                tool_instructions=tool_instructions,

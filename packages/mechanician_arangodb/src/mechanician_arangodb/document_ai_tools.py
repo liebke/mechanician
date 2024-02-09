@@ -6,10 +6,10 @@ import logging
 import pprint
 
 logger = logging.getLogger(__name__)
-logger.setLevel(level=logging.DEBUG)
+logger.setLevel(level=logging.INFO)
 
 handler = logging.StreamHandler()
-handler.setLevel(logging.DEBUG)
+handler.setLevel(logging.INFO)
 logger.addHandler(handler)
 
 
@@ -42,12 +42,14 @@ class DocumentManagerAITools(AITools):
         try:
             collection_name = input.get('collection_name')
             if not collection_name:
-                return "collection_name is required."
+                resp = "collection_name is required."
+                logger.info(resp)
+                return resp
             
             collection = self.doc_mgr.create_document_collection(self.database, collection_name)
             resp = f"Collection '{collection_name}' created."
             # DEBUG
-            logger.debug(pprint.pformat(resp))
+            logger.info(pprint.pformat(resp))
             return resp
         except Exception as e:
             message = str(e)
@@ -59,12 +61,14 @@ class DocumentManagerAITools(AITools):
         try:
             link_collection_name = input.get('link_collection_name')
             if not link_collection_name:
-                return "link_collection_name is required."
+                resp = "link_collection_name is required."
+                logger.info(resp)
+                return resp
             
             link_collection = self.doc_mgr.create_link_collection(self.database, link_collection_name)
             resp = f"Link collection '{link_collection_name}' created."
             # DEBUG
-            logger.debug(pprint.pformat(resp))
+            logger.info(resp)
             return resp
         except Exception as e:
             message = str(e)
@@ -76,12 +80,14 @@ class DocumentManagerAITools(AITools):
         try:
             collection_name = input.get('collection_name')
             if not collection_name:
-                return "collection_name is required."
+                resp = "collection_name is required."
+                logger.info(resp)
+                return resp
             
             self.doc_mgr.delete_collection(self.database, collection_name)
             resp = f"Collection '{collection_name}' deleted."
             # DEBUG
-            logger.debug(pprint.pformat(resp))
+            logger.info(resp)
             return resp
         except Exception as e:
             message = str(e)
@@ -95,12 +101,14 @@ class DocumentManagerAITools(AITools):
             document_id = input.get('document_id')
             document = input.get('document')
             if not collection_name or not document_id or not document:
-                return "collection_name, document_id, and document are required."
+                resp = "collection_name, document_id, and document are required."
+                logger.info(resp)
+                return resp
             
             doc = self.doc_mgr.create_document(self.database, collection_name, document_id, document)
             resp = f"Document '{document_id}' created in collection '{collection_name}': {json.dumps(doc, indent=2)}."
             # DEBUG
-            logger.debug(pprint.pformat(resp))
+            logger.debug(resp)
             return resp
         except Exception as e:
             message = str(e)
@@ -115,12 +123,14 @@ class DocumentManagerAITools(AITools):
             field_name = input.get('field_name')
             field_value = input.get('field_value')
             if not collection_name or not document_id or not field_name or not field_value:
-                return "collection_name, document_id, field_name, and field_value are required."
+                resp = "collection_name, document_id, field_name, and field_value are required."
+                logger.info(resp)
+                return resp
             
             doc = self.doc_mgr.add_field_to_document(self.database, collection_name, document_id, field_name, field_value)
             resp = f"Document '{document_id}' updated in collection '{collection_name}' with field {field_name} = {field_value}."
             # DEBUG
-            logger.debug(pprint.pformat(resp))
+            logger.info(resp)
             return resp
         except Exception as e:
             message = str(e)
@@ -132,12 +142,14 @@ class DocumentManagerAITools(AITools):
             collection_name = input.get('collection_name')
             document_id = input.get('document_id')
             if not collection_name or not document_id:
-                return "collection_name and document_id are required."
+                resp = "collection_name and document_id are required."
+                logger.info(resp)
+                return resp
             
             doc = self.doc_mgr.delete_document(self.database, collection_name, document_id)
             resp = f"Document '{document_id}' has been deleted from collection '{collection_name}'."
             # DEBUG
-            logger.debug(pprint.pformat(resp))
+            logger.info(resp)
             return resp
         except Exception as e:
             message = str(e)
@@ -150,12 +162,14 @@ class DocumentManagerAITools(AITools):
             collection_name = input.get('collection_name')
             link_id = input.get('link_id')
             if not collection_name or not link_id:
-                return "collection_name and link_id are required."
+                resp = "collection_name and link_id are required."
+                logger.info(resp)
+                return resp
             
             doc = self.doc_mgr.delete_document(self.database, collection_name, link_id)
             resp = f"Link '{link_id}' has been deleted from collection '{collection_name}'."
             # DEBUG
-            logger.debug(pprint.pformat(resp))
+            logger.info(resp)
             return resp
         except Exception as e:
             message = str(e)
@@ -168,8 +182,11 @@ class DocumentManagerAITools(AITools):
             collection_name = input.get('collection_name')
             document_id = input.get('document_id')
             if not collection_name or not document_id:
-                return "collection_name and document_id are required."
+                resp = "collection_name and document_id are required."
+                logger.info(resp)
+                return resp
             doc = self.doc_mgr.get_document(self.database, collection_name, document_id)
+            logger.debug(doc)
             return doc
         except Exception as e:
             message = str(e)
@@ -185,11 +202,12 @@ class DocumentManagerAITools(AITools):
             target_document_id = input.get('target_document_id')
             link_collection_name = input.get('link_collection_name')
             if not source_collection_name or not source_document_id or not target_collection_name or not target_document_id or not link_collection_name:
-                return "source_collection_name, source_document_id, target_collection_name, target_document_id, and link_collection_name are required."
+                resp = "source_collection_name, source_document_id, target_collection_name, target_document_id, and link_collection_name are required."
+                logger.info(resp)
+                return resp
             link = self.doc_mgr.link_documents(self.database, source_collection_name, source_document_id, target_collection_name, target_document_id, link_collection_name)
-            # DEBUG
-            logger.debug(pprint.pformat(link))
-            return link
+            logger.info(f"Link created: {source_collection_name}/{source_document_id} -> {link_collection_name} -> {target_collection_name}/{target_document_id}")
+            return
         except Exception as e:
             message = str(e)
             logger.error(f"ERROR: {message}")
@@ -203,7 +221,9 @@ class DocumentManagerAITools(AITools):
             from_collection_name = input.get('from_collection_name')
             link_collection_name = input.get('link_collection_name')
             if not target_collection_name or not target_document_id or not from_collection_name or not link_collection_name:
-                return "target_collection_name, target_document_id, from_collection_name, and link_collection_name are required."
+                resp = "target_collection_name, target_document_id, from_collection_name, and link_collection_name are required."
+                logger.info(resp)
+                return resp
             docs = self.doc_mgr.list_documents_linked_to(self.database, target_collection_name, target_document_id, from_collection_name, link_collection_name)
             return docs
         except Exception as e:
@@ -219,7 +239,9 @@ class DocumentManagerAITools(AITools):
             target_collection_name = input.get('target_collection_name')
             link_collection_name = input.get('link_collection_name')
             if not source_collection_name or not source_document_id or not target_collection_name or not link_collection_name:
-                return "source_collection_name, source_document_id, target_collection_name, and link_collection_name are required."
+                resp = "source_collection_name, source_document_id, target_collection_name, and link_collection_name are required."
+                logger.info(resp)
+                return resp
             docs = self.doc_mgr.list_documents_linked_from(self.database, source_collection_name, source_document_id, target_collection_name, link_collection_name)
             return docs
         except Exception as e:
@@ -232,7 +254,9 @@ class DocumentManagerAITools(AITools):
         try:
             collection_name = input.get('collection_name')
             if not collection_name:
-                return "collection_name is required."
+                resp = "collection_name is required."
+                logger.info(resp)
+                return resp
             docs = self.doc_mgr.list_documents(self.database, collection_name)
             return docs
         except Exception as e:
@@ -245,7 +269,9 @@ class DocumentManagerAITools(AITools):
         try:
             collection_name = input.get('link_collection_name')
             if not collection_name:
-                return "link collection_name is required."
+                resp =  "link collection_name is required."
+                logger.info(resp)
+                return resp
             docs = self.doc_mgr.list_links(self.database, collection_name)
             return docs
         except Exception as e:
@@ -260,8 +286,11 @@ class DocumentManagerAITools(AITools):
             target_document_id = input.get('target_document_id')
             link_collection_name = input.get('link_collection_name')
             if not target_collection_name or not target_document_id or not link_collection_name:
-                return "target_collection_name, target_document_id, and link_collection_name are required."
+                resp = "target_collection_name, target_document_id, and link_collection_name are required."
+                logger.info(resp)
+                return resp
             links = self.doc_mgr.list_inbound_links(self.database, target_collection_name, target_document_id, link_collection_name)
+            return links
         except Exception as e:
             message = str(e)
             logger.error(f"ERROR: {message}")
@@ -273,7 +302,9 @@ class DocumentManagerAITools(AITools):
             target_document_id = input.get('target_document_id')
             link_collection_name = input.get('link_collection_name')
             if not target_collection_name or not target_document_id or not link_collection_name:
-                return "target_collection_name, target_document_id, and link_collection_name are required."
+                resp = "target_collection_name, target_document_id, and link_collection_name are required."
+                logger.info(resp)
+                return resp
             links = self.doc_mgr.list_inbound_links(self.database, target_collection_name, target_document_id, link_collection_name)
             return links
         except Exception as e:
@@ -288,7 +319,9 @@ class DocumentManagerAITools(AITools):
             source_document_id = input.get('source_document_id')
             link_collection_name = input.get('link_collection_name')
             if not source_collection_name or not source_document_id or not link_collection_name:
-                return "source_collection_name, source_document_id, and link_collection_name are required."
+                resp = "source_collection_name, source_document_id, and link_collection_name are required."
+                logger.info(resp)
+                return resp
             links = self.doc_mgr.list_outbound_links(self.database, source_collection_name, source_document_id, link_collection_name)
             return links
         except Exception as e:

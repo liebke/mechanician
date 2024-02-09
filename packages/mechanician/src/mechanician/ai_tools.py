@@ -11,8 +11,20 @@ class AITools(ABC):
         meth = getattr(self, function_name)
         # check that method exists
         if meth:
-            # call method with args
-            return meth(json.loads(args))
+            if args is None:
+                # call method without args
+                resp = meth(args)
+                if resp is not None:
+                    return resp
+            elif args.strip():
+                # call method with args
+                resp = meth(json.loads(args))
+                if resp is not None:
+                    return resp
+            else:
+                resp = meth(args)
+                if resp is not None:
+                    return resp
         else:
             return f"Unknown Function: {function_name}"
         

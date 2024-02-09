@@ -132,8 +132,8 @@ class OpenAIChatAIConnector(StreamingAIConnector):
 
     def process_tool_call(self, tc):
         function_resp = json.dumps(self.tools.call_function(tc['function']['name'], 
-                                                                   tc['id'], 
-                                                                   tc['function']['arguments']))
+                                                            tc['id'], 
+                                                            tc['function']['arguments']))
         return tc, function_resp
 
     

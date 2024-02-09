@@ -54,12 +54,12 @@ def run_q_and_a_evaluations(ai: TAGAI, tests: List[QandATest], ai_evaluator:TAGA
 
             if not ai.streaming_connector():
                 print_markdown(console, resp)
-                print('')
+                print('\n\n\n')
 
             # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
             while resp == None:
                 resp = ai.submit_prompt(None)
-                print('')
+                # print('')
 
             # Record the response as the ACTUAL response
             test.actual = resp
@@ -119,7 +119,7 @@ def run_task_evaluation(ai: TAGAI, ai_evaluator: TAGAI, start_prompt: str="START
             messages.append(f"EVALUATOR: {eval_resp}")
             print("\n\n")
 
-            # Exit if the evaluator says "/bye"
+            # Exit if the evaluator says "PASS" or "FAIL"
             if eval_resp.startswith("PASS"):
                 RUNNING = False
                 EVALUATION = "PASS"
@@ -133,16 +133,13 @@ def run_task_evaluation(ai: TAGAI, ai_evaluator: TAGAI, start_prompt: str="START
 
             if (not ai.streaming_connector()) and (assist_resp is not None):
                 print_markdown(console, f"**ASSISTANT** {assist_resp}")
-                print('')
 
-            # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
+            # if resp = None, tool_calls were processed and we need to get a new stream to see the model's response
             while assist_resp == None:
                 assist_resp = ai.submit_prompt(None)
-                print('')
 
-            print('\n')
+            print('\n\n\n')
             messages.append(f"ASSISTANT: {assist_resp}")
-            print("\n\n")
         
             prompt = assist_resp
             
