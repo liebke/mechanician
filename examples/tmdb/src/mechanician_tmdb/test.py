@@ -2,7 +2,7 @@ from mechanician.testing import QandATest, run_q_and_a_evaluations
 import unittest
 from main import init_ai
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
-from mechanician.tag_ai import TAGAI
+from mechanician.tagai import TAGAI
 import logging
 
 logger = logging.getLogger(__name__)

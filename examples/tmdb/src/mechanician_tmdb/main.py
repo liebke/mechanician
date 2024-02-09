@@ -1,5 +1,5 @@
 from mechanician.ux.cli import run
-from mechanician.tag_ai import TAGAI
+from mechanician.tagai import TAGAI
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
 # from mechanician_openai.assistants_ai_connector import OpenAIAssistantAIConnector
 from tmdb_ai_tools import TMDbAITools

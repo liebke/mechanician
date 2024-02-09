@@ -1,6 +1,6 @@
 from mechanician.ux.cli import run
 from dotenv import load_dotenv
-from mechanician.tag_ai import TAGAI
+from mechanician.tagai import TAGAI
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
 from revised_instructions import system_instructions
 from mechanician_arangodb.document_ai_tools import DocumentManagerAITools

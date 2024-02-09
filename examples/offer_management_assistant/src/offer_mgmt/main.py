@@ -2,7 +2,7 @@ from mechanician.ux.cli import run
 from dotenv import load_dotenv
 # from mechanician.apis.openai.assistants_service_connector import OpenAIAssistantServiceConnector
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
-from mechanician.tag_ai import TAGAI
+from mechanician.tagai import TAGAI
 
 # from offer_mgmt.tools import OfferManagementToolHandler
 from offer_mgmt.offer_mgmt_ai_tools import OfferManagementAITools

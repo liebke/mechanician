@@ -2,7 +2,7 @@ from mechanician.testing import run_task_evaluation
 import unittest
 from main import init_ai
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
-from mechanician.tag_ai import TAGAI
+from mechanician.tagai import TAGAI
 import os
 from dotenv import load_dotenv
 # from pprint import pprint

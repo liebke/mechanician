@@ -1,5 +1,5 @@
 from mechanician.ux.util import print_markdown
-from mechanician.tag_ai import TAGAI
+from mechanician.tagai import TAGAI
 # from mechanician.ai_connectors import AIConnector
 from rich.console import Console  
 import logging
