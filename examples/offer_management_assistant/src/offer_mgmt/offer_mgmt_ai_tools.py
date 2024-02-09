@@ -37,7 +37,7 @@ def print_output(function_name, input, output):
     return
 
 
-class OfferManagementToolHandler(AITools):
+class OfferManagementAITools(AITools):
 
     def __init__(self, database_name="offer_mgmt_db"):
         try:

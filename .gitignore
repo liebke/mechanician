@@ -12,3 +12,4 @@ mechanician_core.egg-info
 mechanician_openai.egg-info
 .vscode
 arango_movie_db.egg-info
+mechanician_offer_mgmt.egg-info

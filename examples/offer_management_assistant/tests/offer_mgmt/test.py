@@ -1,7 +1,8 @@
 from mechanician.testing import run_task_evaluation
 import unittest
-from offer_mgmt.main import ai_connector
+from offer_mgmt.main import init_ai
 from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
+from mechanician.tag_ai import TAGAI
 import json
 import os
 import logging
@@ -75,9 +76,10 @@ def ai_evaluator():
      instructions += """
           [END OF PRODUCT OFFER DATA]
       """
-
-     return OpenAIChatAIConnector(system_instructions=instructions, 
-                                  assistant_name="Task Evaluator")
+     ai_connector = OpenAIChatAIConnector()
+     return TAGAI(ai_connector,
+                  system_instructions=instructions, 
+                  name="Task Evaluator")
 
 
 ###############################################################################
@@ -92,7 +94,7 @@ class TestOfferMgmtAI(unittest.TestCase):
      def test_ai_responses(self):
           try:
                database_name = "offer_mgmt_test_db"
-               ai = ai_connector(database_name)
+               ai = init_ai(database_name)
                print("\n")
                evaluation, messages = run_task_evaluation(ai, ai_evaluator())
                print("\n\n")
