@@ -1,13 +1,11 @@
-from mechanician.ux.cli import run
-from dotenv import load_dotenv
-# from mechanician.apis.openai.assistants_service_connector import OpenAIAssistantServiceConnector
-from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
-from mechanician.tagai import TAGAI
+from mechanician import TAGAI, shell
+from mechanician_openai import OpenAIChatConnector
 
-# from offer_mgmt.tools import OfferManagementToolHandler
 from offer_mgmt.offer_mgmt_ai_tools import OfferManagementAITools
 from offer_mgmt.tool_instructions import tool_instructions
 import logging
+from dotenv import load_dotenv
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +22,10 @@ def init_ai(database_name):
     with open("./instructions.md", 'r') as file:
         instructions = file.read()
 
-    ai_connector = OpenAIChatAIConnector()
+    ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
+                                         model_name=os.getenv("OPENAI_MODEL_NAME"))
     return TAGAI(ai_connector,
-                 system_instructions=instructions, 
+                 ai_instructions=instructions, 
                  tool_instructions=tool_instructions, 
                  tools=OfferManagementAITools(database_name))
 
@@ -39,7 +38,7 @@ def main():
     try:
         database_name="offer_mgmt_test_db"
         ai = init_ai(database_name)
-        run(ai)
+        shell.run(ai)
     finally:
         if DELETE_DB_ON_EXIT:
             ai.tools.doc_mgr.delete_database(database_name)

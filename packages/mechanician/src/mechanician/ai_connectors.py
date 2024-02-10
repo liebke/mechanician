@@ -1,6 +1,6 @@
 
 from abc import ABC, abstractmethod
-from mechanician.ux.stream_printer import StreamPrinter
+from mechanician.util import StreamPrinter
 from mechanician.ai_tools import AITools
 import logging
 

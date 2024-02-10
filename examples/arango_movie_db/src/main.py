@@ -1,15 +1,11 @@
-from mechanician.ux.cli import run
-from dotenv import load_dotenv
-from mechanician.tagai import TAGAI
-from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
-from revised_instructions import system_instructions
-from mechanician_arangodb.document_ai_tools import DocumentManagerAITools
-from mechanician_arangodb.doc_mgr_tool_instructions import tool_instructions
+from mechanician import TAGAI, shell
+from mechanician_openai import OpenAIChatConnector, OpenAIAssistantsConnector
+from mechanician_arangodb import DocumentManagerAITools, tool_instructions
+from revised_instructions import ai_instructions
 from arango import ArangoClient
 import os
 import logging
-# FOR TESTING
-from mechanician_openai.assistants_ai_connector import OpenAIAssistantAIConnector
+from dotenv import load_dotenv
 
 
 logger = logging.getLogger(__name__)
@@ -20,16 +16,17 @@ logger = logging.getLogger(__name__)
 
 def init_ai(database_name="test_db"):
     arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
-    doc_tools = DocumentManagerAITools(arango_client, 
-                                       database_name=database_name)
-    
-    if os.getenv("USE_ASSISTANT_API", "False") == "True":
-        ai_connector = OpenAIAssistantAIConnector()
+    doc_tools = DocumentManagerAITools(arango_client, database_name=database_name)
+    api_key = os.getenv("OPENAI_API_KEY")
+    model_name = os.getenv("OPENAI_MODEL_NAME")
+
+    if os.getenv("USE_OPENAI_ASSISTANTS_API", "False") == "True":
+        ai_connector = OpenAIAssistantsConnector(api_key=api_key, model_name=model_name)
     else:
-        ai_connector = OpenAIChatAIConnector()
+        ai_connector = OpenAIChatConnector(api_key=api_key, model_name=model_name)
 
     ai = TAGAI(ai_connector=ai_connector, 
-               system_instructions=system_instructions, 
+               ai_instructions=ai_instructions, 
                tool_instructions=tool_instructions,
                tools=doc_tools,
                name="Movie Document Manager AI")
@@ -45,7 +42,7 @@ def main():
         load_dotenv()
         database_name = "test_db"
         ai = init_ai(database_name)
-        run(ai)
+        shell.run(ai)
         
     finally:
         ai.tools.doc_mgr.delete_database(database_name)

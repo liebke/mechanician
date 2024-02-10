@@ -1,8 +1,8 @@
+from mechanician import TAGAI
+from mechanician_openai import OpenAIChatConnector
 from mechanician.testing import run_task_evaluation
 import unittest
 from offer_mgmt.main import init_ai
-from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
-from mechanician.tagai import TAGAI
 import json
 import os
 import logging
@@ -76,9 +76,10 @@ def ai_evaluator():
      instructions += """
           [END OF PRODUCT OFFER DATA]
       """
-     ai_connector = OpenAIChatAIConnector()
+     ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"),
+                                          model_name=os.getenv("OPENAI_MODEL_NAME"))
      return TAGAI(ai_connector,
-                  system_instructions=instructions, 
+                  ai_instructions=instructions, 
                   name="Task Evaluator")
 
 

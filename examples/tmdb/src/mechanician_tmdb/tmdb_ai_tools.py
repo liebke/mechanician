@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 from pprint import pprint
 import json
-from mechanician.ai_tools import AITools
+from mechanician import AITools
 import webbrowser
 import logging
 

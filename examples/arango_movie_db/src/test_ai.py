@@ -1,15 +1,14 @@
+from mechanician import TAGAI
+from mechanician_openai import OpenAIChatConnector
 from mechanician.testing import run_task_evaluation
-import unittest
 from main import init_ai
-from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
-from mechanician.tagai import TAGAI
+import unittest
 import os
 from dotenv import load_dotenv
-# from pprint import pprint
 import pprint
 import logging
 
-from mechanician.training.instruction_auto_tuning import InstructionAutoTuning
+from mechanician.training import InstructionAutoTuning
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -71,8 +70,10 @@ instructions = """
 
 
 def ai_evaluator():
-     return TAGAI(OpenAIChatAIConnector(),
-                  system_instructions=instructions, 
+     ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
+                                          model_name=os.getenv("OPENAI_MODEL_NAME"))
+     return TAGAI(ai_connector,
+                  ai_instructions=instructions, 
                   name="Task Evaluator")
                                     
 
@@ -113,7 +114,8 @@ class TestOfferMgmtAI(unittest.TestCase):
             self.assertEqual(evaluation, "PASS")
 
         finally:
-            iat = InstructionAutoTuning(OpenAIChatAIConnector())
+            iat = InstructionAutoTuning(OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
+                                                              model_name=os.getenv("OPENAI_MODEL_NAME")))
             logger.info("Generating Instruction Auto Tuning...")
             training_transcript_path = os.path.join(dir_path, "training_transcript.json")
             iat.write_training_session_data(training_transcript_path)

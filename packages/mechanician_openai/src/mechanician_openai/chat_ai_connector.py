@@ -2,7 +2,7 @@
 from openai import OpenAI
 from mechanician.ai_connectors import StreamingAIConnector
 from mechanician.ai_tools import AITools
-from mechanician.ux.stream_printer import StreamPrinter, SimpleStreamPrinter
+from mechanician.util import SimpleStreamPrinter
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -10,7 +10,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class OpenAIChatAIConnector(StreamingAIConnector):
+class OpenAIChatConnector(StreamingAIConnector):
     DEFAULT_MODEL_NAME="gpt-4-1106-preview"
 
     ###############################################################################
@@ -18,20 +18,20 @@ class OpenAIChatAIConnector(StreamingAIConnector):
     ###############################################################################
 
     def __init__(self, 
-                 stream_printer = SimpleStreamPrinter(),
                  model_name=None,
                  api_key=None,
+                 stream_printer = SimpleStreamPrinter(),
                  max_thread_workers=None):
         
         self.STREAMING = True
-        self.model_name = model_name or os.getenv("MODEL_NAME") or self.DEFAULT_MODEL_NAME
+        self.model_name = model_name or os.getenv("OPENAI_MODEL_NAME") or self.DEFAULT_MODEL_NAME
         self.MAX_THREAD_WORKERS = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
         self.stream_printer = stream_printer
         api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key)
 
         self.tool_instructions = None
-        self.system_instructions = None
+        self.ai_instructions = None
         self.tools = None
         self.messages = []
 
@@ -40,15 +40,15 @@ class OpenAIChatAIConnector(StreamingAIConnector):
     ## INSTRUCT
     ###############################################################################
 
-    def _instruct(self, system_instructions=None, 
+    def _instruct(self, ai_instructions=None, 
                   tool_instructions=None,
                   tools: 'AITools'=None):
-        self.system_instructions = None
+        self.ai_instructions = None
         self.tool_instructions = None
         self.tools = None
 
-        if system_instructions is not None:
-            self.system_instructions = system_instructions
+        if ai_instructions is not None:
+            self.ai_instructions = ai_instructions
 
         if tool_instructions is not None:
             self.tool_instructions = tool_instructions
@@ -63,7 +63,7 @@ class OpenAIChatAIConnector(StreamingAIConnector):
 
     def _connect(self):
         # Initialize the conversation with a system message
-            self.messages = [{"role": "system", "content": self.system_instructions}]
+            self.messages = [{"role": "system", "content": self.ai_instructions}]
 
     ###############################################################################
     ## SUBMIT_PROMPT

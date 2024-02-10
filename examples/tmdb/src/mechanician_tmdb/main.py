@@ -1,7 +1,6 @@
-from mechanician.ux.cli import run
-from mechanician.tagai import TAGAI
-from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
-# from mechanician_openai.assistants_ai_connector import OpenAIAssistantAIConnector
+from mechanician import TAGAI, run
+from mechanician_openai import OpenAIChatConnector
+# from mechanician_openai import OpenAIAssistantsConnector
 from tmdb_ai_tools import TMDbAITools
 from tmdb_tool_instructions import tool_instructions
 from dotenv import load_dotenv
@@ -24,9 +23,10 @@ def init_ai():
 
     tmdb_tools = TMDbAITools(os.getenv("TMDB_READ_ACCESS_TOKEN"))
     # Initialize the connection to the AI assistant
-    ai_connector = OpenAIChatAIConnector()
+    ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
+                                         model_name=os.getenv("OPENAI_MODEL_NAME"))
     ai = TAGAI(ai_connector,
-               system_instructions=instructions, 
+               ai_instructions=instructions, 
                tool_instructions=tool_instructions, 
                tools=tmdb_tools,
                name="TMDB AI" )

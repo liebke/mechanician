@@ -6,7 +6,7 @@ from mechanician.ai_connectors import AIConnector
 iat_instructions = """
 Below is training session data recording during the interactive session between a EVALUATOR AI and an AI ASSISTANT, it includes:
 
-system_instructions: Instructions provided to the AI describing it role
+ai_instructions: Instructions provided to the AI describing it role
 transcript: a transcript of the interaction between the ASSISTANT, the EVALUATOR, and the TOOLS the ASSISTANT used
 tool_instructions: A description of each tool and its parameters
 test_results: If any where available
@@ -19,7 +19,7 @@ Also, highlight behaviors or responses that were useful or explicitly requested 
 iat_instructions_v2 = """
 Below is training session data recording during the interactive session between a EVALUATOR AI and an AI ASSISTANT, it includes:
 
-system_instructions: Instructions provided to the AI describing it role
+ai_instructions: Instructions provided to the AI describing it role
 transcript: a transcript of the interaction between the ASSISTANT, the EVALUATOR, and the TOOLS the ASSISTANT used
 tool_instructions: A description of each tool and its parameters
 test_results: If any where available
@@ -37,16 +37,16 @@ should address identified issues, incorporate user preferences, and replicate su
 
 Provide the revised instructions in a structured, clear format with examples where applicable.
 
-Please provide revised and improved system_instructions to the AI so that it can 
-perform its role better, please start your response with "[system_instructions]", only include 
-the revised instructions and no other comments, and when complete end with "[end system_instructions]" 
+Please provide revised and improved ai_instructions to the AI so that it can 
+perform its role better, please start your response with "[ai_instructions]", only include 
+the revised instructions and no other comments, and when complete end with "[end ai_instructions]" 
 and no other words.
 """
 
 iat_instructions_v1 = """
 Below is training session data recording during the interactive session between a EVALUATOR AI and an AI ASSISTANT, it includes:
 
-system_instructions: Instructions provided to the AI describing it role
+ai_instructions: Instructions provided to the AI describing it role
 transcript: a transcript of the interaction between the ASSISTANT, the EVALUATOR, and the TOOLS the ASSISTANT used
 tool_instructions: A description of each tool and its parameters
 test_results: If any where available
@@ -59,8 +59,8 @@ test_results: If any where available
 
 4. I would like you to improve the tool descriptions and suggest if the output of each tool can be improved.
 
-5. Lastly, I would like you to provide revised and improved system_instructions to the AI so that it can perform its role better, please start your response with "[system_instructions]",
-  only include the revised instructions and no other comments, and when complete end with "[end system_instructions]" and no other words.
+5. Lastly, I would like you to provide revised and improved ai_instructions to the AI so that it can perform its role better, please start your response with "[ai_instructions]",
+  only include the revised instructions and no other comments, and when complete end with "[end ai_instructions]" and no other words.
 
 """
 
@@ -119,7 +119,7 @@ class InstructionAutoTuning():
     def get_training_session_data(self):
         training_session_data = {}
         training_session_data["tool_instructions"] = self.ai_connector.tool_instructions
-        training_session_data["system_instructions"] = self.ai_connector.system_instructions
+        training_session_data["ai_instructions"] = self.ai_connector.ai_instructions
         training_session_data["transcript"] = self.ai_connector.get_message_history()
         training_session_data["test_results"] = None
         return json.dumps(training_session_data, indent=2)
@@ -137,7 +137,7 @@ class InstructionAutoTuning():
     def get_iat_prompt(self, training_session_path): 
         instructions = self.iat_instructions
         transcript = self.read_training_session_data(training_session_path)
-        training_session_data = {"system_instructions": transcript.get("system_instructions"),
+        training_session_data = {"ai_instructions": transcript.get("ai_instructions"),
                                 "tool_instructions": transcript.get("tool_instructions"),
                                 "transcript": transcript.get("transcript"),
                                 "test_results": transcript.get("test_results")}

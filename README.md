@@ -209,14 +209,14 @@ The first movie that Anya Taylor-Joy, the actor who plays Furiosa in the upcomin
 ### Import Statements
 
 ```python
-from mechanician.ux.cli import run
-from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
+from mechanician import shell
+from mechanician_openai import OpenAIChatConnector
 ```
 
 ### Initialize The Service Connector
 
 ```python
-ai = OpenAIChatAIConnector(instructions=instructions, 
+ai = OpenAIChatConnector(instructions=instructions, 
                            tool_schemas=tool_schemas, 
                            tool_handler=tmdb_handler,
                            name="TMDB Assistant" )
@@ -225,7 +225,7 @@ ai = OpenAIChatAIConnector(instructions=instructions,
 ### Run The AI
 
 ```python
-run(ai)
+shell.run(ai)
 ```
 
 ### Tool Handler
@@ -293,7 +293,7 @@ You are an assistant that answers questions about movies and cast members using 
 OPENAI_API_KEY=<YOUR_OPENAI_API_KEY_HERE>
 
 # OPENAI MODEL NAME
-MODEL_NAME=gpt-4-1106-preview
+OPENAI_MODEL_NAME=gpt-4-1106-preview
 
 # ENVIRONMENT VARIABLES FOR THE ASSISTANT
 ASSISTANT_ID=<YOUR_ASSISTANT_ID_HERE>
@@ -446,7 +446,7 @@ OK
 ### AI Self Evaluation Tests Code
 
 ```python
-from mechanician.openai.chat_ai_connector import OpenAIChatAIConnector
+from mechanician.openai.chat_ai_connector import OpenAIChatConnector
 from mechanician.testing import Test, run_tests
 import unittest
 
@@ -458,7 +458,7 @@ class TestAI(unittest.TestCase):
 
         tmdb_handler = TMDbHandler(os.getenv("TMDB_READ_ACCESS_TOKEN"))
 
-        ai = OpenAIChatAIConnector(instructions=instructions, 
+        ai = OpenAIChatConnector(instructions=instructions, 
                                 tool_schemas=tool_schemas, 
                                 tool_handler=tmdb_handler,
                                 assistant_name="TMDB AI" )

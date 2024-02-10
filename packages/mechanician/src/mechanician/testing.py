@@ -1,6 +1,6 @@
-from mechanician.ux.util import print_markdown
+from mechanician.util import print_markdown
 # from mechanician.ai_connectors import AIConnector
-from mechanician.tagai import TAGAI
+from mechanician import TAGAI
 from rich.console import Console
 from typing import List
 import logging

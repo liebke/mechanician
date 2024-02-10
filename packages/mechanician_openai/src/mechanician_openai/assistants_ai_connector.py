@@ -3,7 +3,7 @@ from openai import OpenAI
 from rich.console import Console
 from mechanician.ai_connectors import AIConnector
 from mechanician.ai_tools import AITools
-from mechanician.ux.util import print_markdown
+from mechanician.util import print_markdown
 import time
 import os
 import json
@@ -12,7 +12,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class OpenAIAssistantAIConnector(AIConnector):
+class OpenAIAssistantsConnector(AIConnector):
 
     DEFAULT_MODEL_NAME="gpt-4-1106-preview"
 
@@ -33,12 +33,12 @@ class OpenAIAssistantAIConnector(AIConnector):
         self.assistant_id = assistant_id or os.getenv("ASSISTANT_ID")
         self.CREATE_NEW_ASSISTANT = create_new_assistant or os.getenv("CREATE_NEW_ASSISTANT") # False
         self.DELETE_ASSISTANT_ON_EXIT = delete_assistant_on_exit or os.getenv("DELETE_ASSISTANT_ON_EXIT") # False
-        self.model_name = model_name or os.getenv("MODEL_NAME") or self.DEFAULT_MODEL_NAME
+        self.model_name = model_name or os.getenv("OPENAI_MODEL_NAME") or self.DEFAULT_MODEL_NAME
         
         api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key)
         self.tool_instructions = None
-        self.system_instructions = None
+        self.ai_instructions = None
         self.tools = None
         self.messages = []
 
@@ -47,11 +47,11 @@ class OpenAIAssistantAIConnector(AIConnector):
     ## INSTRUCT
     ###############################################################################
 
-    def _instruct(self, system_instructions=None, 
+    def _instruct(self, ai_instructions=None, 
                  tool_instructions=None,
                  tools: 'AITools'=None):
-        if system_instructions is not None:
-            self.system_instructions = system_instructions
+        if ai_instructions is not None:
+            self.ai_instructions = ai_instructions
 
         if tool_instructions is not None:
             self.tool_instructions = tool_instructions
@@ -77,7 +77,7 @@ class OpenAIAssistantAIConnector(AIConnector):
             print_markdown(self.console, "## Creating a new assistant...")
             self.assistant = self.client.beta.assistants.create(
                 name="Mechanician Assistant",
-                instructions=self.system_instructions,
+                instructions=self.ai_instructions,
                 model=self.model_name,
                 tools=self.tool_instructions
                 )

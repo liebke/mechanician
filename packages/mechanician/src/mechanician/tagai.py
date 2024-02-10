@@ -2,7 +2,7 @@
 from mechanician.ai_connectors import AIConnector
 
 from mechanician.ai_tools import AITools
-from mechanician.ux.stream_printer import StreamPrinter, SimpleStreamPrinter
+from mechanician.util import StreamPrinter, SimpleStreamPrinter
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -18,7 +18,7 @@ class TAGAI():
 
     def __init__(self,
                  ai_connector: 'AIConnector',
-                 system_instructions=None, 
+                 ai_instructions=None, 
                  tool_instructions=None, 
                  tools: 'AITools'=None, 
                  name="Mechanician AI"):
@@ -27,9 +27,9 @@ class TAGAI():
         self.name = name
         self.RUNNING = False
         self.tools = tools
-        self.system_instructions = system_instructions
+        self.ai_instructions = ai_instructions
         self.tool_instructions = tool_instructions
-        self._instruct(system_instructions=system_instructions, 
+        self._instruct(ai_instructions=ai_instructions, 
                        tool_instructions=tool_instructions,
                        tools = tools)
         self.ai_connector._connect()
@@ -38,11 +38,11 @@ class TAGAI():
     ## INSTRUCT
     ###############################################################################
 
-    def _instruct(self, system_instructions=None, 
+    def _instruct(self, ai_instructions=None, 
                  tool_instructions=None,
                  tools: 'AITools'=None):
-        if system_instructions is not None:
-            self.system_instructions = system_instructions
+        if ai_instructions is not None:
+            self.ai_instructions = ai_instructions
 
         if tool_instructions is not None:
             self.tool_instructions = tool_instructions
@@ -50,7 +50,7 @@ class TAGAI():
         if tools is not None:
             self.tools = tools
 
-        self.ai_connector._instruct(system_instructions=system_instructions, 
+        self.ai_connector._instruct(ai_instructions=ai_instructions, 
                                     tool_instructions=tool_instructions,
                                     tools = tools)
         

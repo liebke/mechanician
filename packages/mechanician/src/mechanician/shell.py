@@ -1,8 +1,8 @@
-from mechanician.ux.util import print_markdown
-from mechanician.tagai import TAGAI
-# from mechanician.ai_connectors import AIConnector
-from rich.console import Console  
+from mechanician import TAGAI
+from mechanician.util import print_markdown
+from rich.console import Console 
 import logging
+
 
 logger = logging.getLogger(__name__)
 console = Console()
@@ -56,13 +56,13 @@ def run(ai: TAGAI):
             prompt = input("> ")
 
             # Skip empty prompts
-            if prompt is '':
+            if prompt == '':
                 continue
 
             print('')
             prompt = preprocess_prompt(ai, prompt)
             # If preprocessed prompt is None, we should skip it
-            if prompt is '':
+            if prompt == '':
                 continue
 
             resp = ai.submit_prompt(prompt)
@@ -88,5 +88,4 @@ def run(ai: TAGAI):
     finally:
         ai.clean_up()
         logging.info("goodbye")
-
 

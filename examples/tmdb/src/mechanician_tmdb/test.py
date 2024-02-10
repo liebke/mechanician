@@ -1,9 +1,10 @@
 from mechanician.testing import QandATest, run_q_and_a_evaluations
 import unittest
 from main import init_ai
-from mechanician_openai.chat_ai_connector import OpenAIChatAIConnector
-from mechanician.tagai import TAGAI
+from mechanician_openai import OpenAIChatConnector
+from mechanician import TAGAI
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -13,9 +14,10 @@ logger = logging.getLogger(__name__)
 
 def ai_evaluator():
     instructions = """You are a test-evaluator for an AI assistant. You are given a question and an answer. Your job is to determine if the answer is correct. If the answer is correct, respond with PASS. If the answer is incorrect, respond with FAIL."""
-    ai_connector = OpenAIChatAIConnector()
+    ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
+                                         model_name=os.getenv("OPENAI_MODEL_NAME"))
     return TAGAI(ai_connector,
-                 system_instructions=instructions, 
+                 ai_instructions=instructions, 
                  name="QandA Test Evaluator")
 
 
