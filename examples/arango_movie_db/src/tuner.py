@@ -1,6 +1,6 @@
 from mechanician import TAGAI, shell
 from mechanician_openai import OpenAIChatConnector, OpenAIAssistantsConnector
-from mechanician.training.instruction_auto_tuning import InstructionAutoTuning
+import mechanician.instruction_tuning as tuning
 import os
 import logging
 from dotenv import load_dotenv
@@ -20,9 +20,10 @@ def init_tuner():
         ai_connector = OpenAIAssistantsConnector(api_key=api_key, model_name=model_name)
     else:
         ai_connector = OpenAIChatConnector(api_key=api_key, model_name=model_name)
-    iat = InstructionAutoTuning(training_data_dir="./test_results",
-                                instructions_dir="./instructions")
-    tuner_ai = iat.init_ai(ai_connector)
+
+    tuner_ai = tuning.instruction_auto_tuning_ai(ai_connector=ai_connector,
+                                                 tuning_session_dir="./tuning_sessions",
+                                                 instructions_dir="./instructions")
     return tuner_ai
 
 

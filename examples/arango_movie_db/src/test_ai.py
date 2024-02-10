@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import pprint
 import logging
 
-from mechanician.training import InstructionAutoTuning
+import mechanician.instruction_tuning as tuning
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -92,10 +92,10 @@ class TestOfferMgmtAI(unittest.TestCase):
                 
             load_dotenv()
             # Define the directory and file paths
-            dir_path = "./test_results"
-            test_messages_path = os.path.join(dir_path, "test_messages.txt")
+            test_res_dir_path = "./test_results"
+            test_messages_path = os.path.join(test_res_dir_path, "test_messages.txt")
             # Create the directory if it doesn't exist
-            os.makedirs(dir_path, exist_ok=True)
+            os.makedirs(test_res_dir_path, exist_ok=True)
 
             # Initialize AI
             ai = init_ai("test_db")
@@ -114,16 +114,9 @@ class TestOfferMgmtAI(unittest.TestCase):
             self.assertEqual(evaluation, "PASS")
 
         finally:
-            # iat_ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
-            #                                     model_name=os.getenv("OPENAI_MODEL_NAME"))
-            iat = InstructionAutoTuning(training_data_dir="./test_results",
-                                        instructions_dir="./instructions")
+            # Record Tuning Session
             logger.info("Generating Instruction Auto Tuning...")
-            training_transcript_path = os.path.join(dir_path, "training_session.json")
-            iat.write_training_session_data(ai, training_transcript_path)
-
-            # iat_prompt_path = os.path.join(dir_path, "iat_prompt.txt")
-            # iat.write_iat_prompt(training_transcript_path, iat_prompt_path)
+            tuning.record_tuning_session(ai)
 
             logger.info(f"\n\n\nDocument Collections:")
             doc_collections = ai.tools.list_document_collections()

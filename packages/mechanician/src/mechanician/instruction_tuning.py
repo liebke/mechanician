@@ -19,7 +19,7 @@ tuner_instructions = """
 Your role is an Instructor AI that will evaluate the performance of an AI Assistant given its instructions,
 the tool instructions it was provided, and a transcript of its interactions with a user.
 
-You will be provided a JSON document containing training session data, it includes:
+You will be provided a JSON document containing tuning session data, it includes:
 
 ai_instructions: Instructions provided to the AI describing it role
 transcript: a transcript of the interaction between the ASSISTANT, the EVALUATOR, and the TOOLS the ASSISTANT used
@@ -37,76 +37,45 @@ BE SPECIFIC to the AI's role and the tools it uses when revising its instruction
 
 """
 
-class InstructionAutoTuning():
+###############################################################################
+## INSTRUCTION AUTO TUNING AI
+###############################################################################
 
-    def __init__(self, 
-                 training_data_dir=None,
-                 instructions_dir=None):
-        self.ai_connector = None
-        self.tuner_instructions = tuner_instructions
-        self.tool_instructions = auto_tuner_tool_instructions
-        self.tools = AutoTuningAITools(training_data_dir=training_data_dir,
-                                       instructions_dir=instructions_dir)
-        self.ai = None
-        self.name = "Instruction Auto-Tuning: Instructor AI"
-
-
-    ###############################################################################
-    ## INIT AI
-    ###############################################################################
-
-    def init_ai(self, ai_connector: AIConnector):
-        self.ai_connector = ai_connector
-        self.ai = TAGAI(ai_connector=self.ai_connector, 
-                        ai_instructions=self.tuner_instructions, 
-                        tool_instructions=self.tool_instructions,
-                        tools=self.tools,
-                        name=self.name)
-        return self.ai
-
-
-    def get_training_session_data(self, ai: TAGAI):
-        training_session_data = {}
-        training_session_data["tool_instructions"] = ai.tool_instructions
-        training_session_data["ai_instructions"] = ai.ai_instructions
-        training_session_data["transcript"] = ai.get_message_history()
-        training_session_data["test_results"] = None
-        return json.dumps(training_session_data, indent=2)
+def instruction_auto_tuning_ai(ai_connector: AIConnector,
+                               tuning_session_dir="./tuning_sessions",
+                               instructions_dir="./instructions"):
     
-
-    def write_training_session_data(self, ai: TAGAI, file_path):
-        with open(file_path, 'w') as f:
-            f.write(self.get_training_session_data(ai))
-
-
-    def read_training_session_data(self, file_path):
-        with open(file_path, 'r') as f:
-            return json.loads(f)
-
-
-    def get_iat_prompt(self, training_session_path): 
-        instructions = self.tuner_instructions
-        transcript = self.read_training_session_data(training_session_path)
-        training_session_data = {"ai_instructions": transcript.get("ai_instructions"),
-                                "tool_instructions": transcript.get("tool_instructions"),
-                                "transcript": transcript.get("transcript"),
-                                "test_results": transcript.get("test_results")}
-        
-        resp = f"""
-        {instructions}
-
-        ------------------
-        [TRAINING SESSION DATA]
-        {training_session_data}
-        [END TRAINING SESSION DATA]
-        """
-        return resp
+    tools = AutoTuningAITools(tuning_session_dir=tuning_session_dir,
+                              instructions_dir=instructions_dir)
+    
+    ai = TAGAI(ai_connector=ai_connector, 
+                ai_instructions=tuner_instructions, 
+                tool_instructions=auto_tuner_tool_instructions,
+                tools=tools,
+                name="Instruction Auto-Tuner AI")
+    return ai
 
 
-    def write_iat_prompt(self, training_session_data_path, output_file_path):
-        with open(output_file_path, 'w') as f:
-            f.write(self.get_iat_prompt(training_session_data_path))
+###############################################################################
+# TUNING SESSION TRANSCRIBER FUNCTIONS
+###############################################################################
 
+def get_tuning_session(ai: TAGAI):
+    tuning_session = {}
+    tuning_session["tool_instructions"] = ai.tool_instructions
+    tuning_session["ai_instructions"] = ai.ai_instructions
+    tuning_session["transcript"] = ai.get_message_history()
+    tuning_session["test_results"] = None
+    return json.dumps(tuning_session, indent=2)
+
+
+def record_tuning_session(ai: TAGAI, 
+                          tuning_session_dir="./tuning_sessions", 
+                          file_name="tuning_session.json"):
+    if tuning_session_dir is not None:
+            os.makedirs(tuning_session_dir, exist_ok=True)
+    with open(os.path.join(tuning_session_dir, file_name), 'w') as f:
+        json.dumps(get_tuning_session(ai), f, indent=2)
 
 
 ###############################################################################
@@ -116,17 +85,18 @@ class InstructionAutoTuning():
 class AutoTuningAITools(AITools):
 
     def __init__(self, 
-                 training_data_dir=None,
+                 tuning_session_dir=None,
                  instructions_dir=None):
         self.revised_instructions = None
-        self.training_data_dir = training_data_dir
+        self.tuning_session_dir = tuning_session_dir
         self.instructions_dir = instructions_dir
         self.instructions_file_name = "instructions.json"
-        self.training_data_file_name = "training_session.json"
+        self.tuning_session_file_name = "tuning_session.json"
+        self.tuning_session = None
 
         # ensure the directories exist and set them up if they don't
-        if self.training_data_dir is not None:
-            os.makedirs(self.training_data_dir, exist_ok=True)
+        if self.tuning_session_dir is not None:
+            os.makedirs(self.tuning_session_dir, exist_ok=True)
         if self.instructions_dir is not None:
             os.makedirs(self.instructions_dir, exist_ok=True)
 
@@ -139,15 +109,15 @@ class AutoTuningAITools(AITools):
             self.instructions = {"tool_instructions": [],
                                  "ai_instructions": "EMPTY"}
 
-        # load the training data if it exists
-        training_data_file_path = os.path.join(self.training_data_dir, self.training_data_file_name)
-        if os.path.exists(training_data_file_path):
-            with open(training_data_file_path, 'r') as f:
-                self.training_data = json.load(f)
+        # load the tuning session if it exists
+        tuning_session_file_path = os.path.join(self.tuning_session_dir, self.tuning_session_file_name)
+        if os.path.exists(tuning_session_file_path):
+            with open(tuning_session_file_path, 'r') as f:
+                self.tuning_session = json.load(f)
 
-        # If the tool_instructions is [], set them to the 'tool_instruction' field of the training_data object.
-        if not self.instructions.get("tool_instructions") and self.training_data is not None:
-            self.instructions["tool_instructions"] = self.training_data.get("tool_instructions")
+        # If the tool_instructions is [], set them to the 'tool_instruction' field of the tuning_session object.
+        if not self.instructions.get("tool_instructions") and self.tuning_session is not None:
+            self.instructions["tool_instructions"] = self.tuning_session.get("tool_instructions")
 
 
     def revise_ai_instructions(self, input):
