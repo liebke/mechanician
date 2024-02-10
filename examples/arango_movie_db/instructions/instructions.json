@@ -1,0 +1,415 @@
+{
+  "tool_instructions": [
+    {
+      "type": "function",
+      "function": {
+        "name": "create_document_collection",
+        "description": "Creates a new document collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection to create."
+            }
+          },
+          "required": [
+            "collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "create_link_collection",
+        "description": "Creates a new link collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection to create."
+            }
+          },
+          "required": [
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "delete_collection",
+        "description": "Deletes an existing collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection to delete."
+            }
+          },
+          "required": [
+            "collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "delete_document",
+        "description": "Deletes an existing document.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "document_id": {
+              "type": "string",
+              "description": "The ID of the document to delete."
+            }
+          },
+          "required": [
+            "document_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "delete_link",
+        "description": "Deletes an existing link.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "link_id": {
+              "type": "string",
+              "description": "The ID of the link to delete."
+            }
+          },
+          "required": [
+            "link_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "create_document",
+        "description": "When an operation is completed, such as creating a document or adding fields, always confirm with the user that the operation has been performed as requested. Include explicit confirmation of the requested document fields and data structure.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection."
+            },
+            "document_id": {
+              "type": "string",
+              "description": "The id of the document to create. It must be a unique identifier within the collection and should not contain spaces or other illegal characters. Use hyphens to separate words (e.g., 'the-matrix')."
+            },
+            "document": {
+              "type": "object",
+              "description": "The document to create, this is a JSON object with many fields as described by the user."
+            }
+          },
+          "required": [
+            "collection_name",
+            "document_id",
+            "document"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "add_field_to_document",
+        "description": "Adds a new field, with a specified value, to a document in a collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection."
+            },
+            "document_id": {
+              "type": "string",
+              "description": "The id of the document to create."
+            },
+            "field_name": {
+              "type": "object",
+              "description": "The name of the field to create."
+            },
+            "field_value": {
+              "type": "object",
+              "description": "The value of the field to be created."
+            }
+          },
+          "required": [
+            "collection_name",
+            "document_id",
+            "field_name",
+            "field_value"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "link_documents",
+        "description": "Creates a link between two documents.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "source_collection_name": {
+              "type": "string",
+              "description": "The name of the source collection."
+            },
+            "source_document_id": {
+              "type": "string",
+              "description": "The id of the source document."
+            },
+            "target_collection_name": {
+              "type": "string",
+              "description": "The name of the target collection."
+            },
+            "target_document_id": {
+              "type": "string",
+              "description": "The id of the target document."
+            },
+            "link_collection": {
+              "type": "object",
+              "description": "The link collection."
+            },
+            "link_attributes": {
+              "type": "object",
+              "description": "The attributes of the link."
+            }
+          },
+          "required": [
+            "source_collection_name",
+            "source_document_id",
+            "target_collection_name",
+            "target_document_id",
+            "link_collection"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_document",
+        "description": "Pay close attention to user feedback and promptly make any necessary corrections to align with user expectations. Ensure that all user concerns are addressed and re-verify the changes when necessary.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection."
+            },
+            "document_id": {
+              "type": "string",
+              "description": "The id of the document to get."
+            }
+          },
+          "required": [
+            "collection_name",
+            "document_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_documents_linked_to",
+        "description": "Lists all documents in the target collection that are linked from the source document.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "target_collection_name": {
+              "type": "string",
+              "description": "The name of the target collection."
+            },
+            "target_document_id": {
+              "type": "string",
+              "description": "The id of the target document."
+            },
+            "from_collection_name": {
+              "type": "string",
+              "description": "The name of the source collection."
+            },
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection."
+            }
+          },
+          "required": [
+            "target_collection_name",
+            "target_document_id",
+            "from_collection_name",
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_documents_linked_from",
+        "description": "Lists all documents in the target collection that are linked to the source document.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "source_collection_name": {
+              "type": "string",
+              "description": "The name of the source collection."
+            },
+            "source_document_id": {
+              "type": "string",
+              "description": "The id of the source document."
+            },
+            "target_collection_name": {
+              "type": "string",
+              "description": "The name of the target collection."
+            },
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection."
+            }
+          },
+          "required": [
+            "source_collection_name",
+            "source_document_id",
+            "target_collection_name",
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_documents",
+        "description": "Lists all documents in a collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection."
+            }
+          },
+          "required": [
+            "collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_links",
+        "description": "Lists all links in a link collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection."
+            }
+          },
+          "required": [
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_inbound_links",
+        "description": "Lists all inbound links to a document.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "target_collection_name": {
+              "type": "string",
+              "description": "The name of the target collection."
+            },
+            "target_document_id": {
+              "type": "string",
+              "description": "The id of the target document."
+            },
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection."
+            }
+          },
+          "required": [
+            "target_collection_name",
+            "target_document_id",
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_outbound_links",
+        "description": "Lists all outbound links from a document.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "source_collection_name": {
+              "type": "string",
+              "description": "The name of the source collection."
+            },
+            "source_document_id": {
+              "type": "string",
+              "description": "The id of the source document."
+            },
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection."
+            }
+          },
+          "required": [
+            "source_collection_name",
+            "source_document_id",
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_document_collections",
+        "description": "Lists all document collections."
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_link_collections",
+        "description": "Lists all link collections."
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_collections",
+        "description": "Lists all collections, both document collections and link collections."
+      }
+    }
+  ],
+  "ai_instructions": "### 1. Pre-Verification of Collection Existence\n- **Before Document Creation**: Verify the existence of the target collection before attempting to create a document. If the collection does not exist, create it prior to document creation.\n- **Tool Usage**: Use the `list_document_collections` and `list_link_collections` functions to check for collection existence before `create_document` or `link_documents` calls.\n\n### 2. Correct Tool Argument Structure\n- **Tool Parameters**: Familiarize yourself with required parameters for each tool. Include all necessary arguments in tool calls, especially for document creation and linking.\n- **Adherence to Parameters**: Follow the exact parameter naming and format specified in the tool instructions, such as `collection_name`, `document_id`, `document`, and `link_collection_name` for linking operations.\n\n### 3. Proactive Error Handling and Correction\n- **Immediate Correction**: Assess and correct errors immediately upon encounter. Examples include creating a missing collection or modifying tool call structures.\n- **Error Communication**: Clearly inform the user of errors, the corrective action being undertaken, and expected resolution time.\n\n### 4. Efficient Document and Link Creation Process\n- **Batch Collection Creation**: Create all required collections up front if multiple documents or links will be created.\n- **Pre-creation of Link Collections**: Create the link collection before any document linking to avoid errors from non-existent link collections.\n\n### 5. Engagement and Feedback Loop\n- **Clarification Requests**: Seek clarification from the user if instructions are unclear or incomplete.\n- **Verification with User**: After task or corrective action completion, confirm with the user that the outcome meets their expectations.\n\n### 6. Documentation and Note-Taking\n- **Special Cases and Decisions**: Document any unique cases, user preferences, or decisions during the session for future reference.\n\n### 7. Continuous Learning and Adaptation\n- **Reflect on Mistakes**: Review past interaction errors to identify improvement areas.\n- **Stay Updated**: Keep updated on changes to tool functionalities and adjust methods accordingly.\n\n### 8. Explicit Field Confirmation\n- **Confirmation After Operations**: After operations such as document creation, retrieve the document to confirm with the user that all requested attributes are present.\n- **Address User Feedback**: Use user feedback to guide any verification and corrections needed for document accuracy.\n\n### 9. Detailed Error Communication\n- **Specific Error Descriptions**: Communicate errors and corrective actions with specificity, including what was incorrect and how it has been fixed.\n"
+}

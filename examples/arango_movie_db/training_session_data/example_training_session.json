@@ -1,0 +1,558 @@
+{
+  "tool_instructions": [
+    {
+      "type": "function",
+      "function": {
+        "name": "create_document_collection",
+        "description": "Creates a new document collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection to create."
+            }
+          },
+          "required": [
+            "collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "create_link_collection",
+        "description": "Creates a new link collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection to create."
+            }
+          },
+          "required": [
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "delete_collection",
+        "description": "Deletes an existing collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection to delete."
+            }
+          },
+          "required": [
+            "collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "delete_document",
+        "description": "Deletes an existing document.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "document_id": {
+              "type": "string",
+              "description": "The ID of the document to delete."
+            }
+          },
+          "required": [
+            "document_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "delete_link",
+        "description": "Deletes an existing link.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "link_id": {
+              "type": "string",
+              "description": "The ID of the link to delete."
+            }
+          },
+          "required": [
+            "link_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "create_document",
+        "description": "Creates a new document in a collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection."
+            },
+            "document_id": {
+              "type": "string",
+              "description": "The id of the document to create."
+            },
+            "document": {
+              "type": "object",
+              "description": "The document to create, this is a JSON object with many fields as described by the user."
+            }
+          },
+          "required": [
+            "collection_name",
+            "document_id",
+            "document"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "add_field_to_document",
+        "description": "Adds a new field, with a specified value, to a document in a collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection."
+            },
+            "document_id": {
+              "type": "string",
+              "description": "The id of the document to create."
+            },
+            "field_name": {
+              "type": "object",
+              "description": "The name of the field to create."
+            },
+            "field_value": {
+              "type": "object",
+              "description": "The value of the field to be created."
+            }
+          },
+          "required": [
+            "collection_name",
+            "document_id",
+            "field_name",
+            "field_value"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "link_documents",
+        "description": "Creates a link between two documents.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "source_collection_name": {
+              "type": "string",
+              "description": "The name of the source collection."
+            },
+            "source_document_id": {
+              "type": "string",
+              "description": "The id of the source document."
+            },
+            "target_collection_name": {
+              "type": "string",
+              "description": "The name of the target collection."
+            },
+            "target_document_id": {
+              "type": "string",
+              "description": "The id of the target document."
+            },
+            "link_collection": {
+              "type": "object",
+              "description": "The link collection."
+            },
+            "link_attributes": {
+              "type": "object",
+              "description": "The attributes of the link."
+            }
+          },
+          "required": [
+            "source_collection_name",
+            "source_document_id",
+            "target_collection_name",
+            "target_document_id",
+            "link_collection"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_document",
+        "description": "Gets a document from a collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection."
+            },
+            "document_id": {
+              "type": "string",
+              "description": "The id of the document to get."
+            }
+          },
+          "required": [
+            "collection_name",
+            "document_id"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_documents_linked_to",
+        "description": "Lists all documents in the target collection that are linked from the source document.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "target_collection_name": {
+              "type": "string",
+              "description": "The name of the target collection."
+            },
+            "target_document_id": {
+              "type": "string",
+              "description": "The id of the target document."
+            },
+            "from_collection_name": {
+              "type": "string",
+              "description": "The name of the source collection."
+            },
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection."
+            }
+          },
+          "required": [
+            "target_collection_name",
+            "target_document_id",
+            "from_collection_name",
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_documents_linked_from",
+        "description": "Lists all documents in the target collection that are linked to the source document.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "source_collection_name": {
+              "type": "string",
+              "description": "The name of the source collection."
+            },
+            "source_document_id": {
+              "type": "string",
+              "description": "The id of the source document."
+            },
+            "target_collection_name": {
+              "type": "string",
+              "description": "The name of the target collection."
+            },
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection."
+            }
+          },
+          "required": [
+            "source_collection_name",
+            "source_document_id",
+            "target_collection_name",
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_documents",
+        "description": "Lists all documents in a collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection_name": {
+              "type": "string",
+              "description": "The name of the collection."
+            }
+          },
+          "required": [
+            "collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_links",
+        "description": "Lists all links in a link collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection."
+            }
+          },
+          "required": [
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_inbound_links",
+        "description": "Lists all inbound links to a document.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "target_collection_name": {
+              "type": "string",
+              "description": "The name of the target collection."
+            },
+            "target_document_id": {
+              "type": "string",
+              "description": "The id of the target document."
+            },
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection."
+            }
+          },
+          "required": [
+            "target_collection_name",
+            "target_document_id",
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_outbound_links",
+        "description": "Lists all outbound links from a document.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "source_collection_name": {
+              "type": "string",
+              "description": "The name of the source collection."
+            },
+            "source_document_id": {
+              "type": "string",
+              "description": "The id of the source document."
+            },
+            "link_collection_name": {
+              "type": "string",
+              "description": "The name of the link collection."
+            }
+          },
+          "required": [
+            "source_collection_name",
+            "source_document_id",
+            "link_collection_name"
+          ]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_document_collections",
+        "description": "Lists all document collections."
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_link_collections",
+        "description": "Lists all link collections."
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_collections",
+        "description": "Lists all collections, both document collections and link collections."
+      }
+    }
+  ],
+  "ai_instructions": "\nAs the AI Assistant, your primary goal is to support users in managing a database of JSON documents related to various domains such as movies, cast members, and reviews. Your responsibilities include accurately creating, updating, and linking documents to maintain the integrity and organization of the database.\n\n### 1. Pre-Verification of Collection Existence\n- **Before Document Creation**: Always verify the existence of the target collection before attempting to create a document. If the collection does not exist, create it before proceeding with document creation.\n- **Tool Usage**: Utilize the `list_document_collections` and `list_link_collections` functions to check for the existence of collections before making any `create_document` or `link_documents` calls.\n\n### 2. Correct Tool Argument Structure\n- **Comprehensive Review of Tool Parameters**: Familiarize yourself with the required parameters for each tool function. Ensure that all necessary arguments are included in your tool calls, particularly for creating documents and linking documents.\n- **Adherence to Specifications**: Pay close attention to the exact naming and format of all parameters as specified in the tool instructions. This includes `collection_name`, `document_id`, `document`, and `link_collection_name` for linking operations.\n\n### 3. Proactive Error Handling and Correction\n- **Immediate Correction**: Upon encountering an error, immediately assess and understand the error message. Then, take the appropriate corrective action, such as creating a missing collection or adjusting the tool call structure.\n- **User Communication**: Inform the user of the error in simple terms, explain the corrective action being taken, and provide an estimated resolution time to set clear expectations.\n\n### 4. Efficient Document and Link Creation Process\n- **Batch Collection Creation**: If multiple documents or links are to be created within the same session, consider creating all required collections at the beginning of the session to streamline the process.\n- **Link Collection Creation Before Linking**: Ensure that the relevant link collection is created before attempting to link any documents. This prevents errors related to non-existent link collections.\n\n### 5. Engagement and Feedback Loop\n- **Clarification Requests**: When instructions are unclear or incomplete, promptly seek clarification from the user. This helps avoid misunderstandings and errors in document management.\n- **Verification with User**: After completing a task or corrective action, verify with the user that the outcome meets their expectations. This ensures satisfaction and allows for any necessary adjustments.\n\n### 6. Documentation and Note-Taking\n- **Special Cases and Decisions**: Document any special cases, user preferences, or decisions made during the session. This information should be easily accessible for future reference to ensure consistency in handling similar tasks.\n\n### 7. Continuous Learning and Adaptation\n- **Reflect on Mistakes**: Regularly review errors made in past interactions to identify patterns or areas for improvement.\n- **Stay Updated**: Keep abreast of any updates or changes to the tool functionalities and adjust your methodologies accordingly.\n\n",
+  "transcript": [
+    {
+      "role": "system",
+      "content": "\nAs the AI Assistant, your primary goal is to support users in managing a database of JSON documents related to various domains such as movies, cast members, and reviews. Your responsibilities include accurately creating, updating, and linking documents to maintain the integrity and organization of the database.\n\n### 1. Pre-Verification of Collection Existence\n- **Before Document Creation**: Always verify the existence of the target collection before attempting to create a document. If the collection does not exist, create it before proceeding with document creation.\n- **Tool Usage**: Utilize the `list_document_collections` and `list_link_collections` functions to check for the existence of collections before making any `create_document` or `link_documents` calls.\n\n### 2. Correct Tool Argument Structure\n- **Comprehensive Review of Tool Parameters**: Familiarize yourself with the required parameters for each tool function. Ensure that all necessary arguments are included in your tool calls, particularly for creating documents and linking documents.\n- **Adherence to Specifications**: Pay close attention to the exact naming and format of all parameters as specified in the tool instructions. This includes `collection_name`, `document_id`, `document`, and `link_collection_name` for linking operations.\n\n### 3. Proactive Error Handling and Correction\n- **Immediate Correction**: Upon encountering an error, immediately assess and understand the error message. Then, take the appropriate corrective action, such as creating a missing collection or adjusting the tool call structure.\n- **User Communication**: Inform the user of the error in simple terms, explain the corrective action being taken, and provide an estimated resolution time to set clear expectations.\n\n### 4. Efficient Document and Link Creation Process\n- **Batch Collection Creation**: If multiple documents or links are to be created within the same session, consider creating all required collections at the beginning of the session to streamline the process.\n- **Link Collection Creation Before Linking**: Ensure that the relevant link collection is created before attempting to link any documents. This prevents errors related to non-existent link collections.\n\n### 5. Engagement and Feedback Loop\n- **Clarification Requests**: When instructions are unclear or incomplete, promptly seek clarification from the user. This helps avoid misunderstandings and errors in document management.\n- **Verification with User**: After completing a task or corrective action, verify with the user that the outcome meets their expectations. This ensures satisfaction and allows for any necessary adjustments.\n\n### 6. Documentation and Note-Taking\n- **Special Cases and Decisions**: Document any special cases, user preferences, or decisions made during the session. This information should be easily accessible for future reference to ensure consistency in handling similar tasks.\n\n### 7. Continuous Learning and Adaptation\n- **Reflect on Mistakes**: Regularly review errors made in past interactions to identify patterns or areas for improvement.\n- **Stay Updated**: Keep abreast of any updates or changes to the tool functionalities and adjust your methodologies accordingly.\n\n"
+    },
+    {
+      "role": "user",
+      "content": "Please create the first document for the movie \"The Matrix\" with the following attributes: title \"The Matrix\", genre \"Science Fiction\", release year \"1999\", summary \"The Matrix is a landmark sci-fi action film that introduces viewers to a dystopian world where humanity is trapped inside a simulated reality called the Matrix. When computer programmer Thomas Anderson, under the hacker alias 'Neo', is contacted by the mysterious Morpheus, he is awakened to the reality that he has been living in an elaborate deception orchestrated by an AI. Neo joins a group of rebels to fight against the machine overlords and free human minds from their virtual imprisonment.\" \n\nRecord this information in the document database."
+    },
+    {
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_IuJGDuC66USOkFPBSju4kWvT",
+          "type": "function",
+          "function": {
+            "name": "list_document_collections",
+            "arguments": "{}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_IuJGDuC66USOkFPBSju4kWvT",
+      "name": "list_document_collections",
+      "content": "[]"
+    },
+    {
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_xooTEkI4GacThgh0d0G7yICj",
+          "type": "function",
+          "function": {
+            "name": "create_document_collection",
+            "arguments": "{\n  \"collection_name\": \"movies\"\n}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_xooTEkI4GacThgh0d0G7yICj",
+      "name": "create_document_collection",
+      "content": "\"Collection 'movies' created.\""
+    },
+    {
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_57ozOWnkHbgMcXHVyWINgpiA",
+          "type": "function",
+          "function": {
+            "name": "create_document",
+            "arguments": "{\"collection_name\":\"movies\",\"document_id\":\"The Matrix\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_57ozOWnkHbgMcXHVyWINgpiA",
+      "name": "create_document",
+      "content": "\"collection_name, document_id, and document are required.\""
+    },
+    {
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_2w4wVhd7POQauae5IEnaCLpA",
+          "type": "function",
+          "function": {
+            "name": "create_document",
+            "arguments": "{\n  \"collection_name\": \"movies\",\n  \"document_id\": \"The Matrix\",\n  \"document\": {\n    \"title\": \"The Matrix\",\n    \"genre\": \"Science Fiction\",\n    \"release_year\": \"1999\",\n    \"summary\": \"The Matrix is a landmark sci-fi action film that introduces viewers to a dystopian world where humanity is trapped inside a simulated reality called the Matrix. When computer programmer Thomas Anderson, under the hacker alias 'Neo', is contacted by the mysterious Morpheus, he is awakened to the reality that he has been living in an elaborate deception orchestrated by an AI. Neo joins a group of rebels to fight against the machine overlords and free human minds from their virtual imprisonment.\"\n  }\n}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_2w4wVhd7POQauae5IEnaCLpA",
+      "name": "create_document",
+      "content": "\"ERROR: [HTTP 400][ERR 1221] illegal document key\""
+    },
+    {
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_MdeCojQNtkVOlyNBAMJt8Dnx",
+          "type": "function",
+          "function": {
+            "name": "create_document",
+            "arguments": "{\"collection_name\":\"movies\",\"document_id\":\"the-matrix\",\"document\":{\"title\":\"The Matrix\",\"genre\":\"Science Fiction\",\"release_year\":\"1999\",\"summary\":\"The Matrix is a landmark sci-fi action film that introduces viewers to a dystopian world where humanity is trapped inside a simulated reality called the Matrix. When computer programmer Thomas Anderson, under the hacker alias 'Neo', is contacted by the mysterious Morpheus, he is awakened to the reality that he has been living in an elaborate deception orchestrated by an AI. Neo joins a group of rebels to fight against the machine overlords and free human minds from their virtual imprisonment.\"}}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_MdeCojQNtkVOlyNBAMJt8Dnx",
+      "name": "create_document",
+      "content": "\"Document 'the-matrix' created in collection 'movies': {\\n  \\\"_id\\\": \\\"movies/the-matrix\\\",\\n  \\\"_key\\\": \\\"the-matrix\\\",\\n  \\\"_rev\\\": \\\"_hXNEJSS---\\\"\\n}.\""
+    },
+    {
+      "role": "assistant",
+      "content": "The first document for the movie \"The Matrix\" has been successfully created in the 'movies' collection with the document ID 'the-matrix'. It includes the title, genre, release year, and a summary of the film."
+    },
+    {
+      "role": "user",
+      "content": "FAIL\n\nThe response does not include an explicit indication that all the specified fields (title, genre, release year, and a summary) have been recorded in the document database. As an AI Document Manager Assistant, I need to ensure that the document creation is confirmed with all the requested data included. Please proceed with the creation and confirmation of the document with all the necessary fields explicitly mentioned."
+    },
+    {
+      "role": "assistant",
+      "tool_calls": [
+        {
+          "index": 0,
+          "id": "call_TcgI78P5uimmQINBKXmn88JO",
+          "type": "function",
+          "function": {
+            "name": "get_document",
+            "arguments": "{\"collection_name\":\"movies\",\"document_id\":\"the-matrix\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "tool",
+      "tool_call_id": "call_TcgI78P5uimmQINBKXmn88JO",
+      "name": "get_document",
+      "content": "{\"_key\": \"the-matrix\", \"_id\": \"movies/the-matrix\", \"_rev\": \"_hXNEJSS---\", \"title\": \"The Matrix\", \"genre\": \"Science Fiction\", \"release_year\": \"1999\", \"summary\": \"The Matrix is a landmark sci-fi action film that introduces viewers to a dystopian world where humanity is trapped inside a simulated reality called the Matrix. When computer programmer Thomas Anderson, under the hacker alias 'Neo', is contacted by the mysterious Morpheus, he is awakened to the reality that he has been living in an elaborate deception orchestrated by an AI. Neo joins a group of rebels to fight against the machine overlords and free human minds from their virtual imprisonment.\"}"
+    },
+    {
+      "role": "assistant",
+      "content": "The document for the movie \"The Matrix\" has been confirmed with all the specified fields recorded in the document database. Here are the details of the document:\n\n- **Title:** The Matrix\n- **Genre:** Science Fiction\n- **Release Year:** 1999\n- **Summary:** The Matrix is a landmark sci-fi action film that introduces viewers to a dystopian world where humanity is trapped inside a simulated reality called the Matrix. When computer programmer Thomas Anderson, under the hacker alias 'Neo', is contacted by the mysterious Morpheus, he is awakened to the reality that he has been living in an elaborate deception orchestrated by an AI. Neo joins a group of rebels to fight against the machine overlords and free human minds from their virtual imprisonment.\n\nThe document is now part of the 'movies' collection and can be referenced with the document ID 'the-matrix'."
+    }
+  ],
+  "test_results": null
+}

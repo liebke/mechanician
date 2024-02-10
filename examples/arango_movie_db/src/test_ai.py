@@ -71,7 +71,7 @@ instructions = """
 
 def ai_evaluator():
      ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
-                                          model_name=os.getenv("OPENAI_MODEL_NAME"))
+                                        model_name=os.getenv("OPENAI_MODEL_NAME"))
      return TAGAI(ai_connector,
                   ai_instructions=instructions, 
                   name="Task Evaluator")
@@ -114,14 +114,16 @@ class TestOfferMgmtAI(unittest.TestCase):
             self.assertEqual(evaluation, "PASS")
 
         finally:
-            iat = InstructionAutoTuning(OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
-                                                              model_name=os.getenv("OPENAI_MODEL_NAME")))
+            # iat_ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
+            #                                     model_name=os.getenv("OPENAI_MODEL_NAME"))
+            iat = InstructionAutoTuning(training_data_dir="./test_results",
+                                        instructions_dir="./instructions")
             logger.info("Generating Instruction Auto Tuning...")
-            training_transcript_path = os.path.join(dir_path, "training_transcript.json")
-            iat.write_training_session_data(training_transcript_path)
+            training_transcript_path = os.path.join(dir_path, "training_session.json")
+            iat.write_training_session_data(ai, training_transcript_path)
 
-            iat_prompt_path = os.path.join(dir_path, "iat_prompt.txt")
-            iat.write_iat_prompt(training_transcript_path, iat_prompt_path)
+            # iat_prompt_path = os.path.join(dir_path, "iat_prompt.txt")
+            # iat.write_iat_prompt(training_transcript_path, iat_prompt_path)
 
             logger.info(f"\n\n\nDocument Collections:")
             doc_collections = ai.tools.list_document_collections()
