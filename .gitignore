@@ -2,8 +2,8 @@
 __pycache__
 .DS_Store
 src/mechanician.egg-info
-src/mechanician.egg-info/SOURCES.txt
-examples/offer_management_assistant/resources/_test_data
+src/mechanician.egg-info.txt
+_test_data
 test_results
 mechanician_tmdb.egg-info
 mechanician_arangodb.egg-info
@@ -13,3 +13,4 @@ mechanician_openai.egg-info
 .vscode
 arango_movie_db.egg-info
 mechanician_offer_mgmt.egg-info
+tuning_sessions
