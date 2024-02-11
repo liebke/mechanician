@@ -75,7 +75,7 @@ def record_tuning_session(ai: TAGAI,
     if tuning_session_dir is not None:
             os.makedirs(tuning_session_dir, exist_ok=True)
     with open(os.path.join(tuning_session_dir, file_name), 'w') as f:
-        json.dumps(get_tuning_session(ai), f, indent=2)
+        json.dump(get_tuning_session(ai), f, indent=2)
 
 
 ###############################################################################

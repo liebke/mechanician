@@ -1,7 +1,6 @@
 from mechanician import TAGAI, shell
 from mechanician_openai import OpenAIChatConnector, OpenAIAssistantsConnector
-from mechanician_arangodb import DocumentManagerAITools, tool_instructions
-from revised_instructions import ai_instructions
+from mechanician_arangodb import DocumentManagerAITools
 from arango import ArangoClient
 import os
 import logging
@@ -26,8 +25,7 @@ def init_ai(database_name="test_db"):
         ai_connector = OpenAIChatConnector(api_key=api_key, model_name=model_name)
 
     ai = TAGAI(ai_connector=ai_connector, 
-               ai_instructions=ai_instructions, 
-               tool_instructions=tool_instructions,
+               instruction_set_directory="./instructions",
                tools=doc_tools,
                name="Movie Document Manager AI")
     return ai
@@ -38,14 +36,17 @@ def init_ai(database_name="test_db"):
 ###############################################################################
 
 def main():
+    ai = None
     try: 
         load_dotenv()
         database_name = "test_db"
         ai = init_ai(database_name)
         shell.run(ai)
-        
+    except Exception as e:
+        logger.error(e)
     finally:
-        ai.tools.doc_mgr.delete_database(database_name)
+        if ai and ai.tools and ai.tools.doc_mgr:
+            ai.tools.doc_mgr.delete_database(database_name)
 
 if __name__ == '__main__':
     main()

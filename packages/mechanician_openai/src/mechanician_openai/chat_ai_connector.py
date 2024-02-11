@@ -63,7 +63,8 @@ class OpenAIChatConnector(StreamingAIConnector):
 
     def _connect(self):
         # Initialize the conversation with a system message
-            self.messages = [{"role": "system", "content": self.ai_instructions}]
+            if self.ai_instructions is not None:
+                self.messages = [{"role": "system", "content": self.ai_instructions}]
 
     ###############################################################################
     ## SUBMIT_PROMPT
