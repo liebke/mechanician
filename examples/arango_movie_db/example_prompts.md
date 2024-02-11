@@ -13,6 +13,8 @@ I'd like you to write a positive review for the matrix and link it to the movie 
 
 /file ./tuning_sessions/tuning_session.json
 
+commit changes.
+
 can you evaluate the performance of the assistant and describe its errors and successes?
 
 please revise the assistant's instructions based on your evaluation, using the draft_instructions tool.

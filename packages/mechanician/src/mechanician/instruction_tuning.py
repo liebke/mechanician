@@ -186,7 +186,7 @@ class AutoTuningAITools(AITools):
             return f"ERROR: {message}"
 
 
-    def save_draft_instructions(self, input):
+    def commit_draft_instructions(self, input):
         try:
             if os.path.exists(self.draft_instructions_file_path):
               # If previous version of instruction file exists
@@ -292,8 +292,8 @@ auto_tuner_tool_instructions = [
     {
       "type": "function",
       "function": {
-        "name": "save_draft_instructions",
-        "description": "Saves the draft of the instructions, replacing the original instructions.",
+        "name": "commit_draft_instructions",
+        "description": "Commits the draft of the new instructions, replacing the original instructions after making an archive copy of the original instructions.",
         "parameters": {
           "type": "object",
           "properties": {},
