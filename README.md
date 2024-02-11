@@ -74,6 +74,12 @@ The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) d
 
 
 ### TAGAI Class
+
+* [mechanician_tmdb/main.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb/src/mechanician_tmdb/main.py#L28)
+
+* [examples/arango_movie_db/main.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db/src/main.py#L27)
+
+* [packages/mechanician/src/mechanician/instruction_tuning.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/packages/mechanician/src/mechanician/instruction_tuning.py#L50)
    
 ```python
 from mechanician import TAGAI
@@ -97,6 +103,17 @@ ai = TAGAI(ai_connector=OpenAIChatConnector(),
 
 ### AITools Abstract Class
 
+
+Examples of AITools classes:
+
+* [tmdb_tools.py](https://github.com/liebke/mechanician/blob/main/examples/tmdb/src/mechanician_tmdb/tmdb_ai_tools.py)
+
+* [arango_movie_db_tools.py](https://github.com/liebke/mechanician/blob/main/packages/mechanician_arangodb/src/mechanician_arangodb/document_ai_tools.py)
+
+* [auto_tuning_ai_tools.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/packages/mechanician/src/mechanician/instruction_tuning.py#L62)
+
+
+
 ```python
 from mechanician import AITools
 
@@ -106,6 +123,8 @@ class AutoTuningAITools(AITools):
 ```
 
 ### Instruction Sets
+
+* [Arango Movie DB Example instrucions.json](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/instructions/instructions.json)
 
 The `instruction_set_directory` contains an **instruction set** file, with a default name of `instructions.json`.
 
@@ -156,11 +175,17 @@ export OPENAI_MODEL_NAME=gpt-4-0125-preview
 
 #### OpenAIChatConnector
 
+* [OpenAIChatConnector](https://github.com/liebke/mechanician/blob/main/packages/mechanician_openai/src/mechanician_openai/chat_ai_connector.py)
+
+
 ```python
 from mechanician_openai import OpenAIChatConnector
 ```
 
 #### OpenAIAssistantsConnector
+
+* [OpenAIAssistantsConnector](https://github.com/liebke/mechanician/blob/main/packages/mechanician_openai/src/mechanician_openai/assistants_ai_connector.py)
+
 
 ```python
 from mechanician_openai import OpenAIAssistantsConnector
@@ -202,6 +227,9 @@ ai = TAGAI(ai_connector=OpenAIChatConnector(),
 
 
 ## Getting Started with Mechanician ArangoDB
+
+* [examples/arango_movie_db](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db)
+
 
 ```bash
 pip install mechanician-arangodb
@@ -337,6 +365,8 @@ $ python test.py
 
 
 ## Getting Started with the TMDb Example
+
+* [examples/tmdb](https://github.com/liebke/mechanician/tree/main/examples/tmdb)
 
 ```bash
 export TMDB_API_KEY=<YOUR_TMDB_API_KEY>
