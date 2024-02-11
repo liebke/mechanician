@@ -7,9 +7,9 @@
 
 [**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI by building tools that AIs use. 
 
-We describe this approach as **Tool Augmented Generation** (TAG) and the AIs that support this approach as **Tool Augmented Generative AIs** (TAG AIs).
+The approach of providing tools to Generative AIs to use can be described as **Tool Augmented Generation** (TAG) and the Generative AIs that use tools as **Tool Augmented Generative AIs** (TAG AIs).
 
-*Daring Mechanician* provides tools for building and testing *TAG AIs*, building and testing the tools that these AIs use, and supports a process for *tuning* the instructions for AIs that we call **Instruction Auto-Tuning** (IAT) that uses an **Instructor AI** to revise the instructions for the TAG AI based on its interactions with users.
+*Daring Mechanician* provides tools for building, testing, and tuning *TAG AIs* and the tools that these AIs use, including support for AI-driven testing and AI-assisted *tuning* of the instruction sets given to an AI that we call **Instruction Auto-Tuning** (IAT).
 
 
 # Tool Augmented Generation (TAG)
@@ -22,16 +22,165 @@ In contrast to **Retrieval Augmented Generation** (RAG), which uses a knowledge 
 
 >NOTE: You can build a RAG application using a TAG AI to create a **RAGTAG AI** Application.
 
-*Tool Augmented Generation* broadens the knowledge base of the AI beyond its initial training data and also introduces a dynamic aspect to its learning and interaction capabilities, allowing for real-time data retrieval, analysis, and interaction with a wide range of digital environments.
-
-Foundation Models are inherently limited by the scope of their training data and the static nature of that data, *Tool Augmented Generative AI* can access up-to-date information, perform computations, generate visual content, and execute code in a controlled environment; extending Generative AIs from pure knowledge repositories to active participants in information processing and generation.
-
-*Tool Augmentated Generation* means that the AI can, for example, use a web browsing tool to fetch the latest news or scientific research, interact with data visualization software to create complex graphs, or utilize a code execution environment to verify programming solutions. 
+Foundation Models are inherently limited by the scope of their training data and the static nature of that data, *Tool Augmented Generative AI* can access up-to-date information, perform computations, and interact with external systems; extending Generative AIs from pure knowledge repositories to active participants in information processing and generation.
 
 This approach enhances the AI's problem-solving skills, creativity, and ability to provide accurate, up-to-date information.
 
+
+## Designing Tools for AIs to Use
+
+TAG AIs can be observed to problem solve, learning to use tools effectively through feedback provided by the tools themselves, so it is necessary for the tools to provide effective feedback, often through natural language, when reporting errors or providing results.
+
+AIs will learn from their mistakes and successes, if the tools provide feedback that the AI can learn from.
+
+See [Getting Started with Daring Mechanician](#getting-started-with-daring-mechanician) for an example of how to use the **Tool Augmented Generation** (TAG) approach to build a **Movie Database Assistant**.
+
+
+## Instruction Tuning (IT)
+
+In addition to learning from the feedback provided by the tools they use, TAG AIs can learn from the feedback they receive from users.
+
+But since TAG AIs do not necessarily undergo further training, or Fine Tuning, that permanently encodes what they learned, they can only learn within the context window where feedback is received, and must start from scratch during the next session.
+
+In order to make these learned behaviors persistent, they must be captured through a process of **Instruction Tuning**, where the initial instructions provided to the AI, the instructions provided for the tools the AI can use, and the feedback provided by those tools are revised and improved, incorporating lessons learned during interactions with users.
+
+This process starts with creating an initial set of *AI Instructions*, *Tool Instructions*, and *Tool Feedback*, that are used to guide the AI's behavior and responses, and then iteratively refining those instructions and tool feedback based on the AI's performance during interactions with users.
+
+At the start of this process, the prompting provided to the AI often consists of explict and detailed steps, but as the process proceeds, it is often discoverd that the AI does not need such detailed prompting, and that more general prompts can be used to guide the AI's behavior, and it will work out the details on its own.
+
+In order to speed up this process, it is useful to use an **Evaluator AI** that acts as an *user surrogate*, interactively eliciting responses from the AI as the two work through multi-step tasks.
+
+## Instruction Auto-Tuning (IAT)
+
+By observing an AI's interactions with users and other AIs, an *Instructor AI* can refine and update the AI's current instructions and the instructions describing the tools the AI can use.
+
+The Instructor AI is provided the AI's current set of instructions, instructions for the tools used by the AI, the transcript of interactions between the AI and a User (or Evaluator AI), assessment results for the tasks the assistant is performing, including the AI tool calls and responses.
+
+See [Getting Started with Instruction Auto-Tuning](#getting-started-with-instruction-auto-tuning) for an example of how to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for a **Movie Database Assistant**.
+
+## AI-Driven Testing (AIT)
+
+See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-testing) for an example of how to use the **AI-Driven Testing** (AIT) process to test a **Movie Database Assistant**.
+
+
+
+## Getting Started with Daring Mechanician
+
+```bash
+pip install mechanician
+```
+
+The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains examples of **Tool Augmented Generative AI** projects.
+
+
+### TAGAI Class
+   
 ```python
-from mecanician import TAGAI, shell
+from mechanician import TAGAI
+```
+
+```python
+ai = TAGAI(ai_connector=ai_connector,
+           ai_instructions=ai_instructions,
+           tool_instructions=tool_instructions,
+           tools=tools)
+```
+
+Alternatively, you can pass an `instruction_set_directory` to the `TAGAI` constructor, and it will load the instructions from an *instruction_set* JSON file, with a default name of `instructions.json`.
+
+
+```python
+ai = TAGAI(ai_connector=OpenAIChatConnector(),
+           instruction_set_directory="./instructions",
+           tools=tools)
+```
+
+### AITools Abstract Class
+
+```python
+from mechanician import AITools
+
+class AutoTuningAITools(AITools):
+    def tool1(self, parameters):
+        ...
+```
+
+### Instruction Sets
+
+The `instruction_set_directory` contains an **instruction set** file, with a default name of `instructions.json`.
+
+```json
+{'ai_instructions': "...",
+ 'tool_instructions': {...}}
+```
+
+
+#### AI Instructions
+
+`
+As the AI Assistant, your primary goal is to support users in maintaining a database of JSON documents... 
+`
+
+#### Tool Instructions
+
+```json
+{
+   "tool1": {
+      "name": "tool1",
+      "description": "Tool 1 Description",
+      "parameters": {
+         "parameter1": {
+            "name": "parameter1",
+            "description": "Parameter 1 Description"
+         }
+      }
+   }
+}
+```
+
+### AIConnector Classes
+
+#### OpenAI Connectors
+
+```bash
+pip install mechanician-openai
+```
+
+```bash
+# OPENAI API KEY
+export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY_HERE>
+
+# OPENAI MODEL NAME
+export OPENAI_MODEL_NAME=gpt-4-0125-preview
+```
+
+#### OpenAIChatConnector
+
+```python
+from mechanician_openai import OpenAIChatConnector
+```
+
+#### OpenAIAssistantsConnector
+
+```python
+from mechanician_openai import OpenAIAssistantsConnector
+```
+
+```bash
+# ENVIRONMENT VARIABLES FOR THE ASSISTANT
+export USE_OPENAI_ASSISTANTS_API = False
+export ASSISTANT_ID=<YOUR_ASSISTANT_ID_HERE>
+export CREATE_NEW_ASSISTANT=False
+export DELETE_ASSISTANT_ON_EXIT=False
+```
+
+or create a `.env` file with the variables.
+
+
+#### Running the AI
+
+```python
+from mechanician import TAGAI, shell
 from mechanician_openai import OpenAIChatConnector
 ```
 
@@ -42,39 +191,79 @@ ai = TAGAI(ai_connector=OpenAIChatConnector(),
            tools=tools)
 ```
 
-## Designing Tools for AIs to Use
-
-TAG AIs can be observed learning to use tools effectively through feedback provided by the tools themselves, so it is necessary for the tools to provide effective feedback, often through natural language, when reporting errors or providing results.
-
-AIs will learn from their mistakes and successes, if the tools provide feedback that the AI can learn from.
+Alternatively, you can pass an `instruction_set_directory` to the `TAGAI` constructor, and it will load the instructions from an *instruction_set* JSON file, with a default name of `instructions.json`.
 
 
-## Instruction Tuning (IT)
+```python
+ai = TAGAI(ai_connector=OpenAIChatConnector(),
+           instruction_set_directory="./instructions",
+           tools=tools)
+```
 
-TAG AIs can be observed learning from both feedback provided by the tools they use, and through the feedback they receive from the users.
 
-But since TAG AIs do not necessarily undergo further training, or Fine Tuning, that provides permanent learning, they can only learn within the context window where feedback is received.
-
-In order to make these learned behaviors persistent, they must be captured through a process of **Instruction Tuning**, where the initial instructions, or system instructions, and the feedback provided by the tools the AIs use are revised and improved.
-
-This process starts with creating an initial set of *system instructions* and *tool feedback*, that are used to guide the AI's behavior and responses, and then iteratively refining those instructions based on the AI's performance during testing and assessment of the tasks they are required to perform.
-
-At the start of this process, the prompting provided to the AI often consists of explict and detailed steps, but as the process proceeds, it is often discoverd that the AI does not need such detailed prompting, and that more general prompts can be used to guide the AI's behavior, and it will work out the details on its own.
-
-In order to speed up this process, it is useful to use an **Evaluator AI** that acts as an *user surrogate*, interactively eliciting responses from the AI as the two work through multi-step tasks, with the Evaluator AI providing feedback to the AI on its performance and the quality of its responses.
-
-## Instruction Auto-Tuning (IAT)
-
-By observing these interactions, the developer can further refine the instructions provided to the AI, the feedback provided by the tools, and also the instructions provided to the Evaluator AI.
-
-The question then becomes, can we create an **Instructor AI** meant to observe interactions between an AI Assistant and a user (or a user surrogate AI) and improve the instructions for the Assistant (as well as the user surrogate AI), improve the descriptions and responses of the tools the AI has access to?
-
-We can provide the Instructor AI the current set of system instructions, descriptions of the tools used by the AI, the transcript of interactions between the AI and the User (or Evaluator AI), assessment results for the tasks the assistant is performing, including the AI tool calls and responses, and then ask the Instructor AI to improve and refine the instructions for the Assistant AI, improve and refine the descriptions for each tool and its parameters, suggest improvements for the responses from tools, and either create or revise the instructions for an Evaluator AI.
-
-Daring Mechanician provides tools to perform this **Instruction Auto-Tuning**.
-
+## Getting Started with Mechanician ArangoDB
 
 ```bash
+pip install mechanician-arangodb
+```
+
+```bash
+ARANGO_ROOT_PASSWORD=<YOUR_ARANGO_DATABASE_PASSWORD>
+ARANGO_HOST=http://localhost:8529
+```
+
+#### Run ArangoDB in Docker
+
+```bash
+docker pull arangodb/arangodb
+```
+
+```bash
+docker run -e ARANGO_ROOT_PASSWORD=${ARANGO_ROOT_PASSWORD} -p 8529:8529 -d --name arangodb-instance arangodb/arangodb
+```
+
+```bash
+docker stop arangodb-instance
+```
+
+```bash
+docker start arangodb-instance
+```
+
+```bash
+./run.sh
+```
+
+```bash
+./test.sh
+```
+
+
+### 
+```python
+from mechanician_arangodb import DocumentManagerAITools
+from arango import ArangoClient
+```
+
+```python
+arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
+doc_tools = DocumentManagerAITools(arango_client, database_name=database_name)
+```
+
+```python
+ai = TAGAI(ai_connector=ai_connector, 
+           instruction_set_directory="./instructions",
+           tools=doc_tools,
+           name="Movie Document Manager AI")
+```
+
+## Getting Started with Instruction Auto-Tuning
+
+See the [arango_movie_db example](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db) to see how to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for a **Movie Database Assistant**.
+
+Use the TAGAI's `save_tuning_session` method to save the current tuning session, and then use the `auto_tune.sh` script to run the *Instructor AI* and start the an interactive instruction auto-tuning process. 
+
+```python
 ai.save_tuning_session()
 ```
 
@@ -82,6 +271,138 @@ ai.save_tuning_session()
 ./script/auto_tune.sh
 ```
 
+Use the `/file` chat command to load the tuning session into the *Instructor AI*.
+
+```bash
+> /file ./tuning_sessions/tuning_session.json
+```
+
+It will begin by evaluating the AI's performance and describing its errors and successes, and then creating a revised draft of the AI's instructions and the tool, and tool parameter instructions, to improve the AI's performance. If the updated instruction set is satisfactory, you can ask the *Instructor AI* to commit the changes.
+
+```bash
+> commit the revisions.
+```
+
+## Getting Started with AI-Driven Testing
+
+### AI Q&A Program Tests
+
+```python
+from mechanician.testing import QandATest, run_q_and_a_evaluations
+import unittest
+
+class TestAI(unittest.TestCase):
+
+   def test_ai(self):
+      ai = init_ai()
+      evaluator_at = init_evaluator_ai()
+      tests = [QandATest(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
+                        expected="Anya Taylor-Joy"),
+               QandATest(prompt="What is the name of the actor plays Ken in the Barbie movie?",
+                        expected="Ryan Gosling"),
+               QandATest(prompt="Who played Barbie?",
+                        expected="Margot Robbie"),
+               QandATest(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
+                        expected="The Witch")]
+            
+      results, messages = run_q_and_a_evaluations(ai, tests, evaluator_ai)
+
+      for result in results:
+         self.assertEqual(result.evaluation, "PASS")
+```
+
+### AI Task Evaluations
+
+```python
+from mechanician.testing import run_task_evaluation
+import unittest
+
+class TestAI(unittest.TestCase):
+
+   def test_ai(self):
+      ai = init_ai()
+      evaluator_at = init_evaluator_ai()
+      evaluation, messages = run_task_evaluation(ai, evaluator_ai)
+
+      self.assertEqual(evaluation, "PASS")
+```
+
+
+### Run AI-Driven Tests
+
+```bash
+$ python test.py
+```
+
+
+
+## Getting Started with the TMDb Example
+
+```bash
+export TMDB_API_KEY=<YOUR_TMDB_API_KEY>
+export TMDB_READ_ACCESS_TOKEN=<YOUR_READ_ACCESS_TOKEN>
+```
+
+```bash
+./install.sh
+```
+
+```bash
+./run.sh
+```
+
+```bash
+./test.sh
+```
+
+
+### TMDb Example Code
+
+* [```examples/tmdb/main.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/main.py): shows how to use **Daring Mechanician** to interact with *OpenAI's Chat API*, providing it with **tools** that can be used by the LLM to makes *callouts* to other programs. 
+
+* [```tmdb_tool_schemas.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_tool_schemas.py): informs the LLM what tools are available to it.
+
+* [```tmdb_tools.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_tools.py): is *function_handler* containing ```stub``` functions that are invoked when the LLM makes one or more ```tool_call``` requests.
+
+* [```examples/tmdb/instructions.md```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/instructions.md): is a set of instructions for the LLM that inform it of the tools available to it, and describe its role as a **Movie Database Assistant** that answers questions about movies and their casts and crews.
+
+* [```tmdb_example_prompts.md```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_example_prompts.md): provides a variety of approaches to interacting with the LLM.
+
+* [```examples/tmdb/test.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/test.py): shows how to test **Daring Mechanician** programs by having the AI self-evaluate their responses given a testing rubric. 
+
+
+
+## Getting Started with the Arango Movie Database Example
+
+```bash
+./install.sh
+```
+
+```bash
+./run.sh
+```
+
+```bash
+./test.sh
+```
+
+## Other Environment Variables
+
+## Parallel Tool Calls and Streaming Responses
+
+It currently supports [*OpenAI's Chat API*](https://platform.openai.com/docs/overview) and [*OpenAI's Assistants API*](https://platform.openai.com/docs/overview), and specifically supports [OpenAI's *Function Calling*](https://platform.openai.com/docs/guides/function-calling), a.k.a.```tool_calls```, while [*streaming responses*](https://cookbook.openai.com/examples/how_to_stream_completions) from the *Chat API*. 
+
+Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.python.org/3/library/concurrent.futures.html) as soon as it has completely streamed to the client, allowing it to perform *IO-bound* calls while other ```tool_calls``` continue to stream to the client.
+
+
+```bash
+export CALL_TOOLS_IN_PARALLEL=True
+export MAX_THREAD_WORKERS=50
+```
+
+
+
+-----------------------------------------------------------
 # NOTES
 
 ## Instruction Auto-Tuning: Instructor Prompt
@@ -194,6 +515,10 @@ export TMDB_READ_ACCESS_TOKEN=<YOUR_TMDB_READ_ACCESS_TOKEN_HERE>
 
 ```bash
 ./run.sh
+```
+
+```bash
+./test.sh
 ```
 
 ### Example Interaction
@@ -342,7 +667,7 @@ If the task is expected to result in structured data matching a known outcome, n
 Once automation of the interaction with the AI has been implemented, you will be able to perform prompt-engineering to refine the interactions and responses of the AI.
 
 
-### AI Q and A Program Tests
+### AI Q&A Program Tests
 
 ```python
 from mechanician.testing import QandATest, run_q_and_a_evaluations
