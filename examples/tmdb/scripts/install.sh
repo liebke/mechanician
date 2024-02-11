@@ -1,11 +1,9 @@
 #!/bin/bash
 
 cd ../../packages/mechanician &&
-./install.sh &&
+./scripts/install.sh &&
 cd ../mechanician_openai &&
-./install.sh &&
-# cd ../mechanician_arangodb &&
-# ./install.sh &&
+./scripts/install.sh &&
 cd ../../examples/tmdb/src &&
 pip install -e .
 

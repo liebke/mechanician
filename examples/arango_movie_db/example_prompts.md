@@ -7,9 +7,15 @@ I'd like you to write a positive review for the matrix and link it to the movie 
 
 # INSTRUCTION AUTO TUNING
 
+## Run Auto-Tuner AI
+../../packages/mechanician_openai/scripts/auto_tune.sh
+
+
 /file ./tuning_sessions/tuning_session.json
 
-please revise the assistant's instructions based on your evaluation, using the revise_instructions tool.
+can you evaluate the performance of the assistant and describe its errors and successes?
+
+please revise the assistant's instructions based on your evaluation, using the draft_instructions tool.
 
 Identify all tool and tool parameter instructions that can be revised and improved to help the assistant complete its role more effectively; use your revise_tools_instructions and revise_tool_parameter_instruction tool to update them.
 

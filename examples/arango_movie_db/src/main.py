@@ -46,6 +46,7 @@ def main():
         logger.error(e)
     finally:
         if ai and ai.tools and ai.tools.doc_mgr:
+            ai.save_tuning_session()
             ai.tools.doc_mgr.delete_database(database_name)
 
 if __name__ == '__main__':

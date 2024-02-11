@@ -1,5 +1,5 @@
 #!/bin/bash
 
 cd ../mechanician_openai &&
-./install.sh 
+./script/install.sh 
 

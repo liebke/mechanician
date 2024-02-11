@@ -2,7 +2,7 @@ from mechanician import TAGAI
 from mechanician.util import print_markdown
 from rich.console import Console 
 import logging
-
+import subprocess
 
 logger = logging.getLogger(__name__)
 console = Console()
@@ -28,6 +28,11 @@ def preprocess_prompt(ai: 'TAGAI', prompt: str):
     elif prompt.startswith('/bye'):
         ai.RUNNING = False
         prompt = ''
+
+    elif prompt.startswith('/$'):
+        subprocess.run(prompt.replace('/$', '', 1), shell=True)
+        # Return an empty prompt so that it's skipped
+        return ''
 
     return prompt
 

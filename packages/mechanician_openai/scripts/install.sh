@@ -1,6 +1,6 @@
 #!/bin/bash
 
 cd ../mechanician &&
-./install.sh &&
+./scripts/install.sh &&
 cd ../mechanician_openai/src &&
 pip install -e .

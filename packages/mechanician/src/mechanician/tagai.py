@@ -77,7 +77,29 @@ class TAGAI():
         self.ai_connector._instruct(ai_instructions=ai_instructions, 
                                     tool_instructions=tool_instructions,
                                     tools = tools)
-        
+    
+    ###############################################################################
+    # TUNING SESSION TRANSCRIBER FUNCTIONS
+    ###############################################################################
+
+    def get_tuning_session(self):
+        tuning_session = {}
+        tuning_session["tool_instructions"] = self.tool_instructions
+        tuning_session["ai_instructions"] = self.ai_instructions
+        tuning_session["transcript"] = self.get_message_history()
+        tuning_session["test_results"] = None
+        return json.dumps(tuning_session, indent=2)
+
+
+    def save_tuning_session(self, 
+                            tuning_session_dir="./tuning_sessions", 
+                            file_name="tuning_session.json"):
+        if tuning_session_dir is not None:
+                os.makedirs(tuning_session_dir, exist_ok=True)
+        with open(os.path.join(tuning_session_dir, file_name), 'w') as f:
+            json.dump(self.get_tuning_session(), f, indent=2)
+
+
 
     ###############################################################################
     ## SUBMIT_PROMPT

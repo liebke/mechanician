@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 import pprint
 import logging
 
-import mechanician.instruction_tuning as tuning
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -116,7 +114,7 @@ class TestOfferMgmtAI(unittest.TestCase):
         finally:
             # Record Tuning Session
             logger.info("Generating Instruction Auto Tuning...")
-            tuning.record_tuning_session(ai)
+            ai.save_tuning_session()
 
             logger.info(f"\n\n\nDocument Collections:")
             doc_collections = ai.tools.list_document_collections()
