@@ -30,6 +30,18 @@ Foundation Models are inherently limited by the scope of their training data and
 
 This approach enhances the AI's problem-solving skills, creativity, and ability to provide accurate, up-to-date information.
 
+```python
+from mecanician import TAGAI, shell
+from mechanician_openai import OpenAIChatConnector
+```
+
+```python
+ai = TAGAI(ai_connector=OpenAIChatConnector(),
+           ai_instructions=ai_instructions,
+           tool_instructions=tool_instructions,
+           tools=tools)
+```
+
 ## Designing Tools for AIs to Use
 
 TAG AIs can be observed learning to use tools effectively through feedback provided by the tools themselves, so it is necessary for the tools to provide effective feedback, often through natural language, when reporting errors or providing results.
@@ -61,6 +73,16 @@ We can provide the Instructor AI the current set of system instructions, descrip
 
 Daring Mechanician provides tools to perform this **Instruction Auto-Tuning**.
 
+
+```bash
+ai.save_tuning_session()
+```
+
+```bash
+./script/auto_tune.sh
+```
+
+# NOTES
 
 ## Instruction Auto-Tuning: Instructor Prompt
 
