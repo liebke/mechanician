@@ -92,21 +92,30 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
 
 ## Getting Started with Daring Mechanician
 
+You can install **Daring Mechanician** using pip:
+
 ```bash
 pip install mechanician
 ```
 
+or you can install the latest version from the repository:
+
+```bash
+./scripts/install.sh
+```
+
+
 The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains examples of **Tool Augmented Generative AI** projects.
+
+* [examples/tmdb](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb/src/mechanician_tmdb/) is an example of a **Movie Database Assistant** that uses the *OpenAI Chat API* to answer questions about movies and their casts and crews.
+
+* [examples/arango_movie_db](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db) is an example of a **Movie Database Assistant** that uses the *ArangoDB* to record information on movies, their casts, and reviews.
 
 
 ### TAGAI Class
 
-* [mechanician_tmdb/main.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb/src/mechanician_tmdb/main.py#L28)
+The TAGAI class is used to create instance of a **Tool Augmented Generative AI** (TAG AI).
 
-* [examples/arango_movie_db/main.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db/src/main.py#L27)
-
-* [packages/mechanician/src/mechanician/instruction_tuning.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/packages/mechanician/src/mechanician/instruction_tuning.py#L50)
-   
 ```python
 from mechanician import TAGAI
 ```
@@ -127,25 +136,26 @@ ai = TAGAI(ai_connector=OpenAIChatConnector(),
            tools=tools)
 ```
 
-* [AIConnector](#aiconnector-classes)
-* [AITools](#aitools-abstract-class)
-* [Instruction Sets](#instruction-sets)
-  * [AI Instructions](#ai-instructions)
-  * [Tool Instructions](#tool-instructions)
+* [AIConnector](#aiconnector-classes): Provides a connection to a LLM API, such as the OpenAI Chat API or the OpenAI Assistants API.
+* [AITools](#aitools-abstract-class): Provides a set of tools that the AI can use to interact with other systems, databases, and interfaces.
+* [Instruction Sets](#instruction-sets): Instruction set that includes the following:
+  * [AI Instructions](#ai-instructions): Instructions that guide the AI's behavior and responses.
+  * [Tool Instructions](#tool-instructions): Instructions describing how to use the AITools.
+
+
+Here are some examples of how to use the `TAGAI` class:
+
+* [mechanician_tmdb/main.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb/src/mechanician_tmdb/main.py#L17): a TAG AI that uses `TMDbAITools` for interacting with the The Movie Database (TMDb) API, the `OpenAIChatConnector` to connect to the OpenAI Chat API.
+
+* [examples/arango_movie_db/main.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db/src/main.py#L16): a TAG AI that uses `DocumentManagerAITools` from the `mechanician-arangodb` package to interact with the ArangoDB graph database and the `OpenAIChatConnector` to connect to the OpenAI Chat API.
+
+* [mechanician/instruction_tuning.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/packages/mechanician/src/mechanician/instruction_tuning.py#L43): an Instructor AI that uses `AutoTuningAITools` for tuning and updating the instructions for another AI, and the `OpenAIChatConnector` to connect to the OpenAI Chat API.
+   
 
 
 ### AITools Abstract Class
 
-
-Examples of AITools classes:
-
-* [tmdb_tools.py](https://github.com/liebke/mechanician/blob/main/examples/tmdb/src/mechanician_tmdb/tmdb_ai_tools.py)
-
-* [arango_movie_db_tools.py](https://github.com/liebke/mechanician/blob/main/packages/mechanician_arangodb/src/mechanician_arangodb/document_ai_tools.py)
-
-* [auto_tuning_ai_tools.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/packages/mechanician/src/mechanician/instruction_tuning.py#L62)
-
-
+The `AITools` class is the base class used to create AI tools.
 
 ```python
 from mechanician import AITools
@@ -154,6 +164,21 @@ class AutoTuningAITools(AITools):
     def tool1(self, parameters):
         ...
 ```
+
+Each tool method intended to be called by an AI takes a single parameter, a dict of input parameters, and returns a JSON serializable object.
+
+These methods should fail gracefully, returning an error message if the tool call fails, and should provide detailed feedback to the AI about the results of the tool call.
+
+Examples of AITools classes:
+
+* [tmdb_tools.py](https://github.com/liebke/mechanician/blob/main/examples/tmdb/src/mechanician_tmdb/tmdb_ai_tools.py): `AITools` for interacting with The Movie Database (TMDb) API.
+
+* [arango_movie_db_tools.py](https://github.com/liebke/mechanician/blob/main/packages/mechanician_arangodb/src/mechanician_arangodb/document_ai_tools.py): `AITools` for interacting with the ArangoDB graph database.
+
+* [auto_tuning_ai_tools.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/packages/mechanician/src/mechanician/instruction_tuning.py#L62): `AITools` for tuning and updating the instructions for another AI.
+
+
+
 
 ### Instruction Sets
 
@@ -357,6 +382,10 @@ class TestAI(unittest.TestCase):
          self.assertEqual(result.evaluation, "PASS")
 ```
 
+Examples of AI-Driven Q&A Tests:
+* [examples/tmdb/test.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb/src/mechanician_tmdb/test.py)
+
+
 ### AI Task Evaluations
 
 ```python
@@ -372,6 +401,10 @@ class TestAI(unittest.TestCase):
 
       self.assertEqual(evaluation, "PASS")
 ```
+
+Examples of AI-Driven Task Evaluations:
+
+* [examples/arango_movie_db/test_ai.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db/src/test_ai.py)
 
 
 ### Run AI-Driven Tests

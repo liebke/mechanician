@@ -5,6 +5,7 @@ from mechanician_openai import OpenAIChatConnector
 from mechanician import TAGAI
 import logging
 import os
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +29,8 @@ def ai_evaluator():
 class TestTMDbAI(unittest.TestCase):
 
     def test_ai_responses(self):
+        load_dotenv()
+
         ai = init_ai()
         tests = [QandATest(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
                            expected="Anya Taylor-Joy"),
@@ -40,9 +43,6 @@ class TestTMDbAI(unittest.TestCase):
         
         # AI Evaluator
         results, messages = run_q_and_a_evaluations(ai, tests, ai_evaluator())
-        # AI Self-Evaluation
-        # results = run_tests(ai, tests)
-
         for result in results:
             self.assertEqual(result.evaluation, "PASS")
 
