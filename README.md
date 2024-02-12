@@ -51,7 +51,7 @@ In order to speed up this process, it is useful to use an **Evaluator AI** that 
 
 By observing an AI's interactions with users and other AIs, an *Instructor AI* can refine and update the AI's current instructions and the instructions describing the tools the AI can use.
 
-The Instructor AI is provided the AI's current set of instructions, instructions for the tools used by the AI, the transcript of interactions between the AI and a User (or Evaluator AI), assessment results for the tasks the assistant is performing, including the AI tool calls and responses.
+The Instructor AI is provided the AI's current set of instructions, instructions for the tools used by the AI, and the transcript of interactions between the AI and a User (or Evaluator AI), including the AI tool calls and responses.
 
 See [Getting Started with Instruction Auto-Tuning](#getting-started-with-instruction-auto-tuning) for an example of how to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for a **Movie Database Assistant**.
 
@@ -73,13 +73,13 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
       - [OpenAIChatConnector](#openaichatconnector)
       - [OpenAIAssistantsConnector](#openaiassistantsconnector)
     - [Running the AI](#running-the-ai)
-  - [Getting Started with Mechanician ArangoDB](#getting-started-with-mechanician-arangodb)
-      - [Run ArangoDB in Docker](#run-arangodb-in-docker)
   - [Getting Started with Instruction Auto-Tuning](#getting-started-with-instruction-auto-tuning)
   - [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-testing)
     - [AI Q&A Program Tests](#ai-q&a-program-tests)
     - [AI Task Evaluations](#ai-task-evaluations)
     - [Run AI-Driven Tests](#run-ai-driven-tests)
+  - [Getting Started with Mechanician ArangoDB](#getting-started-with-mechanician-arangodb)
+      - [Run ArangoDB in Docker](#run-arangodb-in-docker)
   - [Getting Started with the TMDb Example](#getting-started-with-the-tmdb-example)
     - [Example Interaction](#example-interaction)
     - [TMDb Example Code](#tmdb-example-code)
@@ -92,15 +92,26 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
 
 ## Getting Started with Daring Mechanician
 
-You can install **Daring Mechanician** using pip:
+**Daring Mechanician** consists of the following packages:
+
+* [mechanician](https://github.com/liebke/mechanician/tree/main/packages/mechanician): the core package for building and running **Tool Augmented Generative AI** (TAG AI) programs.
+* [mechanician-openai](https://github.com/liebke/mechanician/tree/main/packages/mechanician_openai): provides connectors to the *OpenAI Chat API* and the *OpenAI Assistants API*.
+* [mechanician-arangodb](https://github.com/liebke/mechanician/tree/main/packages/mechanician_arangodb): provides tools for interacting with the ArangoDB graph database.
+
+In the future, it will include packages for interacting with different LLM APIs and systems.
+
+You will need to install *mechanician-openai* in order to run a TAG AI.
+
+You can install it using pip:
 
 ```bash
-pip install mechanician
+pip install mechanician-openai
 ```
 
-or you can install the latest version from the repository:
+or you can clone this repo and install the latest version:
 
 ```bash
+cd ./packages/mechanician-openai
 ./scripts/install.sh
 ```
 
@@ -139,9 +150,7 @@ The `TAGAI` class takes the following parameters:
 
 * [AIConnector](#aiconnector-classes): Provides a connection to a LLM API, such as the OpenAI Chat API or the OpenAI Assistants API.
 * [AITools](#aitools-abstract-class): Provides a set of tools that the AI can use to interact with other systems, databases, and interfaces.
-* [Instruction Set Directory](#instruction-sets): The directory containing the following instruction files:
-  * [AI Instructions](#ai-instructions): Instructions that guide the AI's behavior and responses.
-  * [Tool Instructions](#tool-instructions): Instructions describing how to use the AITools.
+* [Instruction Set Directory](#instruction-sets): The directory containing the instruction for the TAG AI, describing its role and behaviors, and the instructions for the tools used by the AI.
 
 
 Here are some examples of how to use the `TAGAI` class:
@@ -161,8 +170,8 @@ The `AITools` class is the base class used to create AI tools.
 ```python
 from mechanician import AITools
 
-class AutoTuningAITools(AITools):
-    def tool1(self, parameters):
+class ExampleAITools(AITools):
+    def example_tool1(self, parameters):
         ...
 ```
 
@@ -183,7 +192,7 @@ Examples of AITools classes:
 
 ### Instruction Sets
 
-If you pass an `instruction_set_directory` to the `TAGAI` constructor, and it will load the the *ai_instructions* and *tool_instructions* from the designated directory. 
+If you pass an `instruction_set_directory` to the `TAGAI` constructor, it will load the the *ai_instructions* and *tool_instructions* from the designated directory. 
 
 ```python
 ai = TAGAI(ai_connector=OpenAIChatConnector(),
@@ -231,6 +240,11 @@ Some example instruction sets:
 
 ### AIConnector Classes
 
+The `AIConnector` class is used to create a connection to a LLM API. There are currently connectors for OpenAI's Chat API and OpenAI's Assistants API. 
+
+The roadmap includes connectors to other LLM APIs that support function calling, including connectors for local LLMs.
+
+
 #### OpenAI Connectors
 
 ```bash
@@ -260,10 +274,8 @@ from mechanician_openai import OpenAIChatConnector
 from mechanician_openai import OpenAIAssistantsConnector
 ```
 
-ENVIRONMENT VARIABLES FOR THE ASSISTANT
-
 ```bash
-export USE_OPENAI_ASSISTANTS_API = False
+export USE_OPENAI_ASSISTANTS_API = True
 export ASSISTANT_ID=<YOUR_ASSISTANT_ID_HERE>
 export CREATE_NEW_ASSISTANT=False
 export DELETE_ASSISTANT_ON_EXIT=False
@@ -282,64 +294,6 @@ from mechanician import shell
 shell.run(ai)
 ```
 
-## Getting Started with Mechanician ArangoDB
-
-* [examples/arango_movie_db](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db)
-
-
-```bash
-pip install mechanician-arangodb
-```
-
-```bash
-ARANGO_ROOT_PASSWORD=<YOUR_ARANGO_DATABASE_PASSWORD>
-ARANGO_HOST=http://localhost:8529
-```
-
-#### Run ArangoDB in Docker
-
-```bash
-docker pull arangodb/arangodb
-```
-
-```bash
-docker run -e ARANGO_ROOT_PASSWORD=${ARANGO_ROOT_PASSWORD} -p 8529:8529 -d --name arangodb-instance arangodb/arangodb
-```
-
-```bash
-docker stop arangodb-instance
-```
-
-```bash
-docker start arangodb-instance
-```
-
-```bash
-./run.sh
-```
-
-```bash
-./test.sh
-```
-
-
-### 
-```python
-from mechanician_arangodb import DocumentManagerAITools
-from arango import ArangoClient
-```
-
-```python
-arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
-doc_tools = DocumentManagerAITools(arango_client, database_name=database_name)
-```
-
-```python
-ai = TAGAI(ai_connector=ai_connector, 
-           instruction_set_directory="./instructions",
-           tools=doc_tools,
-           name="Movie Document Manager AI")
-```
 
 ## Getting Started with Instruction Auto-Tuning
 
@@ -431,6 +385,67 @@ Examples of AI-Driven Task Evaluations:
 $ python test.py
 ```
 
+
+
+
+## Getting Started with Mechanician ArangoDB
+
+* [examples/arango_movie_db](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db)
+
+
+```bash
+pip install mechanician-arangodb
+```
+
+```bash
+ARANGO_ROOT_PASSWORD=<YOUR_ARANGO_DATABASE_PASSWORD>
+ARANGO_HOST=http://localhost:8529
+```
+
+#### Run ArangoDB in Docker
+
+```bash
+docker pull arangodb/arangodb
+```
+
+```bash
+docker run -e ARANGO_ROOT_PASSWORD=${ARANGO_ROOT_PASSWORD} -p 8529:8529 -d --name arangodb-instance arangodb/arangodb
+```
+
+```bash
+docker stop arangodb-instance
+```
+
+```bash
+docker start arangodb-instance
+```
+
+```bash
+./run.sh
+```
+
+```bash
+./test.sh
+```
+
+
+### 
+```python
+from mechanician_arangodb import DocumentManagerAITools
+from arango import ArangoClient
+```
+
+```python
+arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
+doc_tools = DocumentManagerAITools(arango_client, database_name=database_name)
+```
+
+```python
+ai = TAGAI(ai_connector=ai_connector, 
+           instruction_set_directory="./instructions",
+           tools=doc_tools,
+           name="Movie Document Manager AI")
+```
 
 
 ## Getting Started with the TMDb Example
