@@ -418,7 +418,7 @@ Install the mechanician-arangodb, mechanician-openai packages, and example proje
 ```bash
 pip install mechanician-arangodb
 pip install mechanician-openai
-cd ./src && pip install -e .
+pip install -e .
 ```
 
 Set up your environment variables or create a `.env` file with the following variables:
@@ -482,7 +482,7 @@ Install Mechanician OpenAI and the example project using pip:
 
 ```bash
 pip install mechanician-openai
-cd ./src && pip install -e .
+pip install -e .
 ```
 
 or install all the dependencies from a cloned mechanician repo:
