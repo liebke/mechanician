@@ -1,14 +1,6 @@
-### Create a Virtual Environment (optional)
 
-Using [*Conda*](https://conda.io/projects/conda/en/latest/user-guide/getting-started.html#managing-python) for environment management:
+# Daring Mechanician-OpenAI
 
-```bash
-conda create --name mechanician_openai_env
-conda activate mechanician_openai_env
-```
+This package provides **Daring Mechanician** `AIConnectors` for OpenAI Chat and Assistants APIs.
 
-### Install Dependencies
-
-```bash
-./install.sh
-```
+See [Daring Mechanician Github Repo](https://github.com/liebke/mechanician) for more information.

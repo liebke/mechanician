@@ -16,3 +16,5 @@ mechanician_offer_mgmt.egg-info
 tuning_sessions
 archives
 dist
+build
+src/build

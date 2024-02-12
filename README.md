@@ -387,15 +387,37 @@ $ python test.py
 
 
 
+## Getting Started with mechanician-arangodb
 
-## Getting Started with Mechanician ArangoDB
 
+### 
+```python
+from mechanician_arangodb import DocumentManagerAITools
+from arango import ArangoClient
+```
+
+```python
+arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
+doc_tools = DocumentManagerAITools(arango_client, database_name=database_name)
+```
+
+```python
+ai = TAGAI(ai_connector=ai_connector, 
+           instruction_set_directory="./instructions",
+           tools=doc_tools,
+           name="Movie Document Manager AI")
+```
+
+
+Example project:
 * [examples/arango_movie_db](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db)
 
 
 ```bash
 pip install mechanician-arangodb
 ```
+
+Set up your environment variables or create a `.env` file with the following variables:
 
 ```bash
 ARANGO_ROOT_PASSWORD=<YOUR_ARANGO_DATABASE_PASSWORD>
@@ -420,53 +442,62 @@ docker stop arangodb-instance
 docker start arangodb-instance
 ```
 
+#### Run the interactive TAG AI shell:
+
 ```bash
 ./run.sh
 ```
+
+### Run the AI-Driven tests:
 
 ```bash
 ./test.sh
 ```
 
 
-### 
-```python
-from mechanician_arangodb import DocumentManagerAITools
-from arango import ArangoClient
-```
+### Arango Movie Database Example Code
 
-```python
-arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
-doc_tools = DocumentManagerAITools(arango_client, database_name=database_name)
-```
+* [```examples/arango_movie_db/main.py```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/src/main.py): TODO. 
 
-```python
-ai = TAGAI(ai_connector=ai_connector, 
-           instruction_set_directory="./instructions",
-           tools=doc_tools,
-           name="Movie Document Manager AI")
-```
+* [```mechanician_arangodb document_ai_tools.py```](https://github.com/liebke/mechanician/blob/main/packages/mechanician_arangodb/src/mechanician_arangodb/document_ai_tools.py): are the AITools available to the AI.
+
+* [```examples/arango_movie_db/instructions/instructions.json```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/instructions/instructions.json): is a set of instructions for the AI that inform it of the tools available to it, and describe its role as a **Movie Database Assistant** that records information on movies, their casts, and reviews.
+
+* [```example_prompts.md```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/example_prompts.md): provides a variety of approaches to interacting with the AI.
+
+* [```examples/arango_movie_db/test_ai.py```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/src/test_ai.py): shows how to test **Daring Mechanician** programs by having an AI-driven set of tasks. 
+
+
 
 
 ## Getting Started with the TMDb Example
 
 * [examples/tmdb](https://github.com/liebke/mechanician/tree/main/examples/tmdb)
 
+Install Mechanician OpenAI and the example project using pip:
+
 ```bash
-export TMDB_API_KEY=<YOUR_TMDB_API_KEY>
-export TMDB_READ_ACCESS_TOKEN=<YOUR_READ_ACCESS_TOKEN>
+pip install mechanician-openai
+cd ./src && pip install -e .
 ```
+
+or install all the dependencies from a cloned mechanician repo:
 
 ```bash
 ./install.sh
 ```
 
-```bash
-./run.sh
-```
+Set up your environment variables or create a `.env` file with the following variables:
 
 ```bash
-./test.sh
+TMDB_API_KEY=<YOUR_TMDB_API_KEY>
+TMDB_READ_ACCESS_TOKEN=<YOUR_READ_ACCESS_TOKEN>
+```
+
+Run the interactive TAG AI shell:
+
+```bash
+./run.sh
 ```
 
 ### Example Interaction
@@ -484,6 +515,14 @@ The first movie that Anya Taylor-Joy, the actor who plays Furiosa in the upcomin
 
 > 
 ```
+
+
+Run the AI-Driven tests:
+
+```bash
+./test.sh
+```
+
 
 
 
@@ -520,20 +559,6 @@ The first movie that Anya Taylor-Joy, the actor who plays Furiosa in the upcomin
 ```bash
 ./test.sh
 ```
-
-### Arango Movie Database Example Code
-
-* [```examples/arango_movie_db/main.py```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/src/main.py): TODO. 
-
-* [```mechanician_arangodb document_ai_tools.py```](https://github.com/liebke/mechanician/blob/main/packages/mechanician_arangodb/src/mechanician_arangodb/document_ai_tools.py): are the AITools available to the AI.
-
-* [```examples/arango_movie_db/instructions/instructions.json```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/instructions/instructions.json): is a set of instructions for the AI that inform it of the tools available to it, and describe its role as a **Movie Database Assistant** that records information on movies, their casts, and reviews.
-
-* [```example_prompts.md```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/example_prompts.md): provides a variety of approaches to interacting with the AI.
-
-* [```examples/arango_movie_db/test_ai.py```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/src/test_ai.py): shows how to test **Daring Mechanician** programs by having an AI-driven set of tasks. 
-
-
 
 
 ## Parallel Tool Calls and Streaming Responses
