@@ -62,11 +62,6 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
 
 ## Getting Started Guide: Table of Contents
 
-- [Tool Augmented Generation (TAG)](#tool-augmented-generation-(tag))
-  - [Designing Tools for AIs to Use](#designing-tools-for-ais-to-use)
-  - [Instruction Tuning (IT)](#instruction-tuning-(it))
-  - [Instruction Auto-Tuning (IAT)](#instruction-auto-tuning-(iat))
-  - [AI-Driven Testing (AIT)](#ai-driven-testing-(ait))
   - [Getting Started with Daring Mechanician](#getting-started-with-daring-mechanician)
     - [TAGAI Class](#tagai-class)
     - [AITools Abstract Class](#aitools-abstract-class)
