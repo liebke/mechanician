@@ -9,7 +9,15 @@ conda create -n arango_movie_db_env python=3.11
 conda activate arango_movie_db_env
 ```
 
-Install the requirements.
+Install the requirements from PyPI.
+
+```bash
+pip install mechanician_openai
+pip install mechanician_arangodb
+cd ./src && pip install -e .
+```
+
+or install all the requirements from a cloned Mechanician repository.
 
 ```bash
 ./install.sh
@@ -18,13 +26,13 @@ Install the requirements.
 ## Run Interactive Example
 
 ```bash
-./run.sh
+./scripts/run.sh
 ```
 
 ## Run Tests
     
 ```bash
-./test.sh
+./scripts/test.sh
 ```
 
 ## Exit the Virtual Environment and Clean Up
