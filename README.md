@@ -60,6 +60,39 @@ See [Getting Started with Instruction Auto-Tuning](#getting-started-with-instruc
 
 See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-testing) for an example of how to use the **AI-Driven Testing** (AIT) process to test a **Movie Database Assistant**.
 
+## Getting Started Guide: Table of Contents
+
+- [Tool Augmented Generation (TAG)](#tool-augmented-generation-(tag))
+  - [Designing Tools for AIs to Use](#designing-tools-for-ais-to-use)
+  - [Instruction Tuning (IT)](#instruction-tuning-(it))
+  - [Instruction Auto-Tuning (IAT)](#instruction-auto-tuning-(iat))
+  - [AI-Driven Testing (AIT)](#ai-driven-testing-(ait))
+  - [Getting Started with Daring Mechanician](#getting-started-with-daring-mechanician)
+    - [TAGAI Class](#tagai-class)
+    - [AITools Abstract Class](#aitools-abstract-class)
+    - [Instruction Sets](#instruction-sets)
+      - [AI Instructions](#ai-instructions)
+      - [Tool Instructions](#tool-instructions)
+    - [AIConnector Classes](#aiconnector-classes)
+      - [OpenAI Connectors](#openai-connectors)
+      - [OpenAIChatConnector](#openaichatconnector)
+      - [OpenAIAssistantsConnector](#openaiassistantsconnector)
+      - [Running the AI](#running-the-ai)
+  - [Getting Started with Mechanician ArangoDB](#getting-started-with-mechanician-arangodb)
+      - [Run ArangoDB in Docker](#run-arangodb-in-docker)
+  - [Getting Started with Instruction Auto-Tuning](#getting-started-with-instruction-auto-tuning)
+  - [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-testing)
+    - [AI Q&A Program Tests](#ai-q&a-program-tests)
+    - [AI Task Evaluations](#ai-task-evaluations)
+    - [Run AI-Driven Tests](#run-ai-driven-tests)
+  - [Getting Started with the TMDb Example](#getting-started-with-the-tmdb-example)
+    - [Example Interaction](#example-interaction)
+    - [TMDb Example Code](#tmdb-example-code)
+  - [Getting Started with the Arango Movie Database Example](#getting-started-with-the-arango-movie-database-example)
+    - [Arango Movie Database Example Code](#arango-movie-database-example-code)
+  - [Parallel Tool Calls and Streaming Responses](#parallel-tool-calls-and-streaming-responses)
+    - [Environment Variables](#environment-variables)
+
 
 
 ## Getting Started with Daring Mechanician
@@ -171,10 +204,8 @@ pip install mechanician-openai
 ```
 
 ```bash
-# OPENAI API KEY
 export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY_HERE>
 
-# OPENAI MODEL NAME
 export OPENAI_MODEL_NAME=gpt-4-0125-preview
 ```
 
@@ -196,8 +227,9 @@ from mechanician_openai import OpenAIChatConnector
 from mechanician_openai import OpenAIAssistantsConnector
 ```
 
+ENVIRONMENT VARIABLES FOR THE ASSISTANT
+
 ```bash
-# ENVIRONMENT VARIABLES FOR THE ASSISTANT
 export USE_OPENAI_ASSISTANTS_API = False
 export ASSISTANT_ID=<YOUR_ASSISTANT_ID_HERE>
 export CREATE_NEW_ASSISTANT=False
@@ -442,7 +474,6 @@ The first movie that Anya Taylor-Joy, the actor who plays Furiosa in the upcomin
 
 
 
-## Other Environment Variables
 
 ## Parallel Tool Calls and Streaming Responses
 
@@ -450,6 +481,7 @@ It currently supports [*OpenAI's Chat API*](https://platform.openai.com/docs/ove
 
 Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.python.org/3/library/concurrent.futures.html) as soon as it has completely streamed to the client, allowing it to perform *IO-bound* calls while other ```tool_calls``` continue to stream to the client.
 
+### Environment Variables
 
 ```bash
 export CALL_TOOLS_IN_PARALLEL=True
