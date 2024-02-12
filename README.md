@@ -100,7 +100,7 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
 
 In the future, it will include packages for interacting with different LLM APIs and systems.
 
-You will need to install *mechanician-openai* in order to run a TAG AI.
+You will need to install *mechanician-openai* in order to run any of the example projects.
 
 You can install it using pip:
 
@@ -118,7 +118,7 @@ cd ./packages/mechanician-openai
 
 The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains examples of **Tool Augmented Generative AI** projects.
 
-* [examples/tmdb](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb/src/mechanician_tmdb/) is an example of a **Movie Database Assistant** that uses the *OpenAI Chat API* to answer questions about movies and their casts and crews.
+* [examples/tmdb](https://github.com/liebke/mechanician/tree/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb) is an example of a **Movie Database Assistant** that uses the *OpenAI Chat API* to answer questions about movies and their casts and crews.
 
 * [examples/arango_movie_db](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db) is an example of a **Movie Database Assistant** that uses the *ArangoDB* to record information on movies, their casts, and reviews.
 
