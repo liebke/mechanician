@@ -1,9 +1,6 @@
-
-
 <img src="docs/images/daring_mechanician_banner.png" alt="Daring Mechanician"  style="max-width: 100%; height: auto float: right;">
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
-
 
 [**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI by building tools that AIs use. 
 
