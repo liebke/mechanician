@@ -118,16 +118,14 @@ The TAGAI class is used to create instance of a **Tool Augmented Generative AI**
 
 ```python
 from mechanician import TAGAI
-```
 
-```python
 ai = TAGAI(ai_connector=ai_connector,
            ai_instructions=ai_instructions,
            tool_instructions=tool_instructions,
            tools=tools)
 ```
 
-Alternatively, you can pass an `instruction_set_directory` to the `TAGAI` constructor, and it will load the instructions from an *instruction_set* JSON file, with a default name of `instructions.json`.
+Alternatively, you can pass an `instruction_set_directory` to the constructor, and it will load the the *ai_instructions* and *tool_instructions* from the designated directory. 
 
 
 ```python
@@ -136,9 +134,12 @@ ai = TAGAI(ai_connector=OpenAIChatConnector(),
            tools=tools)
 ```
 
+
+The `TAGAI` class takes the following parameters:
+
 * [AIConnector](#aiconnector-classes): Provides a connection to a LLM API, such as the OpenAI Chat API or the OpenAI Assistants API.
 * [AITools](#aitools-abstract-class): Provides a set of tools that the AI can use to interact with other systems, databases, and interfaces.
-* [Instruction Sets](#instruction-sets): Instruction set that includes the following:
+* [Instruction Set Directory](#instruction-sets): The directory containing the following instruction files:
   * [AI Instructions](#ai-instructions): Instructions that guide the AI's behavior and responses.
   * [Tool Instructions](#tool-instructions): Instructions describing how to use the AITools.
 
@@ -182,15 +183,30 @@ Examples of AITools classes:
 
 ### Instruction Sets
 
-The `instruction_set_directory` contains an **instruction set** file, with a default name of `instructions.json`, it has two fields, `ai_instructions` and `tool_instructions`.
+If you pass an `instruction_set_directory` to the `TAGAI` constructor, and it will load the the *ai_instructions* and *tool_instructions* from the designated directory. 
 
-```json
-{"ai_instructions" : "...",
- "tool_instructions" : {...}}
+```python
+ai = TAGAI(ai_connector=OpenAIChatConnector(),
+           instruction_set_directory="./instructions",
+           tools=tools)
 ```
 
-* `ai_instructions` is a string that contains the instructions for the AI.
-* `tool_instructions` is a dictionary that contains the instructions for the tools used by the AI. In the case of the OpenAI Connectors, it contains JSON Schema describing the tools and their parameters.
+The default name and location of the directory is **./instructions**, and the default names for the instruction files are **ai_instructions.md** and **tool_instructions.json**.
+
+Alternatively, you can pass the *ai_instructions* and *tool_instructions* directly to the `TAGAI` constructor.
+
+```python
+ai = TAGAI(ai_connector=ai_connector,
+           ai_instructions=ai_instructions,
+           tool_instructions=tool_instructions,
+           tools=tools)
+```
+
+The advantage of storing the instruction in the `instruction_set_directory` is that it allows you to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for the AI.
+
+* The `ai_instructions.json` file contains the instructions for the AI, defining its role and behaviors.
+
+* The `tool_instructions.json` file contains the instructions for the tools used by the AI. In the case of the OpenAI Connectors, it contains JSON Schema describing the tools and their parameters.
 
 ```json
 {
@@ -209,8 +225,8 @@ The `instruction_set_directory` contains an **instruction set** file, with a def
 
 Some example instruction sets:
 
-* [Arango Movie DB Example instrucions.json](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/instructions/instructions.json)
-* [TMDb Example instrucions.json](https://github.com/liebke/mechanician/blob/main/examples/tmdb/instructions/instructions.json)
+* [Arango Movie DB Example instructions.json](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/instructions)
+* [TMDb Example instructions.json](https://github.com/liebke/mechanician/blob/main/examples/tmdb/instructions)
 
 
 ### AIConnector Classes
@@ -222,9 +238,8 @@ pip install mechanician-openai
 ```
 
 ```bash
-export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY_HERE>
-
-export OPENAI_MODEL_NAME=gpt-4-0125-preview
+OPENAI_API_KEY=<YOUR_OPENAI_API_KEY_HERE>
+OPENAI_MODEL_NAME=gpt-4-0125-preview
 ```
 
 #### OpenAIChatConnector
@@ -346,11 +361,16 @@ Use the `/file` chat command to load the tuning session into the *Instructor AI*
 > /file ./tuning_sessions/tuning_session.json
 ```
 
-It will begin by evaluating the AI's performance and describing its errors and successes, and then creating a revised draft of the AI's instructions and the tool, and tool parameter instructions, to improve the AI's performance. If the updated instruction set is satisfactory, you can ask the *Instructor AI* to commit the changes.
+It will begin by evaluating the AI's performance and describing its errors and successes, and then creating a revised draft of the AI's instructions and the tool, and tool parameter instructions, to improve the AI's performance. If the updated instruction set is satisfactory, you can ask the *Instructor* to commit the changes.
 
 ```bash
 > commit the revisions.
 ```
+
+The *Instructor's* evaluations of the *Assistant's* performance can be really useful, as are it's recommended changes to the instructions, but sometimes its revisions will only include instructions covering the errors it determined the *Assistant* made, and you may want to add additional instructions to cover other cases; you can do this by manually editing the draft instructions before commiting them or by asking the *Instructor* to make further revisions.
+
+You can edit the draft instructions before commiting them, and you can also ask the *Instructor AI* to make further revisions. 
+
 
 ## Getting Started with AI-Driven Testing
 
