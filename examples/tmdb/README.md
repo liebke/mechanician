@@ -17,6 +17,17 @@ Install the requirements.
 ./install.sh
 ```
 
+### Set Environment Variables
+
+You will need an [**OPENAI_API_KEY**](https://platform.openai.com/api-keys) and a [**TMDB_READ_ACCESS_TOKEN**](https://developers.themoviedb.org/3/getting-started/introduction) to run the example.
+
+
+```bash
+export OPENAI_API_KEY=<YOUR_OPENAI_API_KEY_HERE>
+export TMDB_READ_ACCESS_TOKEN=<YOUR_TMDB_READ_ACCESS_TOKEN_HERE>
+```
+
+
 ## Run Interactive Example
 
 ```bash
