@@ -413,8 +413,12 @@ Example project:
 * [examples/arango_movie_db](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db)
 
 
+Install the mechanician-arangodb, mechanician-openai packages, and example project using pip:
+
 ```bash
 pip install mechanician-arangodb
+pip install mechanician-openai
+cd ./src && pip install -e .
 ```
 
 Set up your environment variables or create a `.env` file with the following variables:

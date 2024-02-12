@@ -4,6 +4,7 @@ setup(
     name='mechanician-offer-mgmt',
     version='0.1',
     packages=find_packages(),
+    include_package_data=True,  # Required to include files specified in MANIFEST.in
     install_requires=[
         'mechanician>=0.1.0',
         'mechanician_openai>=0.1.0',

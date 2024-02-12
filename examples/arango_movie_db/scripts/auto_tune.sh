@@ -1,3 +1,3 @@
 #!/bin/bash
 
-../../packages/mechanician_openai/scripts/auto_tune.sh
+python3 -m mechanician_openai.instruction_auto_tuner

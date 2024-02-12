@@ -4,6 +4,7 @@ setup(
     name='arango_movie_db',
     version='0.1',
     packages=find_packages(),
+    include_package_data=True,  # Required to include files specified in MANIFEST.in
     install_requires=[
         'mechanician>=0.1.0',
         'mechanician-openai>=0.1.0',
