@@ -1,21 +1,23 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='mechanician-tmdb',
+    name='mechanician-offer-mgmt',
     version='0.1',
-    packages=find_packages(),
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
     include_package_data=True,  # Required to include files specified in MANIFEST.in
     install_requires=[
         'mechanician>=0.1.0',
         'mechanician_openai>=0.1.0',
+        'mechanician_arangodb>=0.1.0',
         'python-dotenv>=0.17.1',
         'rich>=10.0.0',
         'requests>=2.26.0',
     ],
     author='David Edgar Liebke',
     author_email='david@liebke.ai',
-    description='An TMDb example application of the Daring Mechanician library.',
-    long_description=open('../README.md').read(),
+    description='An example application of the Daring Mechanician library.',
+    long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
-    url='https://github.com/liebke/mechanician/tree/main/examples/tmdb',
+    url='https://github.com/liebke/mechanician/tree/main/examples/offer_management_assistant',
 )

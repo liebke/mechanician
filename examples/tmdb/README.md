@@ -15,7 +15,7 @@ Install the requirements from PyPI.
 
 ```bash
 pip install mechanician_openai
-cd ./src && pip install -e .
+pip install -e .
 ```
 
 or install all the requirements from a cloned Mechanician repository.

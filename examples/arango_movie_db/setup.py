@@ -3,7 +3,8 @@ from setuptools import setup, find_packages
 setup(
     name='arango_movie_db',
     version='0.1',
-    packages=find_packages(),
+    packages=find_packages(where='src'),
+    package_dir={'': 'src'},
     include_package_data=True,  # Required to include files specified in MANIFEST.in
     install_requires=[
         'mechanician>=0.1.0',
@@ -15,7 +16,7 @@ setup(
     author='David Edgar Liebke',
     author_email='david@liebke.ai',
     description='Daring Mechanician ArangoDB Movie Database example.',
-    long_description=open('../README.md').read(),
+    long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/liebke/mechanician',
 )
