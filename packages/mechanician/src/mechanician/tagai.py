@@ -18,7 +18,9 @@ class TAGAI():
                  ai_instructions=None, 
                  tool_instructions=None,
                  instruction_set_directory=None,
-                 instruction_set_file_name="instructions.json",
+                #  instruction_set_file_name="instructions.json",
+                 tool_instruction_file_name="tool_instructions.json",
+                 ai_instruction_file_name="ai_instructions.md",
                  tools: 'AITools'=None, 
                  name="Mechanician AI"):
         self.ai_connector = ai_connector
@@ -27,9 +29,15 @@ class TAGAI():
         self.tools = tools
         self.ai_instructions = ai_instructions
         self.tool_instructions = tool_instructions
-        # If ai_instructions or tool_instructions are not provided, load them from the instruction set file
-        if (instruction_set_directory is not None) and (ai_instructions is None or tool_instructions is None):
-            self.load_instructions(instruction_set_directory, instruction_set_file_name)
+        if (instruction_set_directory is not None) and (ai_instructions is None):
+            self.instruction_set_directory = instruction_set_directory
+            self.ai_instruction_file_name = ai_instruction_file_name
+            self.load_ai_instructions(instruction_set_directory, ai_instruction_file_name)
+
+        if (instruction_set_directory is not None) and (tool_instructions is None):
+            self.instruction_set_directory = instruction_set_directory
+            self.tool_instruction_file_name = tool_instruction_file_name
+            self.load_tool_instructions(instruction_set_directory, tool_instruction_file_name)
 
         self._instruct(ai_instructions=self.ai_instructions, 
                        tool_instructions=self.tool_instructions,
@@ -40,22 +48,29 @@ class TAGAI():
     ## LOAD INSTRUCTIONS
     ###############################################################################
 
-    def load_instructions(self, instruction_set_directory, instruction_set_file_name):
-        instruction_set_path = os.path.join(instruction_set_directory, instruction_set_file_name)
-        if os.path.exists(instruction_set_path):
-            with open(instruction_set_path, 'r') as file:
-                logger.info(f"Loading instructions from {instruction_set_path}")
-                instructions = json.loads(file.read())
+    def load_ai_instructions(self, instruction_set_directory, ai_instruction_file_name):
+        ai_instruction_path = os.path.join(instruction_set_directory, ai_instruction_file_name)
+        if os.path.exists(ai_instruction_path):
+            with open(ai_instruction_path, 'r') as file:
+                logger.info(f"Loading AI Instructions from {ai_instruction_path}")
+                ai_instructions = file.read()
             if self.ai_instructions is None:
-                self.ai_instructions = instructions.get("ai_instructions", None)
-
-            if self.tool_instructions is None:
-                self.tool_instructions = instructions.get("tool_instructions", None)
-
+                self.ai_instructions = ai_instructions
         else:
-            logger.info(f"Instruction set file not found at {instruction_set_path}")
-            logger.info("Instructions will not be loaded from file")
+            logger.info(f"AI Instruction file not found at {ai_instruction_path}")
+            logger.info("AI Instructions will not be loaded from file")
 
+    def load_tool_instructions(self, instruction_set_directory, tool_instruction_file_name):
+        tool_instruction_path = os.path.join(instruction_set_directory, tool_instruction_file_name)
+        if os.path.exists(tool_instruction_path):
+            with open(tool_instruction_path, 'r') as file:
+                logger.info(f"Loading Tool Instructions from {tool_instruction_path}")
+                tool_instructions = json.loads(file.read())
+            if self.tool_instructions is None:
+                self.tool_instructions = tool_instructions
+        else:
+            logger.info(f"Tool Instruction file not found at {tool_instruction_path}")
+            logger.info("Tool Instructions will not be loaded from file")
 
 
     ###############################################################################

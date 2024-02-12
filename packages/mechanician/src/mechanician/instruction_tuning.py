@@ -48,10 +48,10 @@ def instruction_auto_tuning_ai(ai_connector: AIConnector,
                               instructions_dir=instructions_dir)
     
     ai = TAGAI(ai_connector=ai_connector, 
-                ai_instructions=tuner_instructions, 
-                tool_instructions=auto_tuner_tool_instructions,
-                tools=tools,
-                name="Instruction Auto-Tuner AI")
+               ai_instructions=tuner_instructions, 
+               tool_instructions=auto_tuner_tool_instructions,
+               tools=tools,
+               name="Instruction Auto-Tuner AI")
     return ai
 
 
@@ -63,15 +63,28 @@ class AutoTuningAITools(AITools):
 
     def __init__(self, 
                  tuning_session_dir=None,
-                 instructions_dir=None):
-        self.revised_instructions = None
+                 instructions_dir=None,
+                 ai_instructions_file_name="ai_instructions.md",
+                 tool_instructions_file_name="tool_instructions.json"):
+        
+        self.revised_ai_instructions = None
         self.tuning_session_dir = tuning_session_dir
         self.instructions_dir = instructions_dir
-        self.instructions_file_name = "instructions.json"
+
+        self.ai_instructions_file_name = ai_instructions_file_name
+        self.tool_instructions_file_name = tool_instructions_file_name
+
         self.tuning_session_file_name = "tuning_session.json"
-        self.draft_instructions_file_name = f"draft_{self.instructions_file_name}"
-        self.instructions_file_path = os.path.join(self.instructions_dir, self.instructions_file_name)
-        self.draft_instructions_file_path = os.path.join(self.instructions_dir, self.draft_instructions_file_name)
+
+        self.draft_ai_instructions_file_name = f"draft_{self.ai_instructions_file_name}"
+        self.draft_tool_instructions_file_name = f"draft_{self.tool_instructions_file_name}"
+
+        self.ai_instructions_file_path = os.path.join(self.instructions_dir, self.ai_instructions_file_name)
+        self.tool_instructions_file_path = os.path.join(self.instructions_dir, self.tool_instructions_file_name)
+
+        self.draft_ai_instructions_file_path = os.path.join(self.instructions_dir, self.draft_ai_instructions_file_name)
+        self.draft_tool_instructions_file_path = os.path.join(self.instructions_dir, self.draft_tool_instructions_file_name)
+
         self.tuning_session_file_path = os.path.join(self.tuning_session_dir, self.tuning_session_file_name)
         self.tuning_session = None
 
@@ -81,13 +94,17 @@ class AutoTuningAITools(AITools):
         if self.instructions_dir is not None:
             os.makedirs(self.instructions_dir, exist_ok=True)
 
-        # load the existing instructions if they exist.
-        if os.path.exists(self.instructions_file_path):
-            with open(self.instructions_file_path, 'r') as f:
-                self.instructions = json.load(f)
+        if os.path.exists(self.ai_instructions_file_path):
+            with open(self.ai_instructions_file_path, 'r') as f:
+                self.ai_instructions = f.read()
         else:
-            self.instructions = {"tool_instructions": [],
-                                 "ai_instructions": "EMPTY"}
+            self.ai_instructions = None
+
+        if os.path.exists(self.tool_instructions_file_path):
+            with open(self.tool_instructions_file_path, 'r') as f:
+                self.tool_instructions = json.load(f)
+        else:
+            self.tool_instructions = []
 
         # load the tuning session if it exists
         if os.path.exists(self.tuning_session_file_path):
@@ -95,25 +112,30 @@ class AutoTuningAITools(AITools):
                 self.tuning_session = json.load(f)
 
         # If the tool_instructions is [], set them to the 'tool_instruction' field of the tuning_session object.
-        if not self.instructions.get("tool_instructions") and self.tuning_session is not None:
-            self.instructions["tool_instructions"] = self.tuning_session.get("tool_instructions")
+        if not self.tool_instructions and self.tuning_session is not None:
+            self.tool_instructions = self.tuning_session.get("tool_instructions")
+
+        if not self.ai_instructions and self.tuning_session is not None:
+            self.ai_instructions = self.tuning_session.get("ai_instructions")
 
 
     def draft_ai_instructions(self, input):
         try:
-            self.revised_instructions = input.get("revised_instructions")
-            if self.revised_instructions is None:
-                resp = "revised_instructions parameter is required"
+            self.revised_ai_instructions = input.get("revised_ai_instructions")
+            if self.revised_ai_instructions is None:
+                resp = "revised_ai_instructions parameter is required"
                 logger.info(resp)
                 return resp
             console = Console()
             print_markdown(console, "# REVISED INSTRUCTIONS:")
-            print_markdown(console, f"{self.revised_instructions}")
+            print_markdown(console, f"{self.revised_ai_instructions}")
             # Write out the revised instructions to the instructions file
-            self.instructions["ai_instructions"] = self.revised_instructions
-            with open(os.path.join(self.instructions_dir, self.draft_instructions_file_name), 'w') as f:
-                json.dump(self.instructions, f, indent=2)
-            resp = "Instructions revised successfully"
+            self.ai_instructions = self.revised_ai_instructions
+
+            with open(os.path.join(self.instructions_dir, self.draft_ai_instructions_file_name), 'w') as f:
+                f.write(self.ai_instructions)
+
+            resp = "AI Instructions revised successfully"
             logger.info(resp)
             return resp
         except Exception as e:
@@ -134,14 +156,15 @@ class AutoTuningAITools(AITools):
             print_markdown(console, f"# REVISED TOOL INSTRUCTIONS FOR {tool_name}:")
             print_markdown(console, f"{revised_tool_instructions}")
             # write out the revised tool instructions to the correct tool in the tool_instructions list
-            for tool in self.instructions["tool_instructions"]:
+            for tool in self.tool_instructions:
                 if tool.get("function").get("name") == tool_name:
                     tool["function"]["description"] = revised_tool_instructions
                     break
-            with open(os.path.join(self.instructions_dir, self.draft_instructions_file_name), 'w') as f:
+            
+            with open(os.path.join(self.instructions_dir, self.draft_tool_instructions_file_name), 'w') as f:
                 logger.debug("Revised Tool Instructions:")
-                logger.debug(self.instructions)
-                json.dump(self.instructions, f, indent=2)
+                logger.debug(self.tool_instructions)
+                json.dump(self.tool_instructions, f, indent=2)
 
             resp = "Tool instructions revised successfully"
             logger.info(resp)
@@ -165,17 +188,17 @@ class AutoTuningAITools(AITools):
             print_markdown(console, f"# REVISED TOOL PARAMETER INSTRUCTIONS FOR {tool_name}/{parameter_name}:")
             print_markdown(console, f"{revised_parameter_instructions}")
             # write out the revised tool parameter instructions to the correct tool in the tool_instructions list
-            for tool in self.instructions["tool_instructions"]:
+            for tool in self.tool_instructions:
                 if tool.get("function").get("name") == tool_name:
                     for parameter in tool.get("function").get("parameters").get("properties"):
                         if parameter == parameter_name:
                             tool["function"]["parameters"]["properties"][parameter]["description"] = revised_parameter_instructions
                             break
                     break
-            with open(os.path.join(self.instructions_dir, self.draft_instructions_file_name), 'w') as f:
+            with open(os.path.join(self.instructions_dir, self.draft_tool_instructions_file_name), 'w') as f:
                 logger.debug("Revised Tool Parameter Instructions:")
-                logger.debug(self.instructions)
-                json.dump(self.instructions, f, indent=2)
+                logger.debug(self.tool_instructions)
+                json.dump(self.tool_instructions, f, indent=2)
 
             resp = "Tool instructions revised successfully"
             logger.info(resp)
@@ -188,30 +211,40 @@ class AutoTuningAITools(AITools):
 
     def commit_draft_instructions(self, input):
         try:
-            if os.path.exists(self.draft_instructions_file_path):
+            resp = ""
+            # Get the current timestamp
+            timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+            # Create archives directory if it doesn't exist
+            archive_dir = os.path.join(self.instructions_dir, f"archives/instructions_{timestamp}")
+            os.makedirs(archive_dir, exist_ok=True)
+            
+            if os.path.exists(self.draft_ai_instructions_file_path):
               # If previous version of instruction file exists
-              if os.path.exists(self.instructions_file_path):
-                # Create archives directory if it doesn't exist
-                archive_dir = os.path.join(self.instructions_dir, "archives")
-                os.makedirs(archive_dir, exist_ok=True)
-                # Get the current timestamp
-                timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
-                # Get the original name of the old file without the extension
-                original_name = os.path.basename(os.path.splitext('./instructions/instructions.json')[0])
+              if os.path.exists(self.ai_instructions_file_path):
                 # Specify the new directory and new name
-                new_name = os.path.join(archive_dir, f"{original_name}_{timestamp}.json")
+                new_name = os.path.join(archive_dir, self.ai_instructions_file_name)
                 # Rename the old file, moving into the archives directory
-                os.rename(self.instructions_file_path, new_name)
+                os.rename(self.ai_instructions_file_path, new_name)
               
               # Rename the new file
-              os.rename(self.draft_instructions_file_path, self.instructions_file_path)
+              os.rename(self.draft_ai_instructions_file_path, self.ai_instructions_file_path)
+              resp = "Draft AI Instructions saved successfully.\n"
 
-            else:
-                resp = "Draft instructions file not found"
-                logger.info(resp)
-                return resp
+            if os.path.exists(self.draft_tool_instructions_file_path):
+              # If previous version of tool instruction file exists
+              if os.path.exists(self.tool_instructions_file_path):
+                # Specify the new directory and new name
+                new_name = os.path.join(archive_dir, self.tool_instructions_file_name)
+                # Rename the old file, moving into the archives directory
+                os.rename(self.tool_instructions_file_path, new_name)
+              
+              # Rename the new file
+              os.rename(self.draft_tool_instructions_file_path, self.tool_instructions_file_path)  
+              resp += "Draft Tool Instructions saved successfully\n"            
 
-            resp = "Draft Instructions saved successfully"
+            if resp == "":
+                resp = "Draft instructions files were not found"
+
             logger.info(resp)
             return resp
         
@@ -234,7 +267,7 @@ auto_tuner_tool_instructions = [
         "parameters": {
           "type": "object",
           "properties": {
-            "revised_instructions": {
+            "revised_ai_instructions": {
               "type": "string",
               "description": "The revised instructions for the AI."
             }

@@ -1,0 +1,412 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "create_document_collection",
+      "description": "Creates a new document collection.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection_name": {
+            "type": "string",
+            "description": "The name of the collection to create."
+          }
+        },
+        "required": [
+          "collection_name"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "create_link_collection",
+      "description": "When creating link collections, avoid using hyphens in the name to prevent syntax errors. Verify the successful creation of a link collection before attempting to link documents. In case of errors, ensure the Assistant prompts the user with the issue and seeks guidance before reattempting.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "link_collection_name": {
+            "type": "string",
+            "description": "The 'link_collection_name' parameter should reference a name for the link collection that will be created. Avoid using hyphens in the name to prevent syntax errors when later querying or managing links. Use underscores or other compliant naming conventions."
+          }
+        },
+        "required": [
+          "link_collection_name"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "delete_collection",
+      "description": "Deletes an existing collection.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection_name": {
+            "type": "string",
+            "description": "The name of the collection to delete."
+          }
+        },
+        "required": [
+          "collection_name"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "delete_document",
+      "description": "This function deletes an existing document. Carefully verify the document ID supplied by the user to avoid accidental deletion of the wrong document. Provide clear confirmation to the user once a document is successfully deleted.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "description": "The ID of the document to delete."
+          }
+        },
+        "required": [
+          "document_id"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "delete_link",
+      "description": "Deletes an existing link.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "link_id": {
+            "type": "string",
+            "description": "The ID of the link to delete."
+          }
+        },
+        "required": [
+          "link_id"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "create_document",
+      "description": "Please ensure that the 'create_document' function specifies the necessity of the 'document' parameter as a complete JSON object containing all desired document attributes. Clarify that omitting this object will result in an error, as the function requires all the listed parameters without exception for successful document creation.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection_name": {
+            "type": "string",
+            "description": "The name of the collection."
+          },
+          "document_id": {
+            "type": "string",
+            "description": "The id of the document to create. It must be a unique identifier within the collection and should not contain spaces or other illegal characters. Use hyphens to separate words (e.g., 'the-matrix')."
+          },
+          "document": {
+            "type": "object",
+            "description": "This mandatory field must contain a complete and valid JSON object with all the required details of the document to be created, as specified by the user."
+          }
+        },
+        "required": [
+          "collection_name",
+          "document_id",
+          "document"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "add_field_to_document",
+      "description": "When adding a new field to a document, ensure that you use the correct parameters 'field_name' and 'field_value'. The 'field_name' parameter refers to the name of the field to be added, and 'field_value' specifies the content or data to be associated with that field. Do not use 'attribute' or 'value' as parameter names; instead, always use 'field_name' and 'field_value' as defined in the tool specifications. If an error occurs due to parameter misnaming, carefully read the error message, correct the parameter names accordingly, and retry the operation. Before executing the function, verify that the field does not already exist in the document to prevent duplicate entries.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection_name": {
+            "type": "string",
+            "description": "The name of the collection."
+          },
+          "document_id": {
+            "type": "string",
+            "description": "The id of the document to create."
+          },
+          "field_name": {
+            "type": "object",
+            "description": "The name of the field to create."
+          },
+          "field_value": {
+            "type": "object",
+            "description": "The value of the field to be created."
+          }
+        },
+        "required": [
+          "collection_name",
+          "document_id",
+          "field_name",
+          "field_value"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "link_documents",
+      "description": "When using the 'link_documents' function, it is essential to include all required parameters, specifically the 'link_collection_name'. The absence of 'link_collection_name' results in an error and prevents successful document linking. This change aims to emphasize the importance of complete parameter inclusion for proper tool functionality.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "source_collection_name": {
+            "type": "string",
+            "description": "The name of the source collection."
+          },
+          "source_document_id": {
+            "type": "string",
+            "description": "The id of the source document."
+          },
+          "target_collection_name": {
+            "type": "string",
+            "description": "The name of the target collection."
+          },
+          "target_document_id": {
+            "type": "string",
+            "description": "The id of the target document."
+          },
+          "link_collection": {
+            "type": "object",
+            "description": "The 'link_collection_name' parameter must reference an existing link collection. Ensure to check for the existence of the link collection and create it if necessary, using compliant naming conventions that avoid hyphens and other special characters which could cause syntax errors in further operations."
+          },
+          "link_attributes": {
+            "type": "object",
+            "description": "The 'link_attributes' parameter should include all required attributes for a link between documents. If the parameter is necessary, provide all the required attributes as specified."
+          }
+        },
+        "required": [
+          "source_collection_name",
+          "source_document_id",
+          "target_collection_name",
+          "target_document_id",
+          "link_collection"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "get_document",
+      "description": "Pay close attention to user feedback and promptly make any necessary corrections to align with user expectations. Ensure that all user concerns are addressed and re-verify the changes when necessary.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection_name": {
+            "type": "string",
+            "description": "The name of the collection."
+          },
+          "document_id": {
+            "type": "string",
+            "description": "The id of the document to get."
+          }
+        },
+        "required": [
+          "collection_name",
+          "document_id"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_documents_linked_to",
+      "description": "Lists all documents in the target collection that are linked from the source document.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "target_collection_name": {
+            "type": "string",
+            "description": "The name of the target collection."
+          },
+          "target_document_id": {
+            "type": "string",
+            "description": "The id of the target document."
+          },
+          "from_collection_name": {
+            "type": "string",
+            "description": "The name of the source collection."
+          },
+          "link_collection_name": {
+            "type": "string",
+            "description": "The name of the link collection."
+          }
+        },
+        "required": [
+          "target_collection_name",
+          "target_document_id",
+          "from_collection_name",
+          "link_collection_name"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_documents_linked_from",
+      "description": "Lists all documents in the target collection that are linked to the source document.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "source_collection_name": {
+            "type": "string",
+            "description": "The name of the source collection."
+          },
+          "source_document_id": {
+            "type": "string",
+            "description": "The id of the source document."
+          },
+          "target_collection_name": {
+            "type": "string",
+            "description": "The name of the target collection."
+          },
+          "link_collection_name": {
+            "type": "string",
+            "description": "The name of the link collection."
+          }
+        },
+        "required": [
+          "source_collection_name",
+          "source_document_id",
+          "target_collection_name",
+          "link_collection_name"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_documents",
+      "description": "Lists all documents in a collection.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection_name": {
+            "type": "string",
+            "description": "The name of the collection."
+          }
+        },
+        "required": [
+          "collection_name"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_links",
+      "description": "Lists all links in a link collection.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "link_collection_name": {
+            "type": "string",
+            "description": "The name of the link collection."
+          }
+        },
+        "required": [
+          "link_collection_name"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_inbound_links",
+      "description": "Lists all inbound links to a document.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "target_collection_name": {
+            "type": "string",
+            "description": "The name of the target collection."
+          },
+          "target_document_id": {
+            "type": "string",
+            "description": "The id of the target document."
+          },
+          "link_collection_name": {
+            "type": "string",
+            "description": "When specifying 'link_collection_name' for listing inbound links, ensure the name does not contain hyphens to prevent syntax errors during the operation. Use supported naming conventions, such as underscores, for compatibility with system's requirements."
+          }
+        },
+        "required": [
+          "target_collection_name",
+          "target_document_id",
+          "link_collection_name"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_outbound_links",
+      "description": "Lists all outbound links from a document.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "source_collection_name": {
+            "type": "string",
+            "description": "The name of the source collection."
+          },
+          "source_document_id": {
+            "type": "string",
+            "description": "The id of the source document."
+          },
+          "link_collection_name": {
+            "type": "string",
+            "description": "When specifying 'link_collection_name' for listing outbound links, ensure the name does not contain hyphens to prevent syntax errors during the operation. Use supported naming conventions, such as underscores, for compatibility with system's requirements."
+          }
+        },
+        "required": [
+          "source_collection_name",
+          "source_document_id",
+          "link_collection_name"
+        ]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_document_collections",
+      "description": "Lists all document collections."
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_link_collections",
+      "description": "Lists all link collections."
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "list_collections",
+      "description": "Lists all collections, both document collections and link collections."
+    }
+  }
+]

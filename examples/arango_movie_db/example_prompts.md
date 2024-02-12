@@ -13,6 +13,8 @@ I'd like you to write a positive review for the matrix and link it to the movie 
 
 /file ./tuning_sessions/tuning_session.json
 
+draft revised instructions for the AI and any tool instructions that should be revised based on the AI's performance.
+
 commit changes.
 
 can you evaluate the performance of the assistant and describe its errors and successes?

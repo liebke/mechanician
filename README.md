@@ -182,23 +182,15 @@ Examples of AITools classes:
 
 ### Instruction Sets
 
-* [Arango Movie DB Example instrucions.json](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/instructions/instructions.json)
-
-The `instruction_set_directory` contains an **instruction set** file, with a default name of `instructions.json`.
+The `instruction_set_directory` contains an **instruction set** file, with a default name of `instructions.json`, it has two fields, `ai_instructions` and `tool_instructions`.
 
 ```json
-{'ai_instructions': "...",
- 'tool_instructions': {...}}
+{"ai_instructions" : "...",
+ "tool_instructions" : {...}}
 ```
 
-
-#### AI Instructions
-
-`
-As the AI Assistant, your primary goal is to support users in maintaining a database of JSON documents... 
-`
-
-#### Tool Instructions
+* `ai_instructions` is a string that contains the instructions for the AI.
+* `tool_instructions` is a dictionary that contains the instructions for the tools used by the AI. In the case of the OpenAI Connectors, it contains JSON Schema describing the tools and their parameters.
 
 ```json
 {
@@ -214,6 +206,12 @@ As the AI Assistant, your primary goal is to support users in maintaining a data
    }
 }
 ```
+
+Some example instruction sets:
+
+* [Arango Movie DB Example instrucions.json](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/instructions/instructions.json)
+* [TMDb Example instrucions.json](https://github.com/liebke/mechanician/blob/main/examples/tmdb/instructions/instructions.json)
+
 
 ### AIConnector Classes
 
