@@ -72,7 +72,7 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
       - [OpenAI Connectors](#openai-connectors)
       - [OpenAIChatConnector](#openaichatconnector)
       - [OpenAIAssistantsConnector](#openaiassistantsconnector)
-      - [Running the AI](#running-the-ai)
+    - [Running the AI](#running-the-ai)
   - [Getting Started with Mechanician ArangoDB](#getting-started-with-mechanician-arangodb)
       - [Run ArangoDB in Docker](#run-arangodb-in-docker)
   - [Getting Started with Instruction Auto-Tuning](#getting-started-with-instruction-auto-tuning)
@@ -234,7 +234,7 @@ export DELETE_ASSISTANT_ON_EXIT=False
 or create a `.env` file with the variables.
 
 
-#### Running the AI
+### Running the AI
 
 ```python
 from mechanician import shell
