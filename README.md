@@ -56,9 +56,9 @@ The Instructor AI is provided the AI's current set of instructions, instructions
 See [Getting Started with Instruction Auto-Tuning](#getting-started-with-instruction-auto-tuning) for an example of how to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for a **Movie Database Assistant**.
 
 
-## AI-Driven Testing (AIT)
+## AI-Driven Testing
 
-See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-testing) for an example of how to use the **AI-Driven Testing** (AIT) process to test a **Movie Database Assistant**.
+See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-testing) for an example of how to use the **AI-Driven Testing** process to test a **Movie Database Assistant**.
 
 ## Getting Started Guide: Table of Contents
 
