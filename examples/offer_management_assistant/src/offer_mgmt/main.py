@@ -2,7 +2,6 @@ from mechanician import TAGAI, shell
 from mechanician_openai import OpenAIChatConnector
 
 from offer_mgmt.offer_mgmt_ai_tools import OfferManagementAITools
-# from offer_mgmt.tool_instructions import tool_instructions
 import logging
 from dotenv import load_dotenv
 import os
@@ -19,14 +18,9 @@ def init_ai(database_name):
     # Load environment variables from a .env file
     load_dotenv()
 
-    with open("./instructions/ai_instructions.md", 'r') as file:
-        instructions = file.read()
-
     ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
-                                         model_name=os.getenv("OPENAI_MODEL_NAME"))
+                                       model_name=os.getenv("OPENAI_MODEL_NAME"))
     return TAGAI(ai_connector,
-                 ai_instructions=instructions, 
-                #  tool_instructions=tool_instructions,
                  instruction_set_directory="./instructions",
                  tools=OfferManagementAITools(database_name))
 
