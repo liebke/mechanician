@@ -6,7 +6,7 @@ setup(
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     install_requires=[
-        'mechanician>=0.1.1',
+        'mechanician>=0.1.2',
         'openai>=1.11.0,<2.0.0',
     ],
     author='David Edgar Liebke',
