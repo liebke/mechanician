@@ -2,9 +2,9 @@
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
-[**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building Generative AI-enabled applications where the AIs are provided tools to use, an approach that can be described as **Tool Augmented Generation** (**TAG**), where the Generative AIs that use tools can be described as **Tool Augmented Generative AIs** (**TAG AIs**).
+The [**Daring Mechanician** ](https://github.com/liebke/mechanician) project provides several Python packages for building Generative AI-enabled tools where the AIs themselves use tools, an approach that can be described as **Tool Augmented Generation** (**TAG**), and the tool-using Generative AIs can be described as **Tool Augmented Generative AIs** (**TAG AIs**).
 
-*Daring Mechanician* provides tools for building, testing, and tuning *TAG AIs* and the tools that these AIs use, including support for AI-driven testing and AI-assisted *tuning* of the instruction sets given to an AI that we call **Instruction Auto-Tuning** (IAT).
+*Daring Mechanician* provides modules for building, testing, and tuning *TAG AIs* and the tools that these AIs use, including support for AI-driven testing and AI-assisted *tuning* of the instruction sets given to an AI that we call **Instruction Auto-Tuning** (IAT).
 
 
 # Tool Augmented Generation (TAG)
