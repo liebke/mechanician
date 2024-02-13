@@ -1,7 +1,7 @@
 from mechanician import TAGAI
 from mechanician_openai import OpenAIChatConnector
 from mechanician.testing import run_task_evaluation
-from main import init_ai
+from arango_movie_db.main import init_ai
 import unittest
 import os
 from dotenv import load_dotenv

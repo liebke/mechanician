@@ -1,7 +1,7 @@
 from mechanician import TAGAI, shell
 from mechanician_openai import OpenAIChatConnector
 # from mechanician_openai import OpenAIAssistantsConnector
-from tmdb_ai_tools import TMDbAITools
+from mechanician_tmdb.tmdb_ai_tools import TMDbAITools
 from dotenv import load_dotenv
 import os
 import logging

@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='arango_movie_db',
+    name='mechanician_arango_movie_db',
     version='0.1',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
@@ -14,7 +14,7 @@ setup(
         'python-dotenv>=0.17.1',
     ],
     author='David Edgar Liebke',
-    author_email='david@liebke.ai',
+    author_email='david@gmail.com',
     description='Daring Mechanician ArangoDB Movie Database example.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',

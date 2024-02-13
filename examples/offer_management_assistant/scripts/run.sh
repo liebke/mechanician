@@ -1,6 +1,3 @@
 #!/bin/bash
 
-EX_DIR=$(cd .. && pwd)
-OFFER_MGMT_EX=${EX_DIR}/offer_management_assistant
-
-python3 ${OFFER_MGMT_EX}/src/offer_mgmt/main.py
+python3 -m offer_mgmt.main

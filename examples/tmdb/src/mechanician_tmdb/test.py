@@ -1,6 +1,6 @@
 from mechanician.testing import QandATest, run_q_and_a_evaluations
 import unittest
-from main import init_ai
+from mechanician_tmdb.main import init_ai
 from mechanician_openai import OpenAIChatConnector
 from mechanician import TAGAI
 import logging

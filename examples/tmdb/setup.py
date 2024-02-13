@@ -14,7 +14,7 @@ setup(
         'requests>=2.26.0',
     ],
     author='David Edgar Liebke',
-    author_email='david@liebke.ai',
+    author_email='david@gmail.com',
     description='An TMDb example application of the Daring Mechanician library.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
