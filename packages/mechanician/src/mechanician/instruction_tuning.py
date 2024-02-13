@@ -2,7 +2,6 @@ import json
 from mechanician import TAGAI
 from mechanician.ai_connectors import AIConnector
 from mechanician.ai_tools import AITools
-from mechanician.util import print_markdown
 from rich.console import Console
 import logging
 import os
@@ -127,8 +126,8 @@ class AutoTuningAITools(AITools):
                 logger.info(resp)
                 return resp
             console = Console()
-            print_markdown(console, "# REVISED INSTRUCTIONS:")
-            print_markdown(console, f"{self.revised_ai_instructions}")
+            logger.info("# REVISED INSTRUCTIONS:")
+            logger.info(f"{self.revised_ai_instructions}")
             # Write out the revised instructions to the instructions file
             self.ai_instructions = self.revised_ai_instructions
 
@@ -153,8 +152,8 @@ class AutoTuningAITools(AITools):
                 logger.info(resp)
                 return resp
             console = Console()
-            print_markdown(console, f"# REVISED TOOL INSTRUCTIONS FOR {tool_name}:")
-            print_markdown(console, f"{revised_tool_instructions}")
+            logger.info(f"# REVISED TOOL INSTRUCTIONS FOR {tool_name}:")
+            logger.info(f"{revised_tool_instructions}")
             # write out the revised tool instructions to the correct tool in the tool_instructions list
             for tool in self.tool_instructions:
                 if tool.get("function").get("name") == tool_name:
@@ -185,8 +184,8 @@ class AutoTuningAITools(AITools):
                 logger.info(resp)
                 return resp
             console = Console()
-            print_markdown(console, f"# REVISED TOOL PARAMETER INSTRUCTIONS FOR {tool_name}/{parameter_name}:")
-            print_markdown(console, f"{revised_parameter_instructions}")
+            logger.info(f"# REVISED TOOL PARAMETER INSTRUCTIONS FOR {tool_name}/{parameter_name}:")
+            logger.info(f"{revised_parameter_instructions}")
             # write out the revised tool parameter instructions to the correct tool in the tool_instructions list
             for tool in self.tool_instructions:
                 if tool.get("function").get("name") == tool_name:
@@ -263,7 +262,7 @@ auto_tuner_tool_instructions = [
       "type": "function",
       "function": {
         "name": "draft_ai_instructions",
-        "description": "Revises an AI's system instructions.",
+        "description": "Creates a draft of revisions to the AI's Instructions.",
         "parameters": {
           "type": "object",
           "properties": {
@@ -280,7 +279,7 @@ auto_tuner_tool_instructions = [
       "type": "function",
       "function": {
         "name": "draft_tool_instructions",
-        "description": "Revises Tool instructions.",
+        "description": "Creates a draft of revisions to Tool Instructions.",
         "parameters": {
           "type": "object",
           "properties": {
@@ -301,7 +300,7 @@ auto_tuner_tool_instructions = [
       "type": "function",
       "function": {
         "name": "draft_tool_parameter_instructions",
-        "description": "Revises the parameter instructions for a tool.",
+        "description": "Creates a draf of revisions to the parameter instructions for a tool.",
         "parameters": {
           "type": "object",
           "properties": {

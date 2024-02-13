@@ -23,13 +23,18 @@ class OpenAIChatConnector(StreamingAIConnector):
                  stream_printer = SimpleStreamPrinter(),
                  max_thread_workers=None):
         
-        self.STREAMING = True
+        api_key = api_key or os.getenv("OPENAI_API_KEY")
+        if api_key is None:
+            raise ValueError("OpenAI API Key is required")
+    
         self.model_name = model_name or os.getenv("OPENAI_MODEL_NAME") or self.DEFAULT_MODEL_NAME
+        if self.model_name is None:
+            raise ValueError("OpenAI Model Name is required")
+        
+        self.STREAMING = True
         self.MAX_THREAD_WORKERS = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
         self.stream_printer = stream_printer
-        api_key = api_key or os.getenv("OPENAI_API_KEY")
         self.client = OpenAI(api_key=api_key)
-
         self.tool_instructions = None
         self.ai_instructions = None
         self.tools = None
@@ -101,7 +106,7 @@ class OpenAIChatConnector(StreamingAIConnector):
                 if tool_calls_index >= 0:
                     if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                         tc = tool_calls[-1]
-                        self.stream_printer.print(f"Calling external function: {tc['function']['name']}...")
+                        self.stream_printer.print(f"Applying tool: {tc['function']['name']}...")
                         with ThreadPoolExecutor(max_workers=self.MAX_THREAD_WORKERS) as executor:
                             futures.append(executor.submit(self.process_tool_call, tc))
                     
@@ -169,7 +174,7 @@ class OpenAIChatConnector(StreamingAIConnector):
                     tc = tool_calls[-1]
                     with ThreadPoolExecutor(max_workers=self.MAX_THREAD_WORKERS) as executor:
                         futures.append(executor.submit(self.process_tool_call, tc))
-                        self.stream_printer.print(f"Calling external function: {tc['function']['name']}...")
+                        self.stream_printer.print(f"Applying tool: {tc['function']['name']}...")
 
                 results = [f.result() for f in as_completed(futures)]
 

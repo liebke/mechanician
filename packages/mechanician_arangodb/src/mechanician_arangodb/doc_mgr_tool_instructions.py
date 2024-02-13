@@ -1,38 +1,4 @@
 tool_instructions = [
-    # {
-    #   "type": "function",
-    #   "function": {
-    #     "name": "create_database",
-    #     "description": "Creates a new database.",
-    #     "parameters": {
-    #       "type": "object",
-    #       "properties": {
-    #         "db_name": {
-    #           "type": "string",
-    #           "description": "The name of the database to create."
-    #         }
-    #       },
-    #       "required": ["db_name"]
-    #     }
-    #   }
-    # },
-    # {
-    #   "type": "function",
-    #   "function": {
-    #     "name": "delete_database",
-    #     "description": "Deletes an existing database.",
-    #     "parameters": {
-    #       "type": "object",
-    #       "properties": {
-    #         "db_name": {
-    #           "type": "string",
-    #           "description": "The name of the database to delete."
-    #         }
-    #       },
-    #       "required": ["db_name"]
-    #     }
-    #   }
-    # },
     {
       "type": "function",
       "function": {

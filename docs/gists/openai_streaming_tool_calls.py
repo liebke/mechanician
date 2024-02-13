@@ -40,7 +40,7 @@ def process_stream(stream, messages):
                     if idx >= 0:
                         if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                             tc = tool_calls[-1]
-                            # Call external function
+                            # Apply tool
                             with ThreadPoolExecutor(max_workers=os.getenv("MAX_THREAD_WORKERS")) as executor:
                                 futures.append(executor.submit(tool_call_handler, tc))
 
@@ -76,7 +76,7 @@ def process_stream(stream, messages):
                 tc = tool_calls[-1]
                 with ThreadPoolExecutor(max_workers=os.getenv("MAX_THREAD_WORKERS")) as executor:
                     futures.append(executor.submit(tool_call_handler, tc))
-                    print(f"### Calling external function: {tc['function']['name']}...")
+                    print(f"### Applying tool: {tc['function']['name']}...")
 
             results = [f.result() for f in as_completed(futures)]
 

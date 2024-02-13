@@ -37,13 +37,13 @@ docker start arangodb-instance
 ## Run Interactive Example
 
 ```bash
-./run.sh
+./scripts/run.sh
 ```
 
 ## Run Tests
     
 ```bash
-./test.sh
+./scripts/test.sh
 ```
 
 ## Exit the Virtual Environment and Clean Up

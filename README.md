@@ -96,7 +96,7 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
 
 * [mechanician](https://github.com/liebke/mechanician/tree/main/packages/mechanician): the core package for building and running **Tool Augmented Generative AI** (TAG AI) programs.
 * [mechanician-openai](https://github.com/liebke/mechanician/tree/main/packages/mechanician_openai): provides connectors to the *OpenAI Chat API* and the *OpenAI Assistants API*.
-* [mechanician-arangodb](https://github.com/liebke/mechanician/tree/main/packages/mechanician_arangodb): provides tools for interacting with the ArangoDB graph database.
+* [mechanician-arangodb](https://github.com/liebke/mechanician/tree/main/packages/mechanician_arangodb): provides tools for interacting with the [ArangoDB](https://arangodb.com) graph database.
 
 In the future, it will include packages for interacting with different LLM APIs and systems.
 
@@ -112,7 +112,7 @@ The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) d
 
 * [examples/tmdb](https://github.com/liebke/mechanician/tree/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb) is an example of a **Movie Database Assistant** that uses the *OpenAI Chat API* to answer questions about movies and their casts and crews.
 
-* [examples/arango_movie_db](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db) is an example of a **Movie Database Assistant** that uses the *ArangoDB* to record information on movies, their casts, and reviews.
+* [examples/arango_movie_db](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db) is an example of a **Movie Database Assistant** that uses the [ArangoDB](https://arangodb.com) to record information on movies, their casts, and reviews.
 
 
 ### TAGAI Class
@@ -149,7 +149,7 @@ Here are some examples of how to use the `TAGAI` class:
 
 * [mechanician_tmdb/main.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb/src/mechanician_tmdb/main.py#L17): a TAG AI that uses `TMDbAITools` for interacting with the The Movie Database (TMDb) API, the `OpenAIChatConnector` to connect to the OpenAI Chat API.
 
-* [examples/arango_movie_db/main.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db/src/main.py#L16): a TAG AI that uses `DocumentManagerAITools` from the `mechanician-arangodb` package to interact with the ArangoDB graph database and the `OpenAIChatConnector` to connect to the OpenAI Chat API.
+* [examples/arango_movie_db/main.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db/src/main.py#L16): a TAG AI that uses `DocumentManagerAITools` from the `mechanician-arangodb` package to interact with the [ArangoDB](https://arangodb.com) graph database and the `OpenAIChatConnector` to connect to the OpenAI Chat API.
 
 * [mechanician/instruction_tuning.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/packages/mechanician/src/mechanician/instruction_tuning.py#L43): an Instructor AI that uses `AutoTuningAITools` for tuning and updating the instructions for another AI, and the `OpenAIChatConnector` to connect to the OpenAI Chat API.
    
@@ -175,7 +175,7 @@ Examples of AITools classes:
 
 * [tmdb_tools.py](https://github.com/liebke/mechanician/blob/main/examples/tmdb/src/mechanician_tmdb/tmdb_ai_tools.py): `AITools` for interacting with The Movie Database (TMDb) API.
 
-* [arango_movie_db_tools.py](https://github.com/liebke/mechanician/blob/main/packages/mechanician_arangodb/src/mechanician_arangodb/document_ai_tools.py): `AITools` for interacting with the ArangoDB graph database.
+* [arango_movie_db_tools.py](https://github.com/liebke/mechanician/blob/main/packages/mechanician_arangodb/src/mechanician_arangodb/document_ai_tools.py): `AITools` for interacting with the [ArangoDB](https://arangodb.com) graph database.
 
 * [auto_tuning_ai_tools.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/packages/mechanician/src/mechanician/instruction_tuning.py#L62): `AITools` for tuning and updating the instructions for another AI.
 
@@ -298,7 +298,7 @@ ai.save_tuning_session()
 ```
 
 ```bash
-./script/auto_tune.sh
+./scripts/auto_tune.sh
 ```
 
 Use the `/file` chat command to load the tuning session into the *Instructor AI*.
@@ -316,6 +316,13 @@ It will begin by evaluating the AI's performance and describing its errors and s
 The *Instructor's* evaluations of the *Assistant's* performance can be really useful, as are it's recommended changes to the instructions, but sometimes its revisions will only include instructions covering the errors it determined the *Assistant* made, and you may want to add additional instructions to cover other cases; you can do this by manually editing the draft instructions before commiting them or by asking the *Instructor* to make further revisions.
 
 You can edit the draft instructions before commiting them, and you can also ask the *Instructor AI* to make further revisions. 
+
+### Instruction Auto-Tuning AITools
+
+* **draft_ai_instructions**: Creates a draft of revisions to the AI's Instructions.
+* **draft_tool_instructions**: Creates a draft of revisions to Tool Instructions.
+* **draft_tool_parameter_instructions**: Creates a draf of revisions to the parameter instructions for a tool.
+* **commit_draft_instructions**: Commits the draft of the new instructions, replacing the original instructions after making an archive copy of the original instructions.
 
 
 ## Getting Started with AI-Driven Testing
@@ -381,6 +388,8 @@ $ python test.py
 
 ## Getting Started with mechanician-arangodb
 
+The `mechanician-arangodb` package provides `AITools` for interacting with the [ArangoDB](https://arangodb.com) graph databases.
+
 
 ### 
 ```python
@@ -405,147 +414,19 @@ Example project:
 * [examples/arango_movie_db](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db)
 
 
-Install the mechanician-arangodb, mechanician-openai packages, and example project using pip:
-
-```bash
-pip install -e .
-```
-
-Set up your environment variables or create a `.env` file with the following variables:
-
-```bash
-ARANGO_ROOT_PASSWORD=<YOUR_ARANGO_DATABASE_PASSWORD>
-ARANGO_HOST=http://localhost:8529
-```
-
-#### Run ArangoDB in Docker
-
-```bash
-docker pull arangodb/arangodb
-```
-
-```bash
-docker run -e ARANGO_ROOT_PASSWORD=${ARANGO_ROOT_PASSWORD} -p 8529:8529 -d --name arangodb-instance arangodb/arangodb
-```
-
-```bash
-docker stop arangodb-instance
-```
-
-```bash
-docker start arangodb-instance
-```
-
-#### Run the interactive TAG AI shell:
-
-```bash
-./run.sh
-```
-
-### Run the AI-Driven tests:
-
-```bash
-./test.sh
-```
-
-
-### Arango Movie Database Example Code
-
-* [```examples/arango_movie_db/main.py```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/src/main.py): TODO. 
-
-* [```mechanician_arangodb document_ai_tools.py```](https://github.com/liebke/mechanician/blob/main/packages/mechanician_arangodb/src/mechanician_arangodb/document_ai_tools.py): are the AITools available to the AI.
-
-* [```examples/arango_movie_db/instructions/instructions.json```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/instructions/instructions.json): is a set of instructions for the AI that inform it of the tools available to it, and describe its role as a **Movie Database Assistant** that records information on movies, their casts, and reviews.
-
-* [```example_prompts.md```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/example_prompts.md): provides a variety of approaches to interacting with the AI.
-
-* [```examples/arango_movie_db/test_ai.py```](https://github.com/liebke/mechanician/blob/main/examples/arango_movie_db/src/test_ai.py): shows how to test **Daring Mechanician** programs by having an AI-driven set of tasks. 
-
-
-
-
 ## Getting Started with the TMDb Example
 
-* [examples/tmdb](https://github.com/liebke/mechanician/tree/main/examples/tmdb)
+The TMDb example uses the The Movie Database (TMDb) API to provide a **Movie Database Assistant** that answers questions about movies and their casts and crews.
 
-Install Mechanician OpenAI and the example project using pip:
-
-```bash
-pip install -e .
-```
-
-Set up your environment variables or create a `.env` file with the following variables:
-
-```bash
-TMDB_API_KEY=<YOUR_TMDB_API_KEY>
-TMDB_READ_ACCESS_TOKEN=<YOUR_READ_ACCESS_TOKEN>
-```
-
-Run the interactive TAG AI shell:
-
-```bash
-./run.sh
-```
-
-### Example Interaction
-
-```markdown
-> what was the first movie that the actor that plays Furiosa in the upcoming movie Furiosa star in?
-
-Calling external function: search_movie...
-Calling external function: get_movie_by_id...
-Calling external function: get_movie_credits...
-Calling external function: get_actor_credits...
-
-
-The first movie that Anya Taylor-Joy, the actor who plays Furiosa in the upcoming movie "Furiosa: A Mad Max Saga," starred in was "The Witch," where she played the character Thomasin. The film was released in 2015.
-
-> 
-```
-
-
-Run the AI-Driven tests:
-
-```bash
-./test.sh
-```
-
-
-
-
-
-### TMDb Example Code
-
-* [```examples/tmdb/main.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/main.py): shows how to use **Daring Mechanician** to interact with *OpenAI's Chat API*, providing it with **tools** that can be used by the LLM to makes *callouts* to other programs. 
-
-* [```tmdb_tool_schemas.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_tool_schemas.py): informs the LLM what tools are available to it.
-
-* [```tmdb_tools.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_tools.py): is *function_handler* containing ```stub``` functions that are invoked when the LLM makes one or more ```tool_call``` requests.
-
-* [```examples/tmdb/instructions.md```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/instructions.md): is a set of instructions for the LLM that inform it of the tools available to it, and describe its role as a **Movie Database Assistant** that answers questions about movies and their casts and crews.
-
-* [```tmdb_example_prompts.md```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/tmdb_example_prompts.md): provides a variety of approaches to interacting with the LLM.
-
-* [```examples/tmdb/test.py```](https://github.com/liebke/mechanician/blob/main/examples/tmdb/test.py): shows how to test **Daring Mechanician** programs by having the AI self-evaluate their responses given a testing rubric. 
+See the [examples/tmdb](https://github.com/liebke/mechanician/tree/main/examples/tmdb) directory more information.
 
 
 
 ## Getting Started with the Arango Movie Database Example
 
-* [examples/arango_movie_db](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db)
+This example project uses the [ArangoDB](https://arangodb.com) graph database and the `mechanician-arangodb` package to provide a **Movie Database Assistant** that records information on movies, their casts, and reviews.
 
-
-```bash
-./install.sh
-```
-
-```bash
-./run.sh
-```
-
-```bash
-./test.sh
-```
+See the [examples/arango_movie_db](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db) for more information.
 
 
 ## Parallel Tool Calls and Streaming Responses
@@ -554,10 +435,11 @@ It currently supports [*OpenAI's Chat API*](https://platform.openai.com/docs/ove
 
 Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.python.org/3/library/concurrent.futures.html) as soon as it has completely streamed to the client, allowing it to perform *IO-bound* calls while other ```tool_calls``` continue to stream to the client.
 
+
 ### Environment Variables
 
 ```bash
-export CALL_TOOLS_IN_PARALLEL=True
-export MAX_THREAD_WORKERS=50
+CALL_TOOLS_IN_PARALLEL=True
+MAX_THREAD_WORKERS=50
 ```
 

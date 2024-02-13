@@ -25,19 +25,8 @@ class DocumentManagerAITools(AITools):
         self.doc_mgr = DocumentManager(client, username, password)
         self.database_name = database_name
         self.database = self.doc_mgr.create_database(database_name)
-        
-    # def create_database(self, input: dict):
-    #     db_name = input['db_name']
-    #     db = self.doc_mgr.create_database(db_name)
-    #     resp = f"Database '{db_name}' created."
-    #     return resp
-    
-    # def delete_database(self, input: dict):
-    #     db_name = input['db_name']
-    #     self.doc_mgr.delete_database(db_name)
-    #     resp = f"Database '{db_name}' deleted."
-    #     return resp
-    
+
+
     def create_document_collection(self, input: dict):
         try:
             collection_name = input.get('collection_name')
