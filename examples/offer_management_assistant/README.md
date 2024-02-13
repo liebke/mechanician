@@ -9,18 +9,10 @@ conda create -n offer_mgmt_env python=3.11
 conda activate offer_mgmt_env
 ```
 
-Install the requirements from PyPI.
+Install the example project.
 
 ```bash
-pip install mechanician_openai
-pip install mechanician_arangodb
 pip install -e .
-```
-
-or install all the requirements from a cloned Mechanician repository.
-
-```bash
-./install.sh
 ```
 
 

@@ -108,14 +108,6 @@ You can install it using pip:
 pip install mechanician-openai
 ```
 
-or you can clone this repo and install the latest version:
-
-```bash
-cd ./packages/mechanician-openai
-./scripts/install.sh
-```
-
-
 The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains examples of **Tool Augmented Generative AI** projects.
 
 * [examples/tmdb](https://github.com/liebke/mechanician/tree/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb) is an example of a **Movie Database Assistant** that uses the *OpenAI Chat API* to answer questions about movies and their casts and crews.
@@ -416,8 +408,6 @@ Example project:
 Install the mechanician-arangodb, mechanician-openai packages, and example project using pip:
 
 ```bash
-pip install mechanician-arangodb
-pip install mechanician-openai
 pip install -e .
 ```
 
@@ -481,14 +471,7 @@ docker start arangodb-instance
 Install Mechanician OpenAI and the example project using pip:
 
 ```bash
-pip install mechanician-openai
 pip install -e .
-```
-
-or install all the dependencies from a cloned mechanician repo:
-
-```bash
-./install.sh
 ```
 
 Set up your environment variables or create a `.env` file with the following variables:
