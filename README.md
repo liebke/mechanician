@@ -266,11 +266,13 @@ from mechanician_openai import OpenAIChatConnector
 from mechanician_openai import OpenAIAssistantsConnector
 ```
 
+*Assistants Connector* Environment Variables:
+
 ```bash
-export USE_OPENAI_ASSISTANTS_API = True
-export ASSISTANT_ID=<YOUR_ASSISTANT_ID_HERE>
-export CREATE_NEW_ASSISTANT=False
-export DELETE_ASSISTANT_ON_EXIT=False
+USE_OPENAI_ASSISTANTS_API = True
+ASSISTANT_ID=<YOUR_ASSISTANT_ID_HERE>
+CREATE_NEW_ASSISTANT=False
+DELETE_ASSISTANT_ON_EXIT=False
 ```
 
 or create a `.env` file with the variables.
@@ -385,13 +387,11 @@ $ python test.py
 ```
 
 
-
 ## Getting Started with mechanician-arangodb
 
 The `mechanician-arangodb` package provides `AITools` for interacting with the [ArangoDB](https://arangodb.com) graph databases.
 
-
-### 
+ 
 ```python
 from mechanician_arangodb import DocumentManagerAITools
 from arango import ArangoClient
