@@ -2,9 +2,7 @@
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
-[**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building tools that use AI by building tools that AIs use. 
-
-The approach of providing tools to Generative AIs to use can be described as **Tool Augmented Generation** (TAG) and the Generative AIs that use tools as **Tool Augmented Generative AIs** (TAG AIs).
+[**Daring Mechanician** ](https://github.com/liebke/mechanician) is a Python library for building Generative AI-enabled applications where the AIs are provided tools to use, an approach that can be described as **Tool Augmented Generation** (**TAG**), where the Generative AIs that use tools can be described as **Tool Augmented Generative AIs** (**TAG AIs**).
 
 *Daring Mechanician* provides tools for building, testing, and tuning *TAG AIs* and the tools that these AIs use, including support for AI-driven testing and AI-assisted *tuning* of the instruction sets given to an AI that we call **Instruction Auto-Tuning** (IAT).
 
@@ -13,7 +11,7 @@ The approach of providing tools to Generative AIs to use can be described as **T
 
 The **Tool Augmented Generation** (**TAG**) approach provides AIs with external tools, databases, and interfaces to enhance their knowledge, capabilities, and interaction with other systems.
 
-This approach leverages the "**Function Calling**", or "**Tool Calling**", capabilities available in several Large Language Models and is meant to complement other approaches to augmenting Foundation Models, like **Fine Tuning** (FT) and **Retrieval Augmented Generation** (RAG). 
+This approach leverages the "**Function Calling**", or "**Tool Calling**", capabilities available in several Large Language Models, including *OpenAI's GPT*, and is meant to complement other approaches to augmenting Foundation Models, like **Fine Tuning** (FT) and **Retrieval Augmented Generation** (RAG). 
 
 In contrast to **Retrieval Augmented Generation** (RAG), which uses a knowledge base to retrieve information and augment the prompt sent to the AI, **Tool Augmented Generation** (TAG) provides the AI with tools so that it can retrieve information itself, and also perform actions across multiple systems, databases, and interfaces.
 
@@ -26,11 +24,11 @@ This approach enhances the AI's problem-solving skills, creativity, and ability 
 
 ## Designing Tools for AIs to Use
 
-TAG AIs can be observed to problem solve, learning to use tools effectively through feedback provided by the tools themselves, so it is necessary for the tools to provide effective feedback, often through natural language, when reporting errors or providing results.
+TAG AIs can be observed to perform multi-step problem solving, driven by the feedback provided by their tools, and learning to use those tools effectively through that feedback, so it is necessary for the tools to provide effective feedback, often through natural language, when reporting errors or providing results.
 
-AIs will learn from their mistakes and successes, if the tools provide feedback that the AI can learn from.
+Generative AIs will learn from their mistakes and successes, if the tools provide feedback that the AI can learn from.
 
-See [Getting Started with Daring Mechanician](#getting-started-with-daring-mechanician) for an example of how to use the **Tool Augmented Generation** (TAG) approach to build a **Movie Database Assistant**.
+See [Getting Started with Daring Mechanician](#getting-started-with-daring-mechanician) for an example of how to build a **Tool Augmented Generative AI** (TAG AI).
 
 
 ## Instruction Tuning (IT)
@@ -39,7 +37,7 @@ In addition to learning from the feedback provided by the tools they use, TAG AI
 
 But since TAG AIs do not necessarily undergo further training, or Fine Tuning, that permanently encodes what they learned, they can only learn within the context window where feedback is received, and must start from scratch during the next session.
 
-In order to make these learned behaviors persistent, they must be captured through a process of **Instruction Tuning**, where the initial instructions provided to the AI, the instructions provided for the tools the AI can use, and the feedback provided by those tools are revised and improved, incorporating lessons learned during interactions with users.
+In order to make these learned behaviors persistent, they must be captured through a process of **Instruction Tuning**, or *prompt engineering*, where the initial instructions provided to the AI, the instructions provided for the tools the AI can use, and the feedback provided by those tools are revised and improved, incorporating lessons learned during interactions with users.
 
 This process starts with creating an initial set of *AI Instructions*, *Tool Instructions*, and *Tool Feedback*, that are used to guide the AI's behavior and responses, and then iteratively refining those instructions and tool feedback based on the AI's performance during interactions with users.
 
@@ -51,7 +49,7 @@ In order to speed up this process, it is useful to use an **Evaluator AI** that 
 
 By observing an AI's interactions with users and other AIs, an *Instructor AI* can refine and update the AI's current instructions and the instructions describing the tools the AI can use.
 
-The Instructor AI is provided the AI's current set of instructions, instructions for the tools used by the AI, and the transcript of interactions between the AI and a User (or Evaluator AI), including the AI tool calls and responses.
+The Instructor AI is given the AI's current set of instructions, instructions for the tools used by the AI, and the transcript of interactions between the AI and a User (or Evaluator AI), including the AI tool calls and responses.
 
 See [Getting Started with Instruction Auto-Tuning](#getting-started-with-instruction-auto-tuning) for an example of how to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for a **Movie Database Assistant**.
 
@@ -95,12 +93,14 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
 **Daring Mechanician** consists of the following packages:
 
 * [mechanician](https://github.com/liebke/mechanician/tree/main/packages/mechanician): the core package for building and running **Tool Augmented Generative AI** (TAG AI) programs.
-* [mechanician-openai](https://github.com/liebke/mechanician/tree/main/packages/mechanician_openai): provides connectors to the *OpenAI Chat API* and the *OpenAI Assistants API*.
-* [mechanician-arangodb](https://github.com/liebke/mechanician/tree/main/packages/mechanician_arangodb): provides tools for interacting with the [ArangoDB](https://arangodb.com) graph database.
+* [mechanician-openai](https://github.com/liebke/mechanician/tree/main/packages/mechanician_openai): provides *AIConnector* classes for connecting to the *OpenAI Chat API* and the *OpenAI Assistants API*.
+* [mechanician-arangodb](https://github.com/liebke/mechanician/tree/main/packages/mechanician_arangodb): provides an *AITools* class for interacting with the [ArangoDB](https://arangodb.com) graph database.
 
-In the future, it will include packages for interacting with different LLM APIs and systems.
+The roadmap includes more *AIConnectors* for connecting to different LLM APIs, and more AITools for interacting with different systems.
 
-You will need to install *mechanician-openai* in order to run any of the example projects.
+### Example Projects
+
+To run the example projects, you'll need to install *mechanician-openai* to connect to an OpenAI GPT, and you will need an OpenAI API Key. 
 
 You can install it using pip:
 
@@ -243,6 +243,8 @@ The roadmap includes connectors to other LLM APIs that support function calling,
 pip install mechanician-openai
 ```
 
+You can pass the following values directly to the OpenAI connectors, but you may want use environment variables, or include them in a `.env` file:
+
 ```bash
 OPENAI_API_KEY=<YOUR_OPENAI_API_KEY_HERE>
 OPENAI_MODEL_NAME=gpt-4-0125-preview
@@ -266,19 +268,20 @@ from mechanician_openai import OpenAIChatConnector
 from mechanician_openai import OpenAIAssistantsConnector
 ```
 
-*Assistants Connector* Environment Variables:
+Additional *Assistants Connector* Environment Variables:
 
 ```bash
-USE_OPENAI_ASSISTANTS_API = True
 ASSISTANT_ID=<YOUR_ASSISTANT_ID_HERE>
 CREATE_NEW_ASSISTANT=False
 DELETE_ASSISTANT_ON_EXIT=False
 ```
 
-or create a `.env` file with the variables.
+You can also include these variables in a `.env` file.
 
 
 ### Running the AI
+
+You can use the `mechanician.shell` to interact with the AI on the command line.
 
 ```python
 from mechanician import shell
@@ -431,12 +434,12 @@ See the [examples/arango_movie_db](https://github.com/liebke/mechanician/tree/ma
 
 ## Parallel Tool Calls and Streaming Responses
 
-It currently supports [*OpenAI's Chat API*](https://platform.openai.com/docs/overview) and [*OpenAI's Assistants API*](https://platform.openai.com/docs/overview), and specifically supports [OpenAI's *Function Calling*](https://platform.openai.com/docs/guides/function-calling), a.k.a.```tool_calls```, while [*streaming responses*](https://cookbook.openai.com/examples/how_to_stream_completions) from the *Chat API*. 
+Daring Mechanician currently supports [*OpenAI's Chat API*](https://platform.openai.com/docs/overview) and [*OpenAI's Assistants API*](https://platform.openai.com/docs/overview), and specifically supports [OpenAI's *Function Calling*](https://platform.openai.com/docs/guides/function-calling), a.k.a.```tool_calls```, while [*streaming responses*](https://cookbook.openai.com/examples/how_to_stream_completions) from the *Chat API*. 
 
 Each ```tool_call``` will be executed in a [```ThreadExecutor```](https://docs.python.org/3/library/concurrent.futures.html) as soon as it has completely streamed to the client, allowing it to perform *IO-bound* calls while other ```tool_calls``` continue to stream to the client.
 
 
-### Environment Variables
+### Related Environment Variables
 
 ```bash
 CALL_TOOLS_IN_PARALLEL=True
