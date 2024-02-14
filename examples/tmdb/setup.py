@@ -7,8 +7,8 @@ setup(
     package_dir={'': 'src'},
     include_package_data=True,  # Required to include files specified in MANIFEST.in
     install_requires=[
-        'mechanician>=0.1.0',
-        'mechanician_openai>=0.1.0',
+        'mechanician>=0.1.2',
+        'mechanician_openai>=0.1.2',
         'python-dotenv>=0.17.1',
         'rich>=10.0.0',
         'requests>=2.26.0',
