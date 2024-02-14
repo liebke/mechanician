@@ -252,6 +252,8 @@ OPENAI_MODEL_NAME=gpt-4-0125-preview
 
 #### OpenAIChatConnector
 
+The advantage of the `OpenAIChatConnector` is that it supports streaming responses from the *Chat API*, which feels more responsive for interactive applications, and tool calls are executed as soon as they stream in, so you don't need to wait for all the parallel tool calls to stream in to begin executing the calls.
+
 * [OpenAIChatConnector](https://github.com/liebke/mechanician/blob/main/packages/mechanician_openai/src/mechanician_openai/chat_ai_connector.py)
 
 
@@ -260,6 +262,8 @@ from mechanician_openai import OpenAIChatConnector
 ```
 
 #### OpenAIAssistantsConnector
+
+The advantages of the `OpenAIAssistantsConnector` are that it supports all the additional functionality of the the *Assistants API*, but it definitely feels less responsive due to the lack of streaming.
 
 * [OpenAIAssistantsConnector](https://github.com/liebke/mechanician/blob/main/packages/mechanician_openai/src/mechanician_openai/assistants_ai_connector.py)
 
