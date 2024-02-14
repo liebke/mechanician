@@ -19,7 +19,7 @@ In contrast to **Retrieval Augmented Generation** (RAG), which uses a knowledge 
 
 Foundation Models are inherently limited by the scope of their training data and the static nature of that data, *Tool Augmented Generative AI* can access up-to-date information, perform computations, and interact with external systems; extending Generative AIs from pure knowledge repositories to active participants in information processing and generation.
 
-This approach enhances the AI's problem-solving skills, creativity, and ability to provide accurate, up-to-date information.
+This approach enhances the AI's problem-solving skills, ability to provide accurate, up-to-date information, and provide the Generative AI a form of memory, like what OpenAI announced [here](https://openai.com/blog/memory-and-new-controls-for-chatgpt).
 
 
 ## Designing Tools for AIs to Use
@@ -296,29 +296,31 @@ shell.run(ai)
 
 See the [arango_movie_db example](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db) to see how to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for a **Movie Database Assistant**.
 
-Use the TAGAI's `save_tuning_session` method to save the current tuning session, and then use the `auto_tune.sh` script to run the *Instructor AI* and start the an interactive instruction auto-tuning process. 
+Use the `save_tuning_session` method of the TAGAI class to save the current tuning session,
 
 ```python
 ai.save_tuning_session()
 ```
 
+and then use the `instruction_auto_tuner` in the `mechanician_openai` package to run the *Instructor AI* and start the an interactive instruction auto-tuning session. 
+
 ```bash
-./scripts/auto_tune.sh
+python3 -m mechanician_openai.instruction_auto_tuner
 ```
 
-Use the `/file` chat command to load the tuning session into the *Instructor AI*.
+Use the `/file` chat command to load the tuning session saved earlier.
 
 ```bash
 > /file ./tuning_sessions/tuning_session.json
 ```
 
-It will begin by evaluating the AI's performance and describing its errors and successes, and then creating a revised draft of the AI's instructions and the tool, and tool parameter instructions, to improve the AI's performance. If the updated instruction set is satisfactory, you can ask the *Instructor* to commit the changes.
+The *Instructor* will then be able to use the session data to evaluate the AI's performance during its recorded interactions with a user (or Evaluator AI), describing its errors and successes, and then can be requested to create a draft of revised instructions for the AI, the tools, and tool parameters, in order to improve the AI's performance. If the updated instruction set is satisfactory, you can ask the *Instructor* to commit the changes.
 
 ```bash
-> commit the revisions.
+> commit the revisions
 ```
 
-The *Instructor's* evaluations of the *Assistant's* performance can be really useful, as are it's recommended changes to the instructions, but sometimes its revisions will only include instructions covering the errors it determined the *Assistant* made, and you may want to add additional instructions to cover other cases; you can do this by manually editing the draft instructions before commiting them or by asking the *Instructor* to make further revisions.
+The *Instructor's* evaluations of the *Assistant's* performance can be really useful, as are it's recommended revisions to the instructions, but sometimes its revisions will only include instructions covering the errors it determined the *Assistant* made, and you may want to add additional instructions to cover other cases; you can do this by manually editing the draft instructions before commiting them or by asking the *Instructor* to make further revisions.
 
 You can edit the draft instructions before commiting them, and you can also ask the *Instructor AI* to make further revisions. 
 
@@ -332,7 +334,12 @@ You can edit the draft instructions before commiting them, and you can also ask 
 
 ## Getting Started with AI-Driven Testing
 
+The `mechanician.testing` package includes the `QandATest` class and the `run_q_and_a_evaluations` and `run_task_evaluation` functions for driving test interactions with an *Evaluator AI*.
+
+
 ### AI Q&A Program Tests
+
+The `QandATest` class lets you pair a series of prompts with their expected responses, and the `run_q_and_a_evaluations` function lets you substitue the *Evaluator AI* for a human user to submit the prompts and evaluate if the AI's responses correspond to the expected responses. Since Generative AIs responses can vary in length and detail, it can be difficult to directly compare the AI's responses to the expected responses with standard programming tools, which is where the *Evaluator AI* can be step in to evaluate the AI's responses and provide a PASS or FAIL evaluation.
 
 ```python
 from mechanician.testing import QandATest, run_q_and_a_evaluations
@@ -344,13 +351,13 @@ class TestAI(unittest.TestCase):
       ai = init_ai()
       evaluator_at = init_evaluator_ai()
       tests = [QandATest(prompt="What is the name of the actor playing the titular character in the upcoming Furiosa movie?", 
-                        expected="Anya Taylor-Joy"),
+                         expected="Anya Taylor-Joy"),
                QandATest(prompt="What is the name of the actor plays Ken in the Barbie movie?",
-                        expected="Ryan Gosling"),
+                         expected="Ryan Gosling"),
                QandATest(prompt="Who played Barbie?",
-                        expected="Margot Robbie"),
+                         expected="Margot Robbie"),
                QandATest(prompt="What is the first movie that the actor that plays the titual character in the upcoming Furiosa movie?", 
-                        expected="The Witch")]
+                         expected="The Witch")]
             
       results, messages = run_q_and_a_evaluations(ai, tests, evaluator_ai)
 
@@ -362,7 +369,16 @@ Examples of AI-Driven Q&A Tests:
 * [examples/tmdb/test.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb/src/mechanician_tmdb/test.py)
 
 
+### Run AI-Driven Tests
+
+```bash
+$ python3 -m mechanician_tmdb.test
+```
+
+
 ### AI Task Evaluations
+
+The `run_task_evaluation` function lets you substitute the *Evaluator AI* for a human user in tasks involving multi-step interactions with an AI. You provide the *Evaluator AI* with instructions on its role and objectives and the role and abilities of the AI assistant. 
 
 ```python
 from mechanician.testing import run_task_evaluation
@@ -386,13 +402,35 @@ Examples of AI-Driven Task Evaluations:
 ### Run AI-Driven Tests
 
 ```bash
-$ python test.py
+$ python3 -m arango_movie_db.test_ai
 ```
 
 
 ## Getting Started with mechanician-arangodb
 
 The `mechanician-arangodb` package provides `AITools` for interacting with the [ArangoDB](https://arangodb.com) graph databases.
+
+## The Arango Document Manager AI Tools
+
+* **create_document_collection**: Creates a document collection in the database
+* **create_link_collection**: Creates an link collection in the database
+* **delete_collection**: Deletes a collection from the database
+* **delete_document**: Deletes a document from a collection
+* **delete_link**: Deletes a link from a collection
+* **create_document**: Creates a document in a collection
+* **add_field_to_document**: Adds a field to a document in a collection
+* **link_documents**: Links two documents in a collection
+* **get_document**: Retrieves a document from a collection
+* **list_documents_linked_to**: Lists all documents in the target collection that are linked from the source document.
+* **list_documents_linked_from**: Lists all documents in the target collection that are linked to the source document.
+* **list_documents**: Lists all documents in a collection
+* **list_links**: Lists all links in a collection
+* **list_inbound_links**: Lists all inbound links to a document.
+* **list_outbound_links**: Lists all outbound links from a document.
+* **list_document_collections**: Lists all document collections in the database
+* **list_link_collections**: Lists all link collections in the database
+* **list_collections**: Lists all collections in the database
+
 
  
 ```python

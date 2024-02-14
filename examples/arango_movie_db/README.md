@@ -6,30 +6,7 @@ This example project uses the ArangoDB graph database and the mechanician-arango
 
 * [examples/arango_movie_db](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db)
 
-## The Arango Document Manager AI Tools
-
-This project uses the generic **DocumentManagerAITools** class from the mechanician-arangodb package to interact with the ArangoDB graph database.
-
-* **create_document_collection**: Creates a document collection in the database
-* **create_link_collection**: Creates an link collection in the database
-* **delete_collection**: Deletes a collection from the database
-* **delete_document**: Deletes a document from a collection
-* **delete_link**: Deletes a link from a collection
-* **create_document**: Creates a document in a collection
-* **add_field_to_document**: Adds a field to a document in a collection
-* **link_documents**: Links two documents in a collection
-* **get_document**: Retrieves a document from a collection
-* **list_documents_linked_to**: Lists all documents in the target collection that are linked from the source document.
-* **list_documents_linked_from**: Lists all documents in the target collection that are linked to the source document.
-* **list_documents**: Lists all documents in a collection
-* **list_links**: Lists all links in a collection
-* **list_inbound_links**: Lists all inbound links to a document.
-* **list_outbound_links**: Lists all outbound links from a document.
-* **list_document_collections**: Lists all document collections in the database
-* **list_link_collections**: Lists all link collections in the database
-* **list_collections**: Lists all collections in the database
-
-
+This project uses the generic **DocumentManagerAITools** class from the mechanician-arangodb package to interact with the ArangoDB graph database, the tools have not been customized but the instructions provided to the AI are focused on create documents related to movies and movie reviews.
 
 ### Arango Movie Database Example Code
 
@@ -66,7 +43,6 @@ Set up your environment variables or create a `.env` file with the following var
 ARANGO_ROOT_PASSWORD=<YOUR_ARANGO_DATABASE_PASSWORD>
 ARANGO_HOST=http://localhost:8529
 OPENAI_API_KEY=<YOUR_OPENAI_API_KEY_HERE>
-
 ```
 
 
