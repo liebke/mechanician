@@ -1,2 +1,0 @@
-Name, BusinessId, ChargeType, Description, Available_End_Date, Available_Start_Date, Category_ID, Effective_End_Date, Effective_Start_Date
-"Gold Unlimited Component 1 Charge 1", "COMP_1_CHARGE_ID_1", "RecurringCharge", "Gold Unlimted Component Charge Description", 1/31/25, 1/31/24, CAT_123, 1/31/24, 1/31/23

@@ -1,7 +1,0 @@
-Type, Name, BusinessId, ProductOfferCategory, Description, Available_End_Date, Available_Start_Date, Category_ID, Effective_End_Date, Effective_Start_Date, Max_Child_Elements, Min_Child_Elements, Charge_ID, Charge_Name, Charge_Type, Charge_Rate, Charge_Activation_Start_Date, Charge_Activation_End_Date
-Bundle, "Gold Suite", "BUNDLE_ID_2", "Bundle", "Complete Gold Suite with multiple services", 12/31/26, 1/1/25, "CAT_BUNDLE", 12/31/26, 1/1/25, 3, 1, , , , ,
-Package, "Gold Data Package", "PKG_ID_3", "Package", "Medium-speed data package", 12/31/26, 1/1/25, "CAT_PACKAGE", 12/31/26, 1/1/25, 2, 1, "CHARGE_ID_6", "Data Package Charge", "RecurringCharge", "25.00", 1/1/25, 12/31/26
-Component, "Data Component 3GB", "COMP_ID_4", "Component", "3GB Data add-on", 12/31/26, 1/1/25, "CAT_COMPONENT", 12/31/26, 1/1/25, 1, 0, "CHARGE_ID_7", "3GB Data Charge", "NonRecurringCharge", "8.00", 1/1/25, 12/31/26
-Component, "Data Component 6GB", "COMP_ID_5", "Component", "6GB Data add-on", 12/31/26, 1/1/25, "CAT_COMPONENT", 12/31/26, 1/1/25, 1, 0, "CHARGE_ID_8", "6GB Data Charge", "NonRecurringCharge", "12.00", 1/1/25, 12/31/26
-Package, "Gold Voice Package", "PKG_ID_4", "Package", "Regional voice package", 12/31/26, 1/1/25, "CAT_PACKAGE", 12/31/26, 1/1/25, 1, 1, "CHARGE_ID_9", "Voice Package Charge", "RecurringCharge", "15.00", 1/1/25, 12/31/26
-Component, "Voice Component 500min", "COMP_ID_6", "Component", "500 minutes voice add-on", 12/31/26, 1/1/25, "CAT_COMPONENT", 12/31/26, 1/1/25, 1, 0, "CHARGE_ID_10", "500min Voice Charge", "NonRecurringCharge", "3.00", 1/1/25, 12/31/26

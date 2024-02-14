@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='mechanician_openai',
-    version='0.1.2',
+    version='0.1.3',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     install_requires=[
-        'mechanician>=0.1.2',
+        'mechanician>=0.1.3',
         'openai>=1.11.0,<2.0.0',
     ],
     author='David Edgar Liebke',

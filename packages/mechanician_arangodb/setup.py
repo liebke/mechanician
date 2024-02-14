@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='mechanician_arangodb',
-    version='0.1.2',
+    version='0.1.3',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
     install_requires=[
-        'mechanician>=0.1.2',
+        'mechanician>=0.1.3',
         'python-arango>=5.0.0',
     ],
     author='David Edgar Liebke',
