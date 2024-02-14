@@ -2,29 +2,29 @@
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
-The [**Daring Mechanician** ](https://github.com/liebke/mechanician) project provides several Python packages for building Generative AI-enabled tools where the AIs themselves use tools, an approach that can be described as **Tool Augmented Generation** (**TAG**), and the tool-using Generative AIs can be described as **Tool Augmented Generative AIs** (**TAG AIs**).
+The [**Daring Mechanician** ](https://github.com/liebke/mechanician) project provides several Python packages for building Generative AI-enabled applications where the AIs themselves are provided tools to use, an approach that can be described as **Tool Augmented Generation** (**TAG**), and the tool-wielding Generative AIs can be described as **Tool Augmented Generative AIs** (**TAG AIs**).
 
-*Daring Mechanician* provides modules for building, testing, and tuning *TAG AIs* and the tools that these AIs use, including support for AI-driven testing and AI-assisted *tuning* of the instruction sets given to an AI that we call **Instruction Auto-Tuning** (IAT).
+The core `mechanician` package provides modules for building, testing, and tuning *TAG AIs* and the tools that these AIs use, including support for AI-driven testing and AI-assisted *tuning* of the instruction sets given to an AI that we call **Instruction Auto-Tuning** (IAT). 
+
+The `mechanician-openai` package provides `AIConnectors` for both OpenAI's *Chat* API and *Assistants* API, and there are plans to create connectors for more LLMs with *tool-call* support, especially local LLMs.
+
+The `mechanician-arangodb` module provides `AITools` that let AIs interact with the [ArangoDB](https://arangodb.com) graph database.
 
 
 # Tool Augmented Generation (TAG)
 
-The **Tool Augmented Generation** (**TAG**) approach provides AIs with external tools, databases, and interfaces to enhance their knowledge, capabilities, and interaction with other systems.
+Foundation Models are inherently limited by the scope of their training data and the static nature of that data, **Tool Augmented Generation** (**TAG**) provides AIs with tools that let them interact with databases, APIs, and code libraries, enhancing their knowledge and capabilities and giving them access to up-to-date information, the ability to perform computations, and to interact with external systems, and can provide them a form of memory that spans multiple *context windows*, like what OpenAI announced [here](https://openai.com/blog/memory-and-new-controls-for-chatgpt).
 
-This approach leverages the "**Function Calling**", or "**Tool Calling**", capabilities available in several Large Language Models, including *OpenAI's GPT*, and is meant to complement other approaches to augmenting Foundation Models, like **Fine Tuning** (FT) and **Retrieval Augmented Generation** (RAG). 
-
-In contrast to **Retrieval Augmented Generation** (RAG), which uses a knowledge base to retrieve information and augment the prompt sent to the AI, **Tool Augmented Generation** (TAG) provides the AI with tools so that it can retrieve information itself, and also perform actions across multiple systems, databases, and interfaces.
+In contrast to **Retrieval Augmented Generation** (RAG), which uses a knowledge base to retrieve information and augment the *prompt* sent to an AI, **Tool Augmented Generative AIs** can retrieve information themselves, and also perform actions across multiple systems, databases, and APIs, extending *Generative AIs* from pure knowledge repositories to active participants in information processing and generation.
 
 >NOTE: You can build a RAG application using a TAG AI to create a **RAGTAG AI** Application.
 
-Foundation Models are inherently limited by the scope of their training data and the static nature of that data, *Tool Augmented Generative AI* can access up-to-date information, perform computations, and interact with external systems; extending Generative AIs from pure knowledge repositories to active participants in information processing and generation.
-
-This approach enhances the AI's problem-solving skills, ability to provide accurate, up-to-date information, and provide the Generative AI a form of memory, like what OpenAI announced [here](https://openai.com/blog/memory-and-new-controls-for-chatgpt).
+*TAG* leverages the "**Function Calling**", or "**Tool Calling**", capabilities available in several Large Language Models, including *OpenAI's GPT*, and is meant to complement other approaches to augmenting Foundation Models, like **Retrieval Augmented Generation** (RAG) and **Fine Tuning** (FT). 
 
 
 ## Designing Tools for AIs to Use
 
-TAG AIs can be observed to perform multi-step problem solving, driven by the feedback provided by their tools, and learning to use those tools effectively through that feedback, so it is necessary for the tools to provide effective feedback, often through natural language, when reporting errors or providing results.
+TAG AIs can be observed performing multi-step problem solving, driven by the feedback provided by their tools, and learning to use those tools effectively through that feedback, so it is necessary for the tools to provide effective feedback, often through natural language, when reporting errors or providing results.
 
 Generative AIs will learn from their mistakes and successes, if the tools provide feedback that the AI can learn from.
 
@@ -35,28 +35,28 @@ See [Getting Started with Daring Mechanician](#getting-started-with-daring-mecha
 
 In addition to learning from the feedback provided by the tools they use, TAG AIs can learn from the feedback they receive from users.
 
-But since TAG AIs do not necessarily undergo further training, or Fine Tuning, that permanently encodes what they learned, they can only learn within the context window where feedback is received, and must start from scratch during the next session.
+But since TAG AIs do not necessarily undergo further training, or Fine Tuning, that permanently encodes what they learned, they can only learn within the *context window* where feedback is received, and must start from scratch during the next session.
 
 In order to make these learned behaviors persistent, they must be captured through a process of **Instruction Tuning**, or *prompt engineering*, where the initial instructions provided to the AI, the instructions provided for the tools the AI can use, and the feedback provided by those tools are revised and improved, incorporating lessons learned during interactions with users.
 
 This process starts with creating an initial set of *AI Instructions*, *Tool Instructions*, and *Tool Feedback*, that are used to guide the AI's behavior and responses, and then iteratively refining those instructions and tool feedback based on the AI's performance during interactions with users.
 
-At the start of this process, the prompting provided to the AI often consists of explict and detailed steps, but as the process proceeds, it is often discoverd that the AI does not need such detailed prompting, and that more general prompts can be used to guide the AI's behavior, and it will work out the details on its own.
+At the start of this process, the prompting provided to the AI often consists of explicit and detailed steps, but as the process proceeds, you sometimes discover that the AI doesn't need such detailed prompting, and that more general prompting approach can be used, letting it will work out the details on its own, and other times you discover the reverse where the AI makes incorrect assumptions, and more explicit prompting is required.
 
-In order to speed up this process, it is useful to use an **Evaluator AI** that acts as an *user surrogate*, interactively eliciting responses from the AI as the two work through multi-step tasks.
+In order to speed up this process, it is useful to use an **Evaluator AI** that acts as an *user surrogate*, interactively eliciting responses from the AI as the two work through multi-step tasks. See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-testing) for more information on *Evaluator AIs*.
 
 ## Instruction Auto-Tuning (IAT)
 
 By observing an AI's interactions with users and other AIs, an *Instructor AI* can refine and update the AI's current instructions and the instructions describing the tools the AI can use.
 
-The Instructor AI is given the AI's current set of instructions, instructions for the tools used by the AI, and the transcript of interactions between the AI and a User (or Evaluator AI), including the AI tool calls and responses.
+The Instructor AI is given the AI's current set of instructions, instructions for the tools used by the AI, and the transcript of interactions between the AI and a User (or Evaluator AI), including the AI *tool calls* and responses.
 
 See [Getting Started with Instruction Auto-Tuning](#getting-started-with-instruction-auto-tuning) for an example of how to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for a **Movie Database Assistant**.
 
 
 ## AI-Driven Testing
 
-See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-testing) for an example of how to use the **AI-Driven Testing** process to test a **Movie Database Assistant**.
+See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-testing) for an example of how to use the **AI-Driven Testing** process.
 
 ## Getting Started Guide: Table of Contents
 
@@ -92,15 +92,18 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
 
 **Daring Mechanician** consists of the following packages:
 
-* [mechanician](https://github.com/liebke/mechanician/tree/main/packages/mechanician): the core package for building and running **Tool Augmented Generative AI** (TAG AI) programs.
-* [mechanician-openai](https://github.com/liebke/mechanician/tree/main/packages/mechanician_openai): provides *AIConnector* classes for connecting to the *OpenAI Chat API* and the *OpenAI Assistants API*.
-* [mechanician-arangodb](https://github.com/liebke/mechanician/tree/main/packages/mechanician_arangodb): provides an *AITools* class for interacting with the [ArangoDB](https://arangodb.com) graph database.
+* [mechanician](https://github.com/liebke/mechanician/tree/main/packages/mechanician): the core package for building, running, and testing **Tool Augmented Generative AI** (TAG AI) applications.
 
-The roadmap includes more *AIConnectors* for connecting to different LLM APIs, and more AITools for interacting with different systems.
+* [mechanician-openai](https://github.com/liebke/mechanician/tree/main/packages/mechanician_openai): provides *AIConnector* classes for connecting to the *OpenAI Chat API* and the *OpenAI Assistants API*.
+
+* [mechanician-arangodb](https://github.com/liebke/mechanician/tree/main/packages/mechanician_arangodb): provides an *AITools* class that lets AIs interact with the [ArangoDB](https://arangodb.com) graph database.
+
+The roadmap includes more *AIConnectors* for connecting to different LLMs, and more *AITools* that let AIs interact with different systems.
+
 
 ### Example Projects
 
-To run the example projects, you'll need to install *mechanician-openai* to connect to an OpenAI GPT, and you will need an OpenAI API Key. 
+To run the example projects, you'll need to install *mechanician-openai* to connect to an OpenAI GPT, and you will also need an [OpenAI API Key(https://openai.com/product#made-for-developers)]. 
 
 You can install it using pip:
 
@@ -110,14 +113,25 @@ pip install mechanician-openai
 
 The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) directory contains examples of **Tool Augmented Generative AI** projects.
 
-* [examples/tmdb](https://github.com/liebke/mechanician/tree/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb) is an example of a **Movie Database Assistant** that uses the *OpenAI Chat API* to answer questions about movies and their casts and crews.
+* [examples/tmdb](https://github.com/liebke/mechanician/tree/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb) is an example of a **The Movie Database (TMDb) Assistant** that uses the *OpenAI Chat API* to answer questions about movies and their casts and crews.
 
-* [examples/arango_movie_db](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db) is an example of a **Movie Database Assistant** that uses the [ArangoDB](https://arangodb.com) to record information on movies, their casts, and reviews.
+* [examples/arango_movie_db](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/arango_movie_db) is an example of a **Movie Document Database Assistant** that uses the [ArangoDB](https://arangodb.com) to record information on movies, their casts, and reviews.
+
+
+## The Core Classes and Concepts
+
+The next few sections will cover the core classes and concepts used to build and run **Tool Augmented Generative AI** (TAG AI) applications.
+
+* TAGAI Class
+* AITools Abstract Class
+* Instruction Sets
+* AIConnector Classes
+* Mechanician Shell
 
 
 ### TAGAI Class
 
-The TAGAI class is used to create instance of a **Tool Augmented Generative AI** (TAG AI).
+The TAGAI class is used to create instance of a **Tool Augmented Generative AI**.
 
 ```python
 from mechanician import TAGAI
@@ -140,8 +154,10 @@ ai = TAGAI(ai_connector=OpenAIChatConnector(),
 
 The `TAGAI` class takes the following parameters:
 
-* [AIConnector](#aiconnector-classes): Provides a connection to a LLM API, such as the OpenAI Chat API or the OpenAI Assistants API.
+* [AIConnector](#aiconnector-classes): Provides a connection to an LLM API, such as the OpenAI Chat API or the OpenAI Assistants API.
+
 * [AITools](#aitools-abstract-class): Provides a set of tools that the AI can use to interact with other systems, databases, and interfaces.
+
 * [Instruction Set Directory](#instruction-sets): The directory containing the instruction for the TAG AI, describing its role and behaviors, and the instructions for the tools used by the AI.
 
 
@@ -167,7 +183,7 @@ class ExampleAITools(AITools):
         ...
 ```
 
-Each tool method intended to be called by an AI takes a single parameter, a dict of input parameters, and returns a JSON serializable object.
+Each tool method takes a single parameter, a dict of input parameters, and returns a JSON serializable object.
 
 These methods should fail gracefully, returning an error message if the tool call fails, and should provide detailed feedback to the AI about the results of the tool call.
 
@@ -252,7 +268,7 @@ OPENAI_MODEL_NAME=gpt-4-0125-preview
 
 #### OpenAIChatConnector
 
-The advantage of the `OpenAIChatConnector` is that it supports streaming responses from the *Chat API*, which feels more responsive for interactive applications, and tool calls are executed as soon as they stream in, so you don't need to wait for all the parallel tool calls to stream in to begin executing the calls.
+The advantage of the `OpenAIChatConnector` is that it supports streaming responses from the *Chat API*, which feels more responsive for interactive applications, and tool calls are executed as soon as they stream in, so you don't need to wait for all the parallel tool calls to stream in before executing the first.
 
 * [OpenAIChatConnector](https://github.com/liebke/mechanician/blob/main/packages/mechanician_openai/src/mechanician_openai/chat_ai_connector.py)
 
@@ -298,7 +314,7 @@ shell.run(ai)
 
 ## Getting Started with Instruction Auto-Tuning
 
-See the [arango_movie_db example](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db) to see how to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for a **Movie Database Assistant**.
+See the [arango_movie_db example](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db) to see how to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for a **Movie Document Database Assistant**.
 
 Use the `save_tuning_session` method of the TAGAI class to save the current tuning session,
 
@@ -306,7 +322,11 @@ Use the `save_tuning_session` method of the TAGAI class to save the current tuni
 ai.save_tuning_session()
 ```
 
-and then use the `instruction_auto_tuner` in the `mechanician_openai` package to run the *Instructor AI* and start the an interactive instruction auto-tuning session. 
+This will save the current tuning session to a file called `tuning_session.json` in the `tuning_sessions` directory; you can provide an alternative directory location or file name.
+
+```bash 
+
+and then use the `instruction_auto_tuner` in the `mechanician_openai` package to run the *Instructor AI* and start the an interactive *Instruction Auto-Tuning* session. 
 
 ```bash
 python3 -m mechanician_openai.instruction_auto_tuner
@@ -318,7 +338,9 @@ Use the `/file` chat command to load the tuning session saved earlier.
 > /file ./tuning_sessions/tuning_session.json
 ```
 
-The *Instructor* will then be able to use the session data to evaluate the AI's performance during its recorded interactions with a user (or Evaluator AI), describing its errors and successes, and then can be requested to create a draft of revised instructions for the AI, the tools, and tool parameters, in order to improve the AI's performance. If the updated instruction set is satisfactory, you can ask the *Instructor* to commit the changes.
+The *Instructor* will then be able to use the *session data* to evaluate the AI's performance during its recorded interactions with a user (or Evaluator AI), describing its errors and successes, and then can be requested to create a draft of revised instructions for the AI, the tools, and tool parameters, in order to improve the AI's performance. 
+
+If the updated instruction set is satisfactory, you can ask the *Instructor* to commit the changes.
 
 ```bash
 > commit the revisions
@@ -326,7 +348,6 @@ The *Instructor* will then be able to use the session data to evaluate the AI's 
 
 The *Instructor's* evaluations of the *Assistant's* performance can be really useful, as are it's recommended revisions to the instructions, but sometimes its revisions will only include instructions covering the errors it determined the *Assistant* made, and you may want to add additional instructions to cover other cases; you can do this by manually editing the draft instructions before commiting them or by asking the *Instructor* to make further revisions.
 
-You can edit the draft instructions before commiting them, and you can also ask the *Instructor AI* to make further revisions. 
 
 ### Instruction Auto-Tuning AITools
 
@@ -343,7 +364,8 @@ The `mechanician.testing` package includes the `QandATest` class and the `run_q_
 
 ### AI Q&A Program Tests
 
-The `QandATest` class lets you pair a series of prompts with their expected responses, and the `run_q_and_a_evaluations` function lets you substitue the *Evaluator AI* for a human user to submit the prompts and evaluate if the AI's responses correspond to the expected responses. Since Generative AIs responses can vary in length and detail, it can be difficult to directly compare the AI's responses to the expected responses with standard programming tools, which is where the *Evaluator AI* can be step in to evaluate the AI's responses and provide a PASS or FAIL evaluation.
+The `QandATest` class lets you pair a series of prompts with their expected responses, and the `run_q_and_a_evaluations` function lets you substitue the *Evaluator AI* for a human user to submit the prompts and evaluate if the AI's responses correspond to the expected responses. Since Generative AIs responses can vary in length and detail, it can be difficult to directly compare the AI's responses to the expected responses with standard programming tools, which is where the *Evaluator AI* can step in to help evaluate the AI's responses and provide a PASS or FAIL assessment.
+
 
 ```python
 from mechanician.testing import QandATest, run_q_and_a_evaluations
@@ -412,7 +434,7 @@ $ python3 -m arango_movie_db.test_ai
 
 ## Getting Started with mechanician-arangodb
 
-The `mechanician-arangodb` package provides `AITools` for interacting with the [ArangoDB](https://arangodb.com) graph databases.
+The `mechanician-arangodb` package provides `AITools` that let AIs interact with the [ArangoDB](https://arangodb.com) graph databases.
 
 ## The Arango Document Manager AI Tools
 
