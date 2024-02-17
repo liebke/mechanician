@@ -7,6 +7,23 @@ import subprocess
 logger = logging.getLogger(__name__)
 console = Console()
 
+
+def get_multiline_input():
+    lines = []
+    while True:
+        line = input()
+        if line:
+            lines.append(line)
+        else:
+            break
+    return "\n".join(lines)
+
+# Usage:
+# text = get_multiline_input("Enter your text (leave a blank line to finish):")
+# print("You entered:")
+# print(text)
+
+
 ###############################################################################
 ## PREPRCOESS_PROMPT
 ###############################################################################
@@ -16,14 +33,24 @@ def preprocess_prompt(ai: 'TAGAI', prompt: str):
     if prompt.startswith('/file'):
         filename = prompt.replace('/file ', '', 1)
 
-        with open(filename, 'r') as file:
-            prompt = file.read()
-            print('')
-            print_markdown(console, "------------------")
-            print_markdown(console, "## INPUT FILE")
-            print_markdown(console, f"``` \n{prompt}\n ```")
-            print_markdown(console, "------------------")
-            print('')
+        try:
+            with open(filename, 'r') as file:
+                prompt = file.read()
+                print('')
+                print_markdown(console, "------------------")
+                print_markdown(console, "## INPUT FILE")
+                print_markdown(console, f"``` \n{prompt}\n ```")
+                print_markdown(console, "------------------")
+                print('')
+        except FileNotFoundError:
+            resp = f"File not found: {filename}"
+            logger.info(resp)
+            return resp
+        except Exception as e:
+            message = str(e)
+            resp = f"Error reading file: {message}"
+            logger.info(resp)
+            return resp
 
     elif prompt.startswith('/bye'):
         ai.RUNNING = False
@@ -33,6 +60,11 @@ def preprocess_prompt(ai: 'TAGAI', prompt: str):
         subprocess.run(prompt.replace('/$', '', 1), shell=True)
         # Return an empty prompt so that it's skipped
         return ''
+    
+    elif prompt.startswith('/multiline'):
+        print("Enter your prompt (leave a blank line to finish)")
+        prompt = get_multiline_input()
+        print("Submitting prompt...")
 
     return prompt
 
