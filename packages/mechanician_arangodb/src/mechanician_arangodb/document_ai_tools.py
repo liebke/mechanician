@@ -4,6 +4,7 @@ import json
 from mechanician_arangodb.document_manager import DocumentManager
 import logging
 import pprint
+import os
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -22,6 +23,14 @@ class DocumentManagerAITools(AITools):
                  password: str = None):
         
         logger.info(f"Initializing DocumentManagerToolHandler with database_name: {database_name}")
+        if not client:
+            raise ValueError("Arango client is required.")
+        if not database_name:
+            raise ValueError("Database name is required.")
+        username = username or os.getenv("ARANGO_USERNAME", None)
+        password = password or os.getenv("ARANGO_PASSWORD", None)
+        if (not username) or (not password):
+            raise ValueError("ARANGO_USERNAME and ARANGO_PASSWORD are required.")
         self.doc_mgr = DocumentManager(client, username, password)
         self.database_name = database_name
         self.database = self.doc_mgr.create_database(database_name)
@@ -86,6 +95,8 @@ class DocumentManagerAITools(AITools):
 
     def create_document(self, input: dict):
         try:
+            print("CREATE_DOCUMENT INPUT:")
+            pprint.pprint(input)
             collection_name = input.get('collection_name')
             document_id = input.get('document_id')
             document = input.get('document')
