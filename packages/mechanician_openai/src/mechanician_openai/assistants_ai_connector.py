@@ -155,7 +155,7 @@ class OpenAIAssistantsConnector(AIConnector):
                         resp_str = ""
                     
                     tool_outputs.append({"tool_call_id": call_id,
-                                            "output": resp_str})
+                                         "output": resp_str})
                     
                 # Submit the outputs of the tools to the current run
                 if tool_outputs:

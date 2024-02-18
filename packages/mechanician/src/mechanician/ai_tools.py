@@ -26,6 +26,8 @@ class AITools(ABC):
                     resp = meth(args)
                     if resp is not None:
                         return resp
-            else:
-                return f"Unknown Function: {function_name}"
+        else:
+            logger.info(f"Unknown Function: {function_name}")
+            return f"Unknown Function: {function_name}"
+            
         

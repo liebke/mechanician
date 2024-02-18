@@ -19,3 +19,4 @@ dist
 build
 src/build
 mechanician_arango_movie_db.egg-info
+mechanician_arango_memory.egg-info

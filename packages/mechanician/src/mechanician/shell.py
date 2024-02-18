@@ -61,7 +61,7 @@ def preprocess_prompt(ai: 'TAGAI', prompt: str):
         # Return an empty prompt so that it's skipped
         return ''
     
-    elif prompt.startswith('/multiline'):
+    elif prompt.startswith('/multiline') or prompt.startswith('/...'):
         print("Enter your prompt (leave a blank line to finish)")
         prompt = get_multiline_input()
         print("Submitting prompt...")

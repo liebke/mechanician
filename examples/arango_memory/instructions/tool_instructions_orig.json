@@ -1,0 +1,197 @@
+[
+
+    {
+        "type": "function",
+        "function": {
+          "name": "get_weather",
+          "description": "Find weather for a given location and date and time, if no date and time is provide use the current date and time.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "location": {
+                "type": "string",
+                "description": "The location for the weather conditions."
+              },
+              "date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The location for the weather conditions."
+              }
+            },
+            "required": [
+              "location"
+            ]
+          }
+        }
+    },
+
+
+    {
+        "type": "function",
+        "function": {
+          "name": "get_current_datetime",
+          "description": "Get the current date and time.",
+          "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        }
+    },
+
+
+    {
+      "type": "function",
+      "function": {
+        "name": "start_workflow",
+        "description": "Starts a workflow process, it requires the name of the workflow, workflow_name. The result will be a Task object containing instructions that you should follow and additional input that you can use to complete the task. The task object will contain the task_id, the task_name, task_instructions, and a conditions object. Evaluate each statement in the conditions object and create a corresponding `decisions` object with the same keys as the conditions object and boolean vlaues representing your responses to the statements in the conditions object.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "workflow_name": {
+              "type": "object",
+              "description": "This is the name of the workflow to start. It must be a valid workflow name."
+            },
+            "input": {
+              "type": "object",
+              "description": "This is the input to the workflow."
+            }
+          },
+          "required": ["workflow_name", "input"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "start_task",
+        "description": "Starts a task associated with a workflow process. The result will contain instructions that you should follow and additional input that you can use to complete the task. The task object will contain the task_id, the task_name, task_instructions, until all task a complete.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "task_name": {
+              "type": "object",
+              "description": "This is the name of the task to start."
+            },
+            "input": {
+              "type": "object",
+              "description": "This is the input to the task."
+            }
+          },
+          "required": ["task_name", "input"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "complete_task",
+        "description": "Completes a task associated with a workflow process, after following the instructions provided when you started a Task, provide your response to this tool..",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "object",
+              "description": "This is the unique ID of the task to complete."
+            },
+            "input": {
+              "type": "object",
+              "description": "This is the input to the task to be completed."
+            },
+            "decisions": {
+              "type": "object",
+              "description": "This is a json object, where the keys correspond to the keys from the `conditions` object from the Task, and the values are Boolean (TRUE or FALSE) responses to the statements in the `conditions` object from the Task."
+            }
+          },
+          "required": ["task_name", "input", "decisions"]
+        }
+      }
+    },
+
+    {
+      "type": "function",
+      "function": {
+        "name": "make_decision",
+        "description": "Once you have completed the instruction, if the task has `conditions`, you will need to evaluate each condition and then call the `make_decision` tool with a TRUE or FALSE value for each named condition.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "task_id": {
+              "type": "string",
+              "description": "This is the unique ID of the task to complete."
+            },
+            "decision_name": {
+              "type": "string",
+              "description": "The name of the decision corresponding to the name of the condition used to make this decision."
+            },
+            "decision_value": {
+              "type": "boolean",
+              "description": "The boolean decision value."
+            }
+          },
+          "required": ["task_id", "decision_name", "decision_value"]
+        }
+      }
+    },
+
+
+    
+    {
+      "type": "function",
+      "function": {
+        "name": "remember",
+        "description": "Creates a memory with a name and a value, the value is either a string or a JSON serializable object with attributes representing the attributes of the memory. For example, create_memory('home_address', \"{'city': 'San Francisco', 'state': 'CA', 'zip': '94105'})\"",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "value": {
+              "type": "object",
+              "description": "This mandatory field must contain a string represeenting the value of the memory or a complete and valid JSON object with all the required details of the memory to be created, as specified by the user."
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of the memory to create. It must be a unique identifier within the memory collection and using the name name as a previous memory will update the value of that memory."
+            }
+          },
+          "required": [
+            "value",
+            "name"
+          ]
+        }
+      }
+    },
+
+  {
+    "type": "function",
+    "function": {
+      "name": "recall_memories",
+      "description": "Recalls all memories related to the current user.",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    }
+  },
+
+  {
+    "type": "function",
+    "function": {
+      "name": "forget_memory",
+      "description": "Forgets a memory by its name.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "memory_name": {
+            "type": "string",
+            "description": "The name of the memory to delete."
+          }
+        },
+        "required": [
+          "memory_name"
+        ]
+      }
+    }
+  }
+
+  ]
