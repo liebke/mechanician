@@ -10,8 +10,11 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+
+
 class OpenAIChatConnector(StreamingAIConnector):
     DEFAULT_MODEL_NAME="gpt-4-1106-preview"
+    DEFAULT_ENDPOINT="https://api.openai.com"
 
     ###############################################################################
     ## INIT_MODEL
@@ -20,21 +23,26 @@ class OpenAIChatConnector(StreamingAIConnector):
     def __init__(self, 
                  model_name=None,
                  api_key=None,
+                 base_url=None,
                  stream_printer = SimpleStreamPrinter(),
-                 max_thread_workers=None):
-        
-        api_key = api_key or os.getenv("OPENAI_API_KEY")
-        if api_key is None:
+                 max_thread_workers=None,
+                 client=None):
+                      
+        self.base_url = base_url or self.DEFAULT_ENDPOINT
+        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+            
+        if self.api_key is None:
             raise ValueError("OpenAI API Key is required")
     
-        self.model_name = model_name or os.getenv("OPENAI_MODEL_NAME") or self.DEFAULT_MODEL_NAME
+        self.model_name = model_name or os.getenv("OPENAI_MODEL_NAME")
+            
         if self.model_name is None:
             raise ValueError("OpenAI Model Name is required")
         
         self.STREAMING = True
         self.MAX_THREAD_WORKERS = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
         self.stream_printer = stream_printer
-        self.client = OpenAI(api_key=api_key)
+        self.client = client or OpenAI(api_key=api_key)
         self.tool_instructions = None
         self.ai_instructions = None
         self.tools = None
@@ -80,13 +88,21 @@ class OpenAIChatConnector(StreamingAIConnector):
         # Create a new message with user prompt
         if prompt is not None:
             self.messages.append({"role": "user", "content": prompt})
-
-        stream = client.chat.completions.create(
-            model=self.model_name,
-            messages=self.messages,
-            tools=self.tool_instructions,
-            stream=True,
-        )
+            
+        if not self.tool_instructions:
+            stream = client.chat.completions.create(
+                model=self.model_name,
+                messages=self.messages,
+                stream=True,
+            )
+        else:
+            stream = client.chat.completions.create(
+                model=self.model_name,
+                messages=self.messages,
+                tools=self.tool_instructions,
+                stream=True,
+            )
+            
         return stream
     
 
@@ -154,6 +170,9 @@ class OpenAIChatConnector(StreamingAIConnector):
         tool_calls_index = -1
         futures = []
         for chunk in stream:
+            if not chunk.choices:
+                continue
+            
             if chunk.choices[0].delta.content is not None:
                 # Collect response to include in message history
                 response += chunk.choices[0].delta.content
