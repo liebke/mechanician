@@ -1,1 +1,1 @@
-from .notepad import  NotepadAITools, NotepadStore, NotepadFileStore
+from .notepads import  NotepadAITools, NotepadStore, NotepadFileStore

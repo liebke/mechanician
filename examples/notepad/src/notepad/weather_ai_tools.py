@@ -35,21 +35,7 @@ def get_closest_match(s, dictionary):
     
 
 
-class ExampleAITools(AITools):
-        
-    def get_tool_instructions(self):
-        ex_tool_instructions = []
-        with open("./instructions/tool_instructions.json", "r") as f:
-            ex_tool_instructions = json.load(f)
-        return ex_tool_instructions
-    
-
-    def get_ai_instructions(self):
-        ex_ai_instructions = ""
-        with open("./instructions/ai_instructions.md", "r") as f:
-            ex_ai_instructions = f.read()
-        return ex_ai_instructions
-
+class MiddleEarthWeatherAITools(AITools):
 
     def get_weather(self, input: dict):
         location = input.get("location", "unknown")

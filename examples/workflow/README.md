@@ -1,4 +1,4 @@
-<img src="../../docs/images/dm_workflows_1600x840.png" alt="Daring Mechanician Notepads"  style="max-width: 100%; height: auto float: right;">
+<img src="../../docs/images/dm_workflows_v2_1600x840.png" alt="Daring Mechanician Notepads"  style="max-width: 100%; height: auto float: right;">
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 

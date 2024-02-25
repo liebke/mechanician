@@ -185,9 +185,9 @@ class NotepadFileStore(NotepadStore):
     
     def __init__(self,
                  notepad_name: str,
-                 notepad_directory_name: str = "./notepads",):
+                 notepad_directory_name: str = "notepads",):
         self.notepad_name = notepad_name
-        self.notepad_directory_name = notepad_directory_name
+        self.notepad_directory_name = os.path.join(os.getcwd(), notepad_directory_name)
         self.notepad_file_path = os.path.join(self.notepad_directory_name, f"{self.notepad_name}.json")
         self.notepad = {}
         # if notepad directory does not exist, create it
@@ -289,7 +289,7 @@ class NotepadAITools(AITools):
     
 
     def delete_note(self, params:dict):
-        note_name = params.get("name")
+        note_name = params.get("note_name")
         if not note_name:
             resp = "Note name is required"
             logger.info(resp)

@@ -88,7 +88,12 @@ class DocumentManager:
         else:
             return collection.insert(document)
         
-        
+    
+    def document_exists(self, database, collection_name, document_id):
+        collection = database.collection(collection_name)
+        return collection.has(document_id)
+    
+    
     def link_exists(self,
                     link_collection, 
                     from_collection_name: str,
@@ -236,3 +241,10 @@ class DocumentManager:
         document = collection.get(document_id)
         document[field_name] = field_value
         return collection.update(document)
+ 
+    def delete_field_from_document(self, database, collection_name, document_id, field_name):
+        collection = database.collection(collection_name)
+        update_object = {field_name: None}
+        resp = collection.update_match({"_key": document_id}, update_object)
+        print (f"DocumentManager: Deleted field: {field_name} from document: {document_id}")
+        return resp

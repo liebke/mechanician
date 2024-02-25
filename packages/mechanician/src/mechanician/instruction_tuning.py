@@ -40,8 +40,11 @@ BE SPECIFIC to the AI's role and the tools it uses when revising its instruction
 ###############################################################################
 
 def instruction_auto_tuning_ai(ai_connector: AIConnector,
-                               tuning_session_dir="./tuning_sessions",
-                               instructions_dir="./instructions"):
+                               tuning_session_dir="tuning_sessions",
+                               instructions_dir="instructions"):
+    
+    tuning_session_dir = os.path.join(os.getcwd(), tuning_session_dir)
+    instructions_dir = os.path.join(os.getcwd(), instructions_dir)
     
     tools = AutoTuningAITools(tuning_session_dir=tuning_session_dir,
                               instructions_dir=instructions_dir)

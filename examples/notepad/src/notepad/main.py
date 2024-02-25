@@ -1,12 +1,15 @@
 from mechanician import TAGAI, shell
 from mechanician_openai import OpenAIChatConnector
-from notepad.example_ai_tools import ExampleAITools
-from mechanician.tools.notepad import NotepadAITools, NotepadFileStore
+from notepad.weather_ai_tools import MiddleEarthWeatherAITools
+from mechanician.tools.notepads import NotepadAITools, NotepadFileStore
+from mechanician_arangodb.notepad_store import ArangoNotepadStore
 import os
 import logging
 from dotenv import load_dotenv
 import traceback
 import sys
+
+from arango import ArangoClient
 
 logger = logging.getLogger(__name__)
 
@@ -18,12 +21,26 @@ def init_ai(notepad_name, notepad_directory_name="./notepads"):
     api_key = os.getenv("OPENAI_API_KEY")
     model_name = os.getenv("OPENAI_MODEL_NAME")
     ai_connector = OpenAIChatConnector(api_key=api_key, model_name=model_name)
-    ex_tools = ExampleAITools()
+    ex_tools = MiddleEarthWeatherAITools()
     notepad_file_store = NotepadFileStore(notepad_name=notepad_name,
                                           notepad_directory_name=notepad_directory_name)
+    # ArangoDB notepad store
+    database_name="test_notepad_db"
+    notepad_collection_name="notepads"
+    arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
+    arango_notepad_store = ArangoNotepadStore(notepad_name=notepad_name,
+                                              arango_client=arango_client, 
+                                              database_name=database_name,
+                                              notepad_collection_name=notepad_collection_name,
+                                              db_username=os.getenv("ARANGO_USERNAME"),
+                                              db_password=os.getenv("ARANGO_PASSWORD"))
+    arango_notepad_tools = NotepadAITools(notepad_store=arango_notepad_store)
+    # END ArangoDB notepad store
+
     notepad_tools = NotepadAITools(notepad_store=notepad_file_store)
     ai = TAGAI(ai_connector=ai_connector, 
-               tools=[ex_tools, notepad_tools],
+            #    tools=[ex_tools, notepad_tools],
+               tools=[ex_tools, arango_notepad_tools],
                name="Notepad-Enabled AI")
     return ai
 

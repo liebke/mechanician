@@ -1,13 +1,15 @@
 my name is Frodo Baggins.
 
-my home address is Bag End, Bagshot Row, Hobbiton, The Shire.
+my home address is Bag End, Hobbiton, The Shire.
 
-My friend is Samwise Gamgee, can you remember that?
+My best friend is Samwise Gamgee.
 
 
 how's the weather right now?
 
 can you list all your notes?
+
+can you note the current weather timestamped for the now?
 
 
 how's the weather at Elrond's mother-in-law's house?
