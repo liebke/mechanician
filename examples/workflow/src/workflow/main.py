@@ -73,7 +73,7 @@ def main():
         logger.error(e)
         traceback.print_exc()
     finally:
-        if ai and ai.tools and ai.tools.doc_mgr:
+        if ai:
             ai.save_tuning_session()
 
 
