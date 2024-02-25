@@ -6,6 +6,7 @@ import os
 import logging
 from dotenv import load_dotenv
 import traceback
+import sys
 
 logger = logging.getLogger(__name__)
 
@@ -36,8 +37,13 @@ def main():
     ai = None
     try: 
         load_dotenv()
-        notepad_name = "test_notepad"
-        ai = init_ai(notepad_name=notepad_name)
+        notepad = "test_notepad"
+        # sys.argv[0] is the script name itself
+        for i in range(1, len(sys.argv)):
+            if sys.argv[i] == "--notepad":
+                notepad = sys.argv[i + 1]
+ 
+        ai = init_ai(notepad_name=notepad)
         shell.run(ai)
 
     except Exception as e:

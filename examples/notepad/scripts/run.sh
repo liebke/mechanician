@@ -1,3 +1,4 @@
 #!/bin/bash
 
-python3 -m notepad.main
+
+python3 -m notepad.main "$@"
