@@ -99,7 +99,7 @@ class OpenAIAssistantsConnector(AIConnector):
     ## SUBMIT_PROMPT
     ###############################################################################
 
-    def submit_prompt(self, prompt):
+    def submit_prompt(self, prompt, role="user"):
         client = self.client
         assistant = self.assistant
         if assistant is None:
@@ -109,7 +109,7 @@ class OpenAIAssistantsConnector(AIConnector):
         # Create a new message with user input
         message = client.beta.threads.messages.create(
             thread_id=thread.id,
-            role='user',
+            role=role,
             content=prompt
         )
 

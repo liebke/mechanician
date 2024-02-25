@@ -7,6 +7,7 @@ import json
 import os
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import logging
+import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -68,26 +69,27 @@ class OpenAIChatConnector(StreamingAIConnector):
 
         if tools is not None:
             self.tools = tools
+
+        if self.ai_instructions is not None:
+            self.messages = [{"role": "system", "content": self.ai_instructions}]
         
-
-    ###############################################################################
-    ## CONNECT
-    ###############################################################################
-
-    def _connect(self):
-        # Initialize the conversation with a system message
-            if self.ai_instructions is not None:
-                self.messages = [{"role": "system", "content": self.ai_instructions}]
 
     ###############################################################################
     ## SUBMIT_PROMPT
     ###############################################################################
 
-    def get_stream(self, prompt):
+    def submit_prompt(self, prompt, role="user"):
+        return self.process_stream(self.get_stream(prompt, role=role))
+    
+    ###############################################################################
+    ## GET_PROMPT
+    ###############################################################################
+
+    def get_stream(self, prompt, role="user"):
         client = self.client
         # Create a new message with user prompt
         if prompt is not None:
-            self.messages.append({"role": "user", "content": prompt})
+            self.messages.append({"role": role, "content": prompt})
             
         if not self.tool_instructions:
             stream = client.chat.completions.create(

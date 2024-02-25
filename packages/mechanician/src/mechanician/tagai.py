@@ -1,9 +1,10 @@
 
 from mechanician.ai_connectors import AIConnector
-from mechanician.ai_tools import AITools
+from mechanician.ai_tools import AITools, AITools, AIToolKit
 import json
 import os
 import logging
+import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -21,14 +22,25 @@ class TAGAI():
                 #  instruction_set_file_name="instructions.json",
                  tool_instruction_file_name="tool_instructions.json",
                  ai_instruction_file_name="ai_instructions.md",
-                 tools: 'AITools'=None, 
+                 tools=None, 
                  name="Mechanician AI"):
         self.ai_connector = ai_connector
         self.name = name
         self.RUNNING = False
-        self.tools = tools
-        self.ai_instructions = ai_instructions
-        self.tool_instructions = tool_instructions
+        self.tools = None
+        self.ai_instructions = None
+        self.tool_instructions = None
+        
+        if ai_instructions is not None:
+            self.ai_instructions = ai_instructions
+        # if tool instructions is a JSON string, then convert to it to list of dictionaries
+        if isinstance(tool_instructions, str):
+            self.tool_instructions = json.loads(tool_instructions)
+        elif isinstance(tool_instructions, list):
+            self.tool_instructions = tool_instructions
+        else:
+            print(f"tool_instructions is not a string or list: {tool_instructions}")
+
         if (instruction_set_directory is not None) and (ai_instructions is None):
             self.instruction_set_directory = instruction_set_directory
             self.ai_instruction_file_name = ai_instruction_file_name
@@ -39,10 +51,15 @@ class TAGAI():
             self.tool_instruction_file_name = tool_instruction_file_name
             self.load_tool_instructions(instruction_set_directory, tool_instruction_file_name)
 
-        self._instruct(ai_instructions=self.ai_instructions, 
-                       tool_instructions=self.tool_instructions,
-                       tools = tools)
-        self.ai_connector._connect()
+        if tools is not None:
+            if isinstance(tools, AITools):
+                self.tools = tools
+            elif isinstance(tools, list):
+                self.tools = AIToolKit(tools=tools)
+            else:
+                raise ValueError(f"tools must be an instance of AITools or a list of AITools. Received: {tools}")
+        
+        self._equip_tools()
 
     ###############################################################################
     ## LOAD INSTRUCTIONS
@@ -60,6 +77,7 @@ class TAGAI():
             logger.info(f"AI Instruction file not found at {ai_instruction_path}")
             logger.info("AI Instructions will not be loaded from file")
 
+
     def load_tool_instructions(self, instruction_set_directory, tool_instruction_file_name):
         tool_instruction_path = os.path.join(instruction_set_directory, tool_instruction_file_name)
         if os.path.exists(tool_instruction_path):
@@ -74,25 +92,28 @@ class TAGAI():
 
 
     ###############################################################################
-    ## INSTRUCT
+    ## EQUIP TOOLS
     ###############################################################################
 
-    def _instruct(self, ai_instructions=None, 
-                 tool_instructions=None,
-                 tools: 'AITools'=None):
-        if ai_instructions is not None:
-            self.ai_instructions = ai_instructions
+    def _equip_tools(self):
+        if isinstance(self.tools, AITools):
+            if self.ai_instructions is None:
+                self.ai_instructions = self.tools.get_ai_instructions()
+            else:
+                # If ai_instructios has already been set by the user, then append the self-explanatory tool's ai_instructions.
+                self.ai_instructions += f"""\n\n{self.tools.get_ai_instructions()}"""
 
-        if tool_instructions is not None:
-            self.tool_instructions = tool_instructions
+            if self.tool_instructions is None:
+                self.tool_instructions = self.tools.get_tool_instructions()
+            else:
+                # If specific tool_instructios has already been set by the user, then append the self-explanatory tool's tool_instructions.
+                self.tool_instructions = self.tool_instructions + self.tools.get_tool_instructions()
 
-        if tools is not None:
-            self.tools = tools
+        self.ai_connector._instruct(ai_instructions=self.ai_instructions, 
+                                    tool_instructions=self.tool_instructions,
+                                    tools = self.tools)
+        
 
-        self.ai_connector._instruct(ai_instructions=ai_instructions, 
-                                    tool_instructions=tool_instructions,
-                                    tools = tools)
-    
     ###############################################################################
     # TUNING SESSION TRANSCRIBER FUNCTIONS
     ###############################################################################
@@ -120,8 +141,8 @@ class TAGAI():
     ## SUBMIT_PROMPT
     ###############################################################################
 
-    def submit_prompt(self, prompt):
-        return self.ai_connector.submit_prompt(prompt)
+    def submit_prompt(self, prompt, role="user"):
+        return self.ai_connector.submit_prompt(prompt, role=role)
     
 
     ###############################################################################
@@ -144,3 +165,12 @@ class TAGAI():
 
     def clean_up(self):
         return self.ai_connector.clean_up()
+    
+
+    ###############################################################################
+    ## APPEND AI INSTRUCTIONS
+    ###############################################################################
+
+    def append_ai_instructions(self, ai_instructions):
+        return self.submit_prompt(ai_instructions, role="system")
+    

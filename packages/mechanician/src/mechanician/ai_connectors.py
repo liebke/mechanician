@@ -51,5 +51,6 @@ class StreamingAIConnector(AIConnector):
     def clean_up(self) -> None:
         pass
 
-    def submit_prompt(self, prompt):
-        return self.process_stream(self.get_stream(prompt))
+    @abstractmethod
+    def submit_prompt(self, prompt, role="user"):
+        pass

@@ -70,6 +70,7 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
       - [OpenAI Connectors](#openai-connectors)
       - [OpenAIChatConnector](#openaichatconnector)
       - [OpenAIAssistantsConnector](#openaiassistantsconnector)
+      - [AzureOpenAIChatConnector](#azureopenaichatconnector)
     - [Running the AI](#running-the-ai)
   - [Getting Started with Instruction Auto-Tuning](#getting-started-with-instruction-auto-tuning)
   - [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-testing)
@@ -272,7 +273,6 @@ The advantage of the `OpenAIChatConnector` is that it supports streaming respons
 
 * [OpenAIChatConnector](https://github.com/liebke/mechanician/blob/main/packages/mechanician_openai/src/mechanician_openai/chat_ai_connector.py)
 
-
 ```python
 from mechanician_openai import OpenAIChatConnector
 ```
@@ -297,6 +297,17 @@ DELETE_ASSISTANT_ON_EXIT=False
 ```
 
 You can also include these variables in a `.env` file.
+
+
+#### AzureOpenAIChatConnector
+
+The `AzureOpenAIChatConnector` supports the OpenAI API on Microsoft's Azure.
+
+* [AzureOpenAIChatConnector](https://github.com/liebke/mechanician/blob/main/packages/mechanician_openai/src/mechanician_openai/azure_openai_connector.py)
+
+```python
+from mechanician_openai import AzureOpenAIChatConnector
+```
 
 
 ### Running the AI

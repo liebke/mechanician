@@ -90,9 +90,9 @@
         "parameters": {
           "type": "object",
           "properties": {
-            "task_id": {
-              "type": "object",
-              "description": "This is the unique ID of the task to complete."
+            "current_task_id": {
+              "type": "string",
+              "description": "This is the `task_id` of the current task that has been completed."
             },
             "result": {
               "type": "object",
@@ -101,10 +101,10 @@
             "next": {
               "type": "array",
               "items": {"type": "string"},
-              "description": "After evaluating each decision condition in the task in order, you will provide the 'then' value of the first condition that is true. If no condition is true, you will provide the 'else' value. If there is no 'else' value, you will provide a null value. "
+              "description": "After evaluating the `next` parameter of the current task, you will have a list of the next tasks to complete, if any."
             }
           },
-          "required": ["task_id"]
+          "required": ["current_task_id"]
         }
       }
     },

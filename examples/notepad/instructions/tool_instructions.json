@@ -1,0 +1,28 @@
+[
+
+    {
+        "type": "function",
+        "function": {
+          "name": "get_weather",
+          "description": "Find weather for a given location and date and time, if no date and time is provide use the current date and time.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "location": {
+                "type": "string",
+                "description": "The location for the weather conditions."
+              },
+              "date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The location for the weather conditions."
+              }
+            },
+            "required": [
+              "location"
+            ]
+          }
+        }
+    }
+
+  ]

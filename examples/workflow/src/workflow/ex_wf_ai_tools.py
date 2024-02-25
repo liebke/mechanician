@@ -22,42 +22,42 @@ logger.addHandler(handler)
 ## RUN_WORKFLOW
 ###############################################################################
 
-def run_workflow(ai: 'TAGAI', workflow_name: str):
-    messages = []
-    workflow_tools = ai.tools
-    wf, task = workflow_tools.start_workflow({"workflow_name": workflow_name})
-    try:
-        # while not (workflow_tools.running_workflow is None):
-        while not (wf.get("COMPLETE", False) is True):
-            tasks = list(workflow_tools.running_tasks.values())
-            for task in tasks:
-                print(f"\n\nSTARTING TASK {task['task_id']}:")
-                task_id = task.get("task_id", None)
-                print("\n\n")
-                print("\nWORKFLOW:")
-                pprint.pprint(task)
-                print("\nASSISTANT:")
-                assist_resp = ai.submit_prompt(json.dumps(task))
-                messages.append(f"\nASSISTANT: {assist_resp}")
-                if (not ai.streaming_connector()) and (assist_resp is not None):
-                    print(f"**ASSISTANT** {assist_resp}")
-                print("\n\n")
-                while not (workflow_tools.running_tasks.get(task_id, None) is None):
-                    wf_prompt = f"Complete task {task_id} by calling `get_next_task` with the task_id and either results or decisions."
-                    print(f"\nWORKFLOW: {wf_prompt}")
-                    print("\nASSISTANT:")
-                    assist_resp = ai.submit_prompt(wf_prompt)
-                    messages.append(f"\nASSISTANT: {assist_resp}")
-                    if (not ai.streaming_connector()) and (assist_resp is not None):
-                        print(f"**ASSISTANT** {assist_resp}")
+# def run_workflow(ai: 'TAGAI', workflow_name: str):
+#     messages = []
+#     workflow_tools = ai.tools
+#     wf, task = workflow_tools.start_workflow({"workflow_name": workflow_name})
+#     try:
+#         # while not (workflow_tools.running_workflow is None):
+#         while not (wf.get("COMPLETE", False) is True):
+#             tasks = list(workflow_tools.running_tasks.values())
+#             for task in tasks:
+#                 print(f"\n\nSTARTING TASK {task['task_id']}:")
+#                 task_id = task.get("task_id", None)
+#                 print("\n\n")
+#                 print("\nWORKFLOW:")
+#                 pprint.pprint(task)
+#                 print("\nASSISTANT:")
+#                 assist_resp = ai.submit_prompt(json.dumps(task))
+#                 messages.append(f"\nASSISTANT: {assist_resp}")
+#                 if (not ai.streaming_connector()) and (assist_resp is not None):
+#                     print(f"**ASSISTANT** {assist_resp}")
+#                 print("\n\n")
+#                 while not (workflow_tools.running_tasks.get(task_id, None) is None):
+#                     wf_prompt = f"Complete task {task_id} by calling `get_next_task` with the `current_task_id` and a list of the `next` tasks to retrieve."
+#                     print(f"\nWORKFLOW: {wf_prompt}")
+#                     print("\nASSISTANT:")
+#                     assist_resp = ai.submit_prompt(wf_prompt)
+#                     messages.append(f"\nASSISTANT: {assist_resp}")
+#                     if (not ai.streaming_connector()) and (assist_resp is not None):
+#                         print(f"**ASSISTANT** {assist_resp}")
 
-    except KeyboardInterrupt:
-        print("Ctrl+C was pressed, exiting...")
-    except EOFError:
-        print("Ctrl+D was pressed, exiting...")
-    finally:
-        ai.clean_up()
-        print("goodbye")
+#     except KeyboardInterrupt:
+#         print("Ctrl+C was pressed, exiting...")
+#     except EOFError:
+#         print("Ctrl+D was pressed, exiting...")
+#     finally:
+#         ai.clean_up()
+#         print("goodbye")
 
 
 class LTMAITools(AITools):
@@ -170,8 +170,8 @@ class LTMAITools(AITools):
             return resp
         
         task = wf_execution.get(task_name, None)
-        print("TASK:")
-        pprint.pprint(task)
+        # print("START_TASK: TASK STARTING")
+        # pprint.pprint(task)
         if task is None:
             resp = f"Task '{task_name}' does not exist."
             logger.info(resp)
@@ -184,7 +184,7 @@ class LTMAITools(AITools):
         task["workflow_id"] = workflow_id
         self.running_tasks[task_id] = task
 
-        print("START TASK OUTPUT:")
+        print("START_TASK: TASK STARTED")
         pprint.pprint(task)
         return task
 
@@ -193,76 +193,64 @@ class LTMAITools(AITools):
     def get_next_task(self, input: dict):
         print("get_next_task INPUT:")
         pprint.pprint(input)
-        task_id = input.get("task_id", None)
-        if task_id is None:
-            resp = "task_id is required."
+       
+        current_task_id = input.get("current_task_id", None)
+        if current_task_id is None:
+            resp = "The current_task_id is a required parameter of `get_next_task`."
             logger.info(resp)
-            print(resp)
-            return resp
-        task = self.running_tasks.get(task_id, None)
-        if task is None:
-            resp = f"Task '{task_id}' is not running."
-            logger.info(resp)
-            print(resp)
             return resp
         
+        result = input.get("result", None)
+
+        task = self.running_tasks.get(current_task_id, None)
+        if task is None:
+            resp = f"Task '{current_task_id}' is not running."
+            logger.info(resp)
+            return resp
+        
+        next = input.get("next", None)
+        if (not task.get("next", None) is None) and (next is None):
+            resp = "You must provide `next` tasks when the `current_task` has a `next` field."
+            logger.info(resp)
+            return resp
+
+        # Complete the current task
+        task["COMPLETE"] = True
+        if result is not None:
+            task["result"] = result
+        # REMOVE FROM RUNNING TASKS
+        self.running_tasks.pop(current_task_id)
+
+        # Get next tasks
         workflow_id = task.get("workflow_id", None)
         wf_execution = self.workflow_executions.get(workflow_id, None)
-        # If task has decisions, input should contain the next tasks to perform
-        # else, add input to the task's output field, and return the next task
-        next = input.get("next", None)
-        if not next:
-            result = input.get("result", None)
-            if result is None:
-                # resp = f"Task '{task_id}' has no result, a result or next are required."
-                logger.info("No result or next provided.")
-                # print("No result or next provided.")
-                # return resp
-            else:
-                task["result"] = result
-
-            task["COMPLETE"] = True
-            # REMOVE FROM RUNNING TASKS
-            self.running_tasks.pop(task_id)
-            next = task.get("next", None)
-            if next is None:
+        if wf_execution is None:
+            resp = f"Workflow Execution {workflow_id} not found."
+            logger.info(resp)
+            return resp
+        
+        if (not next) or (next is None):
+            if not self.running_tasks:
                 resp = f"WORKFLOW COMPLETE."
                 wf_execution["COMPLETE"] = True
                 logger.info(resp)
                 print(resp)
                 return resp
             else:
-                next_tasks = []
-                for task_name in next:
-                    next_task = wf_execution.get(task_name, None)
-                    if next_task is None:
-                        resp = f"Next task '{next}' does not exist."
-                        logger.info(resp)
-                        print(resp)
-                        return resp
-                    next_task = self.start_task({"workflow_id": workflow_id, "task_name": task_name, "input": input})
-                    next_tasks.append(next_task)
-                print("COMPLETE TASK OUTPUT:")
-                pprint.pprint(next_tasks)
-                return next_tasks
-        else:
-            if next is None:
-                resp = f"next required for task '{task_id}'."
+                resp = f"Complete your remaining current Tasks, Workflow '{workflow_id}' is not complete yet."
                 logger.info(resp)
-                print(resp)
                 return resp
-            
-            task["COMPLETE"] = True
-            self.running_tasks.pop(task_id)
-            logger.info(f"Decisions made, next tasks: {next}")
+        else:
             next_tasks = []
-            for task_name in next:
-                next_task = self.start_task({"workflow_id": workflow_id, "task_name": task_name, "input": input})
+            for next_task_name in next:
+                next_task = self.start_task({"workflow_id": task["workflow_id"], 
+                                            "task_name": next_task_name})
+                # print("NEXT TASK:")
+                # pprint.pprint(next_task)
                 next_tasks.append(next_task)
 
-            print("COMPLETE TASK OUTPUT:")
-            pprint.pprint(next_tasks)
             return next_tasks
+        
         
 
 ###############################################################################
