@@ -22,3 +22,4 @@ mechanician_arango_movie_db.egg-info
 mechanician_arango_memory.egg-info
 examples/notepad/notepads/*
 mechanician_notepad_example.egg-info
+mechanician_workflow_example.egg-info

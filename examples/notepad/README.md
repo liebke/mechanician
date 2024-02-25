@@ -9,9 +9,9 @@ The focus of the [Daring Mechanician](https://mechanician.ai/daring-mechanician)
 
 ### Notepads Vs ChatGPT Memory
 
-*Daring Mechanician* ***Notepads*** are inspired by the recent announcement of [ChatGPT memory](https://openai.com/blog/memory-and-new-controls-for-chatgpt) by *OpenAI*, meant to provide context about each user across multiple ChatGPT sessions.
+*Daring Mechanician* ***Notepads*** are inspired by the recent announcement of [ChatGPT memory](https://openai.com/blog/memory-and-new-controls-for-chatgpt) by *OpenAI*, meant to let the LLM remember details about each user across different ChatGPT sessions.
 
-*Notepads* provide the same functionality as ChatGPT's memory but a way that provides additional flexibility in what is remembered in different contexts.
+*Notepads* provide this same memory functionality but in a way that provides additional flexibility in what is remembered in different contexts.
 
 ### Different Notepads for Different Contexts
 
@@ -19,11 +19,13 @@ A *Notepad* can be specific to a user, a project, an activity, a location, or an
 
 ### Notepads Tools
 
-Telling the AI a fact will, usually, cause it to write a *note* in its *Notepad*, and you can ask it to remember a fact explicitly.
+Telling the AI a fact will usually cause it to write a *note* in its *Notepad* or you can just ask it to remember a fact explicitly.
 
-You can ask the AI to list all the *notes* in its *Notepad*, to delete a *note*, or to delete the entire *Notepad*.
-
-The *Notepads* tools also include a method to get the current date and time, which can be useful for adding a timestamp to a *note*.
+You can also ask the AI to
+* list all the *notes* in its *Notepad*
+* delete a *note*
+* delete the entire *Notepad*
+* get the current date and time, which can be useful for adding a timestamp to a *note*
 
 ### Notepad Storage
 
@@ -36,8 +38,8 @@ from mechanician.tools.notepad import NotepadFileStore
 ```
 
 ```python
-notepad_file_store = NotepadFileStore(notepad_name=notepad_name,
-                                      notepad_directory_name=notepad_directory_name)
+notepad_store = NotepadFileStore(notepad_name=notepad_name,
+                                 notepad_directory_name=notepad_directory_name)
 ```
 
 #### ArangoNotepadStore
@@ -51,16 +53,12 @@ from mechanician_arangodb import ArangoClient
 database_name="test_notepad_db"
 notepad_collection_name="notepads"
 arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
-arango_notepad_store = ArangoNotepadStore(notepad_name=notepad_name,
-                                          arango_client=arango_client, 
-                                          database_name=database_name,
-                                          notepad_collection_name=notepad_collection_name,
-                                          db_username=os.getenv("ARANGO_USERNAME"),
-                                          db_password=os.getenv("ARANGO_PASSWORD"))
-```
-
-```python
-arango_notepad_tools = NotepadAITools(notepad_store=arango_notepad_store)
+notepad_store = ArangoNotepadStore(notepad_name=notepad_name,
+                                   arango_client=arango_client, 
+                                   database_name=database_name,
+                                   notepad_collection_name=notepad_collection_name,
+                                   db_username=os.getenv("ARANGO_USERNAME"),
+                                   db_password=os.getenv("ARANGO_PASSWORD"))
 ```
 
 ### NotepadAITools
@@ -80,7 +78,7 @@ from mechanician.tools.notepad import NotepadAITools
 ```
 
 ```python
-notepad_tools = NotepadAITools(notepad_store=notepad_file_store)
+notepad_tools = NotepadAITools(notepad_store=notepad_store)
 ```
 
 #### Self-Explanatory AITools
@@ -138,7 +136,7 @@ Finally, if the `instruction_set_directory` doesn't exist, `get_ai_instructions`
 
 ## The Notepads Example Project
 
-See the [Notepad Example (NEED TO UPDATE TO MAIN BRANCH)](https://github.com/liebke/mechanician/tree/workflow/examples/notepad) for more details on how to use the *Notepads* tools.
+See the [Notepad Example](https://github.com/liebke/mechanician/tree/main/examples/notepad) for more details on how to use the *Notepads* tools.
 
 
 ### Install

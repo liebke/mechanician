@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 -m arango_memory.test
+python3 -m workflow.test

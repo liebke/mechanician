@@ -13,6 +13,88 @@ logger.addHandler(handler)
 
 class WorkflowAITools(AITools):
 
+    tool_instructions = [
+        {
+            "type": "function",
+            "function": {
+                "name": "start_workflow",
+                "description": "Starts a workflow process, it requires the name of the workflow, workflow_name. The result will be a Task object containing instructions that you should follow and additional input that you can use to complete the task. The task object will contain the task_id, the task_name, task_instructions, and a conditions object. Evaluate each statement in the conditions object and create a corresponding `decisions` object with the same keys as the conditions object and boolean vlaues representing your responses to the statements in the conditions object.",
+                "parameters": {
+                "type": "object",
+                "properties": {
+                    "workflow_name": {
+                    "type": "object",
+                    "description": "This is the name of the workflow to start. It must be a valid workflow name."
+                    },
+                    "input": {
+                    "type": "object",
+                    "description": "This is the input to the workflow."
+                    }
+                },
+                "required": ["workflow_name", "input"]
+                }
+            }
+        },
+        {
+            "type": "function",
+            "function": {
+                "name": "get_next_task",
+                "description": "Completes a task associated with a workflow process, if the Task contained 'decisions', evaluate each decision in the list in order and use the 'decisions' field in the 'get_next_task' tool, passing the value of the 'then' field as in the input `next` input parameter for the first condition that evaluates True, otherwise return the value of the 'else' field. If the Task does not contain 'decisions', follow the instructions and return a 'result' to the 'get_next_task' tool.",
+                "parameters": {
+                "type": "object",
+                "properties": {
+                    "current_task_id": {
+                    "type": "string",
+                    "description": "This is the `task_id` of the current task that has been completed."
+                    },
+                    "result": {
+                    "type": "object",
+                    "description": "This is your result for the task to be completed."
+                    },
+                    "next": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "After evaluating the `next` parameter of the current task, you will have a list of the next tasks to complete, if any."
+                    }
+                },
+                "required": ["current_task_id"]
+                }
+            }
+        }
+    ]
+
+    ai_instructions = """# Workflow for AI
+
+    You are an AI assistant with access to tools for performing different tasks. and can start workflow processes by name. After starting a workflow with the `start_workflow` tool, you will receive a task, once you have completed the instructions in the task, YOU MUST CALL the `get_next_task` tool, for EVERY SINGLE TASK you complete.
+
+    The `next` field in the Task will contain a list of conditionals that you must evaluate, here is one example of the format you can expect:
+    ```
+    [{"if": "Is the value greater than $10 and less than $100?",
+    "then": ["task2"]},
+    {"elif": "Is the value less than $500?",
+    "then": ["task4"]},
+    {"else": ["task3"]}]
+    ```
+
+    But the conditional statements in the `next` can also be in natural language, like this:
+    ```
+    if the value is greater than $10 and less than $100
+    then do task2
+    else if the value is less than $500
+    then do task4
+    otherwise do task3
+    ```
+
+    * Evaluate each conditional and include the task list of the first conditional that you evaluate to be true as the `next` parameter of the `get_next_task` tool.
+
+    * You MUST include the `task_id` of the current task in the `current_task_id` parameter of the `get_next_task` tool.
+
+    * If the instructions say to include a result, then include the result in the `result` parameter of the `get_next_task` tool.
+
+    * You will receive new tasks until all tasks are complete.
+    """
+
+
     def __init__(self,
                  workflows = {}):
         #### Workflows ######
@@ -21,14 +103,6 @@ class WorkflowAITools(AITools):
         self.workflow_executions = {}
         self.running_tasks = {}
 
-
-    def get_ai_instructions(self):
-      return ""
-    
-
-    def get_tool_instructions(self):
-      return ""
- 
 
     def start_workflow(self, input: dict):
         self.WORKFLOW_RUNNING = True

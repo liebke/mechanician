@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='mechanician_arango_memory',
+    name='mechanician_workflow_example',
     version='0.1',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
@@ -9,13 +9,13 @@ setup(
     install_requires=[
         'mechanician>=0.1.2',
         'mechanician-openai>=0.1.2',
-        'mechanician-arangodb>=0.1.2',
-        'python-arango>=5.0.0',
+        # 'mechanician-arangodb>=0.1.2',
+        # 'python-arango>=5.0.0',
         'python-dotenv>=0.17.1',
     ],
     author='David Edgar Liebke',
     author_email='david@gmail.com',
-    description='Daring Mechanician ArangoDB Movie Database example.',
+    description='Daring Mechanician Workflow example.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/liebke/mechanician',

@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python3 -m arango_memory.main
+python3 -m workflow.main
