@@ -7,9 +7,9 @@ setup(
     package_dir={'': 'src'},
     include_package_data=True,  # Required to include files specified in MANIFEST.in
     install_requires=[
-        'mechanician>=0.1.2',
-        'mechanician-openai>=0.1.2',
-        'mechanician-arangodb>=0.1.2',
+        'mechanician>=0.1.3',
+        'mechanician-openai>=0.1.3',
+        'mechanician-arangodb>=0.1.3',
         'python-dotenv>=0.17.1',
     ],
     author='David Edgar Liebke',
