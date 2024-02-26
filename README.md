@@ -86,6 +86,7 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
     - [Arango Movie Database Example Code](#arango-movie-database-example-code)
   - [Parallel Tool Calls and Streaming Responses](#parallel-tool-calls-and-streaming-responses)
     - [Environment Variables](#environment-variables)
+  - [Notepads](https://github.com/liebke/mechanician/tree/main/examples/notepad#readme)
 
 
 

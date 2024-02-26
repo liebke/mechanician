@@ -4,11 +4,11 @@
 
 ## Daring Mechanician Notepads
 
-The focus of the [Daring Mechanician](https://mechanician.ai/daring-mechanician) project is on building tools for AIs to use, and *notepads* are one of the oldest tools around. The ability to take notes is a broadly useful ability that can be applied in innumerable ways by both people and AIs to remember context across multiple conversations.
+The focus of the [Daring Mechanician](https://mechanician.ai/daring-mechanician) project is on building tools that AIs themselves can use, and *notepads* are one of the oldest tools around. The ability to take notes is a broadly useful ability that can be applied in innumerable ways by both people and AIs to remember context across multiple conversations.
 
 ### Notepads Vs The ChatGPT Memory Feature
 
-*Daring Mechanician* ***Notepads*** are inspired by the recent announcement by *OpenAI* of the [ChatGPT Memory](https://openai.com/blog/memory-and-new-controls-for-chatgpt) function, meant to let the LLM remember details about a user across different conversations.
+*Daring Mechanician* ***Notepads*** are inspired by the recent announcement by *OpenAI* of the [ChatGPT Memory](https://openai.com/blog/memory-and-new-controls-for-chatgpt) function, meant to let LLMs remember details about a user across different conversations.
 
 *Notepads* provide this same memory functionality but in a way that provides additional flexibility in what is remembered in different contexts.
 
@@ -28,25 +28,25 @@ A *Notepad* can be specific to a user, a project, an activity, a location, an AI
 Telling the AI a fact will usually cause it to write a *note* in its *Notepad* or you can just ask it to remember something explicitly.
 
 You can also ask the AI to
-* list all the *notes* in its *Notepad*
-* delete a *note*
-* delete the entire *Notepad*
-* get the current date and time, which can be useful for adding a timestamp to a *note*
+* List all the *notes* in its *Notepad*.
+* Delete a *note*.
+* Delete the entire *Notepad*.
+* Get the current date and time, which can be useful for adding a timestamp to a *note*.
 
 
-### What would an AI take notes on if an AI could take notes?
+### What Notes Would an AI Take If an AI Could Take Notes?
 
-*Notepads* are tools used by the AI, and only indirectly used by users, to take notes on information of its choosing that it gathers during interactions with users.
+*Notepads* are tools used by the AI, and only indirectly by users, to take notes on information of its choosing that it gathers during interactions with users.
 
 It's interesting to see what information the AI chooses to note, how it chooses to represent it, and how it combines its notes with the other tools available to it.
 
 * It will typically note facts told to it directly by the user
 * It will sometimes note responses from tools it calls
 
-* It will not always use the same representation for the same information across different conversations, for instance if it has noted a set of tasks to complete, it will usually remove items as they are completed, at least during the session in which the tasks were noted. If a task is completed during a subsequent conversation, it may not remove it from its *Notepad* but rather add a new note indicating that the task was completed.
+* It will not always use the same representation for the same information across different conversations, for instance if it has noted a set of tasks to complete, it will usually remove items as they are completed, at least during the conversation in which the tasks were noted. If a task is completed during a subsequent conversation, it may not remove it from its *Notepad* but rather add a new note indicating that the task was completed; it will remove completed tasks when ask to though.
 
 
-The way an AI uses a *Notepad* can be guided by the `ai_instructions` given to it at the outset of the conversation. You can choose to give explicit and clear instructions on how should use its *Notepad*, or let the AI figure it out on its own, both approaches can be useful in different contexts.
+The way an AI uses a *Notepad* can be guided by the `ai_instructions` given to it at the outset of the conversation. You can choose to give explicit and clear instructions on how it should use its *Notepad*, or let the AI figure it out on its own, both approaches can be useful in different contexts.
 
 
 
@@ -72,15 +72,13 @@ The best way to see how well your preferences have been captured by the AI is to
 
 ### Notepad Storage
 
-Notepads can be stored in a local file or in an ArangoDB database, using the `NotepadFileStore` and `ArangoNotepadStore` classes, respectively.
+Notepads can be stored in a local file or in an [ArangoDB](https://arangodb.com)  database, using the [NotepadFileStore](https://github.com/liebke/mechanician/blob/b2e9d1a57814d3351de1fe64fbd2d29bfed21ba7/packages/mechanician/src/mechanician/tools/notepads.py#L186) and [ArangoNotepadStore](https://github.com/liebke/mechanician/blob/main/packages/mechanician_arangodb/src/mechanician_arangodb/notepad_store.py) classes, respectively.
 
 #### NotepadFileStore
 
 ```python
 from mechanician.tools.notepad import NotepadFileStore
-```
 
-```python
 notepad_store = NotepadFileStore(notepad_name=notepad_name,
                                  notepad_directory_name=notepad_directory_name)
 ```
@@ -90,9 +88,7 @@ notepad_store = NotepadFileStore(notepad_name=notepad_name,
 ```python
 from mechanician_arangodb.notepad_store import ArangoNotepadStore
 from mechanician_arangodb import ArangoClient
-```
 
-```python
 database_name="test_notepad_db"
 notepad_collection_name="notepads"
 arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
@@ -106,7 +102,7 @@ notepad_store = ArangoNotepadStore(notepad_name=notepad_name,
 
 ### NotepadAITools
 
-The `NotepadAITools` class provides the AI tools for interacting with *Notepads*, including the following methods:
+The [NotepadAITools](https://github.com/liebke/mechanician/blob/b2e9d1a57814d3351de1fe64fbd2d29bfed21ba7/packages/mechanician/src/mechanician/tools/notepads.py#L250) class provides tools for AIs to interact with *Notepads*, and includes the following methods:
 
 * create_note
 * list_notes
@@ -115,7 +111,7 @@ The `NotepadAITools` class provides the AI tools for interacting with *Notepads*
 * get_current_datetime
 
 
-Import the `NotepadAITools` class and create an instance of it, passing the `notepad_store` to it.
+Import the `NotepadAITools` class from [mechanician.tools.notepad](https://github.com/liebke/mechanician/blob/b2e9d1a57814d3351de1fe64fbd2d29bfed21ba7/packages/mechanician/src/mechanician/tools/notepads.py) and create an instance of it, passing the `notepad_store` to it.
 
 ```python
 from mechanician.tools.notepad import NotepadAITools
@@ -123,9 +119,9 @@ from mechanician.tools.notepad import NotepadAITools
 notepad_tools = NotepadAITools(notepad_store=notepad_store)
 ```
 
-#### Self-Explanatory AITools
+### Self-Explanatory AITools
 
-The `NotepadAITools` class can be described as "self-explanatory", meaning it provides `get_tool_instructions` and `get_ai_instructions` methods that the `TAGAI` can use to get instructions on their use.
+The `NotepadAITools` class can be described as "self-explanatory", meaning it provides the `get_tool_instructions` and `get_ai_instructions` methods that will be used by the `TAGAI` class to retrieve the instructions sets.
 
 This means that you don't need to pass the `ai_instructions` and `tool_instructions` parameters to the `TAGAI` when initializing it, as it can get them directly from the `NotepadAITools` instance.
 
@@ -141,35 +137,45 @@ shell.run(ai)
 
 
 
-#### Passing Multiple AITools to a TAGAI
+### Passing Multiple AITools to a TAGAI
 
-You can pass a list of self-explanatory *AITools* to the `tools` parameter when initializing a *TAGAI*.
+You can now pass a list of self-explanatory *AITools* to the *TAGAI* class using the `tools` parameter.
 
 ```python
 from mechanician.tools.weather import MiddleEarthWeatherAITools
-```
 
-```python
 weather_tools = MiddleEarthWeatherAITools()
-```
 
-```python
 ai = TAGAI(ai_connector=ai_connector, 
            tools=[notepad_tools, weather_tools],
            name="Notepad-Enabled AI")
 ```
 
-### Self-Explanatory AITools
-
 Each instance of `AITools` should use the same "self-explanatory" approach as `NotepadAITools`.
 
-The default `get_ai_instructions` and `get_tool_instructions` methods of the `AITools` class will look for the existence of either `self.ai_instructions` or `self.tool_instructions` and return those if they exist.
 
-Otherwise they will look for the exitence of `self.instruction_set_directory`, `self.tool_instruction_file_name`, and `self.ai_instruction_file_name` and use those to read the instructions for their respective files. 
+### Writing Self-Explanatory AITools
+
+When creating new sub-classes of [AITools](https://github.com/liebke/mechanician/blob/main/packages/mechanician/src/mechanician/ai_tools.py), you will want to provide both the `ai_instructions` and `tool_instructions` so that the `TAGAI` class can successfully provide instructions to the AI on how to use your tools.
+
+You can do this by:
+
+* Including the class variables, `ai_instructions` and `tool_instructions` directly.
+
+* Including the class variables `instruction_set_directory`, `ai_instruction_file_name`, and `tool_instruction_file_name` indicating where the instruction files can be found
+
+* Just placing the respective instruction files in the default locations, `./instructions/ai_instructions.md` and `./instructions/tool_instructions.json`.
+
+
+The default `get_ai_instructions` and `get_tool_instructions` methods of the `AITools` class will:
+
+* Look for the existence of either `self.ai_instructions` or `self.tool_instructions` and return those if they exist.
+
+* Otherwise they will look for the exitence of `self.instruction_set_directory`, `self.tool_instruction_file_name`, and `self.ai_instruction_file_name` and use those to read the instructions for their respective files. 
  
-But if none of those exist, they will use the default values of `./instructions` for the `instruction_set_directory` and `tool_instructions.json` and `ai_instructions.md` for the `tool_instruction_file_name` and `ai_instruction_file_name`, respectively, 
+* But if none of those exist, they will use the default values of `./instructions` for the `instruction_set_directory` and `tool_instructions.json` and `ai_instructions.md` for the `tool_instruction_file_name` and `ai_instruction_file_name`, respectively, 
  
-Finally, if the `instruction_set_directory` doesn't exist, `get_ai_instructions` will return an empty string and `get_tool_instructions` will return an empty list.
+* Finally, if the `instruction_set_directory` doesn't exist, `get_ai_instructions` will return an empty string and `get_tool_instructions` will return an empty list.
 
 
 
