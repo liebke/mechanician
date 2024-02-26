@@ -37,6 +37,8 @@ ai_instructions = f"""
 
       Be sure to include all relevant attributes of the `note` you are storing.
 
+      Review the following `notes`, looking for user PREFERENCES, and use those PREFERENCES to guide your actions and interactions with the user.
+
       The following are the `notes` you have related to the current user:
       ----
       """

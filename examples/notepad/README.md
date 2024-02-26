@@ -23,7 +23,25 @@ A *Notepad* can be specific to a user, a project, an activity, a location, or an
 * Create task lists for the AI to complete.
 * Have the AI create a TODO list and remove completed items.
 
+
+### AI-Driven Note-Taking
+
+It's important to remember that *Notepads* are tools used by the AI and only indirectly tools used by users.
+
 It's interesting to see how the AI chooses to use the *Notepad* and how it can be combined with other tools.
+
+
+#### Improving Preference Notes
+
+Notepads can be used to capture user preferences for different tools used by the AI, but getting the AI to use the preferences can sometimes be a challenge. You may find the AI not following the noted preferences. 
+
+One strategy to improve the AI's adherence to the preferences is to ask it to help you improve the wording of the preference.
+
+
+##### Testing Preference Notes
+
+The best way to see how well the preferences have been captured by the AI in the notepad is to exit the session and start a new one, where the only context is that represented by the *Notepad*.
+
 
 
 ### Notepads Tools
