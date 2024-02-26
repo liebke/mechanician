@@ -3,6 +3,7 @@ from mechanician.util import print_markdown
 from rich.console import Console 
 import logging
 import subprocess
+import traceback
 
 logger = logging.getLogger(__name__)
 console = Console()
@@ -122,6 +123,9 @@ def run(ai: TAGAI):
         logging.info("Ctrl+C was pressed, exiting...")
     except EOFError:
         logging.info("Ctrl+D was pressed, exiting...")
+    except Exception as e:
+        logging.error(e)
+        traceback.print_exc()
     finally:
         ai.clean_up()
         logging.info("goodbye")

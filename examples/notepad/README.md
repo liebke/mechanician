@@ -17,6 +17,15 @@ The focus of the [Daring Mechanician](https://mechanician.ai/daring-mechanician)
 
 A *Notepad* can be specific to a user, a project, an activity, a location, or any other context that is useful to remember across multiple sessions.
 
+* Capture user preferences for different tools used by the AI.
+* Record results from different tools used by the AI.
+* Store facts about the user or the user's environment.
+* Create task lists for the AI to complete.
+* Have the AI create a TODO list and remove completed items.
+
+It's interesting to see how the AI chooses to use the *Notepad* and how it can be combined with other tools.
+
+
 ### Notepads Tools
 
 Telling the AI a fact will usually cause it to write a *note* in its *Notepad* or you can just ask it to remember a fact explicitly.
@@ -121,6 +130,8 @@ ai = TAGAI(ai_connector=ai_connector,
            tools=[notepad_tools, weather_tools],
            name="Notepad-Enabled AI")
 ```
+
+### Self-Explanatory AITools
 
 Each instance of `AITools` should use the same "self-explanatory" approach as `NotepadAITools`.
 

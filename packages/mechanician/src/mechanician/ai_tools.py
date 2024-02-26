@@ -3,6 +3,7 @@ import json
 import logging
 from typing import List
 import os
+import traceback
 
 logger = logging.getLogger(__name__)
 
@@ -58,28 +59,34 @@ class AITools(ABC):
 
 
     def call_function(self, function_name, call_id, args):
-        # get method by name if it exists
-        if hasattr(self, function_name):
-            meth = getattr(self, function_name)
-            # check that method exists
-            if meth:
-                if args is None:
-                    # call method without args
-                    resp = meth(args)
-                    if resp is not None:
-                        return resp
-                elif args.strip():
-                    # call method with args
-                    resp = meth(json.loads(args))
-                    if resp is not None:
-                        return resp
-                else:
-                    resp = meth(args)
-                    if resp is not None:
-                        return resp
-        else:
-            logger.info(f"Unknown Function: {function_name}")
-            return f"Unknown Function: {function_name}"
+        try:
+            # get method by name if it exists
+            if hasattr(self, function_name):
+                meth = getattr(self, function_name)
+                # check that method exists
+                if meth:
+                    if args is None:
+                        # call method without args
+                        resp = meth(args)
+                        if resp is not None:
+                            return resp
+                    elif args.strip():
+                        # call method with args
+                        resp = meth(json.loads(args))
+                        if resp is not None:
+                            return resp
+                    else:
+                        resp = meth(args)
+                        if resp is not None:
+                            return resp
+            else:
+                logger.info(f"Unknown Function: {function_name}")
+                return f"Unknown Function: {function_name}"
+            
+        except Exception as e:
+            logger.error(f"Error calling function {function_name}: {e}")
+            traceback.print_exc()
+            return f"Error calling function {function_name}: {e}"
             
 
 class AIToolKit(AITools):
