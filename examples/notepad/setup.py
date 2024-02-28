@@ -9,6 +9,7 @@ setup(
     install_requires=[
         'mechanician>=0.1.3',
         'mechanician-openai>=0.1.3',
+        'mechanician-mistral>=0.1.3',
         'mechanician-arangodb>=0.1.3',
         'python-dotenv>=0.17.1',
     ],

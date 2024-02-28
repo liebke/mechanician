@@ -4,6 +4,8 @@ cd ../../packages/mechanician &&
 ./scripts/install.sh &&
 cd ../mechanician_openai &&
 ./scripts/install.sh &&
+cd ../mechanician_mistral &&
+./scripts/install.sh &&
 cd ../mechanician_arangodb &&
 ./scripts/install.sh &&
 cd ../../examples/notepad &&

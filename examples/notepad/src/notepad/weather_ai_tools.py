@@ -52,7 +52,12 @@ class MiddleEarthWeatherAITools(AITools):
         # read weather_reports from middle_earth_weather.json
         with open("./middle_earth_weather.json", "r") as f:
             weather_reports = json.load(f)
-        resp = random.choice(get_closest_match(location, weather_reports).get("reports", []))
+        match = get_closest_match(location, weather_reports)
+        if not match is None:
+            resp = random.choice(match.get("reports", []))
+        else:
+            resp = None
+
         if resp == None:
             resp = f"Location {location} not found."
         logger.info(f"Getting weather for {input}")
