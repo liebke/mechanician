@@ -3,6 +3,7 @@ import logging
 from mechanician.ai_tools import AITools
 import random
 import re
+import pprint
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -38,6 +39,8 @@ def get_closest_match(s, dictionary):
 class MiddleEarthWeatherAITools(AITools):
 
     def get_weather(self, input: dict):
+        print("GET_WEATHER INPUT:")
+        pprint.pprint(input)
         location = input.get("location", "unknown")
         date = input.get("date", "unknown")
         if location == "unknown":
