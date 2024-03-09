@@ -1,6 +1,8 @@
 from mechanician import TAGAI, shell
 from mechanician_openai import OpenAIChatConnector
 from mechanician.tools.workflows import WorkflowAITools
+from workflow.family_tree_ai_tools import FamilyTreeAITools
+from arango import ArangoClient
 import os
 import logging
 from dotenv import load_dotenv
@@ -12,15 +14,20 @@ logger = logging.getLogger(__name__)
 ## INIT AI
 ###############################################################################
 
-def init_ai(workflows=None):
+def init_ai(workflows=None, database_name="test_family_tree_db"):
 
     api_key = os.getenv("OPENAI_API_KEY")
     model_name = os.getenv("OPENAI_MODEL_NAME")
     ai_connector = OpenAIChatConnector(api_key=api_key, model_name=model_name)
     workflow_tools = WorkflowAITools(workflows=workflows)
+    arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
+    family_tree_tools = FamilyTreeAITools(client=arango_client, 
+                                          database_name=database_name,
+                                          username=os.getenv("ARANGO_USERNAME"),
+                                          password=os.getenv("ARANGO_PASSWORD"))
     ai = TAGAI(ai_connector=ai_connector, 
-               tools=workflow_tools,
-               name="Workflow-Enabled AI")
+               tools=[workflow_tools, family_tree_tools],
+               name="Family Tree AI")
     return ai
 
 

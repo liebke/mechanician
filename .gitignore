@@ -24,3 +24,4 @@ examples/notepad/notepads/*
 mechanician_notepad_example.egg-info
 mechanician_workflow_example.egg-info
 mechanician_mistral.egg-info
+docs/_*

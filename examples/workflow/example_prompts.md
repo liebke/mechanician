@@ -1,5 +1,5 @@
 
-I'd like to make a family tree
+start family_tree workflow
 
 Balbo Baggins 1167-1258
 

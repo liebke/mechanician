@@ -9,8 +9,8 @@ setup(
     install_requires=[
         'mechanician>=0.1.3',
         'mechanician-openai>=0.1.3',
-        # 'mechanician-arangodb>=0.1.3',
-        # 'python-arango>=5.0.0',
+        'mechanician-arangodb>=0.1.3',
+        'python-arango>=5.0.0',
         'python-dotenv>=0.17.1',
     ],
     author='David Edgar Liebke',
