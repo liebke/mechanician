@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 import json
 import logging
 from typing import List

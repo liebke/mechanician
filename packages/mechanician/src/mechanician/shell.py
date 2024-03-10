@@ -4,6 +4,10 @@ from rich.console import Console
 import logging
 import subprocess
 import traceback
+from abc import ABC
+from typing import List
+from mechanician.prompting.tools import PromptTools, PromptToolKit
+
 
 logger = logging.getLogger(__name__)
 console = Console()
@@ -29,8 +33,9 @@ def get_multiline_input():
 ## PREPRCOESS_PROMPT
 ###############################################################################
 
-def preprocess_prompt(ai: 'TAGAI', prompt: str):
+def preprocess_prompt(ai: 'TAGAI', prompt: str, prompt_tools: 'PromptTools' = None):
 
+    # Load a file
     if prompt.startswith('/file'):
         filename = prompt.replace('/file ', '', 1)
 
@@ -53,19 +58,38 @@ def preprocess_prompt(ai: 'TAGAI', prompt: str):
             logger.info(resp)
             return resp
 
+    # Exit the program
     elif prompt.startswith('/bye'):
         ai.RUNNING = False
         prompt = ''
 
+    # Run a shell command
     elif prompt.startswith('/$'):
         subprocess.run(prompt.replace('/$', '', 1), shell=True)
         # Return an empty prompt so that it's skipped
         return ''
     
+    # Enable multi-line input
     elif prompt.startswith('/multiline') or prompt.startswith('/...'):
         print("Enter your prompt (leave a blank line to finish)")
         prompt = get_multiline_input()
         print("Submitting prompt...")
+
+    # Call a function
+    elif prompt.startswith('/call'):
+        print("Calling function...")
+        print(prompt)
+        # split prompt into function_name and args
+        function_name = prompt.split(' ')[1]
+        args = prompt.split(' ')[2:]
+        print(f"Function: {function_name}")
+        print(f"Args: {args}")
+        prompt = prompt_tools.call_function(function_name, args)
+        print("Generated Prompt")
+        print("-----------------")
+        print(prompt)
+        print("-----------------")
+
 
     return prompt
 
@@ -84,7 +108,16 @@ def print_header(name):
 ## RUN
 ###############################################################################
 
-def run(ai: TAGAI):
+def run(ai: TAGAI, prompt_tools:'PromptTools' = None):
+
+    if prompt_tools is not None:
+        if isinstance(prompt_tools, PromptTools):
+            prompt_tools = prompt_tools
+        elif isinstance(prompt_tools, list):
+            prompt_tools = PromptToolKit(tools=prompt_tools)
+        else:
+            raise ValueError(f"prompt_tools must be an instance of PromptTools or a list of PromptTools. Received: {prompt_tools}")
+            
     print_header(name=ai.name)
     # Loop while RUNNING is True, processing user input from the terminal
     ai.RUNNING = True
@@ -98,7 +131,7 @@ def run(ai: TAGAI):
                 continue
 
             print('')
-            prompt = preprocess_prompt(ai, prompt)
+            prompt = preprocess_prompt(ai, prompt, prompt_tools=prompt_tools)
             # If preprocessed prompt is None, we should skip it
             if prompt == '':
                 continue

@@ -1,0 +1,505 @@
+{"contacts": [
+    {
+        "name": {
+            "first": "Lobelia",
+            "last": "Sackville-Baggins"
+        },
+        "address": "Hardbottle, The Shire",
+        "relationship": "Unwelcome relative",
+        "interests": [
+            "Snooping",
+            "Acquiring silver spoons",
+            "Intruding on Bag End"
+        ],
+        "family": [
+            "Sackville-Baggins family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Otho",
+            "last": "Sackville-Baggins"
+        },
+        "address": "Hardbottle, The Shire",
+        "relationship": "Ambitious relative",
+        "interests": [
+            "Property acquisition",
+            "Social climbing"
+        ],
+        "family": [
+            "Sackville-Baggins family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Lotho",
+            "last": "Sackville-Baggins"
+        },
+        "address": "Hardbottle, The Shire",
+        "relationship": "Troublesome offspring",
+        "interests": [
+            "Undermining Bilbo",
+            "Business ventures of dubious nature"
+        ],
+        "family": [
+            "Sackville-Baggins family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Folco",
+            "last": "Boffin"
+        },
+        "address": "5 Chubb Lane, Michel Delving, Westfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Local politics",
+            "Gardening"
+        ],
+        "family": ["Boffin family"]
+    },
+    {
+        "name": {
+            "first": "Fredegar",
+            "last": "Bolger"
+        },
+        "address": "7 Grub Street, Hobbiton, Westfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Eating",
+            "Jokes"
+        ],
+        "family": [
+            "Bolger family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Pearl",
+            "last": "Took"
+        },
+        "address": "Tookbank Towers, Tookbank, Westfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Fashion",
+            "Social gatherings"
+        ],
+        "family": [
+            "Took clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Ruby",
+            "last": "Gamgee"
+        },
+        "address": "1 Bagshot Row, Hobbiton, Westfarthing",
+        "relationship": "Relative",
+        "interests": [
+            "Cooking",
+            "Family gatherings"
+        ],
+        "family": [
+            "Gamgee family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Dinodas",
+            "last": "Brandybuck"
+        },
+        "address": "Overhill Underhay, Overhill, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Fishing",
+            "Storytelling"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Eglantine",
+            "last": "Banks"
+        },
+        "address": "4 Winding Way, Frogmorton, Eastfarthing",
+        "relationship": "Acquaintance",
+        "interests": [
+            "Botany",
+            "Tea parties"
+        ],
+        "family": []
+    },
+    {
+        "name": {
+            "first": "Hal",
+            "last": "Hornblower"
+        },
+        "address": "6 Long Cleeve, Northfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Pipe smoking",
+            "Folk tales"
+        ],
+        "family": [
+            "Hornblower family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Bell",
+            "last": "Goodchild"
+        },
+        "address": "1 High Lane, Scary, Eastfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Baking",
+            "Local lore"
+        ],
+        "family": []
+    },
+    {
+        "name": {
+            "first": "Doderic",
+            "last": "Proudfoot"
+        },
+        "address": "3 Proudfoot Path, Longbottom, Southfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Astronomy",
+            "Walking"
+        ],
+        "family": [
+            "Proudfoot clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Melilot",
+            "last": "Brandybuck"
+        },
+        "address": "Brandy Hall, Bucklebury, Buckland, Eastfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Dancing",
+            "Singing"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Nob",
+            "last": "Bell"
+        },
+        "address": "5 Greenholm Greenway, Greenholm, Westfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Gardening",
+            "Bird watching"
+        ],
+        "family": []
+    },
+    {
+        "name": {
+            "first": "Cora",
+            "last": "Burrows"
+        },
+        "address": "The Marish Meadery, Marish, Eastfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Mead making",
+            "Cooking"
+        ],
+        "family": [
+            "Burrows family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Griffo",
+            "last": "Boffin"
+        },
+        "address": "2 Bridgefields Wall, Buckland, Eastfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Reading",
+            "History"
+        ],
+        "family": [
+            "Boffin family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Milo",
+            "last": "Burrows"
+        },
+        "address": "Whitfurrows Farmstead, Whitfurrows, Eastfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Farming",
+            "Market trading"
+        ],
+        "family": [
+            "Burrows family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Primrose",
+            "last": "Gamgee"
+        },
+        "address": "1 Bagshot Row, Hobbiton, Westfarthing",
+        "relationship": "Relative",
+        "interests": [
+            "Gardening",
+            "Family"
+        ],
+        "family": [
+            "Gamgee family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Berilac",
+            "last": "Brandybuck"
+        },
+        "address": "Overhill Underhay, Overhill, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Adventures",
+            "Boating"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Hugo",
+            "last": "Bracegirdle"
+        },
+        "address": "2 Cotton Road, Bywater, Westfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Fishing",
+            "Local festivals"
+        ],
+        "family": [
+            "Bracegirdle family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Sigismond",
+            "last": "Took"
+        },
+        "address": "Tookbank Towers, Tookbank, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Horse riding",
+            "Archery"
+        ],
+        "family": [
+            "Took clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Linda",
+            "last": "Baggins"
+        },
+        "address": "3 Brookbank Street, Bywater, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Embroidery",
+            "Tea parties"
+        ],
+        "family": [
+            "Baggins family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Marmaduke",
+            "last": "Brandybuck"
+        },
+        "address": "Brandy Hall, Bucklebury, Buckland, Eastfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Fishing",
+            "Storytelling"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Pansy",
+            "last": "Bolger"
+        },
+        "address": "5 Chubb Lane, Michel Delving, Westfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Cooking",
+            "Gossip"
+        ],
+        "family": [
+            "Bolger family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Adalgrim",
+            "last": "Took"
+        },
+        "address": "The Great Smials, Tuckborough, Tookland, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Farming",
+            "Hunting"
+        ],
+        "family": [
+            "Took clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Esmeralda",
+            "last": "(Took) Brandybuck"
+        },
+        "address": "Brandy Hall, Bucklebury, Buckland, Eastfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Gardening",
+            "Cooking"
+        ],
+        "family": [
+            "Took and Brandybuck families"
+        ]
+    },
+    {
+        "name": {
+            "first": "Robin",
+            "last": "Smallburrow"
+        },
+        "address": "4 Winding Way, Frogmorton, Eastfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Fishing",
+            "Local festivals"
+        ],
+        "family": [
+            "Smallburrow family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Celandine",
+            "last": "Brandybuck"
+        },
+        "address": "Nobottle Vineyard, Nobottle, Westfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Wine making",
+            "Gardening"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Rufus",
+            "last": "Burrows"
+        },
+        "address": "7 Grub Street, Hobbiton, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Farming",
+            "Cooking"
+        ],
+        "family": [
+            "Burrows family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Paladin",
+            "last": "Took II"
+        },
+        "address": "Tookbank Towers, Tookbank, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Horse riding",
+            "Fishing"
+        ],
+        "family": [
+            "Took clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Eglantine",
+            "last": "(Banks) Took"
+        },
+        "address": "The Great Smials, Tuckborough, Tookland, Westfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Gardening",
+            "Tea parties"
+        ],
+        "family": [
+            "Took and Banks families"
+        ]
+    },
+    {
+        "name": {
+            "first": "Saradoc",
+            "last": "Brandybuck"
+        },
+        "address": "Brandy Hall, Bucklebury, Buckland, Eastfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Fishing",
+            "Boating"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Esmeralda",
+            "last": "Took"
+        },
+        "address": "The Great Smials, Tuckborough, Tookland, Westfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Cooking",
+            "Embroidery"
+        ],
+        "family": [
+            "Took clan"
+        ]
+    }
+],
+"events": [
+    {
+        "title": "Bilbo's Eleventy-First Birthday",
+        "date": "22 September 3001",
+        "location": "Bag End, Hobbiton, Westfarthing",
+        "organizer": "Bilbo Baggins"
+    },
+    {
+        "title": "Frodo's Farewell Party",
+        "date": "22 September 3021",
+        "location": "Bag End, Hobbiton, Westfarthing",
+        "organizer": "Frodo Baggins"
+    }
+]
+}

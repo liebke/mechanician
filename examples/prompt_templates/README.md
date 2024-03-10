@@ -1,9 +1,9 @@
-<img src="../../docs/images/dm_workflows_v2_1600x840.png" alt="Daring Mechanician Notepads"  style="max-width: 100%; height: auto float: right;">
+<img src="../../docs/images/dm_templates_1600x840.png" alt="Daring Mechanician Notepads"  style="max-width: 100%; height: auto float: right;">
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
 
-# Daring Mechanician Workflows Example
+# Daring Mechanician Prompt Templates and Prompt Tools Example Project
 
 
 ## Install
@@ -11,8 +11,8 @@
 Create a virtual environment and install the requirements.
 
 ```bash
-conda create -n dm_workflows_env python=3.11
-conda activate dm_workflows_env
+conda create -n dm_prompt_template_env python=3.11
+conda activate dm_prompt_template_env
 ```
 
 Install the example project using pip:
@@ -38,5 +38,5 @@ pip install -e .
 
 ```bash
 conda deactivate
-conda remove --name dm_workflows_env --all
+conda remove --name dm_prompt_template_env --all
 ```
