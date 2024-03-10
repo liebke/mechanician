@@ -7,7 +7,7 @@ import traceback
 from abc import ABC
 from typing import List
 from mechanician.prompting.tools import PromptTools, PromptToolKit
-
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 console = Console()
@@ -79,12 +79,12 @@ def preprocess_prompt(ai: 'TAGAI', prompt: str, prompt_tools: 'PromptTools' = No
     elif prompt.startswith('/call'):
         print("Calling function...")
         print(prompt)
-        # split prompt into function_name and args
-        function_name = prompt.split(' ')[1]
-        args = prompt.split(' ')[2:]
-        print(f"Function: {function_name}")
-        print(f"Args: {args}")
-        prompt = prompt_tools.call_function(function_name, args)
+        parsed_prompt = prompt_tools.parse_command_line(prompt)
+        if parsed_prompt is None:
+            return f"Invalid /call command: {prompt}"
+        print("Parsed Prompt:")
+        pprint(parsed_prompt)
+        prompt = prompt_tools.call_function(parsed_prompt.get("function_name"), parsed_prompt.get("params"))
         print("Generated Prompt")
         print("-----------------")
         print(prompt)

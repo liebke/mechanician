@@ -87,11 +87,10 @@ class MiddleEarthCRMPromptTools(PromptTools):
         self.crm = MiddleEarthCRM()
 
 
-    def event_invite(self, args):
-        prompt_template_name = args[0]
-        search_term = " ".join(args[1:])
-        # split remaining args into contact name and event title on a comma
-        event_title, contact_name = search_term.split(",")
+    def event_invite(self, params):
+        prompt_template_name = params.get("template")
+        event_title = params.get("event")
+        contact_name = params.get("contact")
         contact = self.crm.lookup_contact_by_name(contact_name)
         if contact is None:
             return f"Contact not found: {contact_name}"
@@ -107,10 +106,8 @@ class MiddleEarthCRMPromptTools(PromptTools):
 
         contact_resource = PromptResource("contact", contact)
         event_resource = PromptResource("event", event)
-        
         prompt_template = read_prompt_template(prompt_template_name,
                                                template_directory=self.prompt_template_directory)
-        
         return generate_prompt(prompt_template, [contact_resource, event_resource])
     
 

@@ -3,7 +3,7 @@
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
 
-# Daring Mechanician Prompt Templates and Prompt Tools Example Project
+# Daring Mechanician Prompt Templates & Tools Example Project
 
 
 ## Install
