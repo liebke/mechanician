@@ -491,13 +491,13 @@
 "events": [
     {
         "title": "Bilbo's Eleventy-First Birthday",
-        "date": "22 September 3001",
+        "date": "22 September 1401 Shire Reckoning",
         "location": "Bag End, Hobbiton, Westfarthing",
         "organizer": "Bilbo Baggins"
     },
     {
         "title": "Frodo's Farewell Party",
-        "date": "22 September 3021",
+        "date": "22 September 1418 Shire Reckoning",
         "location": "Bag End, Hobbiton, Westfarthing",
         "organizer": "Frodo Baggins"
     }
