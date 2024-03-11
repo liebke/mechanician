@@ -59,8 +59,9 @@ class PromptTools(ABC):
             
         except Exception as e:
             logger.error(f"Error calling function {function_name}: {e}")
-            traceback.print_exc()
-            return f"Error calling function {function_name}: {e}"
+            # Return empty prompt so that it's skipped
+            prompt = ''
+            return prompt
         
 
 

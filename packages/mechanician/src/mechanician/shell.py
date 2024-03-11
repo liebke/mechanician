@@ -85,11 +85,14 @@ def preprocess_prompt(ai: 'TAGAI', prompt: str, prompt_tools: 'PromptTools' = No
         print("Parsed Prompt:")
         pprint(parsed_prompt)
         prompt = prompt_tools.call_function(parsed_prompt.get("function_name"), parsed_prompt.get("params"))
+        if prompt == '':
+            # skip the prompt
+            return prompt
+        
         print("Generated Prompt")
         print("-----------------")
         print(prompt)
         print("-----------------")
-
 
     return prompt
 

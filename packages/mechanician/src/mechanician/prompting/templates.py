@@ -35,7 +35,8 @@ class PromptTemplate:
     def generate_prompt(self):
         missing_fields = self._check_template_fields(self.template_str, self.resources)
         if missing_fields:
-            return f"The PromptResources used by the Prompt Template are missing fields: {', '.join(missing_fields)}"
+            error_msg = f"The PromptResources used by the Prompt Template are missing fields: {', '.join(missing_fields)}"
+            raise ValueError(error_msg)
 
         resource_collection = {resource.name: resource.data for resource in self.resources}
 
