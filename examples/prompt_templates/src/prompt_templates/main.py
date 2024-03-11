@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 import traceback
 
 import json
-from mechanician.prompting.templates import generate_prompt, PromptResource, read_prompt_template
+from mechanician.prompting.templates import PromptTemplate
 from mechanician.prompting.tools import PromptTools
 
 logger = logging.getLogger(__name__)
@@ -104,11 +104,11 @@ class MiddleEarthCRMPromptTools(PromptTools):
         print(f"Contact: {contact}")
         print("\n\n")
 
-        contact_resource = PromptResource("contact", contact)
-        event_resource = PromptResource("event", event)
-        prompt_template = read_prompt_template(prompt_template_name,
-                                               template_directory=self.prompt_template_directory)
-        return generate_prompt(prompt_template, [contact_resource, event_resource])
+        prompt_template = PromptTemplate(template_filename=prompt_template_name, 
+                                         template_directory=self.prompt_template_directory)
+        prompt_template.add_resource("contact", contact)
+        prompt_template.add_resource("event", event)
+        return prompt_template.generate_prompt()
     
 
 if __name__ == '__main__':

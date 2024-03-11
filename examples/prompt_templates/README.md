@@ -214,6 +214,9 @@ generate_prompt(prompt_template, [contact_resource, event_resource])
 [crm_prompt_tools.py](https://github.com/liebke/mechanician/blob/64fbc65f8eba19183a831294d0015cf5c8178082/examples/prompt_templates/src/prompt_templates/main.py#L84)
 
 ```python
+from mechanician.prompting.templates import PromptTemplate
+from mechanician.prompting.tools import PromptTools
+
 class MiddleEarthCRMPromptTools(PromptTools):
     def __init__(self, prompt_template_directory="./templates"):
         self.prompt_template_directory = prompt_template_directory
@@ -224,19 +227,19 @@ class MiddleEarthCRMPromptTools(PromptTools):
         prompt_template_name = params.get("template")
         event_title = params.get("event")
         contact_name = params.get("contact")
-        contact = self.crm.lookup_contact_by_name(contact_name)
-        if contact is None:
-            return f"Contact not found: {contact_name}"
-        
+
+        contact = self.crm.lookup_contact_by_name(contact_name)        
         event = self.crm.lookup_event_by_title(event_title)
-        if event is None:
-            return f"Event not found: {event_title}"
+
+        prompt_template = PromptTemplate(template_filename=prompt_template_name, 
+                                         template_directory=self.prompt_template_directory)
+
+        prompt_template.add_resource("contact", contact)
+        prompt_template.add_resource("event", event)
         
-        contact_resource = PromptResource("contact", contact)
-        event_resource = PromptResource("event", event)
-        prompt_template = read_prompt_template(prompt_template_name,
-                                               template_directory=self.prompt_template_directory)
-        return generate_prompt(prompt_template, [contact_resource, event_resource])
+        return prompt_template.generate_prompt()
+    
+
 ```
 
 ## Install
