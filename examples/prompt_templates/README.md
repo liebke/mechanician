@@ -187,36 +187,45 @@ Bilbo Baggins
 
 [Example Project](https://github.com/liebke/mechanician/tree/main/examples/prompt_templates)
 
-### Prompt Resources
-
-```python
-contact_resource = PromptResource("contact", contact)
-event_resource = PromptResource("event", event)
-```
 
 ### Prompt Templates
 
 [party_invite.md](https://github.com/liebke/mechanician/blob/main/examples/prompt_templates/templates/party_invite.md)
 
 ```python
-read_prompt_template(prompt_template_name,
-                     template_directory="./templates")
+from mechanician.prompting.templates import PromptTemplate
+```
+
+```python
+prompt_template = PromptTemplate(template_filename=prompt_template_name, 
+                                 template_directory=prompt_template_directory)
+```
+
+### Prompt Resources
+
+```python
+prompt_template.add_resource("contact", contact)
+prompt_template.add_resource("event", event)
 ```
 
 ### Generate Prompt
 
 ```python
-generate_prompt(prompt_template, [contact_resource, event_resource])
+prompt_template.generate_prompt()
 ```
+
+## PromptTools
+
+```python
+from mechanician.prompting.tools import PromptTools
+```
+
 
 ### MiddleEarthCRMPromptTools
 
 [crm_prompt_tools.py](https://github.com/liebke/mechanician/blob/64fbc65f8eba19183a831294d0015cf5c8178082/examples/prompt_templates/src/prompt_templates/main.py#L84)
 
 ```python
-from mechanician.prompting.templates import PromptTemplate
-from mechanician.prompting.tools import PromptTools
-
 class MiddleEarthCRMPromptTools(PromptTools):
     def __init__(self, prompt_template_directory="./templates"):
         self.prompt_template_directory = prompt_template_directory
@@ -236,7 +245,7 @@ class MiddleEarthCRMPromptTools(PromptTools):
 
         prompt_template.add_resource("contact", contact)
         prompt_template.add_resource("event", event)
-        
+
         return prompt_template.generate_prompt()
     
 
