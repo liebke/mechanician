@@ -8,6 +8,7 @@ import traceback
 import json
 from mechanician.prompting.templates import PromptTemplate
 from mechanician.prompting.tools import PromptTools
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 
@@ -77,7 +78,27 @@ class MiddleEarthCRM():
                 return event
         print("Event not found.")
         return None
+    
 
+    def list_customer_inventory(self, customer_id):
+        customer_inventories = self.crm_data.get("customer_inventories", [])
+        for inventory in customer_inventories:
+            if inventory.get("customer_id") == customer_id:
+                print(f"customer_id: {customer_id} == {inventory.get('customer_id')}")
+                return inventory
+        return {}
+    
+
+    def lookup_customer_case(self, case_id):
+        customer_cases = self.crm_data.get("customer_cases", [])
+        for case in customer_cases:
+            if case.get("case_id") == case_id:
+                return case
+        return {}
+
+
+    def list_products(self):
+        return {"product": self.crm_data.get("products", [])}
 
     
 
@@ -109,6 +130,66 @@ class MiddleEarthCRMPromptTools(PromptTools):
         prompt_template.add_resource("contact", contact)
         prompt_template.add_resource("event", event)
         return prompt_template.generate_prompt()
+    
+
+    def sales_email(self, params):
+        prompt_template_name = params.get("template")
+
+        sender_name = params.get("sender")
+        sender = self.crm.lookup_contact_by_name(sender_name)
+        if sender is None:
+            return f"Sender not found: {sender_name}"
+        sender["company"] = "Middle Earth Merchantile Co."
+
+        contact_name = params.get("contact")
+        contact = self.crm.lookup_contact_by_name(contact_name)
+        if contact is None:
+            return f"Contact not found: {contact_name}"
+        
+        products = self.crm.list_products()
+        customer_inventory = self.crm.list_customer_inventory(contact_name)
+        
+        print("\n\n")
+        print(f"Sender: {sender}")
+        print(f"Contact: {contact}")
+        print("\n\n")
+
+        prompt_template = PromptTemplate(template_filename=prompt_template_name, 
+                                         template_directory=self.prompt_template_directory)
+        prompt_template.add_resource("contact", contact)
+        prompt_template.add_resource("sender", sender)
+        prompt_template.add_resource("products", products)
+        prompt_template.add_resource("customer_inventory", customer_inventory)
+        generated_prompt = prompt_template.generate_prompt()
+        return generated_prompt
+    
+
+
+    def customer_service_message(self, params):
+        prompt_template_name = params.get("template")
+
+        care_agent_name = params.get("care_agent")
+        care_agent = self.crm.lookup_contact_by_name(care_agent_name)
+        if care_agent is None:
+            return f"care_agent not found: {care_agent}"
+        care_agent["company"] = "Barad-dûr Jewelery Supply"
+
+        case_id = params.get("case_id")
+        case = self.crm.lookup_customer_case(case_id)
+        if case is None:
+            return f"Contact not found: {case_id}"
+        
+        print("\n\n")
+        print(f"Care Agent: {care_agent}")
+        print(f"Case: {case}")
+        print("\n\n")
+
+        prompt_template = PromptTemplate(template_filename=prompt_template_name, 
+                                         template_directory=self.prompt_template_directory)
+        prompt_template.add_resource("customer_care_agent", care_agent)
+        prompt_template.add_resource("customer_case", case)
+        generated_prompt = prompt_template.generate_prompt()
+        return generated_prompt
     
 
 if __name__ == '__main__':

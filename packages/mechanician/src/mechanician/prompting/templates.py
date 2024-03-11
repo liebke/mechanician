@@ -2,6 +2,8 @@ import logging
 from typing import List
 import re
 import os
+import json
+
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -51,7 +53,12 @@ class PromptTemplate:
                     value = value.get(key, '') if isinstance(value, dict) else ''
                 if not value:
                     break
-            return str(value)
+
+            # Pretty-print JSON values
+            if isinstance(value, (dict, list)):
+                return json.dumps(value, indent=4)
+            else:
+                return str(value)
 
         out = re.sub(r'\{\{([^}]+)\}\}', replacer, self.template_str)
         return out

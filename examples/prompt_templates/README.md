@@ -25,27 +25,28 @@ Prompt Templates provide a method of you applications to interact with the AI, a
 In Copilot-like scenarios where the interactions are conversational, you would rely on tool-calls to provide the AI with the data it needs to provide a grounded anwswer.
 
 
-## Prompt Templates
+#### Event Invite Prompt Template
 
 ```markdown
-You are {{event.organizer}}, and you are writing to your {{contact.relationship}} {{contact.name.first}} 
-{{contact.name.last}} from the family {{contact.family[0]}} living at {{contact.address}}. Your purpose 
-is to extend a heartfelt invitation to {{event.title}} at {{event.location}} on {{event.date}} - 
-an event not to be missed, with merriment, tales, and a feast fit for the Shire's finest.
+You are {{event.organizer}}, and you are writing to your {{contact.relationship}} {{contact.name.first}} {{contact.name.last}} 
+from the family {{contact.family[0]}} living at {{contact.address}}. Your purpose is to extend a heartfelt invitation 
+to {{event.title}} at {{event.location}} on {{event.date}} - use details from the following event entry:
+
+{{event}}
 
 Instructions:
 """
-Generate a subject line that captivates the curiosity and interest of {{contact.name}} using their 
-known interest in {{contact.interests}}, ensuring it relates closely to the content of the email 
-and is no longer than 60 characters.
-Employ language that is warm, inviting, and direct, echoing the camaraderie and simple joys that 
-define hobbit culture. Avoid any form of verbosity or convoluted expressions.
-Gently encourage your {{contact.name}} to reply, expressing your eagerness to hear of their attendance 
-and any inquiries they might have regarding the celebration.
-Include details of the birthday feast: the date, time, location, and a hint at the special surprises 
-you have in store for them.
-Conclude with a hearty invitation to join in the festivities, making it clear how much their presence 
-would add to the joy of the occasion.
+Generate a subject line that captivates the curiosity and interest of {{contact.name}} using their known interest in 
+{{contact.interests}}, ensuring it relates closely to the content of the email and is no longer than 60 characters.
+Employ language that is appropriate to the event as described. Avoid any form of verbosity or convoluted expressions.
+Gently encourage your {{contact.name}} to reply, expressing your eagerness to hear of their attendance and any inquiries 
+they might have regarding the event.
+Include details of the event: the date, time, location, and a special details.
+Conclude with an invitation to join in the event, making it clear how much their presence would be appreciated.
+"""
+
+Now, generate the invitation to {{contact.name}}.
+
 """
 
 Now, generate the invitation to your hobbit friends.
@@ -53,6 +54,7 @@ Now, generate the invitation to your hobbit friends.
 
 ### Prompt Resources
 
+* ```{{event}}```
 * ```{{event.organizer}}```
 * ```{{contact.relationship}}``` 
 * ```{{contact.name.first}}```
@@ -63,125 +65,265 @@ Now, generate the invitation to your hobbit friends.
 * ```{{event.location}}```
 * ```{{event.date}}```
 * ```{{contact.interests}}```
+* ```{{contact.name}}```
 
 
 
-### Middle Earth CRM Data
+### Invitation to Bilbo's Eleventy-First Birthday
 
-[crm.json](https://github.com/liebke/mechanician/blob/main/examples/prompt_templates/crm_data.json)
-
-```json
-{
-    "contacts": [
-        {
-            "name": {
-                "first": "Lobelia",
-                "last": "Sackville-Baggins"
-            },
-            "address": "Hardbottle, The Shire",
-            "relationship": "Unwelcome relative",
-            "interests": [
-                "Snooping",
-                "Acquiring silver spoons",
-                "Intruding on Bag End"
-            ],
-            "family": [
-                "Sackville-Baggins family"
-            ]
-        },
-        ...
-    ],
- 
-    "events": [
-        {
-            "title": "Bilbo's Eleventy-First Birthday",
-            "date": "22 September 1401 Shire Reckoning",
-            "location": "Bag End, Hobbiton, Westfarthing",
-            "organizer": "Bilbo Baggins"
-        },
-        {
-            "title": "Frodo's Farewell Party",
-            "date": "22 September 1418 Shire Reckoning",
-            "location": "Bag End, Hobbiton, Westfarthing",
-            "organizer": "Frodo Baggins"
-        }
-    ]
-}
-```
-
-### Command
+### PromptTools Command
 
 ```bash
 > /call event_invite template=party_invite.md event="Eleventy-First Birthday" contact="Lobelia Sackville-Baggins"
 ```
 
+#### Contact
+
+[crm.json](https://github.com/liebke/mechanician/blob/main/examples/prompt_templates/crm_data.json)
+
+
+```json
+{
+    "name": {
+        "first": "Lobelia",
+        "last": "Sackville-Baggins"
+    },
+    "address": "Hardbottle, The Shire",
+    "relationship": "Unwelcome relative",
+    "interests": [
+        "Snooping",
+        "Acquiring silver spoons",
+        "Intruding on Bag End"
+    ]
+}
+```
+
+#### Event
+
+```json
+{
+    "title": "Bilbo's Eleventy-First Birthday",
+    "date": "22 September 1401 Shire Reckoning",
+    "location": "Bag End, Hobbiton, Westfarthing",
+    "organizer": "Bilbo Baggins",
+    "description": "A splendid party with enchantments and surprises. An evening of merriment, fireworks by Gandalf, and a feast to surpass all prior gatherings. Friends and relatives are invited to join in celebration. Gifts unnecessary, but presence cherished.",
+    "attendees": "Expected attendance by notable Hobbits of the Shire, including the Baggins, Took, and Brandybuck families, among others. Special guest Gandalf the Grey.",
+    "activities": ["Speeches", "Firework display", "Feasting", "Music and dancing"],
+    "special_notes": "A secretive and special announcement to be made. Come for the surprises, stay for the fellowship.",
+    "RSVP_required": true,
+    "dress_code": "Festive attire recommended"
+}
+```
+
 ### Generated Prompt
 
 ```markdown
-You are Bilbo Baggins, and you are writing to your Unwelcome relative Lobelia Sackville-Baggins from the 
-family Sackville-Baggins family living at Hardbottle, The Shire. Your purpose is to extend a heartfelt 
-invitation to Bilbo's Eleventy-First Birthday at Bag End, Hobbiton, Westfarthing on 22 September 3001 - 
-an event not to be missed, with merriment, tales, and a feast fit for the Shire's finest.
+You are Bilbo Baggins, and you are writing to your Unwelcome relative Lobelia Sackville-Baggins from the family Sackville-Baggins family living at Hardbottle, The Shire. Your purpose is to extend a heartfelt invitation to Bilbo's Eleventy-First Birthday at Bag End, Hobbiton, Westfarthing on 22 September 1401 Shire Reckoning - use details from the following event entry:
+
+{
+    "title": "Bilbo's Eleventy-First Birthday",
+    "date": "22 September 1401 Shire Reckoning",
+    "location": "Bag End, Hobbiton, Westfarthing",
+    "organizer": "Bilbo Baggins",
+    "description": "A splendid party with enchantments and surprises. An evening of merriment, fireworks by Gandalf, and a feast to surpass all prior gatherings. Friends and relatives are invited to join in celebration. Gifts unnecessary, but presence cherished.",
+    "attendees": "Expected attendance by notable Hobbits of the Shire, including the Baggins, Took, and Brandybuck families, among others. Special guest Gandalf the Grey.",
+    "activities": [
+        "Speeches",
+        "Firework display",
+        "Feasting",
+        "Music and dancing"
+    ],
+    "special_notes": "A secretive and special announcement to be made. Come for the surprises, stay for the fellowship.",
+    "RSVP_required": true,
+    "dress_code": "Festive attire recommended"
+}
 
 Instructions:
 """
-Generate a subject line that captivates the curiosity and interest of 
-{'first': 'Lobelia', 'last': 'Sackville-Baggins'} using their known interest in 
-['Snooping', 'Acquiring silver spoons', 'Intruding on Bag End'], ensuring it relates closely to the 
-content of the email and is no longer than 60 characters.
-Employ language that is warm, inviting, and direct, echoing the camaraderie and simple joys that 
-define hobbit culture. Avoid any form of verbosity or convoluted expressions.
-Gently encourage your {'first': 'Lobelia', 'last': 'Sackville-Baggins'} to reply, expressing your 
-eagerness to hear of their attendance and any inquiries they might have regarding the celebration.
-Include details of the birthday feast: the date, time, location, and a hint at the special surprises 
-you have in store for them.
-Conclude with a hearty invitation to join in the festivities, making it clear how much their presence 
-would add to the joy of the occasion.
+Generate a subject line that captivates the curiosity and interest of {
+    "first": "Lobelia",
+    "last": "Sackville-Baggins"
+} using their known interest in [
+    "Snooping",
+    "Acquiring silver spoons",
+    "Intruding on Bag End"
+], ensuring it relates closely to the content of the email and is no longer than 60 characters.
+Employ language that is appropriate to the event as described. Avoid any form of verbosity or convoluted expressions.
+Gently encourage your {
+    "first": "Lobelia",
+    "last": "Sackville-Baggins"
+} to reply, expressing your eagerness to hear of their attendance and any inquiries they might have regarding the event.
+Include details of the event: the date, time, location, and a special details.
+Conclude with an invitation to join in the event, making it clear how much their presence would be appreciated.
 """
 
-Now, generate the invitation to your hobbit friends.
+Now, generate the invitation to {
+    "first": "Lobelia",
+    "last": "Sackville-Baggins"
+}.
+"""
+
+Now, generate the invitation to {'first': 'Lobelia', 'last': 'Sackville-Baggins'}.
 ```
 
-### Invitation
+### Invitation to Lobelia Sackville-Baggins
 
-```markdown
-Subject: Discover Bag End's Secrets: A Grand Birthday Feast!
+Subject: Discover the Secrets of Bag End at Bilbo’s Grand Birthday!
 
-Dear Lobelia,
+Dear Cousin Lobelia,
 
-I hope this message finds you in good health and high spirits, surrounded by the many comforts of Hardbottle. 
-As the leaves begin to shift from their summer green to the rich golds and ambers of early fall, an occasion 
-of great importance and merriment is swiftly approaching—an occasion I believe would be greatly diminished 
-without your distinctive presence.
+As the leaves turn and September waxes, so does the anticipation within the bounds of the Shire, and more so at Bag End. It is with great delight and no small amount of excitement that I find myself extending to you an invitation wholly sincere and bursting with promise. I write, of course, of my upcoming Eleventy-First Birthday celebration, set to be a night that will surely echo in Hobbiton's tales and memories for time uncounted.
 
-It is with a joyful heart and open doors that I extend to you this heartfelt invitation to my Eleventy-First 
-Birthday celebration, to be held at Bag End, Hobbiton, in the lush precincts of Westfarthing, on the 22nd of 
-September, 3001, beginning as the sun dips below the horizon and continuing under the twinkling canopy of 
-the night sky.
+Mark your calendar, dear cousin: the event is on 22nd September 1401 Shire Reckoning, taking place at Bag End, Hobbiton, Westfarthing. The evening is to commence as the clock chimes the hour of seven, under the blanket of stars and the embrace of the old party tree, which stands eager to oversee our joy.
 
-Anticipate a feast that promises to delight and surprise, where the ale flows as freely as the rivers of the 
-Shire and the dishes tell tales of lands both near and far. And yes, Lobelia, there will indeed be a few 
-specially reserved surprises—perhaps even a glimpse into the many curious treasures that have found their way 
-into Bag End over the years, much to the delight of those with an eye for the unique and the extraordinary.
+This year's gathering is to include enchantments and surprises, a spectacle of fireworks orchestrated by none other than Gandalf the Grey himself, and a feast to surpass all prior gatherings. The music and dancing will carry us through the night, but it is the fellowship and the shared moments of laughter and delight that promise to be the true gems of the evening.
 
-I understand, dear Lobelia, that your interests lie in the more unique aspects of hobbit gatherings, and I 
-assure you, this birthday will offer moments of intrigue and discovery that would satisfy even the most 
-ardent of curiosity-seekers. It would be a pleasure to share these moments with you, to hear your laughter 
-mixing with the evening's festivities, and to perhaps exchange a story or two about our adventures and the 
-simple yet profound joy they bring.
+Among the attendees will be notable Hobbits of the Shire, from the Baggins to the Tooks and Brandybucks, each adding their own charm to the melange. Yet, it is your presence, Lobelia, that would lend a particular sparkle to the evening, fulfilling the promise of fellowship and family.
 
-I eagerly await your reply, with hopes that you will grace us with your attendance. Should you have any 
-questions or require details about the event, do not hesitate to get in touch. Your presence would 
-undoubtedly add a significant layer of charm and vivacity to the evening’s celebrations.
+I understand that our kinship has traversed rocky paths and perhaps even ventured into the thorns. Yet, what better occasion to set aside old squabbles and celebrate what truly matters? The invitation extends beyond mere attendance; it is a call to revel in the joy of the Shire, in the magic of moments shared under the stars.
 
-Please consider this not just an invitation, but a sincere request for your company, as we come together 
-to celebrate not just another year past, but the enduring spirit of friendship and family that unites us 
-all, regardless of our differences.
+There's mention of a secretive and special announcement to be made; come for the surprises, stay for the fellowship. Gifts are unnecessary as your presence is cherished far more.
 
-With warmest regards and anticipation,
+Kindly reply with your RSVP, and do not hesitate to inquire should you have any questions or require further details about the night's festivities. Festive attire is recommended, to match the spirit of merriment and celebration that awaits.
+
+Looking forward to your positive response and, hopefully, your company on this auspicious occasion.
+
+Warm regards,
 
 Bilbo Baggins
+
+
+
+### Invitation to the Battle of the Pelennor Fields
+
+#### PromptTools Command
+
+```bash
+> /call event_invite template=event_invite.md event="Battle of the Pelennor Fields" contact="Théoden"
 ```
+
+#### Contact
+
+```json
+{
+        "name": {
+            "first": "Théoden",
+            "last": "King of Rohan"
+        },
+        "address": "Edoras, Rohan",
+        "relationship": "King",
+        "interests": [
+            "Horse-riding",
+            "Leadership"
+        ],
+        "family": [
+            "House of Eorl"
+        ]
+    }
+```
+
+#### Event
+
+```json
+{
+    "title": "The Battle of the Pelennor Fields",
+    "date": "15 March 3019 Third Age",
+    "location": "Pelennor Fields, outside Minas Tirith, Gondor",
+    "organizer": "Denethor II, Steward of Gondor, and Gandalf the White",
+    "description": "A call to arms to defend the White City against the forces of Sauron. As darkness descends upon Gondor, the beacons are lit, and the call goes forth to all able-bodied men and allies of the Free Peoples. Stand with us on the Pelennor Fields to face the might of Mordor and fight for the freedom of Middle-earth. Let us unite under the banner of Gondor and push back this shadow once and for all.",
+    "attendees": "Soldiers of Gondor, Riders of Rohan, forces from fiefdoms of Gondor, and any willing allies among the Free Peoples of Middle-earth. Key figures include King Théoden of Rohan, Prince Imrahil of Dol Amroth, Éomer, Éowyn, and the Grey Company.",
+    "activities": ["Assembly at dawn", "Cavalry charges", "Coordination with the Rohirrim", "Strategic defense and counterattacks against enemy forces"],
+    "special_notes": "This battle is a pivotal moment in the War of the Ring. Courage, honor, and unity will be our guiding lights. For Gondor, for freedom!",
+    "RSVP_required": false,
+    "dress_code": "Battle regalia and armor"
+}
+```
+
+#### Generated Prompt
+
+```markdown
+You are Denethor II, Steward of Gondor, and Gandalf the White, and you are writing to your King 
+Théoden King of Rohan from the family House of Eorl living at Edoras, Rohan. Your purpose is to 
+extend a heartfelt invitation to The Battle of the Pelennor Fields at Pelennor Fields, outside 
+Minas Tirith, Gondor on 15 March 3019 Third Age - use details from the following event entry:
+
+{
+    "title": "The Battle of the Pelennor Fields",
+    "date": "15 March 3019 Third Age",
+    "location": "Pelennor Fields, outside Minas Tirith, Gondor",
+    "organizer": "Denethor II, Steward of Gondor, and Gandalf the White",
+    "description": "A call to arms to defend the White City against the forces of Sauron. As 
+    darkness descends upon Gondor, the beacons are lit, and the call goes forth to all able-bodied 
+    men and allies of the Free Peoples. Stand with us on the Pelennor Fields to face the might 
+    of Mordor and fight for the freedom of Middle-earth. Let us unite under the banner of Gondor 
+    and push back this shadow once and for all.",
+    "attendees": "Soldiers of Gondor, Riders of Rohan, forces from fiefdoms of Gondor, and any 
+    willing allies among the Free Peoples of Middle-earth. Key figures include King Th\u00e9oden 
+    of Rohan, Prince Imrahil of Dol Amroth, \u00c9omer, \u00c9owyn, and the Grey Company.",
+    "activities": [
+        "Assembly at dawn",
+        "Cavalry charges",
+        "Coordination with the Rohirrim",
+        "Strategic defense and counterattacks against enemy forces"
+    ],
+    "special_notes": "This battle is a pivotal moment in the War of the Ring. Courage, honor, 
+    and unity will be our guiding lights. For Gondor, for freedom!",
+    "RSVP_required": false,
+    "dress_code": "Battle regalia and armor"
+}
+
+Instructions:
+"""
+Generate a subject line that captivates the curiosity and interest of {
+    "first": "Th\u00e9oden",
+    "last": "King of Rohan"
+} using their known interest in [
+    "Horse-riding",
+    "Leadership"
+], ensuring it relates closely to the content of the email and is no longer than 60 characters.
+Employ language that is appropriate to the event as described. Avoid any form of verbosity 
+or convoluted expressions.
+Gently encourage your {
+    "first": "Th\u00e9oden",
+    "last": "King of Rohan"
+} to reply, expressing your eagerness to hear of their attendance and any inquiries they might 
+have regarding the event.
+Include details of the event: the date, time, location, and a special details.
+Conclude with an invitation to join in the event, making it clear how much their presence would 
+be appreciated.
+"""
+
+Now, generate the invitation to {
+    "first": "Th\u00e9oden",
+    "last": "King of Rohan"
+}.
+```
+
+#### Generated Invitation to Théoden King of Rohan
+
+Subject: Rally to Gondor: A Call for Rohan's Valiant Riders!
+
+To His Esteemed Majesty, Théoden, King of Rohan,
+
+In a time when the shadow of Mordor lengthens over the realms of Middle-earth, threatening to engulf our lands in darkness and despair, the White City of Gondor stands on the brink of an unparalleled siege. It is in this dire hour, under the looming threat of Sauron's forces, that we, Denethor II, Steward of Gondor, and Gandalf the White, reach out to you and the valiant people of Rohan.
+
+The 15th of March, 3019 Third Age, marks a day that will be engraved in the annals of history – the Battle of the Pelennor Fields. We stand at the precipice, ready to defend Gondor's gates against the might that marches from Mordor, and in doing so, protect the freedom of all Free Peoples of Middle-earth.
+
+This call to arms is extended to the Riders of Rohan, whose renowned prowess and unyielding spirit in the saddle have turned the tides of many battles. As darkness descends upon Gondor, the beacons have been lit – a signal that now calls for your aid. The Pelennor Fields, just outside Minas Tirith, will be the stage upon which we unite our forces to face this unprecedented threat. 
+
+Your leadership, King Théoden, and the courage of the Rohirrim, are pivotal to our cause. Together, under the banners of Gondor and Rohan, we will engage in a battle that promises cavalry charges across the fields, coordinated efforts with the Rohirrim, and a strategic defense to counter the advancing enemy forces.
+
+This battle is not just Gondor's to bear; it is a turning point for all the Free Peoples. It is a testament to our courage, honor, and unity. No RSVP is required, for we know that Rohan's heart beats in tandem with the call of valor. Your response, however, would bolster the spirits of all those who stand ready to lay down their lives for freedom's cause.
+
+Prepare your riders, shine your armor, and let us meet on the field with a resolve as unbreakable as the bonds that unite us.
+
+For Gondor, for Rohan, for freedom!
+
+With the highest respect and in anticipation of our united stand,
+
+Denethor II, Steward of Gondor
+Gandalf the White
+
 
 ### Prompt Templates & Tools Example Project
 
