@@ -109,7 +109,7 @@ class MiddleEarthCRMPromptTools(PromptTools):
 
 
     def event_invite(self, params):
-        prompt_template_name = params.get("template")
+        prompt_template_name = params.get("template") or "event_invite.md"
         event_title = params.get("event")
         contact_name = params.get("contact")
         contact = self.crm.lookup_contact_by_name(contact_name)
@@ -133,7 +133,7 @@ class MiddleEarthCRMPromptTools(PromptTools):
     
 
     def sales_email(self, params):
-        prompt_template_name = params.get("template")
+        prompt_template_name = params.get("template") or "sales_email.md"
 
         sender_name = params.get("sender")
         sender = self.crm.lookup_contact_by_name(sender_name)
@@ -166,7 +166,7 @@ class MiddleEarthCRMPromptTools(PromptTools):
 
 
     def customer_service_message(self, params):
-        prompt_template_name = params.get("template")
+        prompt_template_name = params.get("template") or "customer_service_message.md"
 
         care_agent_name = params.get("care_agent")
         care_agent = self.crm.lookup_contact_by_name(care_agent_name)
