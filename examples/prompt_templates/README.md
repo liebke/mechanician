@@ -393,6 +393,79 @@ class MiddleEarthCRMPromptTools(PromptTools):
 
 ```
 
+### Customer Summarization Example
+
+#### PromptTools Command
+
+```bash
+> /call customer_summarization customer="Bilbo Baggins"
+```
+
+### PromptTemplate
+
+```markdown
+You’re an Customer Care Representative and you are providing support for a customer {{customer.name}} and require a summary of 
+the customer's details and interactions with your company, use the data below to create a summary of this customer.
+
+## Customer Details
+
+{{customer}}
+
+## Customer Cases
+
+{{cases}}
+
+## Customer Product Portfolio
+
+{{customer_inventory}}
+
+
+When I ask you to generate a summary, you must strictly follow my instructions below.
+
+Instructions: 
+"""
+Use clear, concise, and straightforward language using the active voice and strictly avoiding the use of filler words and phrases and redundant language.
+Provide a prioritized list of suggestions of actions that the customer care representative should suggest to the customer to represents the most 
+likely reason the customer is contacting the company..
+End with a call to action for the customer care representative to follow up with the customer.
+"""
+
+Now generate the summary of your customer.
+```
+
+
+#### Generated Summary
+
+Customer Summary:
+
+Bilbo Baggins resides at Bag End, Hobbiton, Westfarthing, The Shire, identifies as an adventurer and ring-finder, and is associated with the Baggins family. His interests are writing, storytelling, and Elvish languages.
+
+Case Details:
+Case ID: 002 involves a complaint about a product causing unexpected longevity and an overwhelming desire to be deceitful, alongside difficulties in relinquishing the product despite its negative impact on well-being and personal relationships. Bilbo requests assurance that there will be no lasting effects and seeks compensation for emotional distress. The case is currently under review.
+
+Product Portfolio:
+1. The One Ring - Found in Gollum's cave, TA 2941.
+2. Mithril Shirt - Gift from Thorin Oakenshield, TA 2941.
+3. Sting - Found in a troll hoard, TA 2941.
+4. Worn Travel Cloak - Purchased, TA 2941.
+5. Party Supplies - Purchased for Bilbo's eleventy-first birthday, TA 3001.
+6. Fireworks - Purchase from Gandalf, TA 3001.
+7. Red Book of Westmarch - Created for memoirs, TA 3001.
+8. Pipe and Tobacconist Supplies - Recurrent purchases.
+
+Action Suggestions:
+1. Confirm understanding of Bilbo’s distress caused by the product (The One Ring) and express empathy.
+2. Assure Bilbo that the case is under priority review for a swift resolution.
+3. Inquire if Bilbo needs any assistance with his other items, emphasizing care for his well-being and satisfaction.
+4. Offer to provide regular updates on his case status and inquire if there are any immediate concerns or questions regarding his product portfolio.
+5. Suggest Bilbo prepares any additional information or documentation about his experiences for a comprehensive review.
+
+Call to Action:
+Contact Bilbo Baggins promptly to affirm case prioritization and offer support for any additional needs related to his product portfolio. Aim to provide a meaningful resolution and ensure overall satisfaction.
+
+
+
+
 ## Install
 
 Create a virtual environment and install the requirements.

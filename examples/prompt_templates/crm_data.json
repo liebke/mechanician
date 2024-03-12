@@ -979,28 +979,28 @@
         "customer_cases": [
             {
                 "case_id": "001",
-                "name": "Sméagol",
+                "customer_name": "Sméagol",
                 "complaint": "Product led to immediate and severe addiction. Side effects included extreme possessiveness, identity crisis, and a drastically altered physical appearance. Long-term use resulted in social isolation and homicidal tendencies.",
                 "resolution_requested": "Requesting a full refund or an exchange for a product that doesn't cause eternal damnation.",
                 "status": "Pending investigation"
             },
             {
                 "case_id": "002",
-                "name": "Bilbo Baggins",
+                "customer_name": "Bilbo Baggins",
                 "complaint": "Product caused unexpected longevity and an overwhelming desire to be deceitful. Difficulties in relinquishing the product despite clear negative impact on personal relationships and well-being.",
                 "resolution_requested": "Seeking assurance that no lasting effects will remain and compensation for emotional distress.",
                 "status": "Under review"
             },
             {
                 "case_id": "003",
-                "name": "Frodo Baggins",
+                "customer_name": "Frodo Baggins",
                 "complaint": "Product caused intense psychological trauma, physical harm, and persistent pursuit by hostile forces. Usage led to near-fatal attraction to volcanic environments.",
                 "resolution_requested": "Demands a comprehensive recovery package, including medical care, mental health services, and assurances of no further pursuit by product-related entities.",
                 "status": "Awaiting further action"
             },
             {
                 "case_id": "004",
-                "name": "Samwise Gamgee",
+                "customer_name": "Samwise Gamgee",
                 "complaint": "Temporary interaction with product resulted in immediate exposure to risk and danger, including but not limited to giant spiders and multiple instances of kidnapping. Product use observed to cause significant harm to close friend.",
                 "resolution_requested": "Requests a safer work environment and hazard pay, along with a guarantee of safety for all future ring-bearers.",
                 "status": "Referred to health and safety"

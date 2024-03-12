@@ -95,6 +95,14 @@ class MiddleEarthCRM():
             if case.get("case_id") == case_id:
                 return case
         return {}
+    
+    def lookup_customer_cases_by_name(self, customer_name):
+        customer_cases = self.crm_data.get("customer_cases", [])
+        cases = []
+        for case in customer_cases:
+            if case.get("customer_name") == customer_name:
+                cases.append(case)
+        return cases
 
 
     def list_products(self):
@@ -188,6 +196,41 @@ class MiddleEarthCRMPromptTools(PromptTools):
                                          template_directory=self.prompt_template_directory)
         prompt_template.add_resource("customer_care_agent", care_agent)
         prompt_template.add_resource("customer_case", case)
+        generated_prompt = prompt_template.generate_prompt()
+        return generated_prompt
+    
+
+    def product_newsletter(self, params):
+        prompt_template_name = params.get("template") or "product_newsletter.md"
+        company_name = params.get("company")
+        company = {"name": company_name}
+
+        products = self.crm.list_products()
+        
+        prompt_template = PromptTemplate(template_filename=prompt_template_name, 
+                                         template_directory=self.prompt_template_directory)
+        prompt_template.add_resource("company", company)
+        prompt_template.add_resource("products", products)
+        generated_prompt = prompt_template.generate_prompt()
+        return generated_prompt
+    
+
+    def customer_summarization(self, params):
+        prompt_template_name = params.get("template") or "customer_summarization.md"
+
+        customer_name = params.get("customer")
+        customer = self.crm.lookup_contact_by_name(customer_name)
+        if customer is None:
+            return f"Contact not found: {customer_name}"
+        
+        customer_inventory = self.crm.list_customer_inventory(customer_name)
+        cases = self.crm.lookup_customer_cases_by_name(customer_name)
+
+        prompt_template = PromptTemplate(template_filename=prompt_template_name, 
+                                         template_directory=self.prompt_template_directory)
+        prompt_template.add_resource("customer", customer)
+        prompt_template.add_resource("cases", cases)
+        prompt_template.add_resource("customer_inventory", customer_inventory)
         generated_prompt = prompt_template.generate_prompt()
         return generated_prompt
     
