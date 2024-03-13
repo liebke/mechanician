@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daring Mechanician AI</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            background-color: #333; /* Darker grey for the textarea */
+            color: white; /* White text */
+            font-family: Helvetica, sans-serif; /* Helvetica or fallback to sans-serif */
+            font-size: 18px; /* Adjusted font size */
+        }
+
+        #header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #333; /* Darker grey */
+            color: white;
+            text-align: left; /* Text aligned to the left */
+            padding: 10px 20px; /* Adjusted padding */
+            font-size: 32px;
+            z-index: 1000;
+        }
+
+        #footer {
+            position: fixed;
+            bottom: 10px; /* Slightly raised from the bottom */
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: center; /* Center the footer content */
+        }
+
+
+        #inputContainer {
+            width: 50%; /* Input container occupies 50% of the width */
+            display: flex;
+            border: 1px solid white; /* Thin white border */
+            padding: 5px; /* Padding inside the container */
+            box-sizing: border-box; /* Ensure padding and border are included in the width */
+            align-items: center; /* Align the items vertically in the center */
+            justify-content: space-between; /* Adjust based on your layout preference */
+            border-radius: 5px; /* Optional: Adds rounded corners to the container */
+        }
+
+        /* Adjusted #content area to not overlap with the footer */
+        #content {
+            position: fixed;
+            top: 60px; /* Height of the header */
+            bottom: 70px; /* Height of the footer + some space for margin */
+            overflow-y: auto;
+            width: 100%;
+            padding: 0 10px; /* Adjust as needed */
+            height: calc(100% - 160px); /* Adjusted height to fill between header and footer */
+        }
+
+        textarea {
+            margin: 0; /* Remove default margins */
+            flex-grow: 1; /* Allow textarea to grow */
+            background-color: #333; /* Darker grey for the textarea */
+            color: white; /* White text */
+            border: none; /* Remove border */
+            padding: 5px; /* Reduced padding */
+            resize: none; /* Prevent resizing */
+            font-size: 18px; /* Adjusted font size */
+            font-family: Helvetica, sans-serif; /* Consistent font */
+            overflow-y: hidden; /* Hide the overflow */
+            height: 30px; /* Reduced initial height */
+            min-height: 30px; /* Ensure it does not go smaller than a single line */
+        }
+
+
+
+        button {
+            margin: 0; /* Remove default margins */
+            padding: 10px 20px; /* Padding around the text */
+            background-color: #333; /* Darker grey button */
+            color: white; /* White text */
+            border: none; /* Remove border */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 18px; /* Adjusted font size */
+            font-family: Helvetica, sans-serif; /* Consistent font */
+        }
+
+        button:hover {
+            background-color: #777; /* Lighter grey on hover */
+        }
+
+
+        p {
+            margin: 20px 10px;
+        }
+
+        .message-container {
+            margin: 20px 10px;
+        }
+
+        .message-header, .message-text {
+            margin-left: 10px; /* Ensure alignment */
+        }
+
+        .message-header {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 0px; /* Minimize the vertical gap by reducing bottom margin */
+        }
+
+        .message-text {
+            font-size: 16px;
+            margin-top: 10px; /* Ensure minimal space above the message text */
+            margin-bottom: 30px; /* Increase the gap between this message and the next header */
+        }
+
+        .scroll-indicator {
+            position: fixed; /* Change position to fixed */
+            bottom: calc(0% + 100px); /* Adjust as needed to position just above the text input */
+            left: 50%; /* Center horizontally */
+            transform: translateX(-50%); /* Center horizontally */
+            font-size: 24px;
+            color: #666;
+            display: none; /* Initially hidden */
+            z-index: 1000;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div id="header">Daring Mechanician AI</div>
+
+    <div id="content">
+        <div id="messages"></div>
+        <div class="scroll-indicator" id="scrollIndicator">&#x2B07;</div>
+    </div>
+
+    <div id="footer">
+        <div id="inputContainer">
+            <div class="scroll-indicator" id="scrollIndicator">&#x2B07;</div>
+            <textarea id="input" placeholder="Type your message here..."></textarea>
+            <button id="send">&#x2B06;</button>
+        </div>
+    </div>
+
+    <script>
+        var socket = io('http://' + document.domain + ':' + location.port, {
+            reconnectionAttempts: 5,
+            reconnectionDelay: 2000,
+            reconnectionDelayMax: 5000,
+        });
+        var currentAIResponse = null;
+    
+        socket.on('connect', function() {
+            console.log('Connected to the server.');
+        });
+    
+        socket.on('disconnect', function(reason) {
+            console.log('Disconnected from the server:', reason);
+            $('#messages').append($('<p>').html("<strong>System:</strong> Disconnected. Attempting to reconnect..."));
+        });
+    
+        socket.on('reconnect', function(attemptNumber) {
+            console.log('Reconnected to the server after ' + attemptNumber + ' attempts.');
+            $('#messages').append($('<p>').html("<strong>System:</strong> Reconnected to the server."));
+        });
+    
+        function sendPrompt() {
+            var promptText = $('#input').val().trim();
+            if (promptText) {
+                let userMessageContainer = $('<div class="message-container">');
+                userMessageContainer.append($('<p class="message-header">').html("You"));
+                userMessageContainer.append($('<p class="message-text">').text(promptText));
+                $('#messages').append(userMessageContainer);
+                socket.emit('message', {data: promptText});
+                $('#input').val('');
+                adjustTextareaHeight();
+                currentAIResponse = null;
+                checkScroll(); // Check scroll after sending a prompt
+                setTimeout(checkScroll, 0); // Ensure checkScroll runs after the DOM updates
+            }
+        }
+    
+        $('#send').click(sendPrompt);
+    
+        $('#input').on('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendPrompt();
+            }
+        });
+    
+        socket.on('response', function(msg) {
+            if (msg.data === 'END_OF_RESPONSE') {
+                $('#messages').append($('<hr>'));
+                currentAIResponse = null;
+            } else {
+                if (!currentAIResponse) {
+                    let aiMessageContainer = $('<div class="message-container">');
+                    aiMessageContainer.append($('<p class="message-header">').html("AI"));
+                    currentAIResponse = $('<p class="message-text">');
+                    aiMessageContainer.append(currentAIResponse);
+                    $('#messages').append(aiMessageContainer);
+                }
+                let contentWithBreaks = msg.data.replace(/\n/g, '<br>');
+                currentAIResponse.append(contentWithBreaks);
+                checkScroll(); // Check scroll after receiving a response
+            }
+        });
+    
+        function adjustTextareaHeight() {
+            var textarea = document.getElementById('input');
+            textarea.style.height = 'auto';
+            textarea.style.height = textarea.scrollHeight + 'px';
+        }
+    
+        // Simplified checkScroll function
+        function checkScroll() {
+            var contentElement = document.getElementById('content');
+            var scrollIndicator = document.getElementById('scrollIndicator');
+
+            // Logic to determine if scrolling is needed
+            var isScrollable = contentElement.scrollHeight > contentElement.clientHeight;
+            var isScrolledToBottom = contentElement.scrollHeight - contentElement.scrollTop <= contentElement.clientHeight;
+
+            // Show or hide the scroll indicator
+            scrollIndicator.style.display = isScrollable && !isScrolledToBottom ? 'block' : 'none';
+        }
+
+        // Call checkScroll after adding content to the messages
+        function addContentAndUpdateScroll() {
+            // Your logic to add content to the messages container
+
+            // After adding content, check if scrolling is needed
+            checkScroll();
+        }
+
+        
+        // Initialize and adjust on DOM content loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            adjustTextareaHeight(); // Initial adjust
+            checkScroll(); // Initial check for scroll
+    
+            // Attach scroll event listener
+            document.getElementById('content').addEventListener('scroll', checkScroll);
+        });
+    </script>
+    
+</body>
+</html>

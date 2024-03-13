@@ -78,8 +78,15 @@ class OpenAIChatConnector(StreamingAIConnector):
     ## SUBMIT_PROMPT
     ###############################################################################
 
+    # def submit_prompt(self, prompt, role="user"):
+    #     return self.process_stream(self.get_stream(prompt, role=role))
+            
     def submit_prompt(self, prompt, role="user"):
-        return self.process_stream(self.get_stream(prompt, role=role))
+        stream = self.get_stream(prompt, role=role)
+        responses = []
+        for response in self.process_stream(stream):
+            responses.append(response)
+        return responses
     
     ###############################################################################
     ## GET_PROMPT
@@ -165,31 +172,83 @@ class OpenAIChatConnector(StreamingAIConnector):
     ## PROCESS_STREAM
     ###############################################################################
 
-    def process_stream(self, stream):
+    # def process_stream(self, stream):
         
-        response = ""
+    #     response = ""
+    #     tool_calls = []
+    #     tool_calls_index = -1
+    #     futures = []
+    #     for chunk in stream:
+    #         if not chunk.choices:
+    #             continue
+            
+    #         if chunk.choices[0].delta.content is not None:
+    #             # Collect response to include in message history
+    #             response += chunk.choices[0].delta.content
+    #             self.stream_printer.print(chunk.choices[0].delta.content, end="", flush=True)
+
+    #         elif chunk.choices[0].delta.tool_calls is not None:
+    #             tool_calls, tool_calls_index = self.process_tool_calls_chunk(chunk, tool_calls, tool_calls_index, futures)
+
+    #     # if the assistant responded with a message, add it to the message history
+    #     if(response != ""):
+    #         self.messages.append({"role": "assistant", "content": response})
+
+    #     # if the assistant responded with tool calls, call the function handler for each tool_call,
+    #     # and add each response to the message history
+    #     elif(tool_calls != []):
+    #         if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
+    #             if (len(tool_calls) > len(futures)):
+    #                 tc = tool_calls[-1]
+    #                 with ThreadPoolExecutor(max_workers=self.MAX_THREAD_WORKERS) as executor:
+    #                     futures.append(executor.submit(self.process_tool_call, tc))
+    #                     self.stream_printer.print(f"Applying tool: {tc['function']['name']}...")
+
+    #             results = [f.result() for f in as_completed(futures)]
+
+    #         else:
+    #             results = map(self.process_tool_call, tool_calls)
+
+    #         assistant_message = {"role": "assistant", "tool_calls": []}
+    #         tool_resp_messages = []
+    #         for result in results:
+    #             tc, function_resp = result
+    #             assistant_message['tool_calls'].append(tc)
+    #             tool_resp_message = {"role": "tool", 
+    #                                  "tool_call_id": tc['id'],
+    #                                  "name": tc['function']['name'],
+    #                                  "content": function_resp }
+    #             tool_resp_messages.append(tool_resp_message)
+                
+    #         # Append the assistant message with tool_calls to the message history
+    #         self.messages.append(assistant_message)
+    #         # Append the tool response messages to the message history
+    #         for msg in tool_resp_messages:
+    #             self.messages.append(msg)
+
+    #         response = None
+
+    #     return response
+
+    def process_stream(self, stream):
         tool_calls = []
         tool_calls_index = -1
         futures = []
         for chunk in stream:
             if not chunk.choices:
                 continue
-            
+
             if chunk.choices[0].delta.content is not None:
-                # Collect response to include in message history
-                response += chunk.choices[0].delta.content
+                # Yield response chunk to include in message history
+                yield chunk.choices[0].delta.content
                 self.stream_printer.print(chunk.choices[0].delta.content, end="", flush=True)
 
             elif chunk.choices[0].delta.tool_calls is not None:
                 tool_calls, tool_calls_index = self.process_tool_calls_chunk(chunk, tool_calls, tool_calls_index, futures)
 
-        # if the assistant responded with a message, add it to the message history
-        if(response != ""):
-            self.messages.append({"role": "assistant", "content": response})
-
         # if the assistant responded with tool calls, call the function handler for each tool_call,
         # and add each response to the message history
-        elif(tool_calls != []):
+        if(tool_calls != []):
             if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                 if (len(tool_calls) > len(futures)):
                     tc = tool_calls[-1]
@@ -218,10 +277,6 @@ class OpenAIChatConnector(StreamingAIConnector):
             # Append the tool response messages to the message history
             for msg in tool_resp_messages:
                 self.messages.append(msg)
-
-            response = None
-
-        return response
 
 
     ###############################################################################
