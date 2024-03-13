@@ -10,7 +10,7 @@
             margin: 0;
             padding: 0;
             height: 100%;
-            background-color: #333; /* Darker grey for the textarea */
+            background-color: #222; /* Darker grey for the textarea */
             color: white; /* White text */
             font-family: Helvetica, sans-serif; /* Helvetica or fallback to sans-serif */
             font-size: 18px; /* Adjusted font size */
@@ -20,7 +20,7 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background-color: #333; /* Darker grey */
+            background-color: #222; /* Darker grey */
             color: white;
             text-align: left; /* Text aligned to the left */
             padding: 10px 20px; /* Adjusted padding */
@@ -47,7 +47,7 @@
             box-sizing: border-box; /* Ensure padding and border are included in the width */
             align-items: center; /* Align the items vertically in the center */
             justify-content: space-between; /* Adjust based on your layout preference */
-            border-radius: 5px; /* Optional: Adds rounded corners to the container */
+            border-radius: 15px; /* Optional: Adds rounded corners to the container */
 
             align-items: flex-start; /* Align items to the start, allowing the container to grow with content */
         }
@@ -66,7 +66,7 @@
         textarea {
             margin: 0; /* Remove default margins */
             flex-grow: 1; /* Allow textarea to grow */
-            background-color: #333; /* Darker grey for the textarea */
+            background-color: #222; /* Darker grey for the textarea */
             color: white; /* White text */
             border: none; /* Remove border */
             padding: 5px; /* Reduced padding */
@@ -83,12 +83,14 @@
         button {
             margin: 0; /* Remove default margins */
             padding: 10px 20px; /* Padding around the text */
-            background-color: #333; /* Darker grey button */
+            background-color: #222; /* Darker grey button */
             color: white; /* White text */
             border: none; /* Remove border */
             cursor: pointer; /* Pointer cursor on hover */
             font-size: 24px; /* Adjusted font size */
             font-family: Helvetica, sans-serif; /* Consistent font */
+            font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+            border-radius: 15px; /* Optional: Adds rounded corners to the button */
         }
 
         button:hover {
@@ -132,13 +134,13 @@
         .scroll-indicator {
             position: fixed;
             bottom: calc(0% + 100px); /* Adjust as needed to position just above the text input */
-            left: 50%; /* Center horizontally */
+            left: 60%; /* Center horizontally */
             transform: translateX(-50%); /* Center horizontally */
             font-size: 26px; /* Size of the arrow */
             color: white; /* Arrow color */
             display: none; /* Initially hidden */
             z-index: 1000;
-            background-color: #333; /* Dark grey background */
+            background-color: #222; /* Dark grey background */
             width: 40px; /* Width of the box */
             height: 40px; /* Height of the box */
             line-height: 40px; /* Center the arrow vertically */
@@ -147,13 +149,44 @@
             border: 1px solid #777; /* Fine white border around the circle */
         }
 
+        /* Sidebar Styles */
+        #sidebar {
+            position: fixed;
+            top: 0; /* Align with the top of the viewport */
+            left: 0; /* Align with the left side of the viewport */
+            width: 20%; /* Sidebar width */
+            height: 100%; /* Full height */
+            background-color: #171717; /* Darker grey background */
+            padding: 20px; /* Padding around the content */
+            box-sizing: border-box; /* Include padding in the width calculation */
+            z-index: 1001; /* Ensure it's above other content but below fixed elements if necessary */
+        }
+
+        #sidebar h1 {
+            text-align: center; /* Center the arrow horizontally */
+            color: white; /* Title color */
+            margin: 0 0 20px; /* Add some margin below the title */
+            font-size: 20px; /* Title font size */
+            font-weight: normal; /* Makes the font thinner, assuming Helvetica supports this weight */
+        }
+
+        /* Adjust the #content, #header, and #footer to account for the sidebar */
+        #content, #header, #footer {
+            margin-left: 10%; /* Push them to the right to make space for the sidebar */
+        }
 
 
     </style>
 </head>
 <body>
 
-    <div id="header">Daring Mechanician</div>
+    <!-- Sidebar -->
+    <div id="sidebar">
+        <h1>Daring Mechanician</h1>
+        <!-- Add additional sidebar content here -->
+    </div>
+
+    <div id="header"></div>
 
     <div id="content">
         <div id="messages"></div>
@@ -163,7 +196,7 @@
     <div id="footer">
         <div id="inputContainer">
             <div class="scroll-indicator" id="scrollIndicator">&#x2B07;</div>
-            <textarea id="input" placeholder="Type your message here..."></textarea>
+            <textarea id="input" placeholder="How can I assist you today?"></textarea>
             <button id="send">&#x2B06;</button>
         </div>
     </div>
