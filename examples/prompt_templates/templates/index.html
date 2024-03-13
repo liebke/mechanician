@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Daring Mechanician AI</title>
+    <title>Daring Mechanician</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
@@ -24,7 +24,7 @@
             color: white;
             text-align: left; /* Text aligned to the left */
             padding: 10px 20px; /* Adjusted padding */
-            font-size: 32px;
+            font-size: 24px;
             z-index: 1000;
         }
 
@@ -48,6 +48,8 @@
             align-items: center; /* Align the items vertically in the center */
             justify-content: space-between; /* Adjust based on your layout preference */
             border-radius: 5px; /* Optional: Adds rounded corners to the container */
+
+            align-items: flex-start; /* Align items to the start, allowing the container to grow with content */
         }
 
         /* Adjusted #content area to not overlap with the footer */
@@ -85,7 +87,7 @@
             color: white; /* White text */
             border: none; /* Remove border */
             cursor: pointer; /* Pointer cursor on hover */
-            font-size: 18px; /* Adjusted font size */
+            font-size: 24px; /* Adjusted font size */
             font-family: Helvetica, sans-serif; /* Consistent font */
         }
 
@@ -98,8 +100,15 @@
             margin: 20px 10px;
         }
 
+        
+
         .message-container {
-            margin: 20px 10px;
+            margin-left: 25%; /* Ensure alignment */
+            width: 50%; /* Input container occupies 50% of the width */
+            padding: 5px; /* Padding inside the container */
+            box-sizing: border-box; /* Ensure padding and border are included in the width */
+            justify-content: left; /* Adjust based on your layout preference */
+            border-radius: 5px; /* Optional: Adds rounded corners to the container */
         }
 
         .message-header, .message-text {
@@ -118,27 +127,37 @@
             margin-bottom: 30px; /* Increase the gap between this message and the next header */
         }
 
+        
+
         .scroll-indicator {
-            position: fixed; /* Change position to fixed */
+            position: fixed;
             bottom: calc(0% + 100px); /* Adjust as needed to position just above the text input */
             left: 50%; /* Center horizontally */
             transform: translateX(-50%); /* Center horizontally */
-            font-size: 24px;
-            color: #666;
+            font-size: 26px; /* Size of the arrow */
+            color: white; /* Arrow color */
             display: none; /* Initially hidden */
             z-index: 1000;
+            background-color: #333; /* Dark grey background */
+            width: 40px; /* Width of the box */
+            height: 40px; /* Height of the box */
+            line-height: 40px; /* Center the arrow vertically */
+            text-align: center; /* Center the arrow horizontally */
+            border-radius: 20px; /* Make it a circle or adjust as desired for a box */
+            border: 1px solid #777; /* Fine white border around the circle */
         }
+
 
 
     </style>
 </head>
 <body>
 
-    <div id="header">Daring Mechanician AI</div>
+    <div id="header">Daring Mechanician</div>
 
     <div id="content">
         <div id="messages"></div>
-        <div class="scroll-indicator" id="scrollIndicator">&#x25BC;</div>
+        <div class="scroll-indicator" id="scrollIndicator">&#x2193;</div>
     </div>
 
     <div id="footer">
@@ -216,9 +235,13 @@
     
         function adjustTextareaHeight() {
             var textarea = document.getElementById('input');
-            textarea.style.height = 'auto';
-            textarea.style.height = textarea.scrollHeight + 'px';
+            textarea.style.height = 'auto'; // Reset height to auto to get the correct new height
+            textarea.style.height = textarea.scrollHeight + 'px'; // Set new height based on scroll height
+
+            // Additionally, if the #inputContainer needs to be adjusted directly, you can do so here
+            // For most cases, if the textarea grows, the container should automatically adjust.
         }
+
     
         // Simplified checkScroll function
         function checkScroll() {
@@ -249,6 +272,9 @@
     
             // Attach scroll event listener
             document.getElementById('content').addEventListener('scroll', checkScroll);
+
+            document.getElementById('input').addEventListener('input', adjustTextareaHeight);
+
         });
     </script>
     
