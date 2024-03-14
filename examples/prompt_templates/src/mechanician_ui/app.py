@@ -139,3 +139,5 @@ class MechanicianWebApp:
             pprint(parsed_prompt)
             tool_resp = prompt_tools.call_function(parsed_prompt.get("function_name"), parsed_prompt.get("params"))
             return tool_resp
+        else:
+            return {"status": "noop", "prompt": prompt}
