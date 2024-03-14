@@ -6,6 +6,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+###############################################################################
+## AIConnector
+###############################################################################
+
 class AIConnector(ABC):
 
     messages = []
@@ -28,6 +32,10 @@ class AIConnector(ABC):
     def get_messages(self):
         return self.messages
 
+
+###############################################################################
+## StreamingAIConnector
+###############################################################################
 
 
 class StreamingAIConnector(AIConnector):
@@ -53,4 +61,15 @@ class StreamingAIConnector(AIConnector):
 
     @abstractmethod
     def submit_prompt(self, prompt, role="user"):
+        pass
+
+
+###############################################################################
+## AIConnectorFactory
+###############################################################################
+
+
+class AIConnectorFactory(ABC):
+    @abstractmethod
+    def create_ai_connector(self):
         pass

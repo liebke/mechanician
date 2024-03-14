@@ -84,7 +84,11 @@ def preprocess_prompt(ai: 'TAGAI', prompt: str, prompt_tools: 'PromptTools' = No
             return f"Invalid /call command: {prompt}"
         print("Parsed Prompt:")
         pprint(parsed_prompt)
-        prompt = prompt_tools.call_function(parsed_prompt.get("function_name"), parsed_prompt.get("params"))
+        tool_resp = prompt_tools.call_function(parsed_prompt.get("function_name"), parsed_prompt.get("params"))
+        if tool_resp.get("status", "noop") == "error":
+            print(tool_resp.get("prompt", ''))
+            
+        prompt = tool_resp.get("prompt", '')
         if prompt == '':
             # skip the prompt
             return prompt
@@ -134,11 +138,11 @@ def run(ai: TAGAI, prompt_tools:'PromptTools' = None):
                 continue
 
             print('')
+ 
             prompt = preprocess_prompt(ai, prompt, prompt_tools=prompt_tools)
-            # If preprocessed prompt is None, we should skip it
             if prompt == '':
                 continue
-
+            
             resp = ai.submit_prompt(prompt)
 
             if not ai.streaming_connector():

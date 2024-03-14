@@ -1,5 +1,5 @@
 from mechanician import TAGAI, shell
-from mechanician_openai import OpenAIChatConnector
+from mechanician_openai import OpenAIChatConnector, OpenAIChatConnectorFactory
 import os
 import logging
 from dotenv import load_dotenv
@@ -10,51 +10,28 @@ from mechanician.prompting.templates import PromptTemplate
 from mechanician.prompting.tools import PromptTools
 from pprint import pprint
 
+from mechanician_ui.app import MechanicianWebApp
+
 logger = logging.getLogger(__name__)
 
-###############################################################################
-## INIT AI
-###############################################################################
-
-def init_ai():
-
-    api_key = os.getenv("OPENAI_API_KEY")
-    model_name = os.getenv("OPENAI_MODEL_NAME")
-    ai_connector = OpenAIChatConnector(api_key=api_key, model_name=model_name)
-    ai = TAGAI(ai_connector=ai_connector, 
-               name="MiddleEartch CRM AI")
-    return ai
-
 
 ###############################################################################
-## Main program execution
+## MiddleEarthCRM
 ###############################################################################
-
-def main():
-    ai = None
-    try: 
-        load_dotenv()
-        ai = init_ai()
-        prompt_tools = MiddleEarthCRMPromptTools()
-        shell.run(ai, prompt_tools=prompt_tools)
-
-    except Exception as e:
-        logger.error(e)
-        traceback.print_exc()
-    finally:
-        if ai:
-            ai.save_tuning_session()
-
 
 class MiddleEarthCRM():
 
-    def __init__(self, crm_data_filename="crm_data.json"):
+    def __init__(self, 
+                 crm_data_filename="crm_data.json",
+                 crm_data_directory="./data"):
         self.crm_data_filename = crm_data_filename
+        self.crm_data_directory = crm_data_directory
+        self.crm_data_path = os.path.join(crm_data_directory, crm_data_filename)
         self.crm_data = self.load_crm_data()
 
 
     def load_crm_data(self):
-        with open(self.crm_data_filename, 'r') as file:
+        with open(self.crm_data_path, 'r') as file:
             return json.loads(file.read())
 
 
@@ -110,10 +87,17 @@ class MiddleEarthCRM():
 
     
 
+###############################################################################
+## MiddleEarthCRMPromptTools
+###############################################################################
+
 class MiddleEarthCRMPromptTools(PromptTools):
-    def __init__(self, prompt_template_directory="./templates"):
+
+    def __init__(self, 
+                 prompt_template_directory="./templates",
+                 crm_data_directory="./data"):
         self.prompt_template_directory = prompt_template_directory
-        self.crm = MiddleEarthCRM()
+        self.crm = MiddleEarthCRM(crm_data_directory=crm_data_directory)
 
 
     def event_invite(self, params):
@@ -235,5 +219,74 @@ class MiddleEarthCRMPromptTools(PromptTools):
         return generated_prompt
     
 
+
+###############################################################################
+## INIT AI
+###############################################################################
+
+def init_ai():
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    model_name = os.getenv("OPENAI_MODEL_NAME")
+    ai_connector = OpenAIChatConnector(api_key=api_key, model_name=model_name)
+    ai = TAGAI(ai_connector=ai_connector, 
+               name="MiddleEartch CRM AI")
+    return ai
+
+
+###############################################################################
+## Main program execution
+###############################################################################
+
+def main():
+    ai = None
+    try: 
+        load_dotenv()
+        ai = init_ai()
+        print(f"main: Current working directory: {os.getcwd()}")
+        prompt_tools = MiddleEarthCRMPromptTools(crm_data_directory="./data")
+        shell.run(ai, prompt_tools=prompt_tools)
+
+    except Exception as e:
+        logger.error(e)
+        traceback.print_exc()
+    finally:
+        if ai:
+            ai.save_tuning_session()
+
+
+
+###############################################################################
+## Main application initialization
+###############################################################################
+    
+# To run the application with Uvicorn, for example:
+# uvicorn mechanician_ui.app:app --reload
+def init_app():
+    ai_connector_factory = OpenAIChatConnectorFactory(api_key=os.getenv("OPENAI_API_KEY"), 
+                                                      model_name=os.getenv("OPENAI_MODEL_NAME"))
+    print(f"init_app: Current working directory: {os.getcwd()}")
+    prompt_tools = MiddleEarthCRMPromptTools(crm_data_directory="./data")
+    return MechanicianWebApp(ai_connector_factory=ai_connector_factory,
+                             prompt_tools=prompt_tools,
+                             name="MiddleEartch CRM AI",
+                             template_directory="./src/templates")
+
+# app = init_app()
+
+import uvicorn
+def run_app():
+    print(f"Current working directory: {os.getcwd()}")
+    uvicorn.run(init_app(), host="0.0.0.0", port=8000)
+    # Change the working directory to 'src'
+    # os.chdir('./src')
+    # uvicorn.run("prompt_templates.main:app", host="0.0.0.0", port=8000, reload=True)
+
 if __name__ == '__main__':
-    main()
+    # main()
+    run_app()
+
+
+
+
+

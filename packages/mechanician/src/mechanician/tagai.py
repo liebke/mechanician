@@ -1,10 +1,11 @@
 
-from mechanician.ai_connectors import AIConnector
+from mechanician.ai_connectors import AIConnector, AIConnectorFactory
 from mechanician.ai_tools import AITools, AITools, AIToolKit
 import json
 import os
 import logging
 import pprint
+from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ class TAGAI():
         self.ai_connector = ai_connector
         self.name = name
         self.RUNNING = False
-        self.tools = None
+        self.tools = []
         self.ai_instructions = None
         self.tool_instructions = None
         
@@ -55,10 +56,13 @@ class TAGAI():
             if isinstance(tools, AITools):
                 self.tools = tools
             elif isinstance(tools, list):
-                self.tools = AIToolKit(tools=tools)
+                if not tools:
+                    self.tools = None
+                else:
+                    self.tools = AIToolKit(tools=tools)
             else:
                 raise ValueError(f"tools must be an instance of AITools or a list of AITools. Received: {tools}")
-        
+                    
         self._equip_tools()
 
     ###############################################################################
@@ -174,3 +178,44 @@ class TAGAI():
     def append_ai_instructions(self, ai_instructions):
         return self.submit_prompt(ai_instructions, role="system")
     
+
+
+
+###############################################################################
+## TAGAIFactory
+###############################################################################
+ 
+class TAGAIFactory(ABC):
+    def __init__(self,
+                 ai_connector_factory: 'AIConnectorFactory',
+                 ai_instructions=None, 
+                 tool_instructions=None,
+                 instruction_set_directory=None,
+                 tool_instruction_file_name="tool_instructions.json",
+                 ai_instruction_file_name="ai_instructions.md",
+                 ai_tools=None, 
+                 name="Daring Mechanician AI"):
+        
+        # TAGAI parameters
+        self.ai_connector_factory = ai_connector_factory
+        self.name = name
+        self.ai_tools = ai_tools
+        self.ai_instructions = ai_instructions
+        self.tool_instructions = tool_instructions
+        self.instruction_set_directory = instruction_set_directory
+        self.tool_instruction_file_name = tool_instruction_file_name
+        self.ai_instruction_file_name = ai_instruction_file_name
+        
+        
+    def create_ai_instance(self) -> TAGAI:
+        ai_connector = self.ai_connector_factory.create_ai_connector()
+        ai = TAGAI(ai_connector=ai_connector, 
+                   name = self.name,
+                   tools = self.ai_tools,
+                   ai_instructions = self.ai_instructions,
+                   tool_instructions = self.tool_instructions,
+                   instruction_set_directory = self.instruction_set_directory,
+                   tool_instruction_file_name = self.tool_instruction_file_name,
+                   ai_instruction_file_name = self.ai_instruction_file_name )
+        return ai
+

@@ -1,3 +1,3 @@
-from .chat_ai_connector import OpenAIChatConnector
+from .chat_ai_connector import OpenAIChatConnector, OpenAIChatConnectorFactory
 from .assistants_ai_connector import OpenAIAssistantsConnector
 from .azure_openai_connector import AzureOpenAIChatConnector

@@ -1,6 +1,6 @@
 
 from openai import OpenAI
-from mechanician.ai_connectors import StreamingAIConnector
+from mechanician.ai_connectors import StreamingAIConnector, AIConnectorFactory
 from mechanician.ai_tools import AITools
 from mechanician.util import SimpleStreamPrinter
 import json
@@ -292,3 +292,34 @@ class OpenAIChatConnector(StreamingAIConnector):
 
     def clean_up(self):
         pass
+
+
+###############################################################################
+## OpenAIChatConnectorFactory
+###############################################################################
+
+class OpenAIChatConnectorFactory(AIConnectorFactory):
+
+    def __init__(self,
+                 model_name=None,
+                 api_key=None,
+                 base_url=None,
+                 stream_printer = SimpleStreamPrinter(),
+                 max_thread_workers=None,
+                 client=None):
+        self.api_key = api_key or os.getenv("OPENAI_API_KEY")
+        self.model_name = model_name or os.getenv("OPENAI_MODEL_NAME")
+        self.base_url = base_url or OpenAIChatConnector.DEFAULT_ENDPOINT
+        self.stream_printer = stream_printer
+        self.client = client
+        self.max_thread_workers = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
+
+
+    def create_ai_connector(self):
+        return OpenAIChatConnector(api_key=self.api_key, 
+                                   model_name=self.model_name,
+                                   base_url=self.base_url,
+                                   stream_printer=self.stream_printer,
+                                   max_thread_workers=self.max_thread_workers,
+                                   client=self.client)
+    

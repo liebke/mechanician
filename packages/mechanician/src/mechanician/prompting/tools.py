@@ -46,22 +46,23 @@ class PromptTools(ABC):
                 
                 if meth:
                     if params is None:
-                        resp = meth()
-                        if resp is not None:
-                            return resp
+                        prompt = meth()
+                        if prompt is not None:
+                            return {"status": "success", "prompt": prompt}
                     else:
-                        resp = meth(params)
-                        if resp is not None:
-                            return resp
+                        prompt = meth(params)
+                        if prompt is not None:
+                            return {"status": "success", "prompt": prompt}
             else:
-                logger.info(f"Unknown Function: {function_name}")
-                return f"Unknown Function: {function_name}"
+                error_msg = f"Unknown function: {function_name}"
+                logger.info(error_msg)
+                return {"status": "success", "prompt": error_msg}
             
         except Exception as e:
-            logger.error(f"Error calling function {function_name}: {e}")
+            error_msg = f"Error calling function {function_name}: {e}"
+            logger.error(error_msg)
             # Return empty prompt so that it's skipped
-            prompt = ''
-            return prompt
+            return {"status": "error", "prompt": error_msg}
         
 
 
@@ -72,6 +73,10 @@ class PromptToolKit(PromptTools):
 
     def call_function(self, function_name:str, args:str):
         # iterate over all tools and find the tool with the function
+        resp = {"status": "error", "prompt": f"Unknown function: {function_name}"}
         for tool in self.tools:
             if hasattr(tool, function_name):
-                return tool.call_function(function_name, args)
+                resp = tool.call_function(function_name, args)
+                return resp
+            
+        return resp
