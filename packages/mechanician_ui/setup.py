@@ -1,22 +1,20 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='mechanician_workflow_example',
-    version='0.1',
+    name='mechanician_ui',
+    version='0.1.0',
     packages=find_packages(where='src'),
     package_dir={'': 'src'},
-    include_package_data=True,  # Required to include files specified in MANIFEST.in
+    include_package_data=True,  # This line includes non-Python files
     install_requires=[
         'mechanician>=0.1.3',
-        'mechanician-openai>=0.1.3',
-        'mechanician-ui>=0.1.0',
-        'mechanician-arangodb>=0.1.3',
-        'python-arango>=5.0.0',
-        'python-dotenv>=0.17.1',
+        'fastapi>=0.110.0',
+        'uvicorn[standard]>=0.13.4',
+        'jinja2>=2.11.3'
     ],
     author='David Edgar Liebke',
     author_email='david@gmail.com',
-    description='Daring Mechanician Workflow example.',
+    description='Daring Mechanician FastAPI-based Web UI.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/liebke/mechanician',

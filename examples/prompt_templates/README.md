@@ -481,6 +481,12 @@ Install the example project using pip:
 pip install -e .
 ```
 
+or
+
+```bash
+./scripts/dev_install.sh
+```
+
 #### Run the interactive TAG AI shell:
 
 ```bash

@@ -10,7 +10,8 @@ from mechanician.prompting.templates import PromptTemplate
 from mechanician.prompting.tools import PromptTools
 from pprint import pprint
 
-from mechanician_ui.app import MechanicianWebApp
+from mechanician_ui import MechanicianWebApp
+import uvicorn
 
 logger = logging.getLogger(__name__)
 
@@ -269,18 +270,13 @@ def init_app():
     prompt_tools = MiddleEarthCRMPromptTools(crm_data_directory="./data")
     return MechanicianWebApp(ai_connector_factory=ai_connector_factory,
                              prompt_tools=prompt_tools,
-                             name="MiddleEartch CRM AI",
-                             template_directory="./src/templates")
+                             name="MiddleEartch CRM AI")
 
 # app = init_app()
 
-import uvicorn
 def run_app():
-    print(f"Current working directory: {os.getcwd()}")
+    load_dotenv()
     uvicorn.run(init_app(), host="0.0.0.0", port=8000)
-    # Change the working directory to 'src'
-    # os.chdir('./src')
-    # uvicorn.run("prompt_templates.main:app", host="0.0.0.0", port=8000, reload=True)
 
 if __name__ == '__main__':
     # main()

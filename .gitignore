@@ -26,3 +26,4 @@ mechanician_workflow_example.egg-info
 mechanician_mistral.egg-info
 docs/_*
 examples/_*
+mechanician_ui.egg-info

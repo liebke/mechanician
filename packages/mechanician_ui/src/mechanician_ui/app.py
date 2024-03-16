@@ -1,22 +1,15 @@
-from fastapi import FastAPI, WebSocket, Request, Depends, HTTPException, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect
 from fastapi.responses import HTMLResponse
 # from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from dotenv import load_dotenv
-import os
-from mechanician_openai import OpenAIChatConnectorFactory
 from mechanician.ai_connectors import AIConnectorFactory
 from mechanician import TAGAI, TAGAIFactory
 from typing import Dict
-from abc import ABC, abstractmethod
 import json
 import asyncio
 from pprint import pprint
-
-from mechanician.prompting.tools import PromptTools, PromptToolKit
-
-
-load_dotenv()
+import pkg_resources
+from mechanician.prompting.tools import PromptTools
 
 
 ###############################################################################
@@ -34,8 +27,7 @@ class MechanicianWebApp:
                  tool_instruction_file_name="tool_instructions.json",
                  ai_instruction_file_name="ai_instructions.md",
                  ai_tools=None, 
-                 name="Daring Mechanician AI",
-                 template_directory="./templates"):
+                 name="Daring Mechanician AI"):
         
         # Initialize class variables
         self.ai_connector_factory = ai_connector_factory
@@ -60,6 +52,8 @@ class MechanicianWebApp:
 
         self.app = FastAPI()
         # self.app.mount("/static", StaticFiles(directory="./templates"), name="static")
+        # Get the path to the templates directory
+        template_directory = pkg_resources.resource_filename('mechanician_ui', 'templates')
         self.templates = Jinja2Templates(directory=template_directory)
         self.ai_instances: Dict[str, TAGAI] = {}
 
@@ -98,13 +92,11 @@ class MechanicianWebApp:
                     # If preprocessed prompt is None, we should skip it
                     if prompt == '':
                         continue
-                            # print(f"input_text: {input_text}")
                     try:
                         for chunk in ai_instance.ai_connector.get_stream(prompt):
                             if hasattr(chunk, 'choices') and chunk.choices:
                                 content = chunk.choices[0].delta.content
                                 if content:
-                                    # print(content)
                                     await websocket.send_text(content)
                                     await asyncio.sleep(0)
                     except Exception as e:
@@ -127,8 +119,6 @@ class MechanicianWebApp:
     ###############################################################################
 
     def preprocess_prompt(self, ai: 'TAGAI', prompt: str, prompt_tools: 'PromptTools' = None):
-
-        # Load a file
         if prompt.startswith('/call'):
             print("Calling function...")
             print(prompt)

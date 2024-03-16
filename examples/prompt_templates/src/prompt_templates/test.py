@@ -1,13 +1,21 @@
-import requests
+import asyncio
+import websockets
+import json
 import sys
 
-# Get the prompt from the command line arguments
-prompt = sys.argv[1] if len(sys.argv) > 1 else "Please write a limerick about Frodo Baggins' journey!"
+async def client():
+    uri = "ws://127.0.0.1:8000/ws"  # Replace with the URL of your web app
+    async with websockets.connect(uri) as websocket:
+        # Get input from the command line arguments
+        message = ' '.join(sys.argv[1:])
 
-response = requests.get('http://127.0.0.1:5000/chat', 
-                        params={'message': prompt}, 
-                        stream=True)
+        # Send the input to the server
+        await websocket.send(json.dumps({"data": message}))
 
-for line in response.iter_lines():
-    if line:
-        print(line.decode('utf-8'))
+        # Receive and print messages from the server
+        async for message in websocket:
+            # Print the server's message, preserving newline characters
+            print(message, end='', flush=True)
+
+# Run the client
+asyncio.run(client())
