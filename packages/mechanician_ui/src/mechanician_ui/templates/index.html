@@ -101,7 +101,6 @@
         }
 
         
-
         .message-container {
             margin-left: 25%; /* Ensure alignment */
             width: 50%; /* Input container occupies 50% of the width */
@@ -194,9 +193,8 @@
 
     </style>
 </head>
-<body>
 
-    
+<body>    
     <!-- Sidebar -->
     <div id="sidebar">
         <h1>Daring Mechanician</h1>
@@ -240,6 +238,7 @@
             }
         }
 
+
         function checkSession(socket) {
             var token = localStorage.getItem('jwt_token');
             console.log('Token:', token);
@@ -251,6 +250,7 @@
                 initializeWebSocket(socket);
             }
         }
+
 
         // Your existing JavaScript for UI manipulation here
         function adjustTextareaHeight() {
@@ -319,47 +319,32 @@
         }
 
 
-        $(document).ready(function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            adjustTextareaHeight();
+            checkScroll();
 
-            // Immediately focus on the username field when the page loads
-            $('#input').focus();
+            document.getElementById('content').addEventListener('scroll', checkScroll);
+            document.getElementById('input').addEventListener('input', adjustTextareaHeight);
+            document.getElementById('input').focus();
 
-
-            // This checks the session immediately when the page loads.
             var socket = new WebSocket('ws://' + window.location.host + '/ws');
             checkSession(socket);
 
-            // Send button event listener
-            $('#send').click(function() {
+            document.getElementById('send').addEventListener('click', function() {
                 sendPrompt(socket);
             });
 
-            // Enter key event listener for textarea
-            $('#input').on('keydown', function(e) {
+            document.getElementById('input').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault(); // Prevent line breaks in the textarea
+                    e.preventDefault();
                     sendPrompt(socket);
                 }
             });
 
-            // Logout button click event
-            $('#logoutBtn').click(function() {
-                localStorage.removeItem('jwt_token'); // Clear the JWT token
-                window.location.href = "/login"; // Redirect to the login page
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                localStorage.removeItem('jwt_token');
+                window.location.href = "/login";
             });
-        });
-
-        // Initialize and adjust on DOM content loaded
-        document.addEventListener('DOMContentLoaded', function() {
-
-            adjustTextareaHeight(); // Initial adjust
-            checkScroll(); // Initial check for scroll
-    
-            // Attach scroll event listener
-            document.getElementById('content').addEventListener('scroll', checkScroll);
-
-            document.getElementById('input').addEventListener('input', adjustTextareaHeight);
-
         });
 
     </script>

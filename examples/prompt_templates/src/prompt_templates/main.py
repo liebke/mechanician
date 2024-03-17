@@ -261,22 +261,18 @@ def main():
 ## Main application initialization
 ###############################################################################
     
-# To run the application with Uvicorn, for example:
-# uvicorn mechanician_ui.app:app --reload
 def init_app():
     ai_connector_factory = OpenAIChatConnectorFactory(api_key=os.getenv("OPENAI_API_KEY"), 
                                                       model_name=os.getenv("OPENAI_MODEL_NAME"))
-    print(f"init_app: Current working directory: {os.getcwd()}")
     prompt_tools = MiddleEarthCRMPromptTools(crm_data_directory="./data")
     return MechanicianWebApp(ai_connector_factory=ai_connector_factory,
                              prompt_tools=prompt_tools,
                              name="MiddleEartch CRM AI")
 
-# app = init_app()
-
 def run_app():
     load_dotenv()
     uvicorn.run(init_app(), host="0.0.0.0", port=8000)
+
 
 if __name__ == '__main__':
     # main()
