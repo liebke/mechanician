@@ -264,6 +264,9 @@
 
 
     <script>
+
+        var userHasScrolled = false;
+
         
         function sendPrompt(socket) {
             var promptText = $('#input').val().trim();
@@ -378,6 +381,13 @@
                     }
                     let contentWithBreaks = msg.replace(/\n/g, '<br>');
                     currentAIResponse.append(contentWithBreaks);
+
+                    // After adding content, scroll to the bottom if the user hasn't manually scrolled up
+                    if (!userHasScrolled) {
+                        var contentElement = document.getElementById('content');
+                        contentElement.scrollTop = contentElement.scrollHeight;
+                    }
+                    
                     checkScroll(); // Check scroll after receiving a response
                 }
             };
@@ -388,7 +398,20 @@
             adjustTextareaHeight();
             checkScroll();
 
-            document.getElementById('content').addEventListener('scroll', checkScroll);
+            // document.getElementById('content').addEventListener('scroll', checkScroll);
+
+            document.getElementById('content').addEventListener('scroll', function() {
+                var contentElement = document.getElementById('content');
+                var maxScroll = contentElement.scrollHeight - contentElement.clientHeight;
+                if (contentElement.scrollTop < maxScroll) {
+                    userHasScrolled = true;
+                } else {
+                    userHasScrolled = false; // User scrolled to the bottom
+                }
+                checkScroll(); // Call your existing checkScroll function here
+            });
+
+
             document.getElementById('input').addEventListener('input', adjustTextareaHeight);
             document.getElementById('input').focus();
 
