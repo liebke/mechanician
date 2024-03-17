@@ -11,20 +11,21 @@ from pprint import pprint
 import pkg_resources
 from mechanician.prompting.tools import PromptTools
 import os
-from mechanician_ui.auth import authenticate_user, create_access_token #, ACCESS_TOKEN_EXPIRE_MINUTES
 
-from jose import JWTError, jwt
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from datetime import timedelta
-from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from fastapi.responses import HTMLResponse
+from starlette.responses import Response, RedirectResponse  # Import Response for setting cookies
 from mechanician_ui.secrets import SecretsManager, BasicSecretsManager
+from mechanician_ui.auth import CredentialsManager, BasicCredentialsManager
 
+from pydantic import BaseModel
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+class UserCreate(BaseModel):
+    username: str
+    password: str
+    confirm_password: str
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
 
 ###############################################################################
 ## MechanicianWebApp class
@@ -42,8 +43,11 @@ class MechanicianWebApp:
                  ai_instruction_file_name="ai_instructions.md",
                  ai_tools=None, 
                  name="Daring Mechanician AI",
-                 secrets_manager: 'SecretsManager'=None,
-                 users_secrets: 'SecretsManager'=None):
+                 secrets_manager: SecretsManager=None,
+                 credentials_manager: CredentialsManager=None,
+                 credentials_file_path="./credentials.json",
+                 dm_admin_username=None,
+                 dm_admin_password=None,):
         
         # Initialize class variables
         self.ai_connector_factory = ai_connector_factory
@@ -63,20 +67,15 @@ class MechanicianWebApp:
         self.secrets_manager.set_secret("ALGORITHM", os.getenv("ALGORITHM", "HS256"))
         self.secrets_manager.set_secret("ACCESS_TOKEN_EXPIRE_MINUTES", os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
-        self.users_secrets = users_secrets or BasicSecretsManager(secrets={})
-        admin_username = os.getenv("ADMIN_USERNAME", "mechanician")
-        print(f"admin_username: {admin_username}")
-        admin_password = os.getenv("ADMIN_PASSWORD", None)
-        print(f"admin_password: {admin_password}")
-        if admin_password is None:
-            self.users_secrets.set_secret(admin_username, {"username": admin_username, "hashed_password": None})
-        else:
-            admin_hashed_password = pwd_context.hash(admin_password)
-
-        admin_user = {"username": admin_username, 
-                      "hashed_password": admin_hashed_password}
-        print(f"admin_user: {admin_user}")
-        self.users_secrets.set_secret(admin_username, admin_user)
+        self.credentials_manager = credentials_manager or BasicCredentialsManager(secrets_manager=self.secrets_manager,
+                                                                                  credentials_filename=credentials_file_path)
+        dm_admin_username = dm_admin_username or os.getenv("DM_ADMIN_USERNAME", "mechanician")
+        if not self.credentials_manager.user_exists(dm_admin_username):
+            dm_admin_password = dm_admin_password or os.getenv("DM_ADMIN_PASSWORD", None)
+            if dm_admin_password is None:
+                raise ValueError("dm_admin_password must be provided or DM_ADMIN_PASSWORD environment variable must be set.")
+            else:
+                self.credentials_manager.add_credentials(dm_admin_username, dm_admin_password)
 
 
         self.ai_factory = TAGAIFactory(ai_connector_factory=ai_connector_factory,
@@ -109,31 +108,79 @@ class MechanicianWebApp:
 
         @self.app.get("/", response_class=HTMLResponse)
         async def index(request: Request):
-            return self.templates.TemplateResponse("index.html", {"request": request})
+            user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+            if user is None:
+                username = ""
+            else:
+                username = user.get("username", "")
+            print(f"Access Token: {request.cookies.get('access_token')}")
+            print(f"Username: {username}")
+            return self.templates.TemplateResponse("index.html", 
+                                                   {"request": request,
+                                                    "ai_name": self.name,
+                                                    "username": username})
         
 
         @self.app.post("/token")
-        async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-            print(f"form_data: {form_data.username}, {form_data.password}")
-            user = authenticate_user(self.users_secrets, form_data.username, form_data.password)
-            if not user:
+        async def login_for_access_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
+            username = form_data.username
+            if not self.credentials_manager.verify_password(form_data.username, form_data.password):
                 raise HTTPException(
                     status_code=status.HTTP_401_UNAUTHORIZED,
                     detail="Incorrect username or password",
                     headers={"WWW-Authenticate": "Bearer"},
                 )
-            ACCESS_TOKEN_EXPIRE_MINUTES = int(self.secrets_manager.get_secret("ACCESS_TOKEN_EXPIRE_MINUTES"))
-            access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-            access_token = create_access_token(self.secrets_manager,
-                                               data={"sub": user["username"]}, 
-                                               expires_delta=access_token_expires)
+            access_token = self.credentials_manager.create_access_token(username, data={"sub": username})
+            # Set the token in a secure HttpOnly cookie
+            response.set_cookie(key="access_token", value=access_token, httponly=True, samesite='Lax')
             return {"access_token": access_token, "token_type": "bearer"}
         
 
         @self.app.get("/login")
         async def login(request: Request):
             return self.templates.TemplateResponse("login.html", {"request": request})
+        
 
+        @self.app.get("/create_user")
+        async def login(request: Request):
+            try:
+                self.verify_access_token(request)
+            except HTTPException as e:
+                print(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+            
+            return self.templates.TemplateResponse("create_user.html", {"request": request})
+        
+
+        @self.app.post("/create_user")
+        async def create_user(request: Request, user: UserCreate):
+            try:
+                self.verify_access_token(request)
+            except HTTPException as e:
+                print(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+            
+            if user.password != user.confirm_password:
+                raise HTTPException(status_code=400, detail="Passwords do not match")
+            
+            # Add your user creation logic here
+            create_status = self.credentials_manager.add_credentials(user.username, user.password)
+            if not create_status:
+                raise HTTPException(status_code=400, detail="User already exists")
+
+            return {"message": "User created successfully"}
+        
+
+        @self.app.post("/logout")
+        def logout():
+            print("Logging out...")
+            response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+            response.delete_cookie(key="access_token")
+            return response
+
+        
 
     def setup_websocket_events(self):
 
@@ -147,16 +194,14 @@ class MechanicianWebApp:
                     auth_data = await asyncio.wait_for(websocket.receive_text(), timeout=30)  # Adjust timeout as needed
                     auth_data = json.loads(auth_data)
                     token = auth_data.get("token", "")
-                    # Decode and validate the JWT token
-                    SECRET_KEY = self.secrets_manager.get_secret("SECRET_KEY")
-                    ALGORITHM = self.secrets_manager.get_secret("ALGORITHM")
-                    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                    if self.credentials_manager.verify_access_token(token):
+                        print("Token verified")
+                    else:
+                        print("Invalid token. Closing connection.")
+                        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+                        return
                 except asyncio.TimeoutError:
                     print("Authentication timeout. Closing connection.")
-                    await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
-                    return
-                except (JWTError, json.JSONDecodeError) as e:
-                    print(f"Invalid token. Closing connection. Error: {e}")
                     await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
                     return
                 except Exception as e:
@@ -196,6 +241,22 @@ class MechanicianWebApp:
                 # This outer exception block is to catch any unexpected errors outside the main while loop
                 print(f"Unexpected error: {e}")
 
+
+    def verify_access_token(self, request: Request):
+        token = request.cookies.get("access_token")
+        print(f"Token: {token}")
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        try:
+            validation_response = self.credentials_manager.verify_access_token(token)
+            print(f"Validation response: {validation_response}")
+            if not validation_response:
+                raise credentials_exception
+        except Exception as e:
+            raise credentials_exception
 
 
     def get_ai_instance(self, sid) -> TAGAI:

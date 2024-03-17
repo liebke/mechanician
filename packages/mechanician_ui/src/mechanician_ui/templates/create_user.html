@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create User - Daring Mechanician</title>
+    <!-- <link rel="stylesheet" href="styles.css"> Assuming you have a CSS file -->
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #222;
+            color: white;
+            font-family: Helvetica, sans-serif;
+        }
+        .login-container {
+            padding: 50px;
+            border-radius: 5px;
+            background: #222;
+            text-align: center;
+        }
+        input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #777;
+            background: #222;
+            color: white;
+            outline: none; /* Remove focus outline */
+        }
+        
+
+        button {
+            margin: 0; /* Remove default margins */
+            padding: 10px 20px; /* Padding around the text */
+            background-color: #222; /* Darker grey button */
+            color: white; /* White text */
+            border: none; /* Remove border */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 18px; /* Adjusted font size */
+            font-family: Helvetica, sans-serif; /* Consistent font */
+            font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+            border-radius: 15px; /* Optional: Adds rounded corners to the button */
+        }
+
+        button:hover {
+            background-color: #777; /* Lighter grey on hover */
+        }
+
+        /* Sidebar Styles */
+        #sidebar {
+            position: fixed;
+            top: 0; /* Align with the top of the viewport */
+            left: 0; /* Align with the left side of the viewport */
+            width: 20%; /* Sidebar width */
+            height: 100%; /* Full height */
+            background-color: #171717; /* Darker grey background */
+            padding: 20px; /* Padding around the content */
+            box-sizing: border-box; /* Include padding in the width calculation */
+            z-index: 1001; /* Ensure it's above other content but below fixed elements if necessary */
+        }
+
+        #sidebar h1 {
+            text-align: center; /* Center the arrow horizontally */
+            color: white; /* Title color */
+            margin: 0 0 20px; /* Add some margin below the title */
+            font-size: 20px; /* Title font size */
+            font-weight: normal; /* Makes the font thinner, assuming Helvetica supports this weight */
+        }
+
+    </style>
+</head>
+<body>
+     <!-- Sidebar remains unchanged from your login.html -->
+     <div id="sidebar">
+        <h1>Daring Mechanician</h1>
+        <!-- Additional sidebar content here -->
+        <div id="logoutContainer" style="position: absolute; bottom: 20px; width: calc(100% - 40px); text-align: center;">
+            <button id="logoutBtn">Logout</button>
+        </div>
+    </div>
+
+    <div class="login-container">
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <input type="password" id="confirmPassword" placeholder="Confirm Password">
+        <button id="createUserBtn">Create User</button>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#username').focus();
+
+            function performLogout() {
+                console.log('Logging out...');
+                console.log('Removing Token:', localStorage.getItem('jwt_token'));
+                localStorage.removeItem('jwt_token');
+                console.log('Token Removed:', localStorage.getItem('jwt_token'));
+                console.log('Performing logout...');
+                // Make a request to the logout endpoint
+                $.ajax({
+                    type: "POST",
+                    url: "/logout",
+                    success: function(data) {
+                        // Redirect or update UI on successful logout
+                        window.location.href = "/login";
+                    },
+                    error: function(response) {
+                        // Handle error
+                        console.log("Logout failed:", response);
+                    }
+                });
+            }
+
+            function createUser() {
+                var username = $('#username').val();
+                var password = $('#password').val();
+                var confirmPassword = $('#confirmPassword').val();
+
+                if(password !== confirmPassword) {
+                    alert("Passwords do not match.");
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/create_user",
+                    data: JSON.stringify({ // Convert the data to a JSON string
+                        username: username, 
+                        password: password,
+                        confirm_password: confirmPassword
+                    }),
+                    contentType: "application/json; charset=utf-8", // Set the content type to JSON
+                    dataType: "json", // Expect JSON in response from the server
+                    success: function(data) {
+                        alert("User created successfully.");
+                        window.location.href = "/create_user"; // Redirect to the login page after account creation
+                    },
+                    error: function(response) {
+                        var errorMessage = "User creation failed: ";
+                        if (response.responseJSON && response.responseJSON.detail) {
+                            errorMessage += response.responseJSON.detail;
+                        } else {
+                            errorMessage += "An unexpected error occurred.";
+                        }
+                        alert(errorMessage);
+                    }
+                });
+            }
+
+
+            $('#createUserBtn').click(createUser);
+
+            // Trigger login when Enter key is pressed in the password input
+            $('#confirmPassword').on('keypress', function(e) {
+                if (e.which === 13) { // 13 is the Enter key
+                    createUser();
+                }
+            });
+
+            document.getElementById('logoutBtn').addEventListener('click', function() {
+                performLogout();
+            });
+
+        });
+    </script>
+</body>
+</html>

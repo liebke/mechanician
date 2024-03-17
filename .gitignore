@@ -27,3 +27,6 @@ mechanician_mistral.egg-info
 docs/_*
 examples/_*
 mechanician_ui.egg-info
+examples/prompt_templates/credentials.json
+examples/prompt_templates/certs/cert.pem
+examples/prompt_templates/certs/key.pem

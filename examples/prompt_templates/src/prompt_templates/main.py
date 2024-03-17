@@ -271,7 +271,11 @@ def init_app():
 
 def run_app():
     load_dotenv()
-    uvicorn.run(init_app(), host="0.0.0.0", port=8000)
+    uvicorn.run(init_app(), 
+                host="0.0.0.0", 
+                port=8000,
+                ssl_keyfile=os.getenv("SSL_KEYFILE"),
+                ssl_certfile=os.getenv("SSL_CERTFILE"))
 
 
 if __name__ == '__main__':

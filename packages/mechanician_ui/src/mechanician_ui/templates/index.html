@@ -22,9 +22,19 @@
             background-color: #222; /* Darker grey */
             color: white;
             text-align: left; /* Text aligned to the left */
-            padding: 10px 20px; /* Adjusted padding */
             font-size: 24px;
             z-index: 1000;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        #ai_name {
+            text-align: center;
+            padding: 30px;
+            flex-grow: 1;
         }
 
         #footer {
@@ -154,7 +164,8 @@
             width: 20%; /* Sidebar width */
             height: 100%; /* Full height */
             background-color: #171717; /* Darker grey background */
-            padding: 20px; /* Padding around the content */
+            padding-top: 20px; /* Add some padding to the top */
+            padding-left: 20px; /* Add some padding to the left */
             box-sizing: border-box; /* Include padding in the width calculation */
             z-index: 1001; /* Ensure it's above other content but below fixed elements if necessary */
         }
@@ -184,6 +195,26 @@
             background-color: #777; /* Lighter grey on hover */
         }
 
+        
+
+        .logout-container-username {
+            margin: 0; /* Remove default margins */
+            padding-left: 0px;
+            padding-right: 0px;
+            color: white; /* White text */
+            font-size: 18px; /* Adjusted font size */
+            font-family: Helvetica, sans-serif; /* Consistent font */
+            font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+            text-align: center; /* Center the username */
+        }
+        
+        #logoutContainer {
+            position: absolute;
+            bottom: 20px;
+            width: calc(100% - 40px);
+            text-align: center;
+        }
+
 
         /* Adjust the #content, #header, and #footer to account for the sidebar */
         #content, #header, #footer {
@@ -199,12 +230,24 @@
     <div id="sidebar">
         <h1>Daring Mechanician</h1>
         <!-- Add additional sidebar content here -->
+        <!-- Username aligned to the right -->
+        <!-- <div id="username" style="position: absolute; bottom: 80px; width: calc(100% - 40px); text-align: center;">user: {{ username }}</div>
         <div id="logoutContainer" style="position: absolute; bottom: 20px; width: calc(100% - 40px); text-align: center;">
             <button id="logoutBtn">Logout</button>
-        </div>
-    </div>
+        </div> -->
 
-    <div id="header"></div>
+        
+        <div id="logoutContainer">
+            <div id="username" class="logout-container-username">{{ username }}</div>
+            <button id="logoutBtn">Logout</button>
+        </div>
+        </div>
+    
+
+    <div id="header">
+        <!-- AI Name centered -->
+        <div id="ai_name">{{ ai_name }}</div>
+    </div>
 
     <div id="content">
         <div id="messages"></div>
@@ -244,7 +287,7 @@
             console.log('Token:', token);
             if (!token) {
                 console.log('No token found. Redirecting to login page...');
-                // window.location.href = "/login";
+                window.location.href = "/login";
             } else {
                 // Only initialize WebSocket connection if the session check passes
                 initializeWebSocket(socket);
@@ -283,6 +326,28 @@
             // After adding content, check if scrolling is needed
             checkScroll();
         }
+
+        function performLogout() {
+            console.log('Logging out...');
+            console.log('Removing Token:', localStorage.getItem('jwt_token'));
+            localStorage.removeItem('jwt_token');
+            console.log('Token Removed:', localStorage.getItem('jwt_token'));
+            console.log('Performing logout...');
+            // Make a request to the logout endpoint
+            $.ajax({
+                type: "POST",
+                url: "/logout",
+                success: function(data) {
+                    // Redirect or update UI on successful logout
+                    window.location.href = "/login";
+                },
+                error: function(response) {
+                    // Handle error
+                    console.log("Logout failed:", response);
+                }
+            });
+        }
+
 
 
         function initializeWebSocket(socket) {
@@ -327,7 +392,9 @@
             document.getElementById('input').addEventListener('input', adjustTextareaHeight);
             document.getElementById('input').focus();
 
-            var socket = new WebSocket('ws://' + window.location.host + '/ws');
+            var wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            var socket = new WebSocket(wsProtocol + window.location.host + "/ws");
+
             checkSession(socket);
 
             document.getElementById('send').addEventListener('click', function() {
@@ -342,10 +409,10 @@
             });
 
             document.getElementById('logoutBtn').addEventListener('click', function() {
-                localStorage.removeItem('jwt_token');
-                window.location.href = "/login";
+                performLogout();
             });
         });
+
 
     </script>
     

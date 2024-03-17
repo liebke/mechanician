@@ -487,6 +487,32 @@ or
 ./scripts/dev_install.sh
 ```
 
+
+## SSL Certificates for Local Development: mkcert
+
+https://github.com/FiloSottile/mkcert
+
+```bash
+brew install mkcert
+```
+
+```bash
+mkcert -install
+```
+
+```bash
+mkdir certs
+```
+
+```bash
+mkcert -key-file ./certs/key.pem -cert-file ./certs/cert.pem localhost 127.0.0.1 ::1
+```
+
+```bash
+uvicorn.run("mechanician_ui.main:app", host="127.0.0.1", port=8000, ssl_keyfile="./certs/key.pem", ssl_certfile="./certs/cert.pem")
+```
+
+
 #### Run the interactive TAG AI shell:
 
 ```bash
