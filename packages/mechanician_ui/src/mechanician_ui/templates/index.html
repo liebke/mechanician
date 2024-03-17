@@ -78,8 +78,6 @@
             outline: none; /* Remove focus outline */
         }
 
-
-
         button {
             margin: 0; /* Remove default margins */
             padding: 10px 20px; /* Padding around the text */
@@ -170,6 +168,24 @@
             font-weight: normal; /* Makes the font thinner, assuming Helvetica supports this weight */
         }
 
+        #sidebar button {
+            margin: 0; /* Remove default margins */
+            padding: 10px 20px; /* Padding around the text */
+            background-color: #171717; /* Darker grey button */
+            color: white; /* White text */
+            border: none; /* Remove border */
+            cursor: pointer; /* Pointer cursor on hover */
+            font-size: 18px; /* Adjusted font size */
+            font-family: Helvetica, sans-serif; /* Consistent font */
+            font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+            border-radius: 15px; /* Optional: Adds rounded corners to the button */
+        }
+
+        #sidebar button:hover {
+            background-color: #777; /* Lighter grey on hover */
+        }
+
+
         /* Adjust the #content, #header, and #footer to account for the sidebar */
         #content, #header, #footer {
             margin-left: 10%; /* Push them to the right to make space for the sidebar */
@@ -185,6 +201,9 @@
     <div id="sidebar">
         <h1>Daring Mechanician</h1>
         <!-- Add additional sidebar content here -->
+        <div id="logoutContainer" style="position: absolute; bottom: 20px; width: calc(100% - 40px); text-align: center;">
+            <button id="logoutBtn">Logout</button>
+        </div>
     </div>
 
     <div id="header"></div>
@@ -204,50 +223,8 @@
 
 
     <script>
-        // Establish a WebSocket connection to the server
-        var socket = new WebSocket('ws://' + window.location.host + '/ws');
-        var currentAIResponse = null;
-
-        socket.onopen = function(e) {
-            console.log('Connected to the server.');
-        };
-
-        socket.onclose = function(e) {
-            console.log('Disconnected from the server:', e.reason);
-            $('#messages').append($('<p>').html("<strong>System:</strong> Disconnected. Attempting to reconnect..."));
-        };
-
-        socket.onmessage = function(event) {
-            var msg = event.data;
-            if (msg.data === 'END_OF_RESPONSE') {
-                $('#messages').append($('<hr>'));
-                currentAIResponse = null;
-            } else {
-                if (!currentAIResponse) {
-                    let aiMessageContainer = $('<div class="message-container">');
-                    aiMessageContainer.append($('<p class="message-header">').html("AI"));
-                    currentAIResponse = $('<p class="message-text">');
-                    aiMessageContainer.append(currentAIResponse);
-                    $('#messages').append(aiMessageContainer);
-                }
-                let contentWithBreaks = msg.replace(/\n/g, '<br>');
-                currentAIResponse.append(contentWithBreaks);
-                checkScroll(); // Check scroll after receiving a response
-            }
-        };
-
-        // Event listener for the send button
-        $('#send').click(sendPrompt);
-
-        // Also allow sending the prompt by pressing Enter in the textarea
-        $('#input').on('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault(); // Prevent the default action to avoid line breaks in the textarea
-                sendPrompt();
-            }
-        });
-    
-        function sendPrompt() {
+        
+        function sendPrompt(socket) {
             var promptText = $('#input').val().trim();
             if (promptText) {
                 let userMessageContainer = $('<div class="message-container">');
@@ -263,8 +240,17 @@
             }
         }
 
-
-        
+        function checkSession(socket) {
+            var token = localStorage.getItem('jwt_token');
+            console.log('Token:', token);
+            if (!token) {
+                console.log('No token found. Redirecting to login page...');
+                // window.location.href = "/login";
+            } else {
+                // Only initialize WebSocket connection if the session check passes
+                initializeWebSocket(socket);
+            }
+        }
 
         // Your existing JavaScript for UI manipulation here
         function adjustTextareaHeight() {
@@ -298,9 +284,74 @@
             checkScroll();
         }
 
-        
+
+        function initializeWebSocket(socket) {
+            
+            socket.onopen = function(e) {
+                console.log('Connected to the server.');
+                var token = localStorage.getItem('jwt_token');
+                socket.send(JSON.stringify({token: token}));
+            };
+
+            socket.onclose = function(e) {
+                console.log('Disconnected from the server:', e.reason);
+                $('#messages').append($('<p>').html("<strong>System:</strong> Disconnected. Attempting to reconnect..."));
+            };
+
+            socket.onmessage = function(event) {
+                var msg = event.data;
+                if (msg.data === 'END_OF_RESPONSE') {
+                    $('#messages').append($('<hr>'));
+                    currentAIResponse = null;
+                } else {
+                    if (!currentAIResponse) {
+                        let aiMessageContainer = $('<div class="message-container">');
+                        aiMessageContainer.append($('<p class="message-header">').html("AI"));
+                        currentAIResponse = $('<p class="message-text">');
+                        aiMessageContainer.append(currentAIResponse);
+                        $('#messages').append(aiMessageContainer);
+                    }
+                    let contentWithBreaks = msg.replace(/\n/g, '<br>');
+                    currentAIResponse.append(contentWithBreaks);
+                    checkScroll(); // Check scroll after receiving a response
+                }
+            };
+        }
+
+
+        $(document).ready(function() {
+
+            // Immediately focus on the username field when the page loads
+            $('#input').focus();
+
+
+            // This checks the session immediately when the page loads.
+            var socket = new WebSocket('ws://' + window.location.host + '/ws');
+            checkSession(socket);
+
+            // Send button event listener
+            $('#send').click(function() {
+                sendPrompt(socket);
+            });
+
+            // Enter key event listener for textarea
+            $('#input').on('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); // Prevent line breaks in the textarea
+                    sendPrompt(socket);
+                }
+            });
+
+            // Logout button click event
+            $('#logoutBtn').click(function() {
+                localStorage.removeItem('jwt_token'); // Clear the JWT token
+                window.location.href = "/login"; // Redirect to the login page
+            });
+        });
+
         // Initialize and adjust on DOM content loaded
         document.addEventListener('DOMContentLoaded', function() {
+
             adjustTextareaHeight(); // Initial adjust
             checkScroll(); // Initial check for scroll
     
@@ -311,14 +362,6 @@
 
         });
 
-        $('#send').click(sendPrompt);
-    
-        $('#input').on('keydown', function(e) {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendPrompt();
-            }
-        });
     </script>
     
 </body>

@@ -10,7 +10,11 @@ setup(
         'mechanician>=0.1.3',
         'fastapi>=0.110.0',
         'uvicorn[standard]>=0.13.4',
-        'jinja2>=2.11.3'
+        'jinja2>=2.11.3',
+
+        'python-jose[cryptography]',
+        'passlib[bcrypt]',
+        'python-multipart'
     ],
     author='David Edgar Liebke',
     author_email='david@gmail.com',
