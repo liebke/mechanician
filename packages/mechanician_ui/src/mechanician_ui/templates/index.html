@@ -29,18 +29,20 @@
     
 
     <div id="header">
-        <!-- AI Name centered -->
         <div id="ai_name">{{ ai_name }}</div>
     </div>
 
     <div id="content">
         <div id="messages"></div>
-        <div class="scroll-indicator" id="scrollIndicator">&#x2193;</div>
+        <div class="scroll-indicator" id="scrollIndicator">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="m-1 text-token-text-primary">
+                <path d="M17 13L12 18L7 13M12 6L12 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </div>
     </div>
 
     <div id="footer">
         <div id="input-container">
-            <div class="scroll-indicator" id="scrollIndicator">&#x2B07;</div>
             <input type="file" id="file_input" style="display: none;" />
             <button id="attachment">
                 <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">

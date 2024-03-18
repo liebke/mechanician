@@ -184,7 +184,7 @@
 
     .scroll-indicator {
         position: fixed;
-        bottom: calc(0% + 100px); /* Adjust as needed to position just above the text input */
+        bottom: calc(0% + 80px); /* Adjust as needed to position just above the text input */
         left: 60%; /* Center horizontally */
         transform: translateX(-50%); /* Center horizontally */
         font-size: 26px; /* Size of the arrow */
@@ -192,13 +192,16 @@
         display: none; /* Initially hidden */
         z-index: 1000;
         background-color: #222; /* Dark grey background */
-        width: 40px; /* Width of the box */
-        height: 40px; /* Height of the box */
-        line-height: 40px; /* Center the arrow vertically */
+        width: 25px; /* Width of the box */
+        height: 25px; /* Height of the box */
+        line-height: 0px; /* Center the arrow vertically */
         text-align: center; /* Center the arrow horizontally */
         border-radius: 20px; /* Make it a circle or adjust as desired for a box */
-        border: 1px solid #777; /* Fine white border around the circle */
+        border: 1px solid #444; /* Fine white border around the circle */
+        padding: 4px; /* Padding around the arrow */
     }
+
+    
 
     /* Sidebar Styles */
     #sidebar {
