@@ -83,7 +83,7 @@
         overflow-y: auto;
         width: 100%;
         padding: 0 10px; /* Adjust as needed */
-        height: calc(100% - 160px); /* Adjusted height to fill between header and footer */
+        height: calc(100% - 130px); /* Adjusted height to fill between header and footer */
     }
 
     
