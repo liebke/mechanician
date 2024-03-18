@@ -111,11 +111,7 @@
         }
 
         function performLogout() {
-            console.log('Logging out...');
-            console.log('Removing Token:', localStorage.getItem('jwt_token'));
             localStorage.removeItem('jwt_token');
-            console.log('Token Removed:', localStorage.getItem('jwt_token'));
-            console.log('Performing logout...');
             // Make a request to the logout endpoint
             $.ajax({
                 type: "POST",
@@ -137,11 +133,21 @@
                 console.log('Connected to the server.');
                 var token = localStorage.getItem('jwt_token');
                 socket.send(JSON.stringify({token: token}));
+
+                let sys_message_container = $('<div class="message-container">');
+                sys_message_container.append($('<p class="message-header">').html("System"));
+                current_sys_response = $('<p class="message-text">').text("Connected to AI...");
+                sys_message_container.append(current_sys_response);
+                $('#messages').append(sys_message_container);
             };
 
             socket.onclose = function(e) {
                 console.log('Disconnected from the server:', e.reason);
-                $('#messages').append($('<p>').html("<strong>System:</strong> Disconnected. Attempting to reconnect..."));
+                let sys_message_container = $('<div class="message-container">');
+                sys_message_container.append($('<p class="message-header">').html("System"));
+                current_sys_response = $('<p class="message-text">').text("Disconnected. Please refresh the page to reconnect.");
+                sys_message_container.append(current_sys_response);
+                $('#messages').append(sys_message_container);
             };
 
             socket.onmessage = function(event) {
@@ -193,8 +199,6 @@
                 
                 checkScroll(); // Call your existing checkScroll function here
             });
-
-
 
             document.getElementById('input').addEventListener('input', adjustTextareaHeight);
             document.getElementById('input').focus();
