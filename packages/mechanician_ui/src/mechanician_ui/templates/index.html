@@ -33,10 +33,14 @@
     </div>
 
     <div id="footer">
-        <div id="inputContainer">
+        <div id="input-container">
             <div class="scroll-indicator" id="scrollIndicator">&#x2B07;</div>
             <input type="file" id="file_input" style="display: none;" />
-            <button id="attachment">&#128206;</button>
+            <button id="attachment">
+                <svg width="26" height="26" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M9 7C9 4.23858 11.2386 2 14 2C16.7614 2 19 4.23858 19 7V15C19 18.866 15.866 22 12 22C8.13401 22 5 18.866 5 15V9C5 8.44772 5.44772 8 6 8C6.55228 8 7 8.44772 7 9V15C7 17.7614 9.23858 20 12 20C14.7614 20 17 17.7614 17 15V7C17 5.34315 15.6569 4 14 4C12.3431 4 11 5.34315 11 7V15C11 15.5523 11.4477 16 12 16C12.5523 16 13 15.5523 13 15V9C13 8.44772 13.4477 8 14 8C14.5523 8 15 8.44772 15 9V15C15 16.6569 13.6569 18 12 18C10.3431 18 9 16.6569 9 15V7Z" fill="white"></path>
+                </svg>
+            </button>
             <textarea id="input" placeholder="How can I assist you today?"></textarea>
             <button id="send">&#x2B06;</button>
         </div>
@@ -57,7 +61,7 @@
                 $('#messages').append(userMessageContainer);
                 socket.send(JSON.stringify({data: promptText}));
                 $('#input').val('');
-                adjustTextareaHeight();
+                adjustTextareaHeightAndChangeButtonColor();
                 currentAIResponse = null;
                 checkScroll(); // Check scroll after sending a prompt
                 setTimeout(checkScroll, 0); // Ensure checkScroll runs after the DOM updates
@@ -78,17 +82,25 @@
         }
 
 
-        // Your existing JavaScript for UI manipulation here
-        function adjustTextareaHeight() {
+        function adjustTextareaHeightAndChangeButtonColor() {
             var textarea = document.getElementById('input');
+            var sendButton = document.getElementById('send');
+
+            // Adjusting the textarea height
             textarea.style.height = 'auto'; // Reset height to auto to get the correct new height
             textarea.style.height = textarea.scrollHeight + 'px'; // Set new height based on scroll height
 
-            // Additionally, if the #inputContainer needs to be adjusted directly, you can do so here
-            // For most cases, if the textarea grows, the container should automatically adjust.
+            // Change the #send button color based on the input
+            if (textarea.value.length > 0) {
+                // sendButton.style.backgroundColor = '#4CAF50'; // Example: Change to a green color when text is entered
+                sendButton.style.color = '#FFF'; // Change text color to white for better contrast
+            } else {
+                // sendButton.style.backgroundColor = '#222'; // Revert to original color when there's no text
+                sendButton.style.color = '#777'; // Revert text color to grey
+            }
         }
 
-    
+
         // Simplified checkScroll function
         function checkScroll() {
             var contentElement = document.getElementById('content');
@@ -177,9 +189,33 @@
             };
         }
 
+        function adjustInputContainerWidth() {
+            const sidebarWidth = 260; // Fixed sidebar width
+            const minimumWidth = 50; // Minimum width of the input-container
+            const optimalWidth = 675; // Default optimal width of the input-container
+            const increasedWidth = 775; // Increased width of the input-container when there is enough room
+            const thresholdWidth = 935; // Threshold for when to increase the input-container width
+            const availableWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) - sidebarWidth - 10; // Calculate the maximum available width
+
+            let adjustedWidth;
+            if (availableWidth > thresholdWidth) {
+                adjustedWidth = increasedWidth; // Set width to 775px if there is enough room
+            } else {
+                adjustedWidth = Math.min(Math.max(availableWidth, minimumWidth), optimalWidth); // Calculate the adjusted width
+            }
+
+            const inputContainer = document.getElementById('input-container');
+            if (inputContainer) {
+                inputContainer.style.width = `${adjustedWidth}px`; // Set the adjusted width to the input-container
+            }
+        }
+
+
+        // Adjust the width on window resize
+        window.addEventListener('resize', adjustInputContainerWidth);
 
         document.addEventListener('DOMContentLoaded', function() {
-            adjustTextareaHeight();
+            adjustTextareaHeightAndChangeButtonColor();
             checkScroll();
 
             document.getElementById('content').addEventListener('scroll', function() {
@@ -196,11 +232,12 @@
                 if (nearBottom) {
                     userHasScrolled = false; // Consider user at the bottom if they're within a small threshold of the bottom
                 }
+
                 
                 checkScroll(); // Call your existing checkScroll function here
             });
 
-            document.getElementById('input').addEventListener('input', adjustTextareaHeight);
+            document.getElementById('input').addEventListener('input', adjustTextareaHeightAndChangeButtonColor);
             document.getElementById('input').focus();
 
             var wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
@@ -265,6 +302,9 @@
             document.getElementById('new-button').addEventListener('click', function() {
                 window.location.href = "/";
             });
+
+            // Initial adjustment on load
+            adjustInputContainerWidth();
 
         });
 

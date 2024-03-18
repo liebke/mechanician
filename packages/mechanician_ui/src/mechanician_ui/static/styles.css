@@ -40,18 +40,38 @@
     }
 
 
-    #inputContainer {
-        width: 50%; /* Input container occupies 50% of the width */
+    #input-container {
+        width: 675px; /* Adjust width to automatically fill the available space */
+        margin-left: 20px; /* Add margin on the left to prevent overlapping with the sidebar */
         display: flex;
-        border: 1px solid white; /* Thin white border */
-        padding: 5px; /* Padding inside the container */
+        border: 1px solid #777; /* Thin white border */
+        padding: 0px; /* Padding inside the container */
         box-sizing: border-box; /* Ensure padding and border are included in the width */
         align-items: center; /* Align the items vertically in the center */
-        justify-content: space-between; /* Adjust based on your layout preference */
+        justify-content: center; /* Center the items horizontally */
         border-radius: 15px; /* Optional: Adds rounded corners to the container */
-
-        align-items: flex-start; /* Align items to the start, allowing the container to grow with content */
+        flex-wrap: wrap; /* Allow the contents to wrap if needed */
     }
+    
+
+    #input-container > textarea {
+        margin: 0; /* Remove default margins */
+        flex-grow: 1; /* Allow textarea to grow */
+        background-color: #222; /* Darker grey for the textarea */
+        color: white; /* White text */
+        padding: 5px; /* Keep reduced padding */
+        resize: none; /* Prevent resizing */
+        font-size: 16px; /* Adjusted font size */
+        font-family: Helvetica, sans-serif; /* Consistent font */
+        overflow-y: hidden; /* Hide vertical overflow */
+        height: auto; /* Adjust height based on content */
+        min-height: 20px; /* Ensure it does not go smaller than a single line */
+        outline: none; /* Remove focus outline */
+        line-height: 20px; /* Adjust line height to ensure single line appearance */
+        box-sizing: border-box; /* Ensure padding and border are included in the width */
+        border: none; /* Remove border */
+    }
+    
 
     /* Adjusted #content area to not overlap with the footer */
     #content {
@@ -64,41 +84,35 @@
         height: calc(100% - 160px); /* Adjusted height to fill between header and footer */
     }
 
-    textarea {
-        margin: 0; /* Remove default margins */
-        flex-grow: 1; /* Allow textarea to grow */
-        background-color: #222; /* Darker grey for the textarea */
-        color: white; /* White text */
-        border: none; /* Remove border */
-        padding: 5px; /* Reduced padding */
-        resize: none; /* Prevent resizing */
-        font-size: 18px; /* Adjusted font size */
-        font-family: Helvetica, sans-serif; /* Consistent font */
-        overflow-y: hidden; /* Hide the overflow */
-        height: 30px; /* Reduced initial height */
-        min-height: 30px; /* Ensure it does not go smaller than a single line */
-        outline: none; /* Remove focus outline */
-    }
-
-
+    
     #send {
+        display: flex; /* Makes the button a flex container */
+        justify-content: center; /* Centers content horizontally */
+        align-items: center; /* Centers content vertically */
+        width: auto; /* Adjusts width based on content + padding */
         margin: 0; /* Remove default margins */
-        padding: 10px 20px; /* Padding around the text */
+        padding: 10px 10px; /* Reduced horizontal padding to make the button narrower */
         background-color: #222; /* Darker grey button */
-        color: white; /* White text */
+        color: #777; /* White text */
         border: none; /* Remove border */
         cursor: pointer; /* Pointer cursor on hover */
-        font-size: 24px; /* Adjusted font size */
+        font-size: 22px; /* Adjusted font size */
         font-family: Helvetica, sans-serif; /* Consistent font */
         font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
         border-radius: 15px; /* Optional: Adds rounded corners to the button */
     }
+
+    
 
     #attachment {
+        display: flex; /* Makes the button a flex container */
+        justify-content: center; /* Centers content horizontally */
+        align-items: center; /* Centers content vertically */
+        width: auto; /* Adjusts width based on content + padding */
         margin: 0; /* Remove default margins */
-        padding: 10px 20px; /* Padding around the text */
+        padding: 10px 10px; /* Reduced horizontal padding to make the button narrower */
         background-color: #222; /* Darker grey button */
-        color: white; /* White text */
+        color: #777; /* White text */
         border: none; /* Remove border */
         cursor: pointer; /* Pointer cursor on hover */
         font-size: 24px; /* Adjusted font size */
@@ -106,13 +120,14 @@
         font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
         border-radius: 15px; /* Optional: Adds rounded corners to the button */
     }
+    
 
     #attachment:hover {
-        background-color: #777; /* Lighter grey on hover */
+        background-color: #272727; /* Lighter grey on hover */
     }
 
     #send:hover {
-        background-color: #777; /* Lighter grey on hover */
+        background-color: #272727; /* Lighter grey on hover */
     }
 
     button {
@@ -129,7 +144,7 @@
     }
 
     button:hover {
-        background-color: #777; /* Lighter grey on hover */
+        background-color: #333; /* Lighter grey on hover */
     }
 
 
@@ -223,7 +238,7 @@
     }
 
     #sidebar button:hover {
-        background-color: #777; /* Lighter grey on hover */
+        background-color: #222; /* Lighter grey on hover */
     }
 
     
