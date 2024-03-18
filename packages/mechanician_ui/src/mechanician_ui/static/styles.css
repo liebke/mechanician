@@ -20,12 +20,12 @@
         font-weight: normal;
         display: flex;
         align-items: center;
-        padding: 0 20px;
+        padding-top: 0px;
     }
 
     #ai_name {
         text-align: left;
-        padding-top: 20px;
+        padding-top: 15px;
         padding-right: 160px;
         padding-left: 160px;
         flex-grow: 1;
@@ -92,8 +92,8 @@
         justify-content: center; /* Centers content horizontally */
         align-items: center; /* Centers content vertically */
         width: auto; /* Adjusts width based on content + padding */
-        margin: 0; /* Remove default margins */
-        padding: 10px 10px; /* Reduced horizontal padding to make the button narrower */
+        margin-right: 10px; /* Remove default margins */
+        padding: 3px 3px; /* Reduced horizontal padding to make the button narrower */
         background-color: #222; /* Darker grey button */
         color: #777; /* White text */
         border: none; /* Remove border */
@@ -101,7 +101,7 @@
         font-size: 22px; /* Adjusted font size */
         font-family: Helvetica, sans-serif; /* Consistent font */
         font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
-        border-radius: 15px; /* Optional: Adds rounded corners to the button */
+        border-radius: 8px; /* Optional: Adds rounded corners to the button */
     }
 
     
@@ -123,14 +123,6 @@
         border-radius: 15px; /* Optional: Adds rounded corners to the button */
     }
     
-
-    #attachment:hover {
-        background-color: #272727; /* Lighter grey on hover */
-    }
-
-    #send:hover {
-        background-color: #272727; /* Lighter grey on hover */
-    }
 
     button {
         margin: 0; /* Remove default margins */
@@ -176,6 +168,7 @@
 
     .message-text {
         font-size: 16px;
+        font-weight: 300;
         margin-top: 10px; /* Ensure minimal space above the message text */
         margin-bottom: 30px; /* Increase the gap between this message and the next header */
     }
@@ -208,25 +201,30 @@
         width: 260px; /* Sidebar width */
         height: 100%; /* Full height */
         background-color: #171717; /* Darker grey background */
-        padding-top: 20px; /* Add some padding to the top */
-        padding-left: 20px; /* Add some padding to the left */
+        padding-top: 10px; /* Add some padding to the top */
+        padding-left: 0px; /* Add some padding to the left */
         box-sizing: border-box; /* Include padding in the width calculation */
         z-index: 1001; /* Ensure it's above other content but below fixed elements if necessary */
     }
 
     #sidebar h1 {
         text-align: center; /* Center the arrow horizontally */
+        margin-top: 5px; /* Add margin to the top for spacing between the top of the sidebar */
+        margin-left: 0px; /* Add margin to the left for spacing from the edge */
+
         color: white; /* Title color */
-        margin: 0 0 20px; /* Add some margin below the title */
         font-size: 18px; /* Title font size */
         font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
     }
 
     
+
     #sidebar button {
-        display: block; /* Make the button a block element to fill the width */
+        display: flex; /* Use flexbox layout */
+        align-items: center; /* Center items vertically */
+        justify-content: flex-start; /* Align items to the start (left) */
         width: 100%; /* Full width */
-        margin: 0 0 10px 0; /* Add margin to the bottom for spacing between buttons */
+        margin: 0 0 5px 0; /* Add margin to the bottom for spacing between buttons */
         padding: 10px 20px; /* Padding around the text, 20px to the left for spacing from edge */
         background-color: #171717; /* Darker grey button */
         color: white; /* White text */
@@ -235,9 +233,10 @@
         font-size: 16px; /* Adjusted font size */
         font-family: Helvetica, sans-serif; /* Consistent font */
         font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
-        text-align: left; /* Align text to the left */
-        border-radius: 2; /* Remove rounded corners */
+        border-radius: 2px; /* Adjust rounded corners */
     }
+    
+    
 
     #sidebar button:hover {
         background-color: #222; /* Lighter grey on hover */

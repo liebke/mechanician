@@ -15,7 +15,13 @@
         <!-- Add additional sidebar content here -->
         
         <div id="logout-container" class="logout-container">
-            <button id="new-button">&#x21bb; {{ ai_name }}</button>
+            <!-- <button id="new-button">&#x21bb; {{ ai_name }}</button> -->
+            <button id="new-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M16.7929 2.79289C18.0118 1.57394 19.9882 1.57394 21.2071 2.79289C22.4261 4.01184 22.4261 5.98815 21.2071 7.20711L12.7071 15.7071C12.5196 15.8946 12.2652 16 12 16H9C8.44772 16 8 15.5523 8 15V12C8 11.7348 8.10536 11.4804 8.29289 11.2929L16.7929 2.79289ZM19.7929 4.20711C19.355 3.7692 18.645 3.7692 18.2071 4.2071L10 12.4142V14H11.5858L19.7929 5.79289C20.2308 5.35499 20.2308 4.64501 19.7929 4.20711ZM6 5C5.44772 5 5 5.44771 5 6V18C5 18.5523 5.44772 19 6 19H18C18.5523 19 19 18.5523 19 18V14C19 13.4477 19.4477 13 20 13C20.5523 13 21 13.4477 21 14V18C21 19.6569 19.6569 21 18 21H6C4.34315 21 3 19.6569 3 18V6C3 4.34314 4.34315 3 6 3H10C10.5523 3 11 3.44771 11 4C11 4.55228 10.5523 5 10 5H6Z" fill="currentColor"></path>
+                </svg>
+                &nbsp;{{ ai_name }}
+            </button>
             <button id="user-button">&#9965; {{ username }}</button>
             <button id="logout-button">&#x23FB; exit</button>
         </div>
@@ -37,12 +43,16 @@
             <div class="scroll-indicator" id="scrollIndicator">&#x2B07;</div>
             <input type="file" id="file_input" style="display: none;" />
             <button id="attachment">
-                <svg width="26" height="26" viewBox="0 0 23 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M9 7C9 4.23858 11.2386 2 14 2C16.7614 2 19 4.23858 19 7V15C19 18.866 15.866 22 12 22C8.13401 22 5 18.866 5 15V9C5 8.44772 5.44772 8 6 8C6.55228 8 7 8.44772 7 9V15C7 17.7614 9.23858 20 12 20C14.7614 20 17 17.7614 17 15V7C17 5.34315 15.6569 4 14 4C12.3431 4 11 5.34315 11 7V15C11 15.5523 11.4477 16 12 16C12.5523 16 13 15.5523 13 15V9C13 8.44772 13.4477 8 14 8C14.5523 8 15 8.44772 15 9V15C15 16.6569 13.6569 18 12 18C10.3431 18 9 16.6569 9 15V7Z" fill="white"></path>
                 </svg>
             </button>
             <textarea id="input" placeholder="How can I assist you today?"></textarea>
-            <button id="send">&#x2B06;</button>
+            <button id="send">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-white dark:text-black">
+                    <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
         </div>
     </div>
 
@@ -93,10 +103,12 @@
             // Change the #send button color based on the input
             if (textarea.value.length > 0) {
                 // sendButton.style.backgroundColor = '#4CAF50'; // Example: Change to a green color when text is entered
-                sendButton.style.color = '#FFF'; // Change text color to white for better contrast
+                sendButton.style.color = '#222'; // Change text color to white for better contrast
+                sendButton.style.backgroundColor = '#FFF'; 
             } else {
                 // sendButton.style.backgroundColor = '#222'; // Revert to original color when there's no text
-                sendButton.style.color = '#777'; // Revert text color to grey
+                sendButton.style.color = '#222'; // Revert text color to grey
+                sendButton.style.backgroundColor = '#373737'; // Revert button color
             }
         }
 
