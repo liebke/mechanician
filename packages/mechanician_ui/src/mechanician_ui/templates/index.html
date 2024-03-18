@@ -81,7 +81,9 @@
         }
 
 
-        function checkSession(socket) {
+        function check_session_init_ws() {
+            var wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            var socket = new WebSocket(wsProtocol + window.location.host + "/ws");
             var token = localStorage.getItem('jwt_token');
             console.log('Token:', token);
             if (!token) {
@@ -89,8 +91,21 @@
                 window.location.href = "/login";
             } else {
                 // Only initialize WebSocket connection if the session check passes
-                initializeWebSocket(socket);
+                init_web_socket(socket);
             }
+
+            document.getElementById('send').addEventListener('click', function() {
+                send_prompt(socket);
+            });
+
+            document.getElementById('input').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    send_prompt(socket);
+                }
+            });
+
+            return socket;
         }
 
 
@@ -136,7 +151,7 @@
             checkScroll();
         }
 
-        function performLogout() {
+        function perform_logout() {
             localStorage.removeItem('jwt_token');
             // Make a request to the logout endpoint
             $.ajax({
@@ -153,7 +168,7 @@
             });
         }
 
-        function initializeWebSocket(socket) {
+        function init_web_socket(socket) {
             
             socket.onopen = function(e) {
                 console.log('Connected to the server.');
@@ -174,6 +189,24 @@
                 current_sys_response = $('<p class="message-text">').text("Disconnected. Please refresh the page to reconnect.");
                 sys_message_container.append(current_sys_response);
                 $('#messages').append(sys_message_container);
+            };
+
+            socket.onclose = function(e) {
+                // Check if the close event was unexpected
+                if (!e.wasClean) {
+                    console.log('Disconnected from the server:', e.reason);
+                    let sys_message_container = $('<div class="message-container">');
+                    sys_message_container.append($('<p class="message-header">').html("System"));
+                    let current_sys_response = $('<p class="message-text">').text("Disconnected. Attempting to reconnect...");
+                    sys_message_container.append(current_sys_response);
+                    $('#messages').append(sys_message_container);
+
+                    // Attempt to reconnect after a delay
+                    setTimeout(check_session_init_ws, 5000); // Reconnect after 5 seconds
+                } else {
+                    // Handle intentional disconnection differently, if needed
+                    console.log('Disconnected from the server:', e.reason);
+                }
             };
 
             socket.onmessage = function(event) {
@@ -254,37 +287,9 @@
             document.getElementById('input').addEventListener('input', adjustTextareaHeightAndChangeButtonColor);
             document.getElementById('input').focus();
 
-            var wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-            var socket = new WebSocket(wsProtocol + window.location.host + "/ws");
-
-            checkSession(socket);
-
-            document.getElementById('send').addEventListener('click', function() {
-                send_prompt(socket);
-            });
-
             document.getElementById('attachment').addEventListener('click', function() {
                 document.getElementById('file_input').click(); // Programmatically click the hidden file input
             });
-
-            document.getElementById('file_input').addEventListener('change', function(e) {
-                // Ensure a file was selected
-                if (this.files && this.files[0]) {
-                    var reader = new FileReader();
-
-                    reader.onload = function(e) {
-                        // Place the file content into the input field
-                        document.getElementById('input').value = e.target.result;
-                        // Assuming the socket is available here, call submit_prompt
-                        // You might need to ensure the socket is in scope or manage its state appropriately
-                        submit_prompt(socket);
-                    };
-
-                    // Read the text file
-                    reader.readAsText(this.files[0]);
-                }
-            });
-
 
             // Optionally, listen for file selection changes on the file input
             document.getElementById('file_input').addEventListener('change', function() {
@@ -297,16 +302,8 @@
                 }
             });
 
-
-            document.getElementById('input').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    send_prompt(socket);
-                }
-            });
-
             document.getElementById('logout-button').addEventListener('click', function() {
-                performLogout();
+                perform_logout();
             });
 
             document.getElementById('user-button').addEventListener('click', function() {
@@ -319,6 +316,41 @@
 
             // Initial adjustment on load
             adjustInputContainerWidth();
+
+            // var wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+            // var socket = new WebSocket(wsProtocol + window.location.host + "/ws");
+
+            var socket = check_session_init_ws();
+
+            // document.getElementById('send').addEventListener('click', function() {
+            //     send_prompt(socket);
+            // });
+
+            // document.getElementById('input').addEventListener('keydown', function(e) {
+            //     if (e.key === 'Enter' && !e.shiftKey) {
+            //         e.preventDefault();
+            //         send_prompt(socket);
+            //     }
+            // });
+
+            document.getElementById('file_input').addEventListener('change', function(e) {
+                // Ensure a file was selected
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        // Place the file content into the input field
+                        document.getElementById('input').value = e.target.result;
+                        // Assuming the socket is available here, call submit_prompt
+                        // You might need to ensure the socket is in scope or manage its state appropriately
+                        // submit_prompt(socket);
+                    };
+
+                    // Read the text file
+                    reader.readAsText(this.files[0]);
+                }
+            });
+
 
         });
 
