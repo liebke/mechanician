@@ -352,8 +352,6 @@
             });
         }
 
-
-
         function initializeWebSocket(socket) {
             
             socket.onopen = function(e) {
@@ -399,18 +397,24 @@
             adjustTextareaHeight();
             checkScroll();
 
-            // document.getElementById('content').addEventListener('scroll', checkScroll);
-
             document.getElementById('content').addEventListener('scroll', function() {
                 var contentElement = document.getElementById('content');
                 var maxScroll = contentElement.scrollHeight - contentElement.clientHeight;
+                
+                // This is a small threshold to determine if the user has scrolled close to the bottom
+                var nearBottom = Math.abs(contentElement.scrollTop - maxScroll) < 5;
+
                 if (contentElement.scrollTop < maxScroll) {
                     userHasScrolled = true;
-                } else {
-                    userHasScrolled = false; // User scrolled to the bottom
+                } 
+
+                if (nearBottom) {
+                    userHasScrolled = false; // Consider user at the bottom if they're within a small threshold of the bottom
                 }
+                
                 checkScroll(); // Call your existing checkScroll function here
             });
+
 
 
             document.getElementById('input').addEventListener('input', adjustTextareaHeight);
