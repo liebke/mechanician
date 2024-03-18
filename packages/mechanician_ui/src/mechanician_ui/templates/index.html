@@ -22,18 +22,17 @@
             background-color: #222; /* Darker grey */
             color: white;
             text-align: left; /* Text aligned to the left */
-            font-size: 24px;
+            font-size: 20px;
             z-index: 1000;
-
+            font-weight: 300;
             display: flex;
-            justify-content: space-between;
             align-items: center;
             padding: 0 20px;
         }
 
         #ai_name {
             text-align: center;
-            padding: 30px;
+            padding-top: 20px;
             flex-grow: 1;
         }
 
@@ -230,16 +229,10 @@
     <div id="sidebar">
         <h1>Daring Mechanician</h1>
         <!-- Add additional sidebar content here -->
-        <!-- Username aligned to the right -->
-        <!-- <div id="username" style="position: absolute; bottom: 80px; width: calc(100% - 40px); text-align: center;">user: {{ username }}</div>
-        <div id="logoutContainer" style="position: absolute; bottom: 20px; width: calc(100% - 40px); text-align: center;">
-            <button id="logoutBtn">Logout</button>
-        </div> -->
-
         
         <div id="logoutContainer">
-            <div id="username" class="logout-container-username">{{ username }}</div>
-            <button id="logoutBtn">Logout</button>
+            <button id="user-button">{{ username }}</button>
+            <button id="logout-button">&#x23FB; exit</button>
         </div>
         </div>
     
@@ -257,6 +250,8 @@
     <div id="footer">
         <div id="inputContainer">
             <div class="scroll-indicator" id="scrollIndicator">&#x2B07;</div>
+            <input type="file" id="file_input" style="display: none;" />
+            <button id="attachment">&#128206;</button>
             <textarea id="input" placeholder="How can I assist you today?"></textarea>
             <button id="send">&#x2B06;</button>
         </div>
@@ -268,7 +263,7 @@
         var userHasScrolled = false;
 
         
-        function sendPrompt(socket) {
+        function send_prompt(socket) {
             var promptText = $('#input').val().trim();
             if (promptText) {
                 let userMessageContainer = $('<div class="message-container">');
@@ -387,7 +382,7 @@
                         var contentElement = document.getElementById('content');
                         contentElement.scrollTop = contentElement.scrollHeight;
                     }
-                    
+
                     checkScroll(); // Check scroll after receiving a response
                 }
             };
@@ -421,19 +416,59 @@
             checkSession(socket);
 
             document.getElementById('send').addEventListener('click', function() {
-                sendPrompt(socket);
+                send_prompt(socket);
             });
+
+            document.getElementById('attachment').addEventListener('click', function() {
+                document.getElementById('file_input').click(); // Programmatically click the hidden file input
+            });
+
+            document.getElementById('file_input').addEventListener('change', function(e) {
+                // Ensure a file was selected
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        // Place the file content into the input field
+                        document.getElementById('input').value = e.target.result;
+                        // Assuming the socket is available here, call submit_prompt
+                        // You might need to ensure the socket is in scope or manage its state appropriately
+                        submit_prompt(socket);
+                    };
+
+                    // Read the text file
+                    reader.readAsText(this.files[0]);
+                }
+            });
+
+
+            // Optionally, listen for file selection changes on the file input
+            document.getElementById('file_input').addEventListener('change', function() {
+                if (this.files && this.files.length > 0) {
+                    // File(s) have been selected
+                    // You can handle the file(s) here or initiate an upload
+                    console.log("File selected: ", this.files[0].name);
+                    // Example: Upload the file
+                    // uploadFile(this.files[0]);
+                }
+            });
+
 
             document.getElementById('input').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    sendPrompt(socket);
+                    send_prompt(socket);
                 }
             });
 
-            document.getElementById('logoutBtn').addEventListener('click', function() {
+            document.getElementById('logout-button').addEventListener('click', function() {
                 performLogout();
             });
+
+            document.getElementById('user-button').addEventListener('click', function() {
+                window.location.href = "/user";
+            });
+
         });
 
 

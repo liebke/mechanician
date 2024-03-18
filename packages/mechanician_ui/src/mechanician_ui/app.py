@@ -25,6 +25,12 @@ class UserCreate(BaseModel):
     password: str
     confirm_password: str
 
+class UserUpdate(BaseModel):
+    username: str
+    password: str
+    new_password: str
+    confirm_new_password: str
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 ###############################################################################
@@ -171,6 +177,51 @@ class MechanicianWebApp:
                 raise HTTPException(status_code=400, detail="User already exists")
 
             return {"message": "User created successfully"}
+        
+
+
+        @self.app.get("/user")
+        async def login(request: Request):
+            try:
+                self.verify_access_token(request)
+                user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+                if user is None:
+                    username = ""
+                else:
+                    username = user.get("username", "")
+            except HTTPException as e:
+                print(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+            
+            return self.templates.TemplateResponse("user.html", 
+                                                   {"request": request,
+                                                    "username": username})
+        
+
+        @self.app.post("/user")
+        async def create_user(request: Request, user: UserUpdate):
+            try:
+                self.verify_access_token(request)
+            except HTTPException as e:
+                print(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+            
+            if user.new_password != user.confirm_new_password:
+                raise HTTPException(status_code=400, detail="Passwords do not match")
+            
+            # Add your user creation logic here
+            print(f"User: {user}")
+            update_status = self.credentials_manager.update_password(user.username, 
+                                                                     user.password, 
+                                                                     user.new_password)
+            
+            print(f"Update Status: {update_status}")
+            if not update_status:
+                raise HTTPException(status_code=400, detail="User update error")
+
+            return {"message": "User update successfully"}
         
 
         @self.app.post("/logout")

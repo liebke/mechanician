@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Create User - Daring Mechanician</title>
-    <!-- <link rel="stylesheet" href="styles.css"> Assuming you have a CSS file -->
+    <title>User - Daring Mechanician</title>
     <style>
         body, html {
             height: 100%;
@@ -81,15 +80,16 @@
         <h1>Daring Mechanician</h1>
         <!-- Additional sidebar content here -->
         <div id="logoutContainer" style="position: absolute; bottom: 20px; width: calc(100% - 40px); text-align: center;">
-            <button id="logoutBtn">&#x23FB; exit</button>
+            <button id="logout_button">&#x23FB; exit</button>
         </div>
     </div>
 
     <div class="login-container">
-        <input type="text" id="username" placeholder="Username">
+        <input type="text" id="username" placeholder="{{username}}" value="{{username}}">
         <input type="password" id="password" placeholder="Password">
-        <input type="password" id="confirmPassword" placeholder="Confirm Password">
-        <button id="createUserBtn">Create User</button>
+        <input type="password" id="new_password" placeholder="New Password">
+        <input type="password" id="confirm_new_password" placeholder="Confirm New Password">
+        <button id="update_user_button">Update</button>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -118,32 +118,34 @@
                 });
             }
 
-            function createUser() {
+            function update_user() {
                 var username = $('#username').val();
                 var password = $('#password').val();
-                var confirmPassword = $('#confirmPassword').val();
+                var new_password = $('#new_password').val();
+                var confirm_new_password = $('#confirm_new_password').val();
 
-                if(password !== confirmPassword) {
+                if(new_password !== confirm_new_password) {
                     alert("Passwords do not match.");
                     return;
                 }
 
                 $.ajax({
                     type: "POST",
-                    url: "/create_user",
+                    url: "/user",
                     data: JSON.stringify({ // Convert the data to a JSON string
                         username: username, 
                         password: password,
-                        confirm_password: confirmPassword
+                        new_password: new_password,
+                        confirm_new_password: confirm_new_password
                     }),
                     contentType: "application/json; charset=utf-8", // Set the content type to JSON
                     dataType: "json", // Expect JSON in response from the server
                     success: function(data) {
-                        alert("User created successfully.");
-                        window.location.href = "/create_user"; // Redirect to the login page after account creation
+                        alert("User successfully updated.");
+                        window.location.href = "/user"; // Redirect to the login page after account creation
                     },
                     error: function(response) {
-                        var errorMessage = "User creation failed: ";
+                        var errorMessage = "User update failed: ";
                         if (response.responseJSON && response.responseJSON.detail) {
                             errorMessage += response.responseJSON.detail;
                         } else {
@@ -155,16 +157,16 @@
             }
 
 
-            $('#createUserBtn').click(createUser);
+            $('#update_user_button').click(update_user);
 
             // Trigger login when Enter key is pressed in the password input
-            $('#confirmPassword').on('keypress', function(e) {
+            $('#confirm_new_password').on('keypress', function(e) {
                 if (e.which === 13) { // 13 is the Enter key
-                    createUser();
+                    update_user();
                 }
             });
 
-            document.getElementById('logoutBtn').addEventListener('click', function() {
+            document.getElementById('logout_button').addEventListener('click', function() {
                 performLogout();
             });
 
