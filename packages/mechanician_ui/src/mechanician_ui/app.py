@@ -19,6 +19,7 @@ from mechanician_ui.secrets import SecretsManager, BasicSecretsManager
 from mechanician_ui.auth import CredentialsManager, BasicCredentialsManager
 
 from pydantic import BaseModel
+from fastapi.staticfiles import StaticFiles
 
 class UserCreate(BaseModel):
     username: str
@@ -95,10 +96,11 @@ class MechanicianWebApp:
 
 
         self.app = FastAPI()
-        # self.app.mount("/static", StaticFiles(directory="./templates"), name="static")
         # Get the path to the templates directory
         template_directory = pkg_resources.resource_filename('mechanician_ui', 'templates')
+        static_files_directory = pkg_resources.resource_filename('mechanician_ui', 'static')
         self.templates = Jinja2Templates(directory=template_directory)
+        self.app.mount("/static", StaticFiles(directory=static_files_directory), name="static")
         self.ai_instances: Dict[str, TAGAI] = {}
 
         # Setup routes and WebSocket events

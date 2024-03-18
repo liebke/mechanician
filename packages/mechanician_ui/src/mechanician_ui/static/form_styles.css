@@ -1,0 +1,29 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #222;
+    color: white;
+    font-family: Helvetica, sans-serif;
+}
+
+.form-container {
+    padding: 50px;
+    border-radius: 5px;
+    background: #222;
+    text-align: center;
+}
+input {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #777;
+    background: #222;
+    color: white;
+    outline: none; /* Remove focus outline */
+}

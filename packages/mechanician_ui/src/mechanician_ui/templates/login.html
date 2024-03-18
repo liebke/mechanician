@@ -3,76 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>Login - Daring Mechanician</title>
-    <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #222;
-            color: white;
-            font-family: Helvetica, sans-serif;
-        }
-        .login-container {
-            padding: 50px;
-            border-radius: 5px;
-            background: #222;
-            text-align: center;
-        }
-        input {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border: 1px solid #777;
-            background: #222;
-            color: white;
-            outline: none; /* Remove focus outline */
-        }
-        
-
-        button {
-            margin: 0; /* Remove default margins */
-            padding: 10px 20px; /* Padding around the text */
-            background-color: #222; /* Darker grey button */
-            color: white; /* White text */
-            border: none; /* Remove border */
-            cursor: pointer; /* Pointer cursor on hover */
-            font-size: 18px; /* Adjusted font size */
-            font-family: Helvetica, sans-serif; /* Consistent font */
-            font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
-            border-radius: 15px; /* Optional: Adds rounded corners to the button */
-        }
-
-        button:hover {
-            background-color: #777; /* Lighter grey on hover */
-        }
-
-        /* Sidebar Styles */
-        #sidebar {
-            position: fixed;
-            top: 0; /* Align with the top of the viewport */
-            left: 0; /* Align with the left side of the viewport */
-            width: 20%; /* Sidebar width */
-            height: 100%; /* Full height */
-            background-color: #171717; /* Darker grey background */
-            padding: 20px; /* Padding around the content */
-            box-sizing: border-box; /* Include padding in the width calculation */
-            z-index: 1001; /* Ensure it's above other content but below fixed elements if necessary */
-        }
-
-        #sidebar h1 {
-            text-align: center; /* Center the arrow horizontally */
-            color: white; /* Title color */
-            margin: 0 0 20px; /* Add some margin below the title */
-            font-size: 20px; /* Title font size */
-            font-weight: normal; /* Makes the font thinner, assuming Helvetica supports this weight */
-        }
-
-    </style>
+    <link rel="stylesheet" href="./static/styles.css">
+    <link rel="stylesheet" href="./static/form_styles.css">
+    <style></style>
 </head>
 <body>
      <!-- Sidebar -->
@@ -82,10 +15,10 @@
         </div>
     </div>
 
-    <div class="login-container">
+    <div class="form-container">
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
-        <button id="loginBtn">Login</button>
+        <button id="login-button">Login</button>
     </div>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -121,7 +54,7 @@
                 });
             }
 
-            $('#loginBtn').click(performLogin);
+            $('#login-button').click(performLogin);
 
             // Trigger login when Enter key is pressed in the password input
             $('#password').on('keypress', function(e) {

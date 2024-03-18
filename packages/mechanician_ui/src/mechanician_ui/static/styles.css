@@ -1,0 +1,258 @@
+    body, html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background-color: #222; /* Darker grey for the textarea */
+        color: white; /* White text */
+        font-family: Helvetica, sans-serif; /* Helvetica or fallback to sans-serif */
+        font-size: 18px; /* Adjusted font size */
+    }
+
+    #header {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background-color: #222; /* Darker grey */
+        color: white;
+        text-align: left; /* Text aligned to the left */
+        font-size: 20px;
+        z-index: 1000;
+        font-weight: 300;
+        display: flex;
+        align-items: center;
+        padding: 0 20px;
+    }
+
+    #ai_name {
+        text-align: center;
+        padding-top: 20px;
+        flex-grow: 1;
+    }
+
+    #footer {
+        position: fixed;
+        bottom: 10px; /* Slightly raised from the bottom */
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+        display: flex;
+        justify-content: center; /* Center the footer content */
+    }
+
+
+    #inputContainer {
+        width: 50%; /* Input container occupies 50% of the width */
+        display: flex;
+        border: 1px solid white; /* Thin white border */
+        padding: 5px; /* Padding inside the container */
+        box-sizing: border-box; /* Ensure padding and border are included in the width */
+        align-items: center; /* Align the items vertically in the center */
+        justify-content: space-between; /* Adjust based on your layout preference */
+        border-radius: 15px; /* Optional: Adds rounded corners to the container */
+
+        align-items: flex-start; /* Align items to the start, allowing the container to grow with content */
+    }
+
+    /* Adjusted #content area to not overlap with the footer */
+    #content {
+        position: fixed;
+        top: 60px; /* Height of the header */
+        bottom: 70px; /* Height of the footer + some space for margin */
+        overflow-y: auto;
+        width: 100%;
+        padding: 0 10px; /* Adjust as needed */
+        height: calc(100% - 160px); /* Adjusted height to fill between header and footer */
+    }
+
+    textarea {
+        margin: 0; /* Remove default margins */
+        flex-grow: 1; /* Allow textarea to grow */
+        background-color: #222; /* Darker grey for the textarea */
+        color: white; /* White text */
+        border: none; /* Remove border */
+        padding: 5px; /* Reduced padding */
+        resize: none; /* Prevent resizing */
+        font-size: 18px; /* Adjusted font size */
+        font-family: Helvetica, sans-serif; /* Consistent font */
+        overflow-y: hidden; /* Hide the overflow */
+        height: 30px; /* Reduced initial height */
+        min-height: 30px; /* Ensure it does not go smaller than a single line */
+        outline: none; /* Remove focus outline */
+    }
+
+
+    #send {
+        margin: 0; /* Remove default margins */
+        padding: 10px 20px; /* Padding around the text */
+        background-color: #222; /* Darker grey button */
+        color: white; /* White text */
+        border: none; /* Remove border */
+        cursor: pointer; /* Pointer cursor on hover */
+        font-size: 24px; /* Adjusted font size */
+        font-family: Helvetica, sans-serif; /* Consistent font */
+        font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+        border-radius: 15px; /* Optional: Adds rounded corners to the button */
+    }
+
+    #attachment {
+        margin: 0; /* Remove default margins */
+        padding: 10px 20px; /* Padding around the text */
+        background-color: #222; /* Darker grey button */
+        color: white; /* White text */
+        border: none; /* Remove border */
+        cursor: pointer; /* Pointer cursor on hover */
+        font-size: 24px; /* Adjusted font size */
+        font-family: Helvetica, sans-serif; /* Consistent font */
+        font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+        border-radius: 15px; /* Optional: Adds rounded corners to the button */
+    }
+
+    #attachment:hover {
+        background-color: #777; /* Lighter grey on hover */
+    }
+
+    #send:hover {
+        background-color: #777; /* Lighter grey on hover */
+    }
+
+    button {
+        margin: 0; /* Remove default margins */
+        padding: 10px 20px; /* Padding around the text */
+        background-color: #222; /* Darker grey button */
+        color: white; /* White text */
+        border: none; /* Remove border */
+        cursor: pointer; /* Pointer cursor on hover */
+        font-size: 18px; /* Adjusted font size */
+        font-family: Helvetica, sans-serif; /* Consistent font */
+        font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+        border-radius: 15px; /* Optional: Adds rounded corners to the button */
+    }
+
+    button:hover {
+        background-color: #777; /* Lighter grey on hover */
+    }
+
+
+    p {
+        margin: 20px 10px;
+    }
+
+    
+    .message-container {
+        margin-left: 25%; /* Ensure alignment */
+        width: 50%; /* Input container occupies 50% of the width */
+        padding: 5px; /* Padding inside the container */
+        box-sizing: border-box; /* Ensure padding and border are included in the width */
+        justify-content: left; /* Adjust based on your layout preference */
+        border-radius: 5px; /* Optional: Adds rounded corners to the container */
+    }
+
+    .message-header, .message-text {
+        margin-left: 10px; /* Ensure alignment */
+    }
+
+    .message-header {
+        font-weight: bold;
+        font-size: 16px;
+        margin-bottom: 0px; /* Minimize the vertical gap by reducing bottom margin */
+    }
+
+    .message-text {
+        font-size: 16px;
+        margin-top: 10px; /* Ensure minimal space above the message text */
+        margin-bottom: 30px; /* Increase the gap between this message and the next header */
+    }
+
+    
+
+    .scroll-indicator {
+        position: fixed;
+        bottom: calc(0% + 100px); /* Adjust as needed to position just above the text input */
+        left: 60%; /* Center horizontally */
+        transform: translateX(-50%); /* Center horizontally */
+        font-size: 26px; /* Size of the arrow */
+        color: white; /* Arrow color */
+        display: none; /* Initially hidden */
+        z-index: 1000;
+        background-color: #222; /* Dark grey background */
+        width: 40px; /* Width of the box */
+        height: 40px; /* Height of the box */
+        line-height: 40px; /* Center the arrow vertically */
+        text-align: center; /* Center the arrow horizontally */
+        border-radius: 20px; /* Make it a circle or adjust as desired for a box */
+        border: 1px solid #777; /* Fine white border around the circle */
+    }
+
+    /* Sidebar Styles */
+    #sidebar {
+        position: fixed;
+        top: 0; /* Align with the top of the viewport */
+        left: 0; /* Align with the left side of the viewport */
+        width: 260px; /* Sidebar width */
+        height: 100%; /* Full height */
+        background-color: #171717; /* Darker grey background */
+        padding-top: 20px; /* Add some padding to the top */
+        padding-left: 20px; /* Add some padding to the left */
+        box-sizing: border-box; /* Include padding in the width calculation */
+        z-index: 1001; /* Ensure it's above other content but below fixed elements if necessary */
+    }
+
+    #sidebar h1 {
+        text-align: center; /* Center the arrow horizontally */
+        color: white; /* Title color */
+        margin: 0 0 20px; /* Add some margin below the title */
+        font-size: 20px; /* Title font size */
+        font-weight: normal; /* Makes the font thinner, assuming Helvetica supports this weight */
+    }
+
+    
+    #sidebar button {
+        display: block; /* Make the button a block element to fill the width */
+        width: 100%; /* Full width */
+        margin: 0 0 10px 0; /* Add margin to the bottom for spacing between buttons */
+        padding: 10px 20px; /* Padding around the text, 20px to the left for spacing from edge */
+        background-color: #171717; /* Darker grey button */
+        color: white; /* White text */
+        border: none; /* Remove border */
+        cursor: pointer; /* Pointer cursor on hover */
+        font-size: 16px; /* Adjusted font size */
+        font-family: Helvetica, sans-serif; /* Consistent font */
+        font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+        text-align: left; /* Align text to the left */
+        border-radius: 2; /* Remove rounded corners */
+    }
+
+    #sidebar button:hover {
+        background-color: #777; /* Lighter grey on hover */
+    }
+
+    
+
+.logout-container-username {
+    margin: 0; /* Remove default margins */
+    padding-left: 0px;
+    padding-right: 0px;
+    color: white; /* White text */
+    font-size: 18px; /* Adjusted font size */
+    font-family: Helvetica, sans-serif; /* Consistent font */
+    font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+    text-align: center; /* Center the username */
+}
+
+.logout-container {
+        position: absolute;
+        bottom: 20px;
+        left: 50%; /* Center the container horizontally */
+        transform: translateX(-50%); /* Adjust position to truly center based on its own width */
+        width: calc(100% - 40px); /* Adjust the width as needed, subtracting 40px for padding */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center; /* Ensures the text inside buttons is centered if the buttons themselves are styled differently */
+}
+
+
+/* Adjust the #content, #header, and #footer to account for the sidebar */
+#content, #header, #footer {
+    margin-left: 10%; /* Push them to the right to make space for the sidebar */
+}
