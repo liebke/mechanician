@@ -144,7 +144,8 @@ class MechanicianWebApp:
 
         @self.app.get("/login")
         async def login(request: Request):
-            return self.templates.TemplateResponse("login.html", {"request": request})
+            return self.templates.TemplateResponse("login.html", 
+                                                   {"request": request})
         
 
         @self.app.get("/create_user")
@@ -156,7 +157,16 @@ class MechanicianWebApp:
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
             
-            return self.templates.TemplateResponse("create_user.html", {"request": request})
+            user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+            if user is None:
+                username = ""
+            else:
+                username = user.get("username", "")
+            
+            return self.templates.TemplateResponse("create_user.html",
+                                                   {"request": request,
+                                                    "ai_name": self.name,
+                                                    "username": username})
         
 
         @self.app.post("/create_user")
@@ -196,7 +206,8 @@ class MechanicianWebApp:
             
             return self.templates.TemplateResponse("user.html", 
                                                    {"request": request,
-                                                    "username": username})
+                                                    "username": username,
+                                                    "ai_name": self.name})
         
 
         @self.app.post("/user")

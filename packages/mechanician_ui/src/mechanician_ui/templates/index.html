@@ -196,29 +196,34 @@
 
         
 
-        .logout-container-username {
-            margin: 0; /* Remove default margins */
-            padding-left: 0px;
-            padding-right: 0px;
-            color: white; /* White text */
-            font-size: 18px; /* Adjusted font size */
-            font-family: Helvetica, sans-serif; /* Consistent font */
-            font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
-            text-align: center; /* Center the username */
-        }
-        
-        #logoutContainer {
+    .logout-container-username {
+        margin: 0; /* Remove default margins */
+        padding-left: 0px;
+        padding-right: 0px;
+        color: white; /* White text */
+        font-size: 18px; /* Adjusted font size */
+        font-family: Helvetica, sans-serif; /* Consistent font */
+        font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+        text-align: center; /* Center the username */
+    }
+    
+    .logout-container {
             position: absolute;
             bottom: 20px;
-            width: calc(100% - 40px);
-            text-align: center;
-        }
+            left: 50%; /* Center the container horizontally */
+            transform: translateX(-50%); /* Adjust position to truly center based on its own width */
+            width: calc(100% - 40px); /* Adjust the width as needed, subtracting 40px for padding */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center; /* Ensures the text inside buttons is centered if the buttons themselves are styled differently */
+    }
 
 
-        /* Adjust the #content, #header, and #footer to account for the sidebar */
-        #content, #header, #footer {
-            margin-left: 10%; /* Push them to the right to make space for the sidebar */
-        }
+    /* Adjust the #content, #header, and #footer to account for the sidebar */
+    #content, #header, #footer {
+        margin-left: 10%; /* Push them to the right to make space for the sidebar */
+    }
 
 
     </style>
@@ -230,8 +235,9 @@
         <h1>Daring Mechanician</h1>
         <!-- Add additional sidebar content here -->
         
-        <div id="logoutContainer">
-            <button id="user-button">{{ username }}</button>
+        <div id="logout-container" class="logout-container">
+            <button id="new-button">&#x21BA; {{ ai_name }}</button>
+            <button id="user-button">&#9965; {{ username }}</button>
             <button id="logout-button">&#x23FB; exit</button>
         </div>
         </div>
@@ -467,6 +473,10 @@
 
             document.getElementById('user-button').addEventListener('click', function() {
                 window.location.href = "/user";
+            });
+
+            document.getElementById('new-button').addEventListener('click', function() {
+                window.location.href = "/";
             });
 
         });
