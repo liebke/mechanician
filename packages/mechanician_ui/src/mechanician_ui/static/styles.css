@@ -15,17 +15,19 @@
         background-color: #222; /* Darker grey */
         color: white;
         text-align: left; /* Text aligned to the left */
-        font-size: 20px;
+        font-size: 18px;
         z-index: 1000;
-        font-weight: 300;
+        font-weight: normal;
         display: flex;
         align-items: center;
         padding: 0 20px;
     }
 
     #ai_name {
-        text-align: center;
+        text-align: left;
         padding-top: 20px;
+        padding-right: 160px;
+        padding-left: 160px;
         flex-grow: 1;
     }
 
@@ -216,8 +218,8 @@
         text-align: center; /* Center the arrow horizontally */
         color: white; /* Title color */
         margin: 0 0 20px; /* Add some margin below the title */
-        font-size: 20px; /* Title font size */
-        font-weight: normal; /* Makes the font thinner, assuming Helvetica supports this weight */
+        font-size: 18px; /* Title font size */
+        font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
     }
 
     

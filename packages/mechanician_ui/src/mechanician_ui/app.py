@@ -118,11 +118,13 @@ class MechanicianWebApp:
         async def index(request: Request):
             user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
             if user is None:
-                username = ""
+                # username = ""
+                return self.templates.TemplateResponse("login.html", 
+                                                       {"request": request})
             else:
                 username = user.get("username", "")
-            print(f"Access Token: {request.cookies.get('access_token')}")
-            print(f"Username: {username}")
+            # print(f"Access Token: {request.cookies.get('access_token')}")
+            # print(f"Username: {username}")
             return self.templates.TemplateResponse("index.html", 
                                                    {"request": request,
                                                     "ai_name": self.name,
