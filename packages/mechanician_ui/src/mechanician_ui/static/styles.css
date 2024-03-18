@@ -47,7 +47,6 @@
         margin-left: 20px; /* Add margin on the left to prevent overlapping with the sidebar */
         display: flex;
         border: 1px solid #777; /* Thin white border */
-        padding: 0px; /* Padding inside the container */
         box-sizing: border-box; /* Ensure padding and border are included in the width */
         align-items: center; /* Align the items vertically in the center */
         justify-content: center; /* Center the items horizontally */
@@ -61,7 +60,8 @@
         flex-grow: 1; /* Allow textarea to grow */
         background-color: #222; /* Darker grey for the textarea */
         color: white; /* White text */
-        padding: 5px; /* Keep reduced padding */
+        padding-top: 15px; /* Adjusted top padding */
+        padding-bottom: 0px; /* Adjusted bottom padding */
         resize: none; /* Prevent resizing */
         font-size: 16px; /* Adjusted font size */
         font-family: Helvetica, sans-serif; /* Consistent font */
@@ -73,6 +73,13 @@
         box-sizing: border-box; /* Ensure padding and border are included in the width */
         border: none; /* Remove border */
     }
+
+
+    #input-container > textarea::placeholder {
+        color: #909090; /* Change to your desired placeholder text color */
+        font-weight: 300; /* Example style */
+    }
+    
     
 
     /* Adjusted #content area to not overlap with the footer */
