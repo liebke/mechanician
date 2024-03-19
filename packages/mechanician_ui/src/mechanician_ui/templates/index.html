@@ -73,10 +73,10 @@
                 $('#messages').append(userMessageContainer);
                 socket.send(JSON.stringify({data: promptText}));
                 $('#input').val('');
-                adjustTextareaHeightAndChangeButtonColor();
-                currentAIResponse = null;
-                checkScroll(); // Check scroll after sending a prompt
-                setTimeout(checkScroll, 0); // Ensure checkScroll runs after the DOM updates
+                adjust_textarea_height_and_change_button_color();
+                current_ai_response = null;
+                check_scroll(); // Check scroll after sending a prompt
+                setTimeout(check_scroll, 0); // Ensure check_scroll runs after the DOM updates
             }
         }
 
@@ -105,13 +105,34 @@
                 }
             });
 
+            document.getElementById('attachment').addEventListener('click', function() {
+                document.getElementById('file_input').click(); // Programmatically click the hidden file input
+            });
+            
+            document.getElementById('file_input').addEventListener('change', function(e) {
+                // Ensure a file was selected
+                if (this.files && this.files[0]) {
+                    var reader = new FileReader();
+
+                    reader.onload = function(e) {
+                        // Place the file content into the input field
+                        document.getElementById('input').value = e.target.result;
+                        adjust_textarea_height_and_change_button_color();
+                        send_prompt(socket);
+                    };
+
+                    // Read the text file
+                    reader.readAsText(this.files[0]);
+                }
+            });
+
             return socket;
         }
 
 
-        function adjustTextareaHeightAndChangeButtonColor() {
+        function adjust_textarea_height_and_change_button_color() {
             var textarea = document.getElementById('input');
-            var sendButton = document.getElementById('send');
+            var send_button = document.getElementById('send');
 
             // Adjusting the textarea height
             textarea.style.height = 'auto'; // Reset height to auto to get the correct new height
@@ -119,36 +140,26 @@
 
             // Change the #send button color based on the input
             if (textarea.value.length > 0) {
-                // sendButton.style.backgroundColor = '#4CAF50'; // Example: Change to a green color when text is entered
-                sendButton.style.color = '#222'; // Change text color to white for better contrast
-                sendButton.style.backgroundColor = '#FFF'; 
+                // send_button.style.backgroundColor = '#4CAF50'; // Example: Change to a green color when text is entered
+                send_button.style.color = '#222'; // Change text color to white for better contrast
+                send_button.style.backgroundColor = '#FFF'; 
             } else {
-                // sendButton.style.backgroundColor = '#222'; // Revert to original color when there's no text
-                sendButton.style.color = '#222'; // Revert text color to grey
-                sendButton.style.backgroundColor = '#373737'; // Revert button color
+                // send_button.style.backgroundColor = '#222'; // Revert to original color when there's no text
+                send_button.style.color = '#222'; // Revert text color to grey
+                send_button.style.backgroundColor = '#373737'; // Revert button color
             }
         }
 
 
-        // Simplified checkScroll function
-        function checkScroll() {
-            var contentElement = document.getElementById('content');
+        // Simplified check_scroll function
+        function check_scroll() {
+            var content_element = document.getElementById('content');
             var scrollIndicator = document.getElementById('scrollIndicator');
-
             // Logic to determine if scrolling is needed
-            var isScrollable = contentElement.scrollHeight > contentElement.clientHeight;
-            var isScrolledToBottom = contentElement.scrollHeight - contentElement.scrollTop <= contentElement.clientHeight;
-
+            var isScrollable = content_element.scrollHeight > content_element.clientHeight;
+            var isScrolledToBottom = content_element.scrollHeight - content_element.scrollTop <= content_element.clientHeight;
             // Show or hide the scroll indicator
             scrollIndicator.style.display = isScrollable && !isScrolledToBottom ? 'block' : 'none';
-        }
-
-        // Call checkScroll after adding content to the messages
-        function addContentAndUpdateScroll() {
-            // Your logic to add content to the messages container
-
-            // After adding content, check if scrolling is needed
-            checkScroll();
         }
 
         function perform_logout() {
@@ -173,6 +184,7 @@
             socket.onopen = function(e) {
                 console.log('Connected to the server.');
                 var token = localStorage.getItem('jwt_token');
+                // Send the token to the server to authenticate the WebSocket connection
                 socket.send(JSON.stringify({token: token}));
 
                 let sys_message_container = $('<div class="message-container">');
@@ -213,30 +225,30 @@
                 var msg = event.data;
                 if (msg.data === 'END_OF_RESPONSE') {
                     $('#messages').append($('<hr>'));
-                    currentAIResponse = null;
+                    current_ai_response = null;
                 } else {
-                    if (!currentAIResponse) {
-                        let aiMessageContainer = $('<div class="message-container">');
-                        aiMessageContainer.append($('<p class="message-header">').html("AI"));
-                        currentAIResponse = $('<p class="message-text">');
-                        aiMessageContainer.append(currentAIResponse);
-                        $('#messages').append(aiMessageContainer);
+                    if (!current_ai_response) {
+                        let ai_message_container = $('<div class="message-container">');
+                        ai_message_container.append($('<p class="message-header">').html("AI"));
+                        current_ai_response = $('<p class="message-text">');
+                        ai_message_container.append(current_ai_response);
+                        $('#messages').append(ai_message_container);
                     }
-                    let contentWithBreaks = msg.replace(/\n/g, '<br>');
-                    currentAIResponse.append(contentWithBreaks);
+                    let content_with_breaks = msg.replace(/\n/g, '<br>');
+                    current_ai_response.append(content_with_breaks);
 
                     // After adding content, scroll to the bottom if the user hasn't manually scrolled up
                     if (!userHasScrolled) {
-                        var contentElement = document.getElementById('content');
-                        contentElement.scrollTop = contentElement.scrollHeight;
+                        var content_element = document.getElementById('content');
+                        content_element.scrollTop = content_element.scrollHeight;
                     }
 
-                    checkScroll(); // Check scroll after receiving a response
+                    check_scroll(); // Check scroll after receiving a response
                 }
             };
         }
 
-        function adjustInputContainerWidth() {
+        function adjust_input_container_width() {
             const sidebarWidth = 260; // Fixed sidebar width
             const minimumWidth = 50; // Minimum width of the input-container
             const optimalWidth = 675; // Default optimal width of the input-container
@@ -259,48 +271,28 @@
 
 
         // Adjust the width on window resize
-        window.addEventListener('resize', adjustInputContainerWidth);
+        window.addEventListener('resize', adjust_input_container_width);
 
         document.addEventListener('DOMContentLoaded', function() {
-            adjustTextareaHeightAndChangeButtonColor();
-            checkScroll();
+            adjust_textarea_height_and_change_button_color();
+            check_scroll();
 
             document.getElementById('content').addEventListener('scroll', function() {
-                var contentElement = document.getElementById('content');
-                var maxScroll = contentElement.scrollHeight - contentElement.clientHeight;
-                
+                var content_element = document.getElementById('content');
+                var maxScroll = content_element.scrollHeight - content_element.clientHeight;
                 // This is a small threshold to determine if the user has scrolled close to the bottom
-                var nearBottom = Math.abs(contentElement.scrollTop - maxScroll) < 5;
-
-                if (contentElement.scrollTop < maxScroll) {
+                var nearBottom = Math.abs(content_element.scrollTop - maxScroll) < 5;
+                if (content_element.scrollTop < maxScroll) {
                     userHasScrolled = true;
                 } 
-
                 if (nearBottom) {
                     userHasScrolled = false; // Consider user at the bottom if they're within a small threshold of the bottom
                 }
-
-                
-                checkScroll(); // Call your existing checkScroll function here
+                check_scroll(); 
             });
 
-            document.getElementById('input').addEventListener('input', adjustTextareaHeightAndChangeButtonColor);
+            document.getElementById('input').addEventListener('input', adjust_textarea_height_and_change_button_color);
             document.getElementById('input').focus();
-
-            document.getElementById('attachment').addEventListener('click', function() {
-                document.getElementById('file_input').click(); // Programmatically click the hidden file input
-            });
-
-            // Optionally, listen for file selection changes on the file input
-            document.getElementById('file_input').addEventListener('change', function() {
-                if (this.files && this.files.length > 0) {
-                    // File(s) have been selected
-                    // You can handle the file(s) here or initiate an upload
-                    console.log("File selected: ", this.files[0].name);
-                    // Example: Upload the file
-                    // uploadFile(this.files[0]);
-                }
-            });
 
             document.getElementById('logout-button').addEventListener('click', function() {
                 perform_logout();
@@ -315,43 +307,8 @@
             });
 
             // Initial adjustment on load
-            adjustInputContainerWidth();
-
-            // var wsProtocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-            // var socket = new WebSocket(wsProtocol + window.location.host + "/ws");
-
-            var socket = check_session_init_ws();
-
-            // document.getElementById('send').addEventListener('click', function() {
-            //     send_prompt(socket);
-            // });
-
-            // document.getElementById('input').addEventListener('keydown', function(e) {
-            //     if (e.key === 'Enter' && !e.shiftKey) {
-            //         e.preventDefault();
-            //         send_prompt(socket);
-            //     }
-            // });
-
-            document.getElementById('file_input').addEventListener('change', function(e) {
-                // Ensure a file was selected
-                if (this.files && this.files[0]) {
-                    var reader = new FileReader();
-
-                    reader.onload = function(e) {
-                        // Place the file content into the input field
-                        document.getElementById('input').value = e.target.result;
-                        // Assuming the socket is available here, call submit_prompt
-                        // You might need to ensure the socket is in scope or manage its state appropriately
-                        // submit_prompt(socket);
-                    };
-
-                    // Read the text file
-                    reader.readAsText(this.files[0]);
-                }
-            });
-
-
+            adjust_input_container_width();
+            check_session_init_ws();
         });
 
 
