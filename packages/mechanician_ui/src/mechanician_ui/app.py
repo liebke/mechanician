@@ -220,13 +220,13 @@ class MechanicianWebApp:
         async def user_get(request: Request):
             try:
                 self.verify_access_token(request)
-                user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
-                if user is None:
+                user_data = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+                if user_data is None:
                     response = RedirectResponse(url='/create_user', status_code=status.HTTP_303_SEE_OTHER)
-                else:
-                    username = user.get("username", "")
-                    display_name = user.get("name", username)
-                    user_role = user.get("user_role", "User")
+                
+                username = user_data.get("username", "")
+                display_name = user_data.get("name", username)
+                user_role = user_data.get("user_role", "User")
 
             except HTTPException as e:
                 print(f"Error validating token: {e}")

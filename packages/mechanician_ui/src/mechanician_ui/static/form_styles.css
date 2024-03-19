@@ -89,7 +89,7 @@ body, html {
     background: none;
     border: none;
     font-size: large;
-    margin-right: 50px;
+    margin-right: 70px;
     /* Setting the initial color of the SVG to dark grey */
     color: #666; /* This color affects the stroke because of the use of 'currentColor' in your SVG */
 
