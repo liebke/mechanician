@@ -7,7 +7,13 @@
     <link rel="stylesheet" href="./static/form_styles.css">
     <style></style>
 </head>
+
 <body>
+    <div id="header">
+        <div id="title"></div>
+    </div>
+
+
      <!-- Sidebar -->
      <div id="sidebar">
         <h1>Daring Mechanician</h1>
@@ -23,13 +29,11 @@
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
-        $(document).ready(function() {
-            // Immediately focus on the username field when the page loads
-            $('#username').focus();
+        document.addEventListener('DOMContentLoaded', function() {
 
-            function performLogin() {
-                var username = $('#username').val();
-                var password = $('#password').val();
+            function perform_login() {
+                var username = document.getElementById('username').value;
+                var password = document.getElementById('password').value;
 
                 $.ajax({
                     type: "POST",
@@ -54,14 +58,16 @@
                 });
             }
 
-            $('#login-button').click(performLogin);
-
-            // Trigger login when Enter key is pressed in the password input
-            $('#password').on('keypress', function(e) {
-                if (e.which === 13) { // 13 is the Enter key
-                    performLogin();
+            document.getElementById('username').focus();
+            document.getElementById('login-button').addEventListener('click', function() {
+                perform_login();
+            });
+            document.getElementById('password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') { // Checking if the key pressed is 'Enter'
+                perform_login();
                 }
             });
+
         });
     </script>
 </body>

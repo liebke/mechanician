@@ -11,19 +11,90 @@ body, html {
 }
 
 .form-container {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    align-items: flex-start; /* Align items to the left */
+    justify-content: center; /* Center the items vertically in case the container is taller than its contents */
+
     padding: 50px;
     border-radius: 5px;
     background: #222;
-    text-align: center;
+    text-align: left; /* Align text to the left */
+    width: auto; /* Adjust based on your preference, or you can specify a fixed width */
+    box-sizing: border-box; /* Include padding in the element's total width and height */
 }
-input {
-    display: block;
-    width: 100%;
+
+.form-container input {
+    display: block; /* Make sure inputs and button are block-level, causing them to stack */
+    width: 100%; /* Full width of their container */
+    font-size: 14px;
     padding: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 10px; /* Space between elements */
     border-radius: 5px;
     border: 1px solid #777;
     background: #222;
     color: white;
     outline: none; /* Remove focus outline */
+}
+
+
+.input-group {
+    width: 100%; /* Full width of their container */
+    display: flex;
+    justify-content: flex-end; /* Align items to the right */
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.input-group label {
+    font-size: 15px;
+    margin-right: 10px;
+    color: #999;
+    width: 200px; /* Ensure this is wide enough for your longest label */
+    text-align: right;
+}
+
+
+.form-container button {
+    display: block; /* Make sure inputs and button are block-level, causing them to stack */
+    width: 100%; /* Full width of their container */
+    padding: 10px;
+    margin-bottom: 10px; /* Space between elements */
+    border-radius: 5px;
+    border: none;
+    background: #222;
+    color: white;
+    outline: none; /* Remove focus outline */
+    font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+    border-radius: 15px; /* Optional: Adds rounded corners to the button */
+
+}
+
+.form-container button:hover {
+    background-color: #333; /* Lighter grey on hover */
+}
+
+
+#title {
+    text-align: left;
+    padding-top: 5px;
+    /* Adjust the padding-left to accommodate the sidebar's width and ensure the text doesn't fall under it */
+    padding-left: 220px; /* Adjust this value based on the actual width of your sidebar */
+    padding-right: 20px; /* Optional: Adjust based on layout requirements */
+    flex-grow: 1;
+}
+
+#close_button {
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: large;
+    margin-right: 50px;
+    /* Setting the initial color of the SVG to dark grey */
+    color: #666; /* This color affects the stroke because of the use of 'currentColor' in your SVG */
+
+}
+#close_button:hover {
+    /* Change the color on hover to a lighter grey or any color you prefer */
+    color: #fff; /* This color affects the stroke on hover */
 }

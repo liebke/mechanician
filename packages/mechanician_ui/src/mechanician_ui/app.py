@@ -22,15 +22,19 @@ from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 
 class UserCreate(BaseModel):
+    name: str
     username: str
     password: str
     confirm_password: str
+    user_role: str
 
 class UserUpdate(BaseModel):
+    name: str
     username: str
     password: str
     new_password: str
     confirm_new_password: str
+    user_role: str
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -82,9 +86,10 @@ class MechanicianWebApp:
             if dm_admin_password is None:
                 raise ValueError("dm_admin_password must be provided or DM_ADMIN_PASSWORD environment variable must be set.")
             else:
-                self.credentials_manager.add_credentials(dm_admin_username, dm_admin_password)
+                admin_attrs = {"user_role": "Admin", "name": "Mechanician Admin"}
+                self.credentials_manager.add_credentials(dm_admin_username, dm_admin_password, admin_attrs)
 
-
+        self.client_connections = {}
         self.ai_factory = TAGAIFactory(ai_connector_factory=ai_connector_factory,
                                        name = self.name,
                                        ai_tools = self.ai_tools,
@@ -102,7 +107,6 @@ class MechanicianWebApp:
         self.templates = Jinja2Templates(directory=template_directory)
         self.app.mount("/static", StaticFiles(directory=static_files_directory), name="static")
         self.ai_instances: Dict[str, TAGAI] = {}
-
         # Setup routes and WebSocket events
         self.setup_routes()
         self.setup_websocket_events()
@@ -118,17 +122,16 @@ class MechanicianWebApp:
         async def index(request: Request):
             user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
             if user is None:
-                # username = ""
                 return self.templates.TemplateResponse("login.html", 
                                                        {"request": request})
             else:
                 username = user.get("username", "")
-            # print(f"Access Token: {request.cookies.get('access_token')}")
-            # print(f"Username: {username}")
+
             return self.templates.TemplateResponse("index.html", 
                                                    {"request": request,
                                                     "ai_name": self.name,
-                                                    "username": username})
+                                                    "username": username,
+                                                    "name": user.get("name", username),})
         
 
         @self.app.post("/token")
@@ -153,7 +156,7 @@ class MechanicianWebApp:
         
 
         @self.app.get("/create_user")
-        async def login(request: Request):
+        async def create_user_get(request: Request):
             try:
                 self.verify_access_token(request)
             except HTTPException as e:
@@ -162,19 +165,27 @@ class MechanicianWebApp:
                 return response
             
             user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+            # print(f"User: {user}")
             if user is None:
-                username = ""
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
             else:
-                username = user.get("username", "")
+                username = user.get("username", "anonymous")
+                display_name = user.get("name", username)
+            
+            if user.get("user_role", "User") != "Admin":
+                response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
+                return response
             
             return self.templates.TemplateResponse("create_user.html",
                                                    {"request": request,
                                                     "ai_name": self.name,
-                                                    "username": username})
+                                                    "username": username,
+                                                    "name": display_name})
         
 
         @self.app.post("/create_user")
-        async def create_user(request: Request, user: UserCreate):
+        async def create_user_post(request: Request, user: UserCreate):
             try:
                 self.verify_access_token(request)
             except HTTPException as e:
@@ -182,11 +193,22 @@ class MechanicianWebApp:
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
             
+            user_data = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+            # print(f"User: {user_data}")
+            if user_data is None:
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+            
+            elif user_data.get("user_role", "User") != "Admin":
+                response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+            
             if user.password != user.confirm_password:
                 raise HTTPException(status_code=400, detail="Passwords do not match")
             
             # Add your user creation logic here
-            create_status = self.credentials_manager.add_credentials(user.username, user.password)
+            attrs = {"user_role": user.user_role, "name": user.name}
+            create_status = self.credentials_manager.add_credentials(user.username, user.password, attrs)
             if not create_status:
                 raise HTTPException(status_code=400, detail="User already exists")
 
@@ -195,14 +217,17 @@ class MechanicianWebApp:
 
 
         @self.app.get("/user")
-        async def login(request: Request):
+        async def user_get(request: Request):
             try:
                 self.verify_access_token(request)
                 user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
                 if user is None:
-                    username = ""
+                    response = RedirectResponse(url='/create_user', status_code=status.HTTP_303_SEE_OTHER)
                 else:
                     username = user.get("username", "")
+                    display_name = user.get("name", username)
+                    user_role = user.get("user_role", "User")
+
             except HTTPException as e:
                 print(f"Error validating token: {e}")
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
@@ -211,11 +236,13 @@ class MechanicianWebApp:
             return self.templates.TemplateResponse("user.html", 
                                                    {"request": request,
                                                     "username": username,
-                                                    "ai_name": self.name})
+                                                    "ai_name": self.name,
+                                                    "name": display_name,
+                                                    "user_role": user_role})
         
 
         @self.app.post("/user")
-        async def create_user(request: Request, user: UserUpdate):
+        async def user_post(request: Request, user: UserUpdate):
             try:
                 self.verify_access_token(request)
             except HTTPException as e:
@@ -223,18 +250,26 @@ class MechanicianWebApp:
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
             
-            if user.new_password != user.confirm_new_password:
-                raise HTTPException(status_code=400, detail="Passwords do not match")
-            
-            # Add your user creation logic here
             print(f"User: {user}")
-            update_status = self.credentials_manager.update_password(user.username, 
-                                                                     user.password, 
-                                                                     user.new_password)
+
+            if user.new_password != "":
+                if user.new_password != user.confirm_new_password:
+                    print("Passwords do not match")
+                    raise HTTPException(status_code=400, detail="Passwords do not match")
             
-            print(f"Update Status: {update_status}")
+                update_status = self.credentials_manager.update_password(user.username, 
+                                                                         user.password, 
+                                                                         user.new_password)
+                if not update_status:
+                    print("User password update error")
+                    raise HTTPException(status_code=400, detail="User password update error")
+                
+            update_status = self.credentials_manager.update_user_attributes(user.username,
+                                                                            password=user.password,
+                                                                            attributes={"name": user.name})
             if not update_status:
-                raise HTTPException(status_code=400, detail="User update error")
+                print("User attribute update error")
+                raise HTTPException(status_code=400, detail="User attribute update error")
 
             return {"message": "User update successfully"}
         
@@ -244,6 +279,21 @@ class MechanicianWebApp:
             print("Logging out...")
             response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
             response.delete_cookie(key="access_token")
+            return response
+        
+
+        @self.app.post("/new")
+        def new_session(request: Request):
+            print("Starting new session...")
+            # get token from cookie
+            token = request.cookies.get("access_token")
+            # get sid from client_connections
+            sid = self.client_connections.get(token, None)
+            # clear ai instance
+            if sid:
+                self.clear_ai_instance(sid)
+
+            response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
             return response
 
         
@@ -260,6 +310,8 @@ class MechanicianWebApp:
                     auth_data = await asyncio.wait_for(websocket.receive_text(), timeout=30)  # Adjust timeout as needed
                     auth_data = json.loads(auth_data)
                     token = auth_data.get("token", "")
+                    sid = websocket.client
+                    self.client_connections[token] = sid
                     if self.credentials_manager.verify_access_token(token):
                         print("Token verified")
                     else:
@@ -279,7 +331,7 @@ class MechanicianWebApp:
                 while True:
                     try:
                         data = await websocket.receive_text()
-                        sid = websocket.client
+                        # sid = websocket.client
                         ai_instance = self.get_ai_instance(sid)
                         input_text = json.loads(data).get("data", "")
                         processed_prompt = self.preprocess_prompt(ai_instance, input_text, prompt_tools=self.prompt_tools)
@@ -310,7 +362,7 @@ class MechanicianWebApp:
 
     def verify_access_token(self, request: Request):
         token = request.cookies.get("access_token")
-        print(f"Token: {token}")
+        # print(f"Token: {token}")
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -329,6 +381,12 @@ class MechanicianWebApp:
         if sid not in self.ai_instances:
             self.ai_instances[sid] = self.ai_factory.create_ai_instance()
         return self.ai_instances[sid]
+    
+
+    def clear_ai_instance(self, sid):
+        if sid in self.ai_instances:
+            del self.ai_instances[sid]
+            
     
 
     ###############################################################################

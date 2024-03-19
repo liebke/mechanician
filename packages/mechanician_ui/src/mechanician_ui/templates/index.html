@@ -1,4 +1,7 @@
 <!DOCTYPE html>
+<!-- 
+TODO: have way to navigate back to / endpoint after visiting other pages. -->
+
 <html>
 <head>
     <title>Daring Mechanician</title>
@@ -14,22 +17,31 @@
         <h1>Daring Mechanician</h1>
         <!-- Add additional sidebar content here -->
         
-        <div id="logout-container" class="logout-container">
-            <!-- <button id="new-button">&#x21bb; {{ ai_name }}</button> -->
+        <div id="sidebar-button-container-id" class="sidebar-button-container">
             <button id="new-button">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md">
                     <path fill-rule="evenodd" clip-rule="evenodd" d="M16.7929 2.79289C18.0118 1.57394 19.9882 1.57394 21.2071 2.79289C22.4261 4.01184 22.4261 5.98815 21.2071 7.20711L12.7071 15.7071C12.5196 15.8946 12.2652 16 12 16H9C8.44772 16 8 15.5523 8 15V12C8 11.7348 8.10536 11.4804 8.29289 11.2929L16.7929 2.79289ZM19.7929 4.20711C19.355 3.7692 18.645 3.7692 18.2071 4.2071L10 12.4142V14H11.5858L19.7929 5.79289C20.2308 5.35499 20.2308 4.64501 19.7929 4.20711ZM6 5C5.44772 5 5 5.44771 5 6V18C5 18.5523 5.44772 19 6 19H18C18.5523 19 19 18.5523 19 18V14C19 13.4477 19.4477 13 20 13C20.5523 13 21 13.4477 21 14V18C21 19.6569 19.6569 21 18 21H6C4.34315 21 3 19.6569 3 18V6C3 4.34314 4.34315 3 6 3H10C10.5523 3 11 3.44771 11 4C11 4.55228 10.5523 5 10 5H6Z" fill="currentColor"></path>
                 </svg>
                 &nbsp;{{ ai_name }}
             </button>
-            <button id="user-button">&#9965; {{ username }}</button>
-            <button id="logout-button">&#x23FB; exit</button>
+
+            <button id="user-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md">
+                    <path d="M11.6439 3C10.9352 3 10.2794 3.37508 9.92002 3.98596L9.49644 4.70605C8.96184 5.61487 7.98938 6.17632 6.93501 6.18489L6.09967 6.19168C5.39096 6.19744 4.73823 6.57783 4.38386 7.19161L4.02776 7.80841C3.67339 8.42219 3.67032 9.17767 4.01969 9.7943L4.43151 10.5212C4.95127 11.4386 4.95127 12.5615 4.43151 13.4788L4.01969 14.2057C3.67032 14.8224 3.67339 15.5778 4.02776 16.1916L4.38386 16.8084C4.73823 17.4222 5.39096 17.8026 6.09966 17.8083L6.93502 17.8151C7.98939 17.8237 8.96185 18.3851 9.49645 19.294L9.92002 20.014C10.2794 20.6249 10.9352 21 11.6439 21H12.3561C13.0648 21 13.7206 20.6249 14.08 20.014L14.5035 19.294C15.0381 18.3851 16.0106 17.8237 17.065 17.8151L17.9004 17.8083C18.6091 17.8026 19.2618 17.4222 19.6162 16.8084L19.9723 16.1916C20.3267 15.5778 20.3298 14.8224 19.9804 14.2057L19.5686 13.4788C19.0488 12.5615 19.0488 11.4386 19.5686 10.5212L19.9804 9.7943C20.3298 9.17767 20.3267 8.42219 19.9723 7.80841L19.6162 7.19161C19.2618 6.57783 18.6091 6.19744 17.9004 6.19168L17.065 6.18489C16.0106 6.17632 15.0382 5.61487 14.5036 4.70605L14.08 3.98596C13.7206 3.37508 13.0648 3 12.3561 3H11.6439Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="2"></circle>
+                </svg>
+                &nbsp;{{ name }}</button>
+
+            <button id="logout-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md">
+                    <path d="M11 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H11" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M20 12H11M20 12L16 16M20 12L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                &nbsp;logout</button>
         </div>
     </div>
     
 
     <div id="header">
-        <div id="ai_name">{{ ai_name }}</div>
+        <div id="title">{{ ai_name }}</div>
     </div>
 
     <div id="content">
@@ -58,198 +70,13 @@
         </div>
     </div>
 
+    <script src="./static/functions.js"></script>
 
     <script>
 
         var user_has_scrolled = false;
         var current_ai_response = null;
-        
-        function send_prompt(socket) {
-            var prompt_text = $('#input').val().trim();
-            if (prompt_text) {
-                let user_message_container = $('<div class="message-container">');
-                user_message_container.append($('<p class="message-header">').html("You"));
-                user_message_container.append($('<p class="message-text">').text(prompt_text));
-                $('#messages').append(user_message_container);
-                save_messages_to_local_storage({'from': 'ai'});
-                save_messages_to_local_storage({'from': 'user', 'message': prompt_text});
-                socket.send(JSON.stringify({data: prompt_text}));
-                $('#input').val('');
-                adjust_textarea_height_and_change_button_color();
-                current_ai_response = null;
-                check_scroll(); // Check scroll after sending a prompt
-                setTimeout(check_scroll, 0); // Ensure check_scroll runs after the DOM updates
-            }
-        }
-
-
-        function check_session_init_ws() {
-            var ws_protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
-            var socket = new WebSocket(ws_protocol + window.location.host + "/ws");
-            var token = localStorage.getItem('jwt_token');
-            if (!token) {
-                window.location.href = "/login";
-            } else {
-                // Only initialize WebSocket connection if the session check passes
-                init_web_socket(socket);
-            }
-
-            document.getElementById('send').addEventListener('click', function() {
-                send_prompt(socket);
-            });
-
-            document.getElementById('input').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    send_prompt(socket);
-                }
-            });
-
-            document.getElementById('attachment').addEventListener('click', function() {
-                document.getElementById('file_input').click(); // Programmatically click the hidden file input
-            });
-
-            document.getElementById('file_input').addEventListener('change', function(e) {
-                // Ensure a file was selected
-                if (this.files && this.files[0]) {
-                    var reader = new FileReader();
-
-                    reader.onload = function(e) {
-                        // Place the file content into the input field
-                        document.getElementById('input').value = e.target.result;
-                        adjust_textarea_height_and_change_button_color();
-                        send_prompt(socket);
-                    };
-
-                    // Read the text file
-                    reader.readAsText(this.files[0]);
-                }
-            });
-
-            return socket;
-        }
-
-
-        function adjust_textarea_height_and_change_button_color() {
-            var textarea = document.getElementById('input');
-            var send_button = document.getElementById('send');
-
-            // Adjusting the textarea height
-            textarea.style.height = 'auto'; // Reset height to auto to get the correct new height
-            textarea.style.height = textarea.scrollHeight + 'px'; // Set new height based on scroll height
-
-            // Change the #send button color based on the input
-            if (textarea.value.length > 0) {
-                // send_button.style.backgroundColor = '#4CAF50'; // Example: Change to a green color when text is entered
-                send_button.style.color = '#222'; // Change text color to white for better contrast
-                send_button.style.backgroundColor = '#FFF'; 
-            } else {
-                // send_button.style.backgroundColor = '#222'; // Revert to original color when there's no text
-                send_button.style.color = '#222'; // Revert text color to grey
-                send_button.style.backgroundColor = '#373737'; // Revert button color
-            }
-        }
-
-
-        // Simplified check_scroll function
-        function check_scroll() {
-            var content_element = document.getElementById('content');
-            var scroll_indicator = document.getElementById('scroll_indicator');
-            // Logic to determine if scrolling is needed
-            var is_scrollable = content_element.scrollHeight > content_element.clientHeight;
-            var is_scrolled_to_bottom = content_element.scrollHeight - content_element.scrollTop <= content_element.clientHeight;
-            // Show or hide the scroll indicator
-            scroll_indicator.style.display = is_scrollable && !is_scrolled_to_bottom ? 'block' : 'none';
-        }
-
-        function perform_logout() {
-            localStorage.removeItem('jwt_token');
-            // Make a request to the logout endpoint
-            $.ajax({
-                type: "POST",
-                url: "/logout",
-                success: function(data) {
-                    // Redirect or update UI on successful logout
-                    window.location.href = "/login";
-                },
-                error: function(response) {
-                    // Handle error
-                    console.log("Logout failed:", response);
-                }
-            });
-        }
-
-        function init_web_socket(socket) {
-            
-            socket.onopen = function(e) {
-                console.log('Connected to the server.');
-                var token = localStorage.getItem('jwt_token');
-                // Send the token to the server to authenticate the WebSocket connection
-                socket.send(JSON.stringify({token: token}));
-
-                let sys_message_container = $('<div class="message-container">');
-                sys_message_container.append($('<p class="message-header">').html("System"));
-                current_sys_response = $('<p class="message-text">').text("Connected to AI...");
-                sys_message_container.append(current_sys_response);
-                $('#messages').append(sys_message_container);
-            };
-
-            socket.onclose = function(e) {
-                console.log('Disconnected from the server:', e.reason);
-                let sys_message_container = $('<div class="message-container">');
-                sys_message_container.append($('<p class="message-header">').html("System"));
-                current_sys_response = $('<p class="message-text">').text("Disconnected. Please refresh the page to reconnect.");
-                sys_message_container.append(current_sys_response);
-                $('#messages').append(sys_message_container);
-            };
-
-            socket.onclose = function(e) {
-                // Check if the close event was unexpected
-                if (!e.wasClean) {
-                    console.log('Disconnected from the server:', e.reason);
-                    let sys_message_container = $('<div class="message-container">');
-                    sys_message_container.append($('<p class="message-header">').html("System"));
-                    let current_sys_response = $('<p class="message-text">').text("Disconnected. Attempting to reconnect...");
-                    sys_message_container.append(current_sys_response);
-                    $('#messages').append(sys_message_container);
-
-                    // Attempt to reconnect after a delay
-                    setTimeout(check_session_init_ws, 5000); // Reconnect after 5 seconds
-                } else {
-                    // Handle intentional disconnection differently, if needed
-                    console.log('Disconnected from the server:', e.reason);
-                }
-            };
-
-            socket.onmessage = function(event) {
-                var msg = event.data;
-                save_messages_to_local_storage({'from': 'ai', 'message': msg}); // Save each incoming message to local storage
-                display_message(msg); // Display the incoming message
-            };
-        }
-
-        function adjust_input_container_width() {
-            const sidebar_width = 260; // Fixed sidebar width
-            const minimum_width = 50; // Minimum width of the input-container
-            const optimal_width = 675; // Default optimal width of the input-container
-            const increased_width = 775; // Increased width of the input-container when there is enough room
-            const threshold_width = 935; // Threshold for when to increase the input-container width
-            const available_width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0) - sidebar_width - 10; // Calculate the maximum available width
-
-            let adjusted_width;
-            if (available_width > threshold_width) {
-                adjusted_width = increased_width; // Set width to 775px if there is enough room
-            } else {
-                adjusted_width = Math.min(Math.max(available_width, minimum_width), optimal_width); // Calculate the adjusted width
-            }
-
-            const input_container = document.getElementById('input-container');
-            if (input_container) {
-                input_container.style.width = `${adjusted_width}px`; // Set the adjusted width to the input-container
-            }
-        }
-
-
+  
         // Adjust the width on window resize
         window.addEventListener('resize', adjust_input_container_width);
 
@@ -285,86 +112,26 @@
 
             document.getElementById('new-button').addEventListener('click', function() {
                 localStorage.removeItem('saved_messages');
-                window.location.href = "/";
+                $.ajax({
+                    type: "POST",
+                    url: "/new",
+                    success: function(data) {
+                        // Redirect or update UI on successful logout
+                        window.location.href = "/";
+                    },
+                    error: function(response) {
+                        // Handle error
+                        console.log("New sesssion failed:", response);
+                    }
+                });
             });
 
             // Initial adjustment on load
             adjust_input_container_width();
             check_session_init_ws();
+            check_scroll();
         });
 
-
-
-
-        // Function to save messages to local storage
-        function save_messages_to_local_storage(message) {
-            // Retrieve existing messages from local storage
-            let messages = JSON.parse(localStorage.getItem('saved_messages')) || [];
-            messages.push(message); // Add new message to the array
-            localStorage.setItem('saved_messages', JSON.stringify(messages)); // Save back to local storage
-        }
-
-        // Function to load and display messages from local storage
-        function load_messages_from_local_storage() {
-            let messages = JSON.parse(localStorage.getItem('saved_messages')) || [];
-            messages.forEach(function(msg) {
-                display_stored_message(msg); // Function to display a message
-            });
-        }
-
-        // Function to display a message
-        function display_message(msg) {
-            let content_with_breaks = msg.replace(/\n/g, '<br>');
-            if (!current_ai_response) {
-                let ai_message_container = $('<div class="message-container">');
-                ai_message_container.append($('<p class="message-header">').html("AI"));
-                current_ai_response = $('<p class="message-text">');
-                ai_message_container.append(current_ai_response);
-                $('#messages').append(ai_message_container);
-            }
-            current_ai_response.append(content_with_breaks);
-            
-            // After adding content, scroll to the bottom if the user hasn't manually scrolled up
-            if (!user_has_scrolled) {
-                var content_element = document.getElementById('content');
-                content_element.scrollTop = content_element.scrollHeight;
-            }
-            check_scroll(); // Check scroll after receiving a response
-        }
-
-        // Function to display a message
-        function display_stored_message(msg) {
-            if (msg.from == "ai") {
-                if ('message' in msg) {
-                    let content_with_breaks = msg.message.replace(/\n/g, '<br>');
-                    if (!current_ai_response) {
-                        let ai_message_container = $('<div class="message-container">');
-                        ai_message_container.append($('<p class="message-header">').html("AI"));
-                        current_ai_response = $('<p class="message-text">');
-                        ai_message_container.append(current_ai_response);
-                        $('#messages').append(ai_message_container);
-                    }
-                    current_ai_response.append(content_with_breaks);
-                }
-                else {
-                    current_ai_response = null;
-                    return;
-                }
-            }
-            else if (msg.from == "user") {
-                let user_message_container = $('<div class="message-container">');
-                user_message_container.append($('<p class="message-header">').html("You"));
-                user_message_container.append($('<p class="message-text">').text(msg.message));
-                $('#messages').append(user_message_container);
-            }
-            
-            // After adding content, scroll to the bottom if the user hasn't manually scrolled up
-            if (!user_has_scrolled) {
-                var content_element = document.getElementById('content');
-                content_element.scrollTop = content_element.scrollHeight;
-            }
-            check_scroll(); // Check scroll after receiving a response
-        }
 
     </script>
     
