@@ -58,7 +58,7 @@ class MechanicianWebApp:
                  credentials_manager: CredentialsManager=None,
                  credentials_file_path="./credentials.json",
                  dm_admin_username=None,
-                 dm_admin_password=None,):
+                 dm_admin_password=None):
         
         # Initialize class variables
         self.ai_connector_factory = ai_connector_factory
@@ -132,6 +132,39 @@ class MechanicianWebApp:
                                                     "ai_name": self.name,
                                                     "username": username,
                                                     "name": user.get("name", username),})
+        
+
+        @self.app.post("/", response_class=HTMLResponse)
+        async def index(request: Request):
+            user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+            if user is None:
+                return self.templates.TemplateResponse("login.html", 
+                                                       {"request": request})
+            else:
+                username = user.get("username", "")
+
+            # Access all form fields without knowing their names ahead of time
+            form_data = await request.form()
+            print(f"All form data: {form_data}")
+
+            # Optionally, convert form data to a dictionary for easier processing
+            form_data_dict = dict(form_data)
+            print(f"Form data as dict: {form_data_dict}")
+            input_text = f"/call {form_data_dict.get('function_name')}"
+            # add parameters to input_text
+            for k, v in form_data_dict.items():
+                if k != "function_name":
+                    input_text += f' {k}="{v}"'
+
+            print(f"Input text: {input_text}")
+
+
+            return self.templates.TemplateResponse("index.html", 
+                                                   {"request": request,
+                                                    "ai_name": self.name,
+                                                    "username": username,
+                                                    "name": user.get("name", username),
+                                                    "input": input_text,})
         
 
         @self.app.post("/token")
@@ -223,6 +256,7 @@ class MechanicianWebApp:
                 user_data = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
                 if user_data is None:
                     response = RedirectResponse(url='/create_user', status_code=status.HTTP_303_SEE_OTHER)
+                    return response
                 
                 username = user_data.get("username", "")
                 display_name = user_data.get("name", username)
@@ -295,6 +329,35 @@ class MechanicianWebApp:
 
             response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
             return response
+        
+
+        @self.app.get("/prompt_tools")
+        async def prompt_tools(request: Request):
+            try:
+                self.verify_access_token(request)
+                user_data = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+                if user_data is None:
+                    response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                    return response
+                
+                username = user_data.get("username", "")
+                display_name = user_data.get("name", username)
+                user_role = user_data.get("user_role", "User")
+
+            except HTTPException as e:
+                print(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+
+            print("Prompt Tool Instructions:")
+            pprint(self.prompt_tools.get_tool_instructions())
+            return self.templates.TemplateResponse("prompt_tools.html", 
+                                                   {"request": request,
+                                                    "prompt_tool_instructions": self.prompt_tools.get_tool_instructions(),
+                                                    "username": username,
+                                                    "ai_name": self.name,
+                                                    "name": display_name,
+                                                    "user_role": user_role})
 
         
 

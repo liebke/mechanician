@@ -1,0 +1,114 @@
+[
+    {
+      "type": "function",
+      "function": {
+        "name": "event_invite",
+        "description": "Invites a contact to an event.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "contact": {
+              "type": "string",
+              "description": "The name of the contact to invite."
+            },
+            "event": {
+                "type": "string",
+                "description": "The name of the event."
+              }
+          },
+          "required": [
+            "contact", "event"
+          ]
+        }
+      }
+    },
+
+    {
+        "type": "function",
+        "function": {
+          "name": "sales_email",
+          "description": "Generates a sales email targeted to a contact.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "contact": {
+                "type": "string",
+                "description": "The name of the contact to email."
+              },
+              "sender": {
+                  "type": "string",
+                  "description": "The sender of the email."
+                }
+            },
+            "required": [
+              "contact", "sender"
+            ]
+          }
+        }
+      },
+
+      {
+        "type": "function",
+        "function": {
+          "name": "customer_service_message",
+          "description": "Generates a customer service text response sent regarding a specific case.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "care_agent": {
+                    "type": "string",
+                    "description": "The name of the care agent."
+                },
+              "case_id": {
+                  "type": "string",
+                  "description": "The customer care case ID."
+                }
+            },
+            "required": [
+              "care_agent", "case_id"
+            ]
+          }
+        }
+      },
+
+      {
+        "type": "function",
+        "function": {
+          "name": "product_newsletter",
+          "description": "Generates a product newsletter.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "company": {
+                "type": "string",
+                "description": "The name of the company."
+              }
+            },
+            "required": [
+              "company"
+            ]
+        }
+      }
+    },
+
+    {
+        "type": "function",
+        "function": {
+          "name": "customer_summarization",
+          "description": "Summarizes details on a given customer and their interactions with the company.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "customer": {
+                "type": "string",
+                "description": "The name of the customer."
+                }
+            },
+            "required": [
+              "customer"
+            ]
+          }
+        }
+      }
+    
+  ]

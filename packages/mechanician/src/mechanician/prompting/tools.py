@@ -1,8 +1,9 @@
 from abc import ABC
 from typing import List
 import logging
-import traceback
 import shlex
+import os
+import json
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -18,6 +19,33 @@ logger.addHandler(handler)
 ###############################################################################
         
 class PromptTools(ABC):
+
+    def get_tool_instructions(self):
+        if hasattr(self, "tool_instructions"):
+            return self.tool_instructions
+        
+        if hasattr(self, "instruction_set_directory"):
+            instruction_set_directory = self.instruction_set_directory
+        else:
+            directory_name = 'src/instructions'
+            instruction_set_directory = os.path.join(os.getcwd(), directory_name)
+
+
+        if hasattr(self, "tool_instruction_file_name"):
+            tool_instruction_path = os.path.join(instruction_set_directory, self.tool_instruction_file_name)
+        else:
+            tool_instruction_path = os.path.join(instruction_set_directory, "prompt_tool_instructions.json")
+        
+        print(f"tool_instruction_path: {tool_instruction_path}")
+        if os.path.exists(tool_instruction_path):
+            print(f"Loading Tool Instructions from {tool_instruction_path}")
+            with open(tool_instruction_path, 'r') as file:
+                logger.info(f"Loading Tool Instructions from {tool_instruction_path}")
+                tool_instructions = json.loads(file.read())
+            return tool_instructions
+        else:
+            return []
+        
 
     def parse_command_line(self, command_line):
         tokens = shlex.split(command_line)

@@ -264,10 +264,14 @@ def main():
 def init_app():
     ai_connector_factory = OpenAIChatConnectorFactory(api_key=os.getenv("OPENAI_API_KEY"), 
                                                       model_name=os.getenv("OPENAI_MODEL_NAME"))
-    prompt_tools = MiddleEarthCRMPromptTools(crm_data_directory="./data")
+    prompt_tools = MiddleEarthCRMPromptTools(crm_data_directory="./data")    
     return MechanicianWebApp(ai_connector_factory=ai_connector_factory,
                              prompt_tools=prompt_tools,
                              name="MiddleEarth CRM AI")
+
+    
+
+
 
 def run_app():
     load_dotenv()
