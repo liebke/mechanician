@@ -6,17 +6,38 @@
     <link rel="stylesheet" href="./static/styles.css">
     <link rel="stylesheet" href="./static/form_styles.css">
     <style>
-        .form-container {
-            display: flex;
-            flex-direction: column; /* Stack items vertically */
-            align-items: flex-start; /* Align items to the left */
-            justify-content: center; /* Center the items vertically in case the container is taller than its contents */
-            padding: 50px;
-            border-radius: 5px;
-            text-align: left; /* Align text to the left */
-            width: auto; /* Adjust based on your preference, or you can specify a fixed width */
-            box-sizing: border-box; /* Include padding in the element's total width and height */
-        }
+
+    html, body {
+        height: 100%; /* Ensure full height */
+        margin: 0; /* Reset margins */
+        overflow: hidden; /* Prevent body scrolling */
+        display: flex;
+        flex-direction: column; /* Vertical stacking */
+    }
+
+    .main-container {
+        flex: 1; /* Flex to fill available space */
+        display: flex;
+        flex-direction: column; /* Stack children vertically */
+        overflow-y: auto; /* Scroll vertically as needed */
+        max-height: 90vh; /* Limit to viewport height */
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 50px;
+        border-radius: 5px;
+        text-align: left;
+        width: auto; /* Adapt width */
+        box-sizing: border-box; /* Include padding in width/height */
+        /* Removed max-height to allow natural expansion within .main-container */
+        /* No overflow-y here, as .main-container handles the scrolling */
+    }
+
+
 
         .form-container input {
             display: block; /* Make sure inputs and button are block-level, causing them to stack */
@@ -119,6 +140,18 @@
             white-space: normal; /* Ensures text can wrap */
             word-wrap: break-word; /* To break long words if necessary */
         }
+
+        #prompt {
+            width: 500px;
+            font-size: 14px;
+            height: 300px;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            outline: none; /* Remove focus outline */
+            background-color: #222;
+            color: white;
+        }
     </style>
     
 </head>
@@ -161,9 +194,16 @@
     </div>
     </div>
 
-    <div id="form-container" class="form-container">
+    <div class="main-container">
+        <div id="form-container" class="form-container">
+        </div>
     </div>
+        
+    
 
+ 
+
+    
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="./static/functions.js"></script>
@@ -178,8 +218,9 @@
             select_container.appendChild(select);
 
             const form = document.createElement('form');
-            form.action = '/'; // Set the action to submit the form to the root URL '/'
-            form.method = 'POST'; // Set the method to 'POST'
+            form.id = 'gen-form';
+            // form.action = '/'; // Set the action to submit the form to the root URL '/'
+            // form.method = 'POST'; // Set the method to 'POST'
             
             // Define the hidden input outside so it can be re-appended as needed
             const hidden_input = document.createElement('input');
@@ -250,8 +291,32 @@
             if (!form.querySelector('button[type="submit"]')) {
                 const submit_button = document.createElement('button');
                 submit_button.type = 'submit';
+                submit_button.id = 'gen_prompt_button';
                 submit_button.textContent = 'Generate Prompt';
                 form.appendChild(submit_button);
+            }
+
+            if (!document.getElementById('prompt-form')) {
+                // const prompt_form_container = document.getElementById('form-container');
+                const form_container = document.getElementById('form-container');
+                const prompt_form = document.createElement('form');
+                prompt_form.id = 'prompt-form';
+                prompt_form.action = '/'; // Set the action to submit the form to the root URL '/'
+                prompt_form.method = 'POST'; // Set the method to 'POST'
+                
+
+                const generated_prompt = document.createElement('textarea');
+                generated_prompt.id = 'prompt';
+                generated_prompt.name = 'prompt';
+                generated_prompt.classList.add('generated-prompt');
+                generated_prompt.readOnly = true;
+                prompt_form.appendChild(generated_prompt);
+                const prompt_submit_button = document.createElement('button');
+                prompt_submit_button.type = 'submit';
+                prompt_submit_button.id = 'prompt_submit_button';
+                prompt_submit_button.textContent = 'Send Prompt';
+                prompt_form.appendChild(prompt_submit_button);
+                form_container.appendChild(prompt_form);
             }
         }
 
@@ -278,6 +343,32 @@
 
             document.getElementById('logout-button').addEventListener('click', function() {
                 perform_logout();
+            });
+
+
+            document.getElementById('gen-form').addEventListener('submit', function(e) {
+                e.preventDefault(); // Prevent the default form submission
+
+                const form_data = new FormData(this); // 'this' refers to the form
+                // Alternatively, construct the object manually if needed
+                // const form_data = { key: 'value', ... };
+
+                fetch('/call_prompt_tool', {
+                    method: 'POST',
+                    body: form_data, // or JSON.stringify(form_data) if your server expects JSON
+                    headers: {
+                        // If you're sending JSON, you'll need this header
+                        // 'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Add this to see what the server is actually returning
+                    document.getElementById('prompt').value = data.prompt;
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
             });
 
         });

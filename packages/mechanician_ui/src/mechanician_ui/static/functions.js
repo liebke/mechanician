@@ -4,7 +4,10 @@
             if (prompt_text) {
                 let user_message_container = $('<div class="message-container">');
                 user_message_container.append($('<p class="message-header">').html("You"));
-                user_message_container.append($('<p class="message-text">').text(prompt_text));
+                let content_with_breaks = prompt_text.replace(/\n/g, '<br>');
+                // var htmlContent = marked.parse(content_with_breaks);
+                user_message_container.append($('<p class="message-text">').html(content_with_breaks));
+                // user_message_container.append($('<p class="message-text">').html(htmlContent));
                 $('#messages').append(user_message_container);
                 save_messages_to_local_storage({'from': 'ai'});
                 save_messages_to_local_storage({'from': 'user', 'message': prompt_text});
@@ -214,6 +217,8 @@
         // Function to display a message
         function display_message(msg) {
             let content_with_breaks = msg.replace(/\n/g, '<br>');
+             // Use marked.js to parse the Markdown
+            // var htmlContent = marked.parse(content_with_breaks);
             if (!current_ai_response) {
                 let ai_message_container = $('<div class="message-container">');
                 ai_message_container.append($('<p class="message-header">').html("AI"));
@@ -222,6 +227,7 @@
                 $('#messages').append(ai_message_container);
             }
             current_ai_response.append(content_with_breaks);
+            // current_ai_response.append(htmlContent);
             check_scroll(); // Check scroll after receiving a response
         }
 
@@ -230,6 +236,7 @@
             if (msg.from == "ai") {
                 if ('message' in msg) {
                     let content_with_breaks = msg.message.replace(/\n/g, '<br>');
+                    // var htmlContent = marked.parse(content_with_breaks);
                     if (!current_ai_response) {
                         let ai_message_container = $('<div class="message-container">');
                         ai_message_container.append($('<p class="message-header">').html("AI"));
@@ -238,6 +245,7 @@
                         $('#messages').append(ai_message_container);
                     }
                     current_ai_response.append(content_with_breaks);
+                    // current_ai_response.append(htmlContent);
                 }
                 else {
                     current_ai_response = null;
@@ -247,7 +255,11 @@
             else if (msg.from == "user") {
                 let user_message_container = $('<div class="message-container">');
                 user_message_container.append($('<p class="message-header">').html("You"));
-                user_message_container.append($('<p class="message-text">').text(msg.message));
+                let content_with_breaks = msg.message.replace(/\n/g, '<br>');
+                // var htmlContent = marked.parse(content_with_breaks);
+                let message_text_p = $('<p class="message-text">').html(content_with_breaks);
+                // let message_text_p = $('<p class="message-text">').html(htmlContent);
+                user_message_container.append(message_text_p);
                 $('#messages').append(user_message_container);
             }
             

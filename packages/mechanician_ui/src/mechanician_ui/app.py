@@ -1,5 +1,5 @@
 from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect, status, Depends, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 # from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from mechanician.ai_connectors import AIConnectorFactory
@@ -119,7 +119,7 @@ class MechanicianWebApp:
     def setup_routes(self):
 
         @self.app.get("/", response_class=HTMLResponse)
-        async def index(request: Request):
+        async def index_get(request: Request):
             user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
             if user is None:
                 return self.templates.TemplateResponse("login.html", 
@@ -135,19 +135,43 @@ class MechanicianWebApp:
         
 
         @self.app.post("/", response_class=HTMLResponse)
-        async def index(request: Request):
+        async def index_post(request: Request):
             user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+            print(f"User: {user}")
             if user is None:
                 return self.templates.TemplateResponse("login.html", 
                                                        {"request": request})
             else:
                 username = user.get("username", "")
 
-            # Access all form fields without knowing their names ahead of time
             form_data = await request.form()
-            print(f"All form data: {form_data}")
+            form_data_dict = dict(form_data)
+            print(f"Form data as dict: {form_data_dict}")
+            # input_text = f"/call {form_data_dict.get('function_name')}"
+            prompt = form_data_dict.get("prompt", "")
+            # add parameters to input_text
+            # for k, v in form_data_dict.items():
+            #     if k != "function_name":
+            #         input_text += f' {k}="{v}"'
 
-            # Optionally, convert form data to a dictionary for easier processing
+            print(f"Prompt: {prompt}")
+
+
+            return self.templates.TemplateResponse("index.html", 
+                                                   {"request": request,
+                                                    "ai_name": self.name,
+                                                    "username": username,
+                                                    "name": user.get("name", username),
+                                                    "prompt": prompt,})
+        
+
+        @self.app.post("/call_prompt_tool", response_class=HTMLResponse)
+        async def call_prompt_tool(request: Request):
+            user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+            if user is None:
+                raise HTTPException(status_code=401, detail="Unauthorized: Invalid credentials")
+
+            form_data = await request.form()
             form_data_dict = dict(form_data)
             print(f"Form data as dict: {form_data_dict}")
             input_text = f"/call {form_data_dict.get('function_name')}"
@@ -157,15 +181,15 @@ class MechanicianWebApp:
                     input_text += f' {k}="{v}"'
 
             print(f"Input text: {input_text}")
+            ai_instance = self.get_ai_instance(request.cookies.get("access_token"))
+            generated_prompt = self.preprocess_prompt(ai_instance, input_text, prompt_tools=self.prompt_tools)
 
+            pprint(generated_prompt)
 
-            return self.templates.TemplateResponse("index.html", 
-                                                   {"request": request,
-                                                    "ai_name": self.name,
-                                                    "username": username,
-                                                    "name": user.get("name", username),
-                                                    "input": input_text,})
+            # return generated_prompt
+            return JSONResponse(content=generated_prompt)
         
+
 
         @self.app.post("/token")
         async def login_for_access_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
