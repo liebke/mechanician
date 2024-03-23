@@ -1,4 +1,4 @@
-from mechanician.ai_tools import AITools
+from mechanician.tools import AITools
 from arango import ArangoClient
 import json
 from mechanician_arangodb.document_manager import DocumentManager

@@ -77,7 +77,7 @@ Notepads can be stored in a local file or in an [ArangoDB](https://arangodb.com)
 #### NotepadFileStore
 
 ```python
-from mechanician.tools.notepad import NotepadFileStore
+from mechanician.ai_tools.notepad import NotepadFileStore
 
 notepad_store = NotepadFileStore(notepad_name=notepad_name,
                                  notepad_directory_name=notepad_directory_name)
@@ -111,10 +111,10 @@ The [NotepadAITools](https://github.com/liebke/mechanician/blob/b2e9d1a57814d335
 * get_current_datetime
 
 
-Import the `NotepadAITools` class from [mechanician.tools.notepad](https://github.com/liebke/mechanician/blob/b2e9d1a57814d3351de1fe64fbd2d29bfed21ba7/packages/mechanician/src/mechanician/tools/notepads.py) and create an instance of it, passing the `notepad_store` to it.
+Import the `NotepadAITools` class from [mechanician.ai_tools.notepad](https://github.com/liebke/mechanician/blob/b2e9d1a57814d3351de1fe64fbd2d29bfed21ba7/packages/mechanician/src/mechanician/tools/notepads.py) and create an instance of it, passing the `notepad_store` to it.
 
 ```python
-from mechanician.tools.notepad import NotepadAITools
+from mechanician.ai_tools.notepad import NotepadAITools
 
 notepad_tools = NotepadAITools(notepad_store=notepad_store)
 ```
@@ -142,7 +142,7 @@ shell.run(ai)
 You can now pass a list of self-explanatory *AITools* to the *TAGAI* class using the `tools` parameter.
 
 ```python
-from mechanician.tools.weather import MiddleEarthWeatherAITools
+from ex_tools import MiddleEarthWeatherAITools
 
 weather_tools = MiddleEarthWeatherAITools()
 

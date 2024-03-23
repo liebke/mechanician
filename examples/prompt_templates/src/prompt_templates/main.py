@@ -6,12 +6,17 @@ from dotenv import load_dotenv
 import traceback
 
 import json
-from mechanician.prompting.templates import PromptTemplate
-from mechanician.prompting.tools import PromptTools
+from mechanician.templates import PromptTemplate
+from mechanician.tools import PromptTools
 from pprint import pprint
 
 from mechanician_ui import MechanicianWebApp
 import uvicorn
+
+from mechanician.ai_tools.notepads import NotepadAITools
+from mechanician_arangodb.notepad_store import ArangoNotepadStore
+from arango import ArangoClient
+
 
 logger = logging.getLogger(__name__)
 
@@ -230,8 +235,23 @@ def init_ai():
     api_key = os.getenv("OPENAI_API_KEY")
     model_name = os.getenv("OPENAI_MODEL_NAME")
     ai_connector = OpenAIChatConnector(api_key=api_key, model_name=model_name)
+
+    # ArangoDB notepad store
+    database_name="test_notepad_db"
+    notepad_collection_name="notepads"
+    arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
+    arango_notepad_store = ArangoNotepadStore(notepad_name="test_notepad",
+                                              arango_client=arango_client, 
+                                              database_name=database_name,
+                                              notepad_collection_name=notepad_collection_name,
+                                              db_username=os.getenv("ARANGO_USERNAME"),
+                                              db_password=os.getenv("ARANGO_PASSWORD"))
+    arango_notepad_tools = NotepadAITools(notepad_store=arango_notepad_store)
+    # END ArangoDB notepad store
+
     ai = TAGAI(ai_connector=ai_connector, 
-               name="MiddleEarth CRM AI")
+               name="MiddleEarth CRM AI",
+               tools=[arango_notepad_tools])
     return ai
 
 
@@ -262,10 +282,24 @@ def main():
 ###############################################################################
     
 def init_app():
+    # ArangoDB notepad store
+    database_name="test_notepad_db"
+    notepad_collection_name="notepads"
+    arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
+    arango_notepad_store = ArangoNotepadStore(notepad_name="test_notepad",
+                                              arango_client=arango_client, 
+                                              database_name=database_name,
+                                              notepad_collection_name=notepad_collection_name,
+                                              db_username=os.getenv("ARANGO_USERNAME"),
+                                              db_password=os.getenv("ARANGO_PASSWORD"))
+    arango_notepad_tools = NotepadAITools(notepad_store=arango_notepad_store)
+    # END ArangoDB notepad store
+
     ai_connector_factory = OpenAIChatConnectorFactory(api_key=os.getenv("OPENAI_API_KEY"), 
                                                       model_name=os.getenv("OPENAI_MODEL_NAME"))
     prompt_tools = MiddleEarthCRMPromptTools(crm_data_directory="./data")    
     return MechanicianWebApp(ai_connector_factory=ai_connector_factory,
+                             ai_tools=[arango_notepad_tools],
                              prompt_tools=prompt_tools,
                              name="MiddleEarth CRM AI")
 

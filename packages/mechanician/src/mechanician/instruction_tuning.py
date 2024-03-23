@@ -1,7 +1,7 @@
 import json
 from mechanician import TAGAI
 from mechanician.ai_connectors import AIConnector
-from mechanician.ai_tools import AITools
+from mechanician.tools import AITools
 from rich.console import Console
 import logging
 import os

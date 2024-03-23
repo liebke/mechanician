@@ -6,7 +6,7 @@ import subprocess
 import traceback
 from abc import ABC
 from typing import List
-from mechanician.prompting.tools import PromptTools, PromptToolKit
+from mechanician.tools import MechanicianTools, PromptTools, PromptToolKit
 from pprint import pprint
 
 logger = logging.getLogger(__name__)
@@ -84,7 +84,7 @@ def preprocess_prompt(ai: 'TAGAI', prompt: str, prompt_tools: 'PromptTools' = No
             return f"Invalid /call command: {prompt}"
         print("Parsed Prompt:")
         pprint(parsed_prompt)
-        tool_resp = prompt_tools.call_function(parsed_prompt.get("function_name"), parsed_prompt.get("params"))
+        tool_resp = prompt_tools.call_function(parsed_prompt.get("function_name"), params=parsed_prompt.get("params"))
         if tool_resp.get("status", "noop") == "error":
             print(tool_resp.get("prompt", ''))
             
@@ -115,10 +115,10 @@ def print_header(name):
 ## RUN
 ###############################################################################
 
-def run(ai: TAGAI, prompt_tools:'PromptTools' = None):
+def run(ai: TAGAI, prompt_tools:'MechanicianTools' = None):
 
     if prompt_tools is not None:
-        if isinstance(prompt_tools, PromptTools):
+        if isinstance(prompt_tools, MechanicianTools):
             prompt_tools = prompt_tools
         elif isinstance(prompt_tools, list):
             prompt_tools = PromptToolKit(tools=prompt_tools)
@@ -148,11 +148,6 @@ def run(ai: TAGAI, prompt_tools:'PromptTools' = None):
             if not ai.streaming_connector():
                 print_markdown(console, resp)
                 print('')
-
-            # resp = None, tool_calls were processed and we need to get a new stream to see the model's response
-            # This should never happen with the Assistant API, just in the Chat API
-            while resp == None:
-                resp = ai.submit_prompt(None)
 
             print('\n')
 

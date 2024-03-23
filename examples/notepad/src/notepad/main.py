@@ -2,7 +2,7 @@ from mechanician import TAGAI, shell
 from mechanician_openai import OpenAIChatConnector
 # from mechanician_mistral.mistral_ai_connector import MistralAIConnector
 from notepad.weather_ai_tools import MiddleEarthWeatherAITools
-from mechanician.tools.notepads import NotepadAITools, NotepadFileStore
+from mechanician.ai_tools.notepads import NotepadAITools, NotepadFileStore
 from mechanician_arangodb.notepad_store import ArangoNotepadStore
 import os
 import logging

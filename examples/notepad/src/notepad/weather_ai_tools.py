@@ -1,6 +1,6 @@
 import json
 import logging
-from mechanician.ai_tools import AITools
+from mechanician.tools import AITools
 import random
 import re
 import pprint

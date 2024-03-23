@@ -1,4 +1,4 @@
-from mechanician.tools.notepads import NotepadStore
+from mechanician.ai_tools.notepads import NotepadStore
 from arango import ArangoClient
 import json
 import logging

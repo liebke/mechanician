@@ -1,4 +1,4 @@
-from mechanician.ai_tools import AITools
+from mechanician.tools import AITools
 from abc import ABC, abstractmethod
 import json
 import logging

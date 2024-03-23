@@ -1,4 +1,4 @@
-from mechanician.ai_tools import AITools
+from mechanician.tools import AITools
 import logging
 import pprint
 import uuid

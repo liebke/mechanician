@@ -1,7 +1,7 @@
 
 from abc import ABC, abstractmethod
 from mechanician.util import StreamPrinter
-from mechanician.ai_tools import AITools
+from mechanician.tools import AITools
 import logging
 
 logger = logging.getLogger(__name__)

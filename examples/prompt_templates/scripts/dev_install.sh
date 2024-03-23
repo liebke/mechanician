@@ -6,6 +6,8 @@ cd ../mechanician_openai &&
 ./scripts/install.sh &&
 cd ../mechanician_ui &&
 ./scripts/install.sh &&
+cd ../mechanician_arangodb &&
+./scripts/install.sh &&
 cd ../../examples/prompt_templates &&
 pip install -e .
 

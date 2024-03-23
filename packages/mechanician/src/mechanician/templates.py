@@ -3,6 +3,7 @@ from typing import List
 import re
 import os
 import json
+from mechanician.resources import PromptResource
 
 
 logger = logging.getLogger(__name__)
@@ -109,18 +110,3 @@ class PromptTemplate:
         self.resources.append(PromptResource(resource_name, resource_data))
         
 
-
-###############################################################################
-## RESOURCES
-###############################################################################
-
-class PromptResource:
-    def __init__(self, name: str, data: dict):
-        self.name = name
-        self.data = data
-
-    def __getattr__(self, attr):
-        if attr in self.data:
-            return self.data[attr]
-        else:
-            raise AttributeError(f"'PromptResource' object has no attribute '{attr}'")

@@ -9,7 +9,7 @@ import json
 import asyncio
 from pprint import pprint
 import pkg_resources
-from mechanician.prompting.tools import PromptTools
+from mechanician.tools import PromptTools
 import os
 
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -20,6 +20,17 @@ from mechanician_ui.auth import CredentialsManager, BasicCredentialsManager
 
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
+
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.INFO)
+
+handler = logging.StreamHandler()
+handler.setLevel(logging.INFO)
+logger.addHandler(handler)
+
+
 
 class UserCreate(BaseModel):
     name: str
@@ -38,6 +49,7 @@ class UserUpdate(BaseModel):
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
+  
 ###############################################################################
 ## MechanicianWebApp class
 ###############################################################################
@@ -137,7 +149,6 @@ class MechanicianWebApp:
         @self.app.post("/", response_class=HTMLResponse)
         async def index_post(request: Request):
             user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
-            print(f"User: {user}")
             if user is None:
                 return self.templates.TemplateResponse("login.html", 
                                                        {"request": request})
@@ -146,17 +157,7 @@ class MechanicianWebApp:
 
             form_data = await request.form()
             form_data_dict = dict(form_data)
-            print(f"Form data as dict: {form_data_dict}")
-            # input_text = f"/call {form_data_dict.get('function_name')}"
             prompt = form_data_dict.get("prompt", "")
-            # add parameters to input_text
-            # for k, v in form_data_dict.items():
-            #     if k != "function_name":
-            #         input_text += f' {k}="{v}"'
-
-            print(f"Prompt: {prompt}")
-
-
             return self.templates.TemplateResponse("index.html", 
                                                    {"request": request,
                                                     "ai_name": self.name,
@@ -173,20 +174,14 @@ class MechanicianWebApp:
 
             form_data = await request.form()
             form_data_dict = dict(form_data)
-            print(f"Form data as dict: {form_data_dict}")
             input_text = f"/call {form_data_dict.get('function_name')}"
             # add parameters to input_text
             for k, v in form_data_dict.items():
                 if k != "function_name":
                     input_text += f' {k}="{v}"'
 
-            print(f"Input text: {input_text}")
             ai_instance = self.get_ai_instance(request.cookies.get("access_token"))
             generated_prompt = self.preprocess_prompt(ai_instance, input_text, prompt_tools=self.prompt_tools)
-
-            pprint(generated_prompt)
-
-            # return generated_prompt
             return JSONResponse(content=generated_prompt)
         
 
@@ -217,12 +212,11 @@ class MechanicianWebApp:
             try:
                 self.verify_access_token(request)
             except HTTPException as e:
-                print(f"Error validating token: {e}")
+                logger.error(f"Error validating token: {e}")
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
             
             user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
-            # print(f"User: {user}")
             if user is None:
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
@@ -246,12 +240,11 @@ class MechanicianWebApp:
             try:
                 self.verify_access_token(request)
             except HTTPException as e:
-                print(f"Error validating token: {e}")
+                logger.error(f"Error validating token: {e}")
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
             
             user_data = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
-            # print(f"User: {user_data}")
             if user_data is None:
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
@@ -287,7 +280,7 @@ class MechanicianWebApp:
                 user_role = user_data.get("user_role", "User")
 
             except HTTPException as e:
-                print(f"Error validating token: {e}")
+                logger.error(f"Error validating token: {e}")
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
             
@@ -304,29 +297,27 @@ class MechanicianWebApp:
             try:
                 self.verify_access_token(request)
             except HTTPException as e:
-                print(f"Error validating token: {e}")
+                logger.error(f"Error validating token: {e}")
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
             
-            print(f"User: {user}")
-
             if user.new_password != "":
                 if user.new_password != user.confirm_new_password:
-                    print("Passwords do not match")
+                    logger.error("Passwords do not match")
                     raise HTTPException(status_code=400, detail="Passwords do not match")
             
                 update_status = self.credentials_manager.update_password(user.username, 
                                                                          user.password, 
                                                                          user.new_password)
                 if not update_status:
-                    print("User password update error")
+                    logger.error("User password update error")
                     raise HTTPException(status_code=400, detail="User password update error")
                 
             update_status = self.credentials_manager.update_user_attributes(user.username,
                                                                             password=user.password,
                                                                             attributes={"name": user.name})
             if not update_status:
-                print("User attribute update error")
+                logger.error("User attribute update error")
                 raise HTTPException(status_code=400, detail="User attribute update error")
 
             return {"message": "User update successfully"}
@@ -334,7 +325,7 @@ class MechanicianWebApp:
 
         @self.app.post("/logout")
         def logout():
-            print("Logging out...")
+            logger.debug("Logging out...")
             response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
             response.delete_cookie(key="access_token")
             return response
@@ -342,7 +333,7 @@ class MechanicianWebApp:
 
         @self.app.post("/new")
         def new_session(request: Request):
-            print("Starting new session...")
+            logger.debug("Starting new session...")
             # get token from cookie
             token = request.cookies.get("access_token")
             # get sid from client_connections
@@ -369,12 +360,10 @@ class MechanicianWebApp:
                 user_role = user_data.get("user_role", "User")
 
             except HTTPException as e:
-                print(f"Error validating token: {e}")
+                logger.error(f"Error validating token: {e}")
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
 
-            print("Prompt Tool Instructions:")
-            pprint(self.prompt_tools.get_tool_instructions())
             return self.templates.TemplateResponse("prompt_tools.html", 
                                                    {"request": request,
                                                     "prompt_tool_instructions": self.prompt_tools.get_tool_instructions(),
@@ -390,7 +379,7 @@ class MechanicianWebApp:
         @self.app.websocket("/ws")
         async def websocket_endpoint(websocket: WebSocket):
             await websocket.accept()
-            print("WebSocket connection accepted")
+            logger.debug("WebSocket connection accepted")
             try:
                 # Wait for authentication token
                 try:
@@ -400,17 +389,17 @@ class MechanicianWebApp:
                     sid = websocket.client
                     self.client_connections[token] = sid
                     if self.credentials_manager.verify_access_token(token):
-                        print("Token verified")
+                        logger.debug("Token verified")
                     else:
-                        print("Invalid token. Closing connection.")
+                        logger.info("Invalid token. Closing connection.")
                         await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
                         return
                 except asyncio.TimeoutError:
-                    print("Authentication timeout. Closing connection.")
+                    logger.info("Authentication timeout. Closing connection.")
                     await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
                     return
                 except Exception as e:
-                    print(f"Unexpected error during authentication: {e}")
+                    logger.error(f"Unexpected error during authentication: {e}")
                     await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
                     return
 
@@ -418,7 +407,6 @@ class MechanicianWebApp:
                 while True:
                     try:
                         data = await websocket.receive_text()
-                        # sid = websocket.client
                         ai_instance = self.get_ai_instance(sid)
                         input_text = json.loads(data).get("data", "")
                         processed_prompt = self.preprocess_prompt(ai_instance, input_text, prompt_tools=self.prompt_tools)
@@ -429,27 +417,32 @@ class MechanicianWebApp:
                         if prompt == '':
                             continue
                         try:
-                            for chunk in ai_instance.ai_connector.get_stream(prompt):
-                                if hasattr(chunk, 'choices') and chunk.choices:
-                                    content = chunk.choices[0].delta.content
-                                    if content:
+                            # Equivalent to ai_instance.submit_prompt(prompt) but prints response to WebSocket
+                            no_content = True
+                            while no_content:
+                                stream = ai_instance.ai_connector.get_stream(prompt)
+                                for content in ai_instance.ai_connector.process_stream(stream):
+                                    if content is None:
+                                        no_content = True
+                                        break
+                                    else:
+                                        no_content = False
                                         await websocket.send_text(content)
                                         await asyncio.sleep(0)
                         except Exception as e:
-                            print(f"Error processing AI response: {e}")
+                            logger.error(f"Error processing AI response: {e}")
                             await websocket.send_text(json.dumps({"error": str(e)}))
                             break
                     except WebSocketDisconnect:
-                        print("Client disconnected")
+                        logger.info("Client disconnected")
                         break
             except Exception as e:
                 # This outer exception block is to catch any unexpected errors outside the main while loop
-                print(f"Unexpected error: {e}")
+                logger.error(f"Unexpected error: {e}")
 
 
     def verify_access_token(self, request: Request):
         token = request.cookies.get("access_token")
-        # print(f"Token: {token}")
         credentials_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
@@ -457,7 +450,7 @@ class MechanicianWebApp:
         )
         try:
             validation_response = self.credentials_manager.verify_access_token(token)
-            print(f"Validation response: {validation_response}")
+            logger.debug(f"Validation response: {validation_response}")
             if not validation_response:
                 raise credentials_exception
         except Exception as e:
@@ -482,14 +475,10 @@ class MechanicianWebApp:
 
     def preprocess_prompt(self, ai: 'TAGAI', prompt: str, prompt_tools: 'PromptTools' = None):
         if prompt.startswith('/call'):
-            print("Calling function...")
-            print(prompt)
             parsed_prompt = prompt_tools.parse_command_line(prompt)
             if parsed_prompt is None:
                 return f"Invalid /call command: {prompt}"
-            print("Parsed Prompt:")
-            pprint(parsed_prompt)
-            tool_resp = prompt_tools.call_function(parsed_prompt.get("function_name"), parsed_prompt.get("params"))
+            tool_resp = prompt_tools.call_function(parsed_prompt.get("function_name"), params=parsed_prompt.get("params"))
             return tool_resp
         else:
             return {"status": "noop", "prompt": prompt}

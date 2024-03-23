@@ -335,7 +335,7 @@ Gandalf the White
 [party_invite.md](https://github.com/liebke/mechanician/blob/main/examples/prompt_templates/templates/party_invite.md)
 
 ```python
-from mechanician.prompting.templates import PromptTemplate
+from mechanician.templates import PromptTemplate
 ```
 
 ```python
@@ -359,7 +359,7 @@ prompt_template.generate_prompt()
 ## PromptTools
 
 ```python
-from mechanician.prompting.tools import PromptTools
+from mechanician.tools import PromptTools
 ```
 
 

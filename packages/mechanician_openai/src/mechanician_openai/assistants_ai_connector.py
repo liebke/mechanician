@@ -2,7 +2,7 @@
 from openai import OpenAI
 from rich.console import Console
 from mechanician.ai_connectors import AIConnector
-from mechanician.ai_tools import AITools
+from mechanician.tools import AITools
 import time
 import os
 import json
@@ -148,7 +148,7 @@ class OpenAIAssistantsConnector(AIConnector):
                     # Call the function with the extracted name, ID, and arguments,
                     # and append the output to the tool_outputs list
                     logger.info(f"Applying tool: {function_name}...")
-                    resp = self.tools.call_function(function_name, call_id, args)
+                    resp = self.tools.call_function(function_name, call_id=call_id, params=args)
                     if resp is not None:
                         resp_str = json.dumps(resp)
                     else:

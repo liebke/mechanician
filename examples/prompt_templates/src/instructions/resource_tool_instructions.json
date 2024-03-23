@@ -1,0 +1,86 @@
+[
+    {
+      "type": "resource",
+      "resource": {
+        "name": "crm.contact",
+        "description": "Contact resource",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the contact."
+          }
+        }
+      }
+    },
+
+
+    {
+      "type": "event",
+      "resource": {
+        "name": "crm.event",
+        "description": "Event resource",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The title of the event."
+          }
+        }
+      }
+    },
+
+
+    {
+      "type": "case",
+      "resource": {
+        "name": "crm.case",
+        "description": "Case resource",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The ID of the case."
+          }
+        }
+      }
+    },
+
+      {
+        "type": "function",
+        "function": {
+          "name": "product_newsletter",
+          "description": "Generates a product newsletter.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "company": {
+                "type": "string",
+                "description": "The name of the company."
+              }
+            },
+            "required": [
+              "company"
+            ]
+        }
+      }
+    },
+
+    {
+        "type": "function",
+        "function": {
+          "name": "customer_summarization",
+          "description": "Summarizes details on a given customer and their interactions with the company.",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "customer": {
+                "type": "string",
+                "description": "The name of the customer."
+                }
+            },
+            "required": [
+              "customer"
+            ]
+          }
+        }
+      }
+    
+  ]

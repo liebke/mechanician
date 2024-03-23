@@ -1,6 +1,6 @@
 
 from mechanician.ai_connectors import AIConnector, AIConnectorFactory
-from mechanician.ai_tools import AITools, AITools, AIToolKit
+from mechanician.tools import AITools, AIToolKit, MechanicianTools
 import json
 import os
 import logging
@@ -34,13 +34,14 @@ class TAGAI():
         
         if ai_instructions is not None:
             self.ai_instructions = ai_instructions
+
         # if tool instructions is a JSON string, then convert to it to list of dictionaries
         if isinstance(tool_instructions, str):
             self.tool_instructions = json.loads(tool_instructions)
         elif isinstance(tool_instructions, list):
             self.tool_instructions = tool_instructions
         else:
-            print(f"tool_instructions is not a string or list: {tool_instructions}")
+            logger.debug(f"tool_instructions is not a string or list: {tool_instructions}")
 
         if (instruction_set_directory is not None) and (ai_instructions is None):
             self.instruction_set_directory = instruction_set_directory
@@ -88,8 +89,10 @@ class TAGAI():
             with open(tool_instruction_path, 'r') as file:
                 logger.info(f"Loading Tool Instructions from {tool_instruction_path}")
                 tool_instructions = json.loads(file.read())
+
             if self.tool_instructions is None:
                 self.tool_instructions = tool_instructions
+
         else:
             logger.info(f"Tool Instruction file not found at {tool_instruction_path}")
             logger.info("Tool Instructions will not be loaded from file")
@@ -107,6 +110,7 @@ class TAGAI():
                 # If ai_instructios has already been set by the user, then append the self-explanatory tool's ai_instructions.
                 self.ai_instructions += f"""\n\n{self.tools.get_ai_instructions()}"""
 
+        if isinstance(self.tools, MechanicianTools):
             if self.tool_instructions is None:
                 self.tool_instructions = self.tools.get_tool_instructions()
             else:

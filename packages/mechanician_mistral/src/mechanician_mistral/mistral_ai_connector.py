@@ -2,7 +2,7 @@
 from mistralai.client import MistralClient
 from mistralai.models.chat_completion import ChatMessage
 from mechanician.ai_connectors import StreamingAIConnector
-from mechanician.ai_tools import AITools
+from mechanician.tools import AITools
 from mechanician.util import SimpleStreamPrinter
 import json
 import os
@@ -150,8 +150,8 @@ class MistralAIConnector(StreamingAIConnector):
 
     def process_tool_call(self, tc):
         tc_resp = self.tools.call_function(tc.function.name, 
-                                            tc.id, 
-                                            tc.function.arguments)
+                                           call_id=tc.id, 
+                                           params=tc.function.arguments)
         # print("TC RESP:")
         tc_resp = {"response": tc_resp}
         # pprint.pprint(tc_resp)
