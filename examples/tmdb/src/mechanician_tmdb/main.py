@@ -20,7 +20,7 @@ def init_ai():
                                          model_name=os.getenv("OPENAI_MODEL_NAME"))
     ai = TAGAI(ai_connector,
                instruction_set_directory="./instructions",
-               tools=tmdb_tools,
+               ai_tools=tmdb_tools,
                name="TMDB AI" )
     return ai
 

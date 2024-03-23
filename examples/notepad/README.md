@@ -129,7 +129,7 @@ This means that you don't need to pass the `ai_instructions` and `tool_instructi
 from mechanician import TAGAI, shell
 
 ai = TAGAI(ai_connector=ai_connector, 
-           tools=notepad_tools,
+           ai_tools=notepad_tools,
            name="Notepad-Enabled AI")
 
 shell.run(ai)
@@ -147,7 +147,7 @@ from ex_tools import MiddleEarthWeatherAITools
 weather_tools = MiddleEarthWeatherAITools()
 
 ai = TAGAI(ai_connector=ai_connector, 
-           tools=[notepad_tools, weather_tools],
+           ai_tools=[notepad_tools, weather_tools],
            name="Notepad-Enabled AI")
 ```
 

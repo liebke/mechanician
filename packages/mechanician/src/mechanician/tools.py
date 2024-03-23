@@ -79,8 +79,10 @@ class MechanicianTools(ABC):
 
 class MechanicianToolKit(MechanicianTools):
 
-    def __init__(self, tools: List[MechanicianTools]):
+    def __init__(self, 
+                 tools: List[MechanicianTools]):
         self.tools = tools
+
 
     def call_function(self, function_name:str, call_id=None, params:str = None):
         # iterate over all tools and find the tool with the function
@@ -137,8 +139,9 @@ class PromptTools(MechanicianTools):
 ## MECHANICIAN TOOL KIT
 ###############################################################################
 
-class PromptToolKit(MechanicianToolKit):
-    def __init__(self, tools: List[MechanicianTools]):
+class PromptToolKit(MechanicianToolKit, PromptTools):
+    def __init__(self, 
+                 tools: List[MechanicianTools]):
         super().__init__(tools)
 
 
@@ -208,7 +211,7 @@ class AITools(MechanicianTools):
 ## AI TOOL KIT
 ###############################################################################
  
-class AIToolKit(MechanicianToolKit):
+class AIToolKit(MechanicianToolKit, AITools):
 
     def __init__(self, tools: List[AITools]):
         self.tools = tools

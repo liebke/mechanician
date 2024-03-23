@@ -52,7 +52,7 @@ def instruction_auto_tuning_ai(ai_connector: AIConnector,
     ai = TAGAI(ai_connector=ai_connector, 
                ai_instructions=tuner_instructions, 
                tool_instructions=auto_tuner_tool_instructions,
-               tools=tools,
+               ai_tools=tools,
                name="Instruction Auto-Tuner AI")
     return ai
 

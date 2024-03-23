@@ -145,7 +145,7 @@ from mechanician import TAGAI
 ai = TAGAI(ai_connector=ai_connector,
            ai_instructions=ai_instructions,
            tool_instructions=tool_instructions,
-           tools=tools)
+           ai_tools=tools)
 ```
 
 Alternatively, you can pass an `instruction_set_directory` to the constructor, and it will load the the *ai_instructions* and *tool_instructions* from the designated directory. 
@@ -154,7 +154,7 @@ Alternatively, you can pass an `instruction_set_directory` to the constructor, a
 ```python
 ai = TAGAI(ai_connector=OpenAIChatConnector(),
            instruction_set_directory="./instructions",
-           tools=tools)
+           ai_tools=tools)
 ```
 
 
@@ -211,7 +211,7 @@ If you pass an `instruction_set_directory` to the `TAGAI` constructor, it will l
 ```python
 ai = TAGAI(ai_connector=OpenAIChatConnector(),
            instruction_set_directory="./instructions",
-           tools=tools)
+           ai_tools=tools)
 ```
 
 The default name and location of the directory is **./instructions**, and the default names for the instruction files are **ai_instructions.md** and **tool_instructions.json**.
@@ -222,7 +222,7 @@ Alternatively, you can pass the *ai_instructions* and *tool_instructions* direct
 ai = TAGAI(ai_connector=ai_connector,
            ai_instructions=ai_instructions,
            tool_instructions=tool_instructions,
-           tools=tools)
+           ai_tools=tools)
 ```
 
 The advantage of storing the instruction in the `instruction_set_directory` is that it allows you to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for the AI.
@@ -488,7 +488,7 @@ doc_tools = DocumentManagerAITools(arango_client, database_name=database_name)
 ```python
 ai = TAGAI(ai_connector=ai_connector, 
            instruction_set_directory="./instructions",
-           tools=doc_tools,
+           ai_tools=doc_tools,
            name="Movie Document Manager AI")
 ```
 

@@ -9,7 +9,7 @@ import json
 import asyncio
 from pprint import pprint
 import pkg_resources
-from mechanician.tools import PromptTools
+from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit
 import os
 
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -58,7 +58,7 @@ class MechanicianWebApp:
 
     def __init__(self, 
                  ai_connector_factory: 'AIConnectorFactory',
-                 prompt_tools=[],
+                 prompt_tools=None,
                  ai_instructions=None, 
                  tool_instructions=None,
                  instruction_set_directory=None,
@@ -74,7 +74,6 @@ class MechanicianWebApp:
         
         # Initialize class variables
         self.ai_connector_factory = ai_connector_factory
-        self.prompt_tools = prompt_tools
         self.ai_instructions = ai_instructions
         self.tool_instructions = tool_instructions
         self.instruction_set_directory = instruction_set_directory
@@ -82,6 +81,15 @@ class MechanicianWebApp:
         self.ai_instruction_file_name = ai_instruction_file_name
         self.ai_tools = ai_tools
         self.name = name
+
+        if prompt_tools is not None:
+            if isinstance(prompt_tools, MechanicianTools):
+                self.prompt_tools = prompt_tools
+            elif isinstance(prompt_tools, list):
+                self.prompt_tools = PromptToolKit(tools=prompt_tools)
+            else:
+                raise ValueError(f"prompt_tools must be an instance of PromptTools or a list of PromptTools. Received: {prompt_tools}")
+
 
         self.secrets_manager = secrets_manager or BasicSecretsManager(secrets={})
         # to get a string like this run:

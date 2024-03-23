@@ -44,8 +44,7 @@ def init_ai(notepad_name, notepad_directory_name="./notepads"):
 
     notepad_tools = NotepadAITools(notepad_store=notepad_file_store)
     ai = TAGAI(ai_connector=ai_connector, 
-            #    tools=[ex_tools, notepad_tools],
-               tools=[ex_tools, arango_notepad_tools],
+               ai_tools=[ex_tools, arango_notepad_tools],
                name="Notepad-Enabled AI")
     return ai
 

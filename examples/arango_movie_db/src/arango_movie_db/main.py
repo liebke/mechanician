@@ -26,7 +26,7 @@ def init_ai(database_name="test_db"):
 
     ai = TAGAI(ai_connector=ai_connector, 
                instruction_set_directory="./instructions",
-               tools=doc_tools,
+               ai_tools=doc_tools,
                name="Movie Document Manager AI")
     return ai
 

@@ -23,12 +23,12 @@ class TAGAI():
                 #  instruction_set_file_name="instructions.json",
                  tool_instruction_file_name="tool_instructions.json",
                  ai_instruction_file_name="ai_instructions.md",
-                 tools=None, 
+                 ai_tools=None, 
                  name="Mechanician AI"):
         self.ai_connector = ai_connector
         self.name = name
         self.RUNNING = False
-        self.tools = []
+        self.ai_tools = []
         self.ai_instructions = None
         self.tool_instructions = None
         
@@ -53,16 +53,16 @@ class TAGAI():
             self.tool_instruction_file_name = tool_instruction_file_name
             self.load_tool_instructions(instruction_set_directory, tool_instruction_file_name)
 
-        if tools is not None:
-            if isinstance(tools, AITools):
-                self.tools = tools
-            elif isinstance(tools, list):
-                if not tools:
-                    self.tools = None
+        if ai_tools is not None:
+            if isinstance(ai_tools, AITools):
+                self.ai_tools = ai_tools
+            elif isinstance(ai_tools, list):
+                if not ai_tools:
+                    self.ai_tools = None
                 else:
-                    self.tools = AIToolKit(tools=tools)
+                    self.ai_tools = AIToolKit(tools=ai_tools)
             else:
-                raise ValueError(f"tools must be an instance of AITools or a list of AITools. Received: {tools}")
+                raise ValueError(f"tools must be an instance of AITools or a list of AITools. Received: {ai_tools}")
                     
         self._equip_tools()
 
@@ -103,23 +103,23 @@ class TAGAI():
     ###############################################################################
 
     def _equip_tools(self):
-        if isinstance(self.tools, AITools):
+        if isinstance(self.ai_tools, AITools):
             if self.ai_instructions is None:
-                self.ai_instructions = self.tools.get_ai_instructions()
+                self.ai_instructions = self.ai_tools.get_ai_instructions()
             else:
                 # If ai_instructios has already been set by the user, then append the self-explanatory tool's ai_instructions.
-                self.ai_instructions += f"""\n\n{self.tools.get_ai_instructions()}"""
+                self.ai_instructions += f"""\n\n{self.ai_tools.get_ai_instructions()}"""
 
-        if isinstance(self.tools, MechanicianTools):
+        if isinstance(self.ai_tools, MechanicianTools):
             if self.tool_instructions is None:
-                self.tool_instructions = self.tools.get_tool_instructions()
+                self.tool_instructions = self.ai_tools.get_tool_instructions()
             else:
                 # If specific tool_instructios has already been set by the user, then append the self-explanatory tool's tool_instructions.
-                self.tool_instructions = self.tool_instructions + self.tools.get_tool_instructions()
+                self.tool_instructions = self.tool_instructions + self.ai_tools.get_tool_instructions()
 
         self.ai_connector._instruct(ai_instructions=self.ai_instructions, 
                                     tool_instructions=self.tool_instructions,
-                                    tools = self.tools)
+                                    tools = self.ai_tools)
         
 
     ###############################################################################
@@ -215,7 +215,7 @@ class TAGAIFactory(ABC):
         ai_connector = self.ai_connector_factory.create_ai_connector()
         ai = TAGAI(ai_connector=ai_connector, 
                    name = self.name,
-                   tools = self.ai_tools,
+                   ai_tools = self.ai_tools,
                    ai_instructions = self.ai_instructions,
                    tool_instructions = self.tool_instructions,
                    instruction_set_directory = self.instruction_set_directory,

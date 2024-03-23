@@ -251,7 +251,7 @@ def init_ai():
 
     ai = TAGAI(ai_connector=ai_connector, 
                name="MiddleEarth CRM AI",
-               tools=[arango_notepad_tools])
+               ai_tools=[arango_notepad_tools])
     return ai
 
 
@@ -300,7 +300,7 @@ def init_app():
     prompt_tools = MiddleEarthCRMPromptTools(crm_data_directory="./data")    
     return MechanicianWebApp(ai_connector_factory=ai_connector_factory,
                              ai_tools=[arango_notepad_tools],
-                             prompt_tools=prompt_tools,
+                             prompt_tools=[prompt_tools],
                              name="MiddleEarth CRM AI")
 
     
