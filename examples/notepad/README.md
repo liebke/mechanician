@@ -123,7 +123,7 @@ notepad_tools = NotepadAITools(notepad_store=notepad_store)
 
 The `NotepadAITools` class can be described as "self-explanatory", meaning it provides the `get_tool_instructions` and `get_ai_instructions` methods that will be used by the `TAGAI` class to retrieve the instructions sets.
 
-This means that you don't need to pass the `ai_instructions` and `tool_instructions` parameters to the `TAGAI` when initializing it, as it can get them directly from the `NotepadAITools` instance.
+This means that you don't need to pass the `ai_instructions` and `ai_tool_instructions` parameters to the `TAGAI` when initializing it, as it can get them directly from the `NotepadAITools` instance.
 
 ```python
 from mechanician import TAGAI, shell
@@ -156,24 +156,24 @@ Each instance of `AITools` should use the same "self-explanatory" approach as `N
 
 ### Writing Self-Explanatory AITools
 
-When creating new sub-classes of [AITools](https://github.com/liebke/mechanician/blob/main/packages/mechanician/src/mechanician/ai_tools.py), you will want to provide both the `ai_instructions` and `tool_instructions` so that the `TAGAI` class can successfully provide instructions to the AI on how to use your tools.
+When creating new sub-classes of [AITools](https://github.com/liebke/mechanician/blob/main/packages/mechanician/src/mechanician/ai_tools.py), you will want to provide both the `ai_instructions` and `ai_tool_instructions` so that the `TAGAI` class can successfully provide instructions to the AI on how to use your tools.
 
 You can do this by:
 
-* Including the class variables, `ai_instructions` and `tool_instructions` directly.
+* Including the class variables, `ai_instructions` and `ai_tool_instructions` directly.
 
 * Including the class variables `instruction_set_directory`, `ai_instruction_file_name`, and `tool_instruction_file_name` indicating where the instruction files can be found
 
-* Just placing the respective instruction files in the default locations, `./instructions/ai_instructions.md` and `./instructions/tool_instructions.json`.
+* Just placing the respective instruction files in the default locations, `./instructions/ai_instructions.md` and `./instructions/ai_tool_instructions.json`.
 
 
 The default `get_ai_instructions` and `get_tool_instructions` methods of the `AITools` class will:
 
-* Look for the existence of either `self.ai_instructions` or `self.tool_instructions` and return those if they exist.
+* Look for the existence of either `self.ai_instructions` or `self.ai_tool_instructions` and return those if they exist.
 
 * Otherwise they will look for the exitence of `self.instruction_set_directory`, `self.tool_instruction_file_name`, and `self.ai_instruction_file_name` and use those to read the instructions for their respective files. 
  
-* But if none of those exist, they will use the default values of `./instructions` for the `instruction_set_directory` and `tool_instructions.json` and `ai_instructions.md` for the `tool_instruction_file_name` and `ai_instruction_file_name`, respectively, 
+* But if none of those exist, they will use the default values of `./instructions` for the `instruction_set_directory` and `ai_tool_instructions.json` and `ai_instructions.md` for the `ai_tool_instructions_file_name` and `ai_instruction_file_name`, respectively, 
  
 * Finally, if the `instruction_set_directory` doesn't exist, `get_ai_instructions` will return an empty string and `get_tool_instructions` will return an empty list.
 

@@ -44,7 +44,7 @@ class OpenAIChatConnector(StreamingAIConnector):
         self.MAX_THREAD_WORKERS = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
         self.stream_printer = stream_printer
         self.client = client or OpenAI(api_key=api_key)
-        self.tool_instructions = None
+        self.ai_tool_instructions = None
         self.ai_instructions = None
         self.tools = None
         self.messages = []
@@ -55,17 +55,17 @@ class OpenAIChatConnector(StreamingAIConnector):
     ###############################################################################
 
     def _instruct(self, ai_instructions=None, 
-                  tool_instructions=None,
+                  ai_tool_instructions=None,
                   tools: 'AITools'=None):
         self.ai_instructions = None
-        self.tool_instructions = None
+        self.ai_tool_instructions = None
         self.tools = None
 
         if ai_instructions is not None:
             self.ai_instructions = ai_instructions
 
-        if tool_instructions is not None:
-            self.tool_instructions = tool_instructions
+        if ai_tool_instructions is not None:
+            self.ai_tool_instructions = ai_tool_instructions
 
         if tools is not None:
             self.tools = tools
@@ -101,7 +101,7 @@ class OpenAIChatConnector(StreamingAIConnector):
         if prompt is not None:
             self.messages.append({"role": role, "content": prompt})
             
-        if not self.tool_instructions:
+        if not self.ai_tool_instructions:
             stream = client.chat.completions.create(
                 model=self.model_name,
                 messages=self.messages,
@@ -111,7 +111,7 @@ class OpenAIChatConnector(StreamingAIConnector):
             stream = client.chat.completions.create(
                 model=self.model_name,
                 messages=self.messages,
-                tools=self.tool_instructions,
+                tools=self.ai_tool_instructions,
                 stream=True,
             )
             
@@ -184,7 +184,7 @@ class OpenAIChatConnector(StreamingAIConnector):
                 response += chunk.choices[0].delta.content
                 yield chunk.choices[0].delta.content
 
-            elif chunk.choices[0].delta.tool_calls is not None:
+            if chunk.choices[0].delta.tool_calls is not None:
                 tool_calls, tool_calls_index = self.process_tool_calls_chunk(chunk, tool_calls, tool_calls_index, futures)
 
         # if the assistant responded with a message, add it to the message history
@@ -193,7 +193,7 @@ class OpenAIChatConnector(StreamingAIConnector):
 
         # if the assistant responded with tool calls, call the function handler for each tool_call,
         # and add each response to the message history
-        elif(tool_calls != []):
+        if(tool_calls != []):
             if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                 if (len(tool_calls) > len(futures)):
                     tc = tool_calls[-1]

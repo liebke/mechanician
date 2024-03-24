@@ -43,7 +43,7 @@ class MistralAIConnector(StreamingAIConnector):
         self.MAX_THREAD_WORKERS = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
         self.stream_printer = stream_printer
         self.client = client or MistralClient(api_key=api_key)
-        self.tool_instructions = None
+        self.ai_tool_instructions = None
         self.ai_instructions = None
         self.tools = None
         self.messages = []
@@ -54,17 +54,17 @@ class MistralAIConnector(StreamingAIConnector):
     ###############################################################################
 
     def _instruct(self, ai_instructions=None, 
-                  tool_instructions=None,
+                  ai_tool_instructions=None,
                   tools: 'AITools'=None):
         self.ai_instructions = None
-        self.tool_instructions = None
+        self.ai_tool_instructions = None
         self.tools = None
 
         if ai_instructions is not None:
             self.ai_instructions = ai_instructions
 
-        if tool_instructions is not None:
-            self.tool_instructions = tool_instructions
+        if ai_tool_instructions is not None:
+            self.ai_tool_instructions = ai_tool_instructions
 
         if tools is not None:
             self.tools = tools
@@ -90,7 +90,7 @@ class MistralAIConnector(StreamingAIConnector):
         if prompt is not None:
             self.messages.append({"role": role, "content": prompt})
             
-        if not self.tool_instructions:
+        if not self.ai_tool_instructions:
             stream = client.chat_stream(
                 model=self.model_name,
                 messages=self.messages,
@@ -99,7 +99,7 @@ class MistralAIConnector(StreamingAIConnector):
             stream = client.chat_stream(
                 model=self.model_name,
                 messages=self.messages,
-                tools=self.tool_instructions,
+                tools=self.ai_tool_instructions,
                 # tool_choice="any",
                 tool_choice="auto"
             )

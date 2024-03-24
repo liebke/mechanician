@@ -1,2 +1,2 @@
 include instructions/ai_instructions.md
-include instructions/tool_instructions.json
+include instructions/ai_tool_instructions.json

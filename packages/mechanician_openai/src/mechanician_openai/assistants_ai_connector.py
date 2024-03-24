@@ -43,7 +43,7 @@ class OpenAIAssistantsConnector(AIConnector):
         self.thread = None
         self.DELETE_ASSISTANT_ON_EXIT = delete_assistant_on_exit or os.getenv("DELETE_ASSISTANT_ON_EXIT", "False") # False
         self.client = OpenAI(api_key=api_key)
-        self.tool_instructions = None
+        self.ai_tool_instructions = None
         self.ai_instructions = None
         self.tools = None
         self.messages = []
@@ -54,13 +54,13 @@ class OpenAIAssistantsConnector(AIConnector):
     ###############################################################################
 
     def _instruct(self, ai_instructions=None, 
-                 tool_instructions=None,
+                 ai_tool_instructions=None,
                  tools: 'AITools'=None):
         if ai_instructions is not None:
             self.ai_instructions = ai_instructions
 
-        if tool_instructions is not None:
-            self.tool_instructions = tool_instructions
+        if ai_tool_instructions is not None:
+            self.ai_tool_instructions = ai_tool_instructions
 
         if tools is not None:
             self.tools = tools
@@ -85,7 +85,7 @@ class OpenAIAssistantsConnector(AIConnector):
                 name="Mechanician Assistant",
                 instructions=self.ai_instructions,
                 model=self.model_name,
-                tools=self.tool_instructions
+                tools=self.ai_tool_instructions
                 )
         else:
             logger.info("## Retrieving existing assistant...")

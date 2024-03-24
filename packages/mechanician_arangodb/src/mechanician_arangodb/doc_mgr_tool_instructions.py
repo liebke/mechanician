@@ -1,4 +1,4 @@
-tool_instructions = [
+ai_tool_instructions = [
     {
       "type": "function",
       "function": {

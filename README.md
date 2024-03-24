@@ -144,11 +144,11 @@ from mechanician import TAGAI
 
 ai = TAGAI(ai_connector=ai_connector,
            ai_instructions=ai_instructions,
-           tool_instructions=tool_instructions,
+           ai_tool_instructions=tool_instructions,
            ai_tools=tools)
 ```
 
-Alternatively, you can pass an `instruction_set_directory` to the constructor, and it will load the the *ai_instructions* and *tool_instructions* from the designated directory. 
+Alternatively, you can pass an `instruction_set_directory` to the constructor, and it will load the the *ai_instructions* and *ai_tool_instructions* from the designated directory. 
 
 
 ```python
@@ -206,7 +206,7 @@ Examples of AITools classes:
 
 ### Instruction Sets
 
-If you pass an `instruction_set_directory` to the `TAGAI` constructor, it will load the the *ai_instructions* and *tool_instructions* from the designated directory. 
+If you pass an `instruction_set_directory` to the `TAGAI` constructor, it will load the the *ai_instructions* and *ai_tool_instructions* from the designated directory. 
 
 ```python
 ai = TAGAI(ai_connector=OpenAIChatConnector(),
@@ -214,14 +214,14 @@ ai = TAGAI(ai_connector=OpenAIChatConnector(),
            ai_tools=tools)
 ```
 
-The default name and location of the directory is **./instructions**, and the default names for the instruction files are **ai_instructions.md** and **tool_instructions.json**.
+The default name and location of the directory is **./instructions**, and the default names for the instruction files are **ai_instructions.md** and **ai_tool_instructions.json**.
 
-Alternatively, you can pass the *ai_instructions* and *tool_instructions* directly to the `TAGAI` constructor.
+Alternatively, you can pass the *ai_instructions* and *ai_tool_instructions* directly to the `TAGAI` constructor.
 
 ```python
 ai = TAGAI(ai_connector=ai_connector,
            ai_instructions=ai_instructions,
-           tool_instructions=tool_instructions,
+           ai_tool_instructions=tool_instructions,
            ai_tools=tools)
 ```
 
@@ -229,7 +229,7 @@ The advantage of storing the instruction in the `instruction_set_directory` is t
 
 * The `ai_instructions.json` file contains the instructions for the AI, defining its role and behaviors.
 
-* The `tool_instructions.json` file contains the instructions for the tools used by the AI. In the case of the OpenAI Connectors, it contains JSON Schema describing the tools and their parameters.
+* The `ai_tool_instructions.json` file contains the instructions for the tools used by the AI. In the case of the OpenAI Connectors, it contains JSON Schema describing the tools and their parameters.
 
 ```json
 {

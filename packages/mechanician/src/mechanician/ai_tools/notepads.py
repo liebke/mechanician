@@ -47,7 +47,7 @@ ai_instructions = f"""
 ## TOOL INSTRUCTIONS
 ###############################################################################
   
-tool_instructions = [
+ai_tool_instructions = [
     {
       "type": "function",
       "function": {
@@ -263,7 +263,7 @@ class NotepadAITools(AITools):
     
 
     def get_tool_instructions(self):
-      return tool_instructions
+      return ai_tool_instructions
     
 
     def create_note(self, params:dict):

@@ -38,8 +38,8 @@ class ResourceConnector(ABC):
             print(f"Loading Resource Instructions from {resource_instruction_path}")
             with open(resource_instruction_path, 'r') as file:
                 logger.info(f"Loading Resource Instructions from {resource_instruction_path}")
-                tool_instructions = json.loads(file.read())
-            return tool_instructions
+                ai_tool_instructions = json.loads(file.read())
+            return ai_tool_instructions
         else:
             return []
     

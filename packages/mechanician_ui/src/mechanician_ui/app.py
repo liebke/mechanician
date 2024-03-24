@@ -60,9 +60,9 @@ class MechanicianWebApp:
                  ai_connector_factory: 'AIConnectorFactory',
                  prompt_tools=None,
                  ai_instructions=None, 
-                 tool_instructions=None,
+                 ai_tool_instructions=None,
                  instruction_set_directory=None,
-                 tool_instruction_file_name="tool_instructions.json",
+                 tool_instruction_file_name="ai_tool_instructions.json",
                  ai_instruction_file_name="ai_instructions.md",
                  ai_tools=None, 
                  name="Daring Mechanician AI",
@@ -75,7 +75,7 @@ class MechanicianWebApp:
         # Initialize class variables
         self.ai_connector_factory = ai_connector_factory
         self.ai_instructions = ai_instructions
-        self.tool_instructions = tool_instructions
+        self.ai_tool_instructions = ai_tool_instructions
         self.instruction_set_directory = instruction_set_directory
         self.tool_instruction_file_name = tool_instruction_file_name
         self.ai_instruction_file_name = ai_instruction_file_name
@@ -114,7 +114,7 @@ class MechanicianWebApp:
                                        name = self.name,
                                        ai_tools = self.ai_tools,
                                        ai_instructions = self.ai_instructions,
-                                       tool_instructions = self.tool_instructions,
+                                       ai_tool_instructions = self.ai_tool_instructions,
                                        instruction_set_directory = self.instruction_set_directory,
                                        tool_instruction_file_name = self.tool_instruction_file_name,
                                        ai_instruction_file_name = self.ai_instruction_file_name)

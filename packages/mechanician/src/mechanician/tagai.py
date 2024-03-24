@@ -18,10 +18,9 @@ class TAGAI():
     def __init__(self,
                  ai_connector: 'AIConnector',
                  ai_instructions=None, 
-                 tool_instructions=None,
+                 ai_tool_instructions=None,
                  instruction_set_directory=None,
-                #  instruction_set_file_name="instructions.json",
-                 tool_instruction_file_name="tool_instructions.json",
+                 tool_instruction_file_name="ai_tool_instructions.json",
                  ai_instruction_file_name="ai_instructions.md",
                  ai_tools=None, 
                  name="Mechanician AI"):
@@ -30,28 +29,28 @@ class TAGAI():
         self.RUNNING = False
         self.ai_tools = []
         self.ai_instructions = None
-        self.tool_instructions = None
+        self.ai_tool_instructions = None
         
         if ai_instructions is not None:
             self.ai_instructions = ai_instructions
 
         # if tool instructions is a JSON string, then convert to it to list of dictionaries
-        if isinstance(tool_instructions, str):
-            self.tool_instructions = json.loads(tool_instructions)
-        elif isinstance(tool_instructions, list):
-            self.tool_instructions = tool_instructions
+        if isinstance(ai_tool_instructions, str):
+            self.ai_tool_instructions = json.loads(ai_tool_instructions)
+        elif isinstance(ai_tool_instructions, list):
+            self.ai_tool_instructions = ai_tool_instructions
         else:
-            logger.debug(f"tool_instructions is not a string or list: {tool_instructions}")
+            logger.debug(f"ai_tool_instructions is not a string or list: {ai_tool_instructions}")
 
         if (instruction_set_directory is not None) and (ai_instructions is None):
             self.instruction_set_directory = instruction_set_directory
             self.ai_instruction_file_name = ai_instruction_file_name
             self.load_ai_instructions(instruction_set_directory, ai_instruction_file_name)
 
-        if (instruction_set_directory is not None) and (tool_instructions is None):
+        if (instruction_set_directory is not None) and (ai_tool_instructions is None):
             self.instruction_set_directory = instruction_set_directory
             self.tool_instruction_file_name = tool_instruction_file_name
-            self.load_tool_instructions(instruction_set_directory, tool_instruction_file_name)
+            self.load_ai_tool_instructions(instruction_set_directory, tool_instruction_file_name)
 
         if ai_tools is not None:
             if isinstance(ai_tools, AITools):
@@ -83,15 +82,15 @@ class TAGAI():
             logger.info("AI Instructions will not be loaded from file")
 
 
-    def load_tool_instructions(self, instruction_set_directory, tool_instruction_file_name):
+    def load_ai_tool_instructions(self, instruction_set_directory, tool_instruction_file_name):
         tool_instruction_path = os.path.join(instruction_set_directory, tool_instruction_file_name)
         if os.path.exists(tool_instruction_path):
             with open(tool_instruction_path, 'r') as file:
                 logger.info(f"Loading Tool Instructions from {tool_instruction_path}")
-                tool_instructions = json.loads(file.read())
+                ai_tool_instructions = json.loads(file.read())
 
-            if self.tool_instructions is None:
-                self.tool_instructions = tool_instructions
+            if self.ai_tool_instructions is None:
+                self.ai_tool_instructions = ai_tool_instructions
 
         else:
             logger.info(f"Tool Instruction file not found at {tool_instruction_path}")
@@ -111,14 +110,14 @@ class TAGAI():
                 self.ai_instructions += f"""\n\n{self.ai_tools.get_ai_instructions()}"""
 
         if isinstance(self.ai_tools, MechanicianTools):
-            if self.tool_instructions is None:
-                self.tool_instructions = self.ai_tools.get_tool_instructions()
+            if self.ai_tool_instructions is None:
+                self.ai_tool_instructions = self.ai_tools.get_tool_instructions()
             else:
-                # If specific tool_instructios has already been set by the user, then append the self-explanatory tool's tool_instructions.
-                self.tool_instructions = self.tool_instructions + self.ai_tools.get_tool_instructions()
+                # If specific tool_instructios has already been set by the user, then append the self-explanatory tool's ai_tool_instructions.
+                self.ai_tool_instructions = self.ai_tool_instructions + self.ai_tools.get_tool_instructions()
 
         self.ai_connector._instruct(ai_instructions=self.ai_instructions, 
-                                    tool_instructions=self.tool_instructions,
+                                    ai_tool_instructions=self.ai_tool_instructions,
                                     tools = self.ai_tools)
         
 
@@ -128,7 +127,7 @@ class TAGAI():
 
     def get_tuning_session(self):
         tuning_session = {}
-        tuning_session["tool_instructions"] = self.tool_instructions
+        tuning_session["ai_tool_instructions"] = self.ai_tool_instructions
         tuning_session["ai_instructions"] = self.ai_instructions
         tuning_session["transcript"] = self.get_message_history()
         tuning_session["test_results"] = None
@@ -193,9 +192,9 @@ class TAGAIFactory(ABC):
     def __init__(self,
                  ai_connector_factory: 'AIConnectorFactory',
                  ai_instructions=None, 
-                 tool_instructions=None,
+                 ai_tool_instructions=None,
                  instruction_set_directory=None,
-                 tool_instruction_file_name="tool_instructions.json",
+                 tool_instruction_file_name="ai_tool_instructions.json",
                  ai_instruction_file_name="ai_instructions.md",
                  ai_tools=None, 
                  name="Daring Mechanician AI"):
@@ -205,7 +204,7 @@ class TAGAIFactory(ABC):
         self.name = name
         self.ai_tools = ai_tools
         self.ai_instructions = ai_instructions
-        self.tool_instructions = tool_instructions
+        self.ai_tool_instructions = ai_tool_instructions
         self.instruction_set_directory = instruction_set_directory
         self.tool_instruction_file_name = tool_instruction_file_name
         self.ai_instruction_file_name = ai_instruction_file_name
@@ -217,7 +216,7 @@ class TAGAIFactory(ABC):
                    name = self.name,
                    ai_tools = self.ai_tools,
                    ai_instructions = self.ai_instructions,
-                   tool_instructions = self.tool_instructions,
+                   ai_tool_instructions = self.ai_tool_instructions,
                    instruction_set_directory = self.instruction_set_directory,
                    tool_instruction_file_name = self.tool_instruction_file_name,
                    ai_instruction_file_name = self.ai_instruction_file_name )
