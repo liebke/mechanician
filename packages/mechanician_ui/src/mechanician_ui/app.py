@@ -55,6 +55,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 ###############################################################################
  
 class MechanicianWebApp:
+    stop_generation = False
 
     def __init__(self, 
                  ai_connector_factory: 'AIConnectorFactory',
@@ -130,6 +131,9 @@ class MechanicianWebApp:
         # Setup routes and WebSocket events
         self.setup_routes()
         self.setup_websocket_events()
+
+        self.active_tasks: Dict[str, asyncio.Task] = {}
+        self.client_websockets: Dict[str, WebSocket] = {}
 
 
     async def __call__(self, scope, receive, send):
@@ -388,65 +392,113 @@ class MechanicianWebApp:
         async def websocket_endpoint(websocket: WebSocket):
             await websocket.accept()
             logger.debug("WebSocket connection accepted")
+            sid = str(websocket.client)
             try:
-                # Wait for authentication token
-                try:
-                    auth_data = await asyncio.wait_for(websocket.receive_text(), timeout=30)  # Adjust timeout as needed
-                    auth_data = json.loads(auth_data)
-                    token = auth_data.get("token", "")
-                    sid = websocket.client
-                    self.client_connections[token] = sid
-                    if self.credentials_manager.verify_access_token(token):
-                        logger.debug("Token verified")
-                    else:
-                        logger.info("Invalid token. Closing connection.")
-                        await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
-                        return
-                except asyncio.TimeoutError:
-                    logger.info("Authentication timeout. Closing connection.")
-                    await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+                # Authentication (Assuming this is a separate method for clarity)
+                if not await self.authenticate_websocket(websocket):
+                    logger.info("Authentication failed")
                     return
-                except Exception as e:
-                    logger.error(f"Unexpected error during authentication: {e}")
-                    await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
-                    return
-
-                # Proceed with your normal WebSocket communication
+                
+                # Main WebSocket communication loop
                 while True:
-                    try:
-                        data = await websocket.receive_text()
-                        ai_instance = self.get_ai_instance(sid)
-                        input_text = json.loads(data).get("data", "")
-                        processed_prompt = self.preprocess_prompt(ai_instance, input_text, prompt_tools=self.prompt_tools)
-                        if processed_prompt.get("status", "noop") == "error":
-                            await websocket.send_text(json.dumps(processed_prompt))
-                            continue
-                        prompt = processed_prompt.get("prompt", '')
-                        if prompt == '':
-                            continue
-                        try:
-                            # Equivalent to ai_instance.submit_prompt(prompt) but prints response to WebSocket
-                            no_content = True
-                            while no_content:
-                                stream = ai_instance.ai_connector.get_stream(prompt)
-                                for content in ai_instance.ai_connector.process_stream(stream):
-                                    if content is None:
-                                        no_content = True
-                                        break
-                                    else:
-                                        no_content = False
-                                        await websocket.send_text(content)
-                                        await asyncio.sleep(0)
-                        except Exception as e:
-                            logger.error(f"Error processing AI response: {e}")
-                            await websocket.send_text(json.dumps({"error": str(e)}))
-                            break
-                    except WebSocketDisconnect:
-                        logger.info("Client disconnected")
+                    await self.handle_incoming_messages(websocket)
+            except WebSocketDisconnect:
+                logger.info("Client disconnected")
+                self.cleanup(sid)
+
+
+
+    async def authenticate_websocket(self, websocket: WebSocket) -> bool:
+        """Handle authentication for the WebSocket connection."""
+        try:
+            auth_data = await asyncio.wait_for(websocket.receive_text(), timeout=30)
+            auth_data = json.loads(auth_data)
+            token = auth_data.get("token", "")
+            sid = str(websocket.client)
+            self.client_connections[token] = sid
+            self.client_websockets[token] = websocket
+            if self.credentials_manager.verify_access_token(token):
+                logger.debug("Token verified")
+                return True
+            else:
+                logger.info("Invalid token. Closing connection.")
+                await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+                return False
+        except asyncio.TimeoutError:
+            logger.info("Authentication timeout. Closing connection.")
+            await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+            return False
+        except Exception as e:
+            logger.error(f"Unexpected error during authentication: {e}")
+            await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+            return False
+
+
+    async def handle_incoming_messages(self, websocket: WebSocket):
+        """Process incoming WebSocket messages."""
+        async for message in websocket.iter_text():
+            data = json.loads(message)
+            input_type = data.get("type", "")
+            if input_type == "stop":
+                await self.stop_text_generation(websocket)
+            else:
+                await self.start_text_generation(websocket, data)
+
+
+    async def start_text_generation(self, websocket: WebSocket, data: dict):
+        """Starts the text generation process in a separate task."""
+        sid = str(websocket.client)
+        if sid in self.active_tasks:
+            self.active_tasks[sid].cancel()
+        self.active_tasks[sid] = asyncio.create_task(self.generate_text(websocket, data))
+
+
+    async def generate_text(self, websocket: WebSocket, data: dict):
+        """The actual text generation logic."""
+        input_text = data.get("data", "")
+        processed_prompt = self.preprocess_prompt(self.get_ai_instance(websocket), input_text, prompt_tools=self.prompt_tools)
+        if processed_prompt.get("status", "noop") == "error":
+            await websocket.send_text(json.dumps(processed_prompt))
+            return
+        prompt = processed_prompt.get("prompt", '')
+        if prompt == '':
+            return
+        try:
+            no_content = True
+            while no_content:
+                stream = self.get_ai_instance(websocket).ai_connector.get_stream(prompt)
+                for content in self.get_ai_instance(websocket).ai_connector.process_stream(stream):
+                    if self.stop_generation:
+                        self.stop_generation = False
                         break
-            except Exception as e:
-                # This outer exception block is to catch any unexpected errors outside the main while loop
-                logger.error(f"Unexpected error: {e}")
+
+                    if content is None:
+                        no_content = True
+                        break
+                    else:
+                        no_content = False
+                        await websocket.send_text(content)
+                        await asyncio.sleep(0)
+        except asyncio.CancelledError:
+            logger.info("Text generation cancelled.")
+        except Exception as e:
+            logger.error(f"Error processing AI response: {e}")
+            await websocket.send_text(json.dumps({"error": str(e)}))
+
+    async def stop_text_generation(self, websocket: WebSocket):
+        """Cancels the text generation task."""
+        sid = str(websocket.client)
+        if task := self.active_tasks.get(sid):
+            task.cancel()
+            logger.debug("Text generation stopped.")
+            self.active_tasks.pop(sid, None)
+
+    def cleanup(self, sid: str):
+        """Clean up resources when the WebSocket connection is closed."""
+        if task := self.active_tasks.get(sid):
+            task.cancel()
+        self.active_tasks.pop(sid, None)
+        # Perform additional cleanup as necessary
 
 
     def verify_access_token(self, request: Request):

@@ -169,7 +169,6 @@ class OpenAIChatConnector(StreamingAIConnector):
                                                             params=tc['function']['arguments']))
         return tc, function_resp
 
-
     def process_stream(self, stream):
         response = ""
         tool_calls = []

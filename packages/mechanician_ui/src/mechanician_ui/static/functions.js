@@ -1,21 +1,20 @@
       
+        var generating_text = false;
+
         function send_prompt(socket) {
             var prompt_text = $('#input').val().trim();
             if (prompt_text) {
                 let user_message_container = $('<div class="message-container">');
                 user_message_container.append($('<p class="message-header">').html("You"));
                 let content_with_breaks = prompt_text.replace(/\n/g, '<br>');
-                // var htmlContent = marked.parse(content_with_breaks);
                 user_message_container.append($('<p class="message-text">').html(content_with_breaks));
-                // user_message_container.append($('<p class="message-text">').html(htmlContent));
                 $('#messages').append(user_message_container);
                 save_messages_to_local_storage({'from': 'ai'});
                 save_messages_to_local_storage({'from': 'user', 'message': prompt_text});
-                socket.send(JSON.stringify({data: prompt_text}));
+                socket.send(JSON.stringify({data: prompt_text, type: 'prompt'}));
                 $('#input').val('');
                 adjust_textarea_height_and_change_button_color();
                 current_ai_response = null;
-                // check_scroll(); // Check scroll after sending a prompt
                 setTimeout(check_scroll, 0); // Ensure check_scroll runs after the DOM updates
             }
         }
@@ -78,11 +77,9 @@
 
             // Change the #send button color based on the input
             if (textarea.value.length > 0) {
-                // send_button.style.backgroundColor = '#4CAF50'; // Example: Change to a green color when text is entered
                 send_button.style.color = '#222'; // Change text color to white for better contrast
                 send_button.style.backgroundColor = '#FFF'; 
             } else {
-                // send_button.style.backgroundColor = '#222'; // Revert to original color when there's no text
                 send_button.style.color = '#222'; // Revert text color to grey
                 send_button.style.backgroundColor = '#373737'; // Revert button color
             }
@@ -124,13 +121,78 @@
             });
         }
 
+        function transform_stop_to_send(socket) {
+            if (!generating_text) {
+                return;
+            }
+            generating_text = false;
+
+            // Find the stop button by its new ID
+            var stop_button = document.getElementById('send');
+            
+            // If the stop button exists, transform it back into the send button
+            if (stop_button) {
+                // Restore the button's ID, class attributes, and inner HTML to match the original send button
+                // stop_button.id = 'send';
+                stop_button.className = ''; // Set this to the original class of the send button if it had any
+                stop_button.setAttribute('aria-label', 'send prompt'); // Remove the aria-label or set it to the original if needed
+                
+                // Restore the inner HTML to the SVG of the send button
+                stop_button.innerHTML = `
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-white dark:text-black">
+                        <path d="M7 11L12 6L17 11M12 18V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                `;
+                
+                // Re-attach the original event listener for the send functionality
+                stop_button.removeEventListener('click', function() {stop_generating(socket); }); 
+                stop_button.addEventListener('click', function() {send_prompt(socket); }); 
+            }
+        }
+        
+        function stop_generating(socket) {
+                // Your function to send a stop message over the websocket
+                console.log("Stop generating");
+                if (socket && socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify({type: 'stop'})); // Example message format
+                }
+        }
+        
+
+        function transform_send_to_stop(socket) {
+            if (generating_text) {
+                return;
+            }
+            generating_text = true;
+            setTimeout(function() {transform_stop_to_send(socket); }, 2000); // Revert to the send button after 2 seconds (example delay
+            // Find the send button by its ID
+            var send_button = document.getElementById('send');
+            
+            // If the send button exists, transform it into the stop button
+            if (send_button) {
+                // Update the inner HTML to the SVG of the stop button
+                send_button.innerHTML = `
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="none" height="20" width="20">
+                    <!-- Decrease the radius by 1 to account for the increased stroke width -->
+                    <circle cx="8" cy="8" r="7" stroke="white" stroke-width="2" fill="none"/>
+                    <!-- Adjusted square size and position -->
+                    <rect x="4.5" y="4.5" width="7" height="7" fill="white" rx="1"/>
+                </svg>
+                `;
+                send_button.removeEventListener('click', function() {send_prompt(socket); }); 
+                send_button.addEventListener('click',function() {stop_generating(socket);});
+            }
+        }
+        
+        
         function init_web_socket(socket) {
+            console.log('Initializing WebSocket connection...');
             
             socket.onopen = function(e) {
                 console.log('Connected to the server.');
                 var token = localStorage.getItem('jwt_token');
                 // Send the token to the server to authenticate the WebSocket connection
-                socket.send(JSON.stringify({token: token}));
+                socket.send(JSON.stringify({token: token, type: 'token'}));
 
                 let sys_message_container = $('<div class="message-container">');
                 sys_message_container.append($('<p class="message-header">').html("System"));
@@ -149,28 +211,12 @@
                 $('#messages').append(sys_message_container);
             };
 
-            socket.onclose = function(e) {
-                // Check if the close event was unexpected
-                if (!e.wasClean) {
-                    console.log('Disconnected from the server:', e.reason);
-                    let sys_message_container = $('<div class="message-container">');
-                    sys_message_container.append($('<p class="message-header">').html("System"));
-                    let current_sys_response = $('<p class="message-text">').text("Disconnected. Attempting to reconnect...");
-                    sys_message_container.append(current_sys_response);
-                    $('#messages').append(sys_message_container);
-
-                    // Attempt to reconnect after a delay
-                    setTimeout(check_session_init_ws, 5000); // Reconnect after 5 seconds
-                } else {
-                    // Handle intentional disconnection differently, if needed
-                    console.log('Disconnected from the server:', e.reason);
-                }
-            };
-
+            // Modify your onmessage function to call transform_send_to_stop
             socket.onmessage = function(event) {
                 var msg = event.data;
                 save_messages_to_local_storage({'from': 'ai', 'message': msg}); // Save each incoming message to local storage
                 display_message(msg); // Display the incoming message
+                transform_send_to_stop(socket); // Transform the send button into the stop button
             };
         }
 

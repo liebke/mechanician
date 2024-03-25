@@ -96,25 +96,6 @@
         padding: 0 10px; /* Adjust as needed */
         height: calc(100% - 130px); /* Adjusted height to fill between header and footer */
     }
-
-    
-    #send {
-        display: flex; /* Makes the button a flex container */
-        justify-content: center; /* Centers content horizontally */
-        align-items: center; /* Centers content vertically */
-        width: auto; /* Adjusts width based on content + padding */
-        margin-right: 10px; /* Remove default margins */
-        padding: 3px 3px; /* Reduced horizontal padding to make the button narrower */
-        background-color: #222; /* Darker grey button */
-        color: #777; /* White text */
-        border: none; /* Remove border */
-        cursor: pointer; /* Pointer cursor on hover */
-        font-size: 22px; /* Adjusted font size */
-        font-family: Helvetica, sans-serif; /* Consistent font */
-        font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
-        border-radius: 8px; /* Optional: Adds rounded corners to the button */
-    }
-
     
 
     #attachment {
@@ -151,6 +132,42 @@
     button:hover {
         background-color: #333; /* Lighter grey on hover */
     }
+
+    #send {
+        display: flex; /* Makes the button a flex container */
+        justify-content: center; /* Centers content horizontally */
+        align-items: center; /* Centers content vertically */
+        width: auto; /* Adjusts width based on content + padding */
+        margin-right: 10px; /* Remove default margins */
+        padding: 3px 3px; /* Reduced horizontal padding to make the button narrower */
+        background-color: #222; /* Darker grey button */
+        color: #777; /* White text */
+        border: none; /* Remove border */
+        cursor: pointer; /* Pointer cursor on hover */
+        font-size: 22px; /* Adjusted font size */
+        font-family: Helvetica, sans-serif; /* Consistent font */
+        font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+        border-radius: 8px; /* Optional: Adds rounded corners to the button */
+    }
+
+
+    #stop {
+        display: flex; /* Makes the button a flex container */
+        justify-content: center; /* Centers content horizontally */
+        align-items: center; /* Centers content vertically */
+        width: auto; /* Adjusts width based on content + padding */
+        margin-right: 10px; /* Remove default margins */
+        padding: 3px 3px; /* Reduced horizontal padding to make the button narrower */
+        background-color: transparent; /* Makes the button background transparent */
+        color: #777; /* White text */
+        border: none; /* Remove border */
+        cursor: pointer; /* Pointer cursor on hover */
+        font-size: 22px; /* Adjusted font size */
+        font-family: Helvetica, sans-serif; /* Consistent font */
+        font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+        border-radius: 8px; /* Optional: Adds rounded corners to the button */
+    }
+
 
 
     p {
