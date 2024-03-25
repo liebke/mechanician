@@ -15,6 +15,11 @@ The `mechanician-openai` package provides `AIConnectors` for both OpenAI's *Chat
 The `mechanician-arangodb` module provides `AITools` that let AIs interact with the [ArangoDB](https://arangodb.com) graph database.
 
 
+<img src="docs/images/notepad_todo_animated.gif" alt="Daring Mechanician Notepads"  style="max-width: 100%; height: auto float: right;">
+
+<img src="docs/images/event_invite_animated.gif" alt="Daring Mechanician Notepads"  style="max-width: 100%; height: auto float: right;">
+
+
 # Tool Augmented Generation (TAG)
 
 Foundation Models are inherently limited by the scope of their training data and the static nature of that data, **Tool Augmented Generation** (**TAG**) provides AIs with tools that let them interact with databases, APIs, and code libraries, enhancing their knowledge and capabilities and giving them access to up-to-date information, the ability to perform computations, and to interact with external systems, and can provide them a form of memory that spans multiple *context windows*, like what OpenAI announced [here](https://openai.com/blog/memory-and-new-controls-for-chatgpt).

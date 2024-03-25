@@ -336,6 +336,21 @@
                 window.location.href = '/';
             });
 
+            document.getElementById('new-button').addEventListener('click', function() {
+                localStorage.removeItem('saved_messages');
+                $.ajax({
+                    type: "POST",
+                    url: "/new",
+                    success: function(data) {
+                        // Redirect or update UI on successful logout
+                        window.location.href = "/";
+                    },
+                    error: function(response) {
+                        // Handle error
+                        console.log("New sesssion failed:", response);
+                    }
+                });
+            });
 
             document.getElementById('user-button').addEventListener('click', function() {
                 window.location.href = "/user";
