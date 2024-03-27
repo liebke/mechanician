@@ -31,6 +31,9 @@ class AIConnector(ABC):
 
     def get_messages(self):
         return self.messages
+    
+    def set_messages(self, messages):
+        self.messages = messages
 
 
 ###############################################################################

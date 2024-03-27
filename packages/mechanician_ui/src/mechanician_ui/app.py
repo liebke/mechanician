@@ -456,10 +456,21 @@ class MechanicianWebApp:
                 "user_role": user.get("user_role", "User"), 
                 "access_token_data": access_token_data}
     
+    def merge_client_message_history(self, message_history, client_message_history):
+        if not message_history:
+            return client_message_history
+        else:
+            only_system_messages = [msg for msg in message_history if msg.get("role", "system") == "system"]
+            if len(only_system_messages) == len(message_history):
+                return message_history + client_message_history
+            else:
+                return message_history
+
 
     async def generate_text(self, websocket: WebSocket, data: dict):
         """The actual text generation logic."""
         input_text = data.get("data", "")
+        client_message_history = data.get("message_history", [])
         sid = str(websocket.client)
         token = self.sid_to_tokens.get(sid, None)
         if token is None:
@@ -467,6 +478,8 @@ class MechanicianWebApp:
             return
         
         ai_instance = self.get_ai_instance(websocket, context=self.get_context(token))
+        merged_message_history = self.merge_client_message_history(ai_instance.ai_connector.get_messages(), client_message_history)
+        ai_instance.ai_connector.set_messages(merged_message_history)
         processed_prompt = self.preprocess_prompt(ai_instance, 
                                                   input_text, 
                                                   prompt_tools=self.get_prompt_tools_instance(websocket, context=self.get_context(token)))
