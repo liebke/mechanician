@@ -1,7 +1,7 @@
       
         var generating_text = false;
 
-        function send_prompt(socket) {
+        function send_prompt(socket, username) {
             var prompt_text = $('#input').val().trim();
             if (prompt_text) {
                 let user_message_container = $('<div class="message-container">');
@@ -9,8 +9,8 @@
                 let content_with_breaks = prompt_text.replace(/\n/g, '<br>');
                 user_message_container.append($('<p class="message-text">').html(content_with_breaks));
                 $('#messages').append(user_message_container);
-                save_messages_to_local_storage({'from': 'ai'});
-                save_messages_to_local_storage({'from': 'user', 'message': prompt_text});
+                save_messages_to_local_storage({'from': 'ai'}, username);
+                save_messages_to_local_storage({'from': 'user', 'message': prompt_text}, username);
                 socket.send(JSON.stringify({data: prompt_text, type: 'prompt'}));
                 $('#input').val('');
                 adjust_textarea_height_and_change_button_color();
@@ -20,7 +20,7 @@
         }
 
 
-        function check_session_init_ws() {
+        function check_session_init_ws(username) {
             var ws_protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
             var socket = new WebSocket(ws_protocol + window.location.host + "/ws");
             var token = localStorage.getItem('jwt_token');
@@ -28,17 +28,17 @@
                 window.location.href = "/login";
             } else {
                 // Only initialize WebSocket connection if the session check passes
-                init_web_socket(socket);
+                init_web_socket(socket, username);
             }
 
             document.getElementById('send').addEventListener('click', function() {
-                send_prompt(socket);
+                send_prompt(socket, username);
             });
 
             document.getElementById('input').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    send_prompt(socket);
+                    send_prompt(socket, username);
                 }
             });
 
@@ -55,7 +55,7 @@
                         // Place the file content into the input field
                         document.getElementById('input').value = e.target.result;
                         adjust_textarea_height_and_change_button_color();
-                        send_prompt(socket);
+                        send_prompt(socket, username);
                     };
 
                     // Read the text file
@@ -146,7 +146,7 @@
                 
                 // Re-attach the original event listener for the send functionality
                 stop_button.removeEventListener('click', function() {stop_generating(socket); }); 
-                stop_button.addEventListener('click', function() {send_prompt(socket); }); 
+                stop_button.addEventListener('click', function() {send_prompt(socket, username); }); 
             }
         }
         
@@ -179,13 +179,13 @@
                     <rect x="4.5" y="4.5" width="7" height="7" fill="white" rx="1"/>
                 </svg>
                 `;
-                send_button.removeEventListener('click', function() {send_prompt(socket); }); 
+                send_button.removeEventListener('click', function() {send_prompt(socket, username); }); 
                 send_button.addEventListener('click',function() {stop_generating(socket);});
             }
         }
         
         
-        function init_web_socket(socket) {
+        function init_web_socket(socket, username) {
             console.log('Initializing WebSocket connection...');
             
             socket.onopen = function(e) {
@@ -214,7 +214,7 @@
             // Modify your onmessage function to call transform_send_to_stop
             socket.onmessage = function(event) {
                 var msg = event.data;
-                save_messages_to_local_storage({'from': 'ai', 'message': msg}); // Save each incoming message to local storage
+                save_messages_to_local_storage({'from': 'ai', 'message': msg}, username); // Save each incoming message to local storage
                 display_message(msg); // Display the incoming message
                 transform_send_to_stop(socket); // Transform the send button into the stop button
             };
@@ -245,19 +245,26 @@
 
 
         // Function to save messages to local storage
-        function save_messages_to_local_storage(message) {
+        function save_messages_to_local_storage(message, username) {
             // Retrieve existing messages from local storage
-            let messages = JSON.parse(localStorage.getItem('saved_messages')) || [];
+            const storage_key = username ? `${username}_saved_messages` : 'saved_messages';
+            let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
             messages.push(message); // Add new message to the array
-            localStorage.setItem('saved_messages', JSON.stringify(messages)); // Save back to local storage
+            localStorage.setItem(storage_key, JSON.stringify(messages)); // Save back to local storage
         }
 
         // Function to load and display messages from local storage
-        function load_messages_from_local_storage() {
-            let messages = JSON.parse(localStorage.getItem('saved_messages')) || [];
+        function load_messages_from_local_storage(username) {
+            const storage_key = username ? `${username}_saved_messages` : 'saved_messages';
+            let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
             messages.forEach(function(msg) {
                 display_stored_message(msg); // Function to display a message
             });
+        }
+
+        function clear_messages_from_local_storage(username) {
+            const storage_key = username ? `${username}_saved_messages` : 'saved_messages';
+            localStorage.removeItem(storage_key);
         }
 
         // Function to display a message

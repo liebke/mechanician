@@ -1,6 +1,6 @@
 
 from mechanician.ai_connectors import AIConnector, AIConnectorFactory
-from mechanician.tools import AITools, AIToolKit, MechanicianTools
+from mechanician.tools import AITools, AIToolKit, MechanicianTools, MechanicianToolsFactory
 import json
 import os
 import logging
@@ -196,13 +196,13 @@ class TAGAIFactory(ABC):
                  instruction_set_directory=None,
                  tool_instruction_file_name="ai_tool_instructions.json",
                  ai_instruction_file_name="ai_instructions.md",
-                 ai_tools=None, 
+                 ai_tools_factory=None, 
                  name="Daring Mechanician AI"):
         
         # TAGAI parameters
         self.ai_connector_factory = ai_connector_factory
         self.name = name
-        self.ai_tools = ai_tools
+        self.ai_tools_factory = ai_tools_factory
         self.ai_instructions = ai_instructions
         self.ai_tool_instructions = ai_tool_instructions
         self.instruction_set_directory = instruction_set_directory
@@ -210,11 +210,30 @@ class TAGAIFactory(ABC):
         self.ai_instruction_file_name = ai_instruction_file_name
         
         
-    def create_ai_instance(self) -> TAGAI:
-        ai_connector = self.ai_connector_factory.create_ai_connector()
+    def create_ai_instance(self, context={}) -> TAGAI:
+        ai_connector = self.ai_connector_factory.create_ai_connector(context=context)
+        if self.ai_tools_factory is not None:
+            if isinstance(self.ai_tools_factory, AITools):
+                ai_tools = ai_tools
+            elif isinstance(self.ai_tools_factory, MechanicianToolsFactory):
+                ai_tools = ai_tools.create_tools(context=context)
+            elif isinstance(self.ai_tools_factory, list):
+                ai_tools_instances = []
+                for at in self.ai_tools_factory:
+                    if isinstance(at, MechanicianToolsFactory):
+                        ai_tools_instances.append(at.create_tools(context=context))
+                    elif isinstance(at, MechanicianTools):
+                        ai_tools_instances.append(at)
+                    else:
+                        raise ValueError(f"tools must be an instance or list of instances of MechanicianTools or MechanicianToolsFactory. Received: {ai_tools}")
+                    
+                ai_tools = AIToolKit(tools=ai_tools_instances)
+            else:
+                raise ValueError(f"tools must be an instance of AITools or a list of AITools. Received: {ai_tools}")
+
         ai = TAGAI(ai_connector=ai_connector, 
                    name = self.name,
-                   ai_tools = self.ai_tools,
+                   ai_tools = ai_tools,
                    ai_instructions = self.ai_instructions,
                    ai_tool_instructions = self.ai_tool_instructions,
                    instruction_set_directory = self.instruction_set_directory,

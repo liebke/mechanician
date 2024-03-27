@@ -1,10 +1,11 @@
-from mechanician.tools import AITools
+from mechanician.tools import AITools, MechanicianToolsFactory
 from abc import ABC, abstractmethod
 import json
 import logging
 import pprint
 from datetime import datetime
 import os
+import uuid
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -243,6 +244,66 @@ class NotepadFileStore(NotepadStore):
         return f"Notepad {self.notepad_name} deleted"
     
 
+
+###############################################################################
+## NotepadStoreFactory
+###############################################################################
+  
+class NotepadStoreFactory(ABC):
+    @abstractmethod
+    def create_notepad_store(self, notepad_name: str) -> NotepadStore:
+        pass
+ 
+
+###############################################################################
+## NotepadAIToolsFactory
+###############################################################################
+  
+class NotepadAIToolsFactory(MechanicianToolsFactory):
+    
+    def __init__(self,
+                 notepad_store_factory: NotepadStoreFactory,):
+        
+        self.notepad_store_factory = notepad_store_factory
+
+
+    def create_tools(self, context: dict={}):
+        notepad_name = context.get("notepad_name", None)
+        if not notepad_name:
+            # generate random notepad name
+            notepad_name = f"notepad_{str(uuid.uuid4())}"
+        notepad_store = self.notepad_store_factory.create_notepad_store(notepad_name=notepad_name)
+        return NotepadAITools(notepad_store=notepad_store)
+
+
+###############################################################################
+## UserNotepadAIToolsFactory
+###############################################################################
+
+class UserNotepadAIToolsFactory(NotepadAIToolsFactory):
+
+    def create_tools(self, context: dict={}):
+        notepad_name = context.get("username", None)
+        context["notepad_name"] = notepad_name
+        return super(UserNotepadAIToolsFactory, self).create_tools(context=context)
+
+
+
+###############################################################################
+## NotepadFileStoreFactory
+###############################################################################
+  
+class NotepadFileStoreFactory(NotepadStoreFactory):
+    def __init__(self,
+                 notepad_directory_name: str = "notepads",):
+        self.notepad_directory_name = notepad_directory_name
+
+
+    def create_notepad_store(self, notepad_name: str) -> NotepadStore:
+        return NotepadFileStore(notepad_name=notepad_name, 
+                                notepad_directory_name=self.notepad_directory_name)
+    
+
 ###############################################################################
 ## NotepadAITools
 ###############################################################################
@@ -312,3 +373,4 @@ class NotepadAITools(AITools):
         current_datetime = datetime.now().isoformat()
         resp = {"current_datetime": current_datetime}
         return resp
+

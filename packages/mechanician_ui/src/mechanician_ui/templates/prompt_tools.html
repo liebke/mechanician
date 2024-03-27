@@ -209,6 +209,8 @@
     <script src="./static/functions.js"></script>
     <script type="text/javascript">
 
+        const username = '{{username}}';
+
         function create_form(schema_json) {
             const form_container = document.getElementById('form-container');
             // var select_container = document.getElementById('select-container');
@@ -337,7 +339,7 @@
             });
 
             document.getElementById('new-button').addEventListener('click', function() {
-                localStorage.removeItem('saved_messages');
+                clear_messages_from_local_storage(username);
                 $.ajax({
                     type: "POST",
                     url: "/new",

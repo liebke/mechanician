@@ -7,14 +7,14 @@ import traceback
 
 import json
 from mechanician.templates import PromptTemplate
-from mechanician.tools import PromptTools
+from mechanician.tools import PromptTools, MechanicianToolsFactory
 from pprint import pprint
 
 from mechanician_ui import MechanicianWebApp
 import uvicorn
 
-from mechanician.ai_tools.notepads import NotepadAITools
-from mechanician_arangodb.notepad_store import ArangoNotepadStore
+from mechanician.ai_tools.notepads import UserNotepadAIToolsFactory
+from mechanician_arangodb.notepad_store import ArangoNotepadStoreFactory
 from arango import ArangoClient
 
 
@@ -94,6 +94,24 @@ class MiddleEarthCRM():
     
 
 ###############################################################################
+## MiddleEarthCRMPromptToolsFactory
+###############################################################################
+    
+class MiddleEarthCRMPromptToolsFactory(MechanicianToolsFactory):
+        def __init__(self, 
+                    prompt_template_directory="./templates",
+                    crm_data_directory="./data"):
+            self.prompt_template_directory = prompt_template_directory
+            self.crm = MiddleEarthCRM(crm_data_directory=crm_data_directory)
+    
+
+        def create_tools(self, context: dict={}):
+            print(f"MiddleEarthCRMPromptToolsFactory.create_tools called with context: {context}")
+            return MiddleEarthCRMPromptTools(prompt_template_directory=self.prompt_template_directory,
+                                             crm_data_directory=context.get("crm_data_directory", "./data"))
+
+
+###############################################################################
 ## MiddleEarthCRMPromptTools
 ###############################################################################
 
@@ -104,7 +122,6 @@ class MiddleEarthCRMPromptTools(PromptTools):
                  crm_data_directory="./data"):
         self.prompt_template_directory = prompt_template_directory
         self.crm = MiddleEarthCRM(crm_data_directory=crm_data_directory)
-
 
     def event_invite(self, params):
         prompt_template_name = params.get("template") or "event_invite.md"
@@ -240,18 +257,17 @@ def init_ai():
     database_name="test_notepad_db"
     notepad_collection_name="notepads"
     arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
-    arango_notepad_store = ArangoNotepadStore(notepad_name="test_notepad",
-                                              arango_client=arango_client, 
-                                              database_name=database_name,
-                                              notepad_collection_name=notepad_collection_name,
-                                              db_username=os.getenv("ARANGO_USERNAME"),
-                                              db_password=os.getenv("ARANGO_PASSWORD"))
-    arango_notepad_tools = NotepadAITools(notepad_store=arango_notepad_store)
+    arango_notepad_store_factory = ArangoNotepadStoreFactory(arango_client=arango_client, 
+                                                             database_name=database_name,
+                                                             notepad_collection_name=notepad_collection_name,
+                                                             db_username=os.getenv("ARANGO_USERNAME"),
+                                                             db_password=os.getenv("ARANGO_PASSWORD"))
+    arango_notepad_tools_factory = UserNotepadAIToolsFactory(notepad_store_factory=arango_notepad_store_factory)
     # END ArangoDB notepad store
 
     ai = TAGAI(ai_connector=ai_connector, 
                name="MiddleEarth CRM AI",
-               ai_tools=[arango_notepad_tools])
+               ai_tools=[arango_notepad_tools_factory])
     return ai
 
 
@@ -286,21 +302,20 @@ def init_app():
     database_name="test_notepad_db"
     notepad_collection_name="notepads"
     arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
-    arango_notepad_store = ArangoNotepadStore(notepad_name="test_notepad",
-                                              arango_client=arango_client, 
-                                              database_name=database_name,
-                                              notepad_collection_name=notepad_collection_name,
-                                              db_username=os.getenv("ARANGO_USERNAME"),
-                                              db_password=os.getenv("ARANGO_PASSWORD"))
-    arango_notepad_tools = NotepadAITools(notepad_store=arango_notepad_store)
+    arango_notepad_store_factory = ArangoNotepadStoreFactory(arango_client=arango_client, 
+                                                            database_name=database_name,
+                                                            notepad_collection_name=notepad_collection_name,
+                                                            db_username=os.getenv("ARANGO_USERNAME"),
+                                                            db_password=os.getenv("ARANGO_PASSWORD"))
+    arango_notepad_tools_factory = UserNotepadAIToolsFactory(notepad_store_factory=arango_notepad_store_factory)
     # END ArangoDB notepad store
 
     ai_connector_factory = OpenAIChatConnectorFactory(api_key=os.getenv("OPENAI_API_KEY"), 
                                                       model_name=os.getenv("OPENAI_MODEL_NAME"))
-    prompt_tools = MiddleEarthCRMPromptTools(crm_data_directory="./data")    
+    prompt_tools_factory = MiddleEarthCRMPromptToolsFactory(crm_data_directory="./data")    
     return MechanicianWebApp(ai_connector_factory=ai_connector_factory,
-                             ai_tools=[arango_notepad_tools],
-                             prompt_tools=[prompt_tools],
+                             ai_tools_factory=[arango_notepad_tools_factory],
+                             prompt_tools_factory=[prompt_tools_factory],
                              name="MiddleEarth CRM AI")
 
     

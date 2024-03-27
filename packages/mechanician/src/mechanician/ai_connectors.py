@@ -71,5 +71,5 @@ class StreamingAIConnector(AIConnector):
 
 class AIConnectorFactory(ABC):
     @abstractmethod
-    def create_ai_connector(self):
+    def create_ai_connector(self, context:dict={}):
         pass

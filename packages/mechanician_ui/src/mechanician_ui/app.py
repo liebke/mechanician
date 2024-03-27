@@ -9,7 +9,7 @@ import json
 import asyncio
 from pprint import pprint
 import pkg_resources
-from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit
+from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit, MechanicianToolsFactory
 import os
 
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
@@ -59,13 +59,13 @@ class MechanicianWebApp:
 
     def __init__(self, 
                  ai_connector_factory: 'AIConnectorFactory',
-                 prompt_tools=None,
+                 prompt_tools_factory=None,
                  ai_instructions=None, 
                  ai_tool_instructions=None,
                  instruction_set_directory=None,
                  tool_instruction_file_name="ai_tool_instructions.json",
                  ai_instruction_file_name="ai_instructions.md",
-                 ai_tools=None, 
+                 ai_tools_factory=None, 
                  name="Daring Mechanician AI",
                  secrets_manager: SecretsManager=None,
                  credentials_manager: CredentialsManager=None,
@@ -75,22 +75,14 @@ class MechanicianWebApp:
         
         # Initialize class variables
         self.ai_connector_factory = ai_connector_factory
+        self.prompt_tools_factory = prompt_tools_factory
         self.ai_instructions = ai_instructions
         self.ai_tool_instructions = ai_tool_instructions
         self.instruction_set_directory = instruction_set_directory
         self.tool_instruction_file_name = tool_instruction_file_name
         self.ai_instruction_file_name = ai_instruction_file_name
-        self.ai_tools = ai_tools
+        self.ai_tools_factory = ai_tools_factory
         self.name = name
-
-        if prompt_tools is not None:
-            if isinstance(prompt_tools, MechanicianTools):
-                self.prompt_tools = prompt_tools
-            elif isinstance(prompt_tools, list):
-                self.prompt_tools = PromptToolKit(tools=prompt_tools)
-            else:
-                raise ValueError(f"prompt_tools must be an instance of PromptTools or a list of PromptTools. Received: {prompt_tools}")
-
 
         self.secrets_manager = secrets_manager or BasicSecretsManager(secrets={})
         # to get a string like this run:
@@ -113,7 +105,7 @@ class MechanicianWebApp:
         self.client_connections = {}
         self.ai_factory = TAGAIFactory(ai_connector_factory=ai_connector_factory,
                                        name = self.name,
-                                       ai_tools = self.ai_tools,
+                                       ai_tools_factory = self.ai_tools_factory,
                                        ai_instructions = self.ai_instructions,
                                        ai_tool_instructions = self.ai_tool_instructions,
                                        instruction_set_directory = self.instruction_set_directory,
@@ -128,12 +120,14 @@ class MechanicianWebApp:
         self.templates = Jinja2Templates(directory=template_directory)
         self.app.mount("/static", StaticFiles(directory=static_files_directory), name="static")
         self.ai_instances: Dict[str, TAGAI] = {}
+        self.prompt_tools_instances: Dict[str, PromptTools] = {}
         # Setup routes and WebSocket events
         self.setup_routes()
         self.setup_websocket_events()
 
         self.active_tasks: Dict[str, asyncio.Task] = {}
         self.client_websockets: Dict[str, WebSocket] = {}
+        self.websocket_tokens: Dict[WebSocket, str] = {}
 
 
     async def __call__(self, scope, receive, send):
@@ -180,7 +174,8 @@ class MechanicianWebApp:
 
         @self.app.post("/call_prompt_tool", response_class=HTMLResponse)
         async def call_prompt_tool(request: Request):
-            user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+            access_token = request.cookies.get("access_token")
+            user = self.credentials_manager.get_user_by_token(access_token)
             if user is None:
                 raise HTTPException(status_code=401, detail="Unauthorized: Invalid credentials")
 
@@ -192,8 +187,9 @@ class MechanicianWebApp:
                 if k != "function_name":
                     input_text += f' {k}="{v}"'
 
-            ai_instance = self.get_ai_instance(request.cookies.get("access_token"))
-            generated_prompt = self.preprocess_prompt(ai_instance, input_text, prompt_tools=self.prompt_tools)
+            ai_instance = self.get_ai_instance(access_token, context=self.get_context(access_token))
+            prompt_tools=self.get_prompt_tools_instance(access_token, context=self.get_context(access_token))
+            generated_prompt = self.preprocess_prompt(ai_instance, input_text, prompt_tools)
             return JSONResponse(content=generated_prompt)
         
 
@@ -376,9 +372,11 @@ class MechanicianWebApp:
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
 
+            token = request.cookies.get("access_token")
+            prompt_tools=self.get_prompt_tools_instance(token, context=self.get_context(token))
             return self.templates.TemplateResponse("prompt_tools.html", 
                                                    {"request": request,
-                                                    "prompt_tool_instructions": self.prompt_tools.get_tool_instructions(),
+                                                    "prompt_tool_instructions": prompt_tools.get_tool_instructions(),
                                                     "username": username,
                                                     "ai_name": self.name,
                                                     "name": display_name,
@@ -405,6 +403,10 @@ class MechanicianWebApp:
             except WebSocketDisconnect:
                 logger.info("Client disconnected")
                 self.cleanup(sid)
+            except Exception as e:
+                # Identify the error type and print it
+                logger.error(f"Unexpected error: {e}")
+                self.cleanup(sid)
 
 
 
@@ -417,6 +419,7 @@ class MechanicianWebApp:
             sid = str(websocket.client)
             self.client_connections[token] = sid
             self.client_websockets[token] = websocket
+            self.websocket_tokens[websocket] = token
             if self.credentials_manager.verify_access_token(token):
                 logger.debug("Token verified")
                 return True
@@ -453,10 +456,26 @@ class MechanicianWebApp:
         self.active_tasks[sid] = asyncio.create_task(self.generate_text(websocket, data))
 
 
+    def get_context(self, token:str):
+        user = self.credentials_manager.get_user_by_token(token)
+        access_token_data = self.credentials_manager.decode_access_token(token)
+        return {"username": user.get("username", ""), 
+                "user_role": user.get("user_role", "User"), 
+                "access_token_data": access_token_data}
+    
+
     async def generate_text(self, websocket: WebSocket, data: dict):
         """The actual text generation logic."""
         input_text = data.get("data", "")
-        processed_prompt = self.preprocess_prompt(self.get_ai_instance(websocket), input_text, prompt_tools=self.prompt_tools)
+        token = self.websocket_tokens.get(websocket, None)
+        if token is None:
+            logger.error("Invalid token. Closing connection.")
+            return
+        
+        ai_instance = self.get_ai_instance(websocket, context=self.get_context(token))
+        processed_prompt = self.preprocess_prompt(ai_instance, 
+                                                  input_text, 
+                                                  prompt_tools=self.get_prompt_tools_instance(websocket, context=self.get_context(token)))
         if processed_prompt.get("status", "noop") == "error":
             await websocket.send_text(json.dumps(processed_prompt))
             return
@@ -466,8 +485,8 @@ class MechanicianWebApp:
         try:
             no_content = True
             while no_content:
-                stream = self.get_ai_instance(websocket).ai_connector.get_stream(prompt)
-                for content in self.get_ai_instance(websocket).ai_connector.process_stream(stream):
+                stream = ai_instance.ai_connector.get_stream(prompt)
+                for content in ai_instance.ai_connector.process_stream(stream):
                     if self.stop_generation:
                         self.stop_generation = False
                         break
@@ -517,15 +536,50 @@ class MechanicianWebApp:
             raise credentials_exception
 
 
-    def get_ai_instance(self, sid) -> TAGAI:
+    def get_ai_instance(self, sid, context:dict={}) -> TAGAI:
         if sid not in self.ai_instances:
-            self.ai_instances[sid] = self.ai_factory.create_ai_instance()
+            self.ai_instances[sid] = self.ai_factory.create_ai_instance(context=context)
         return self.ai_instances[sid]
     
 
     def clear_ai_instance(self, sid):
         if sid in self.ai_instances:
             del self.ai_instances[sid]
+
+
+    def get_prompt_tools_instance(self, key, context:dict={}) -> PromptTools:
+        if key not in self.prompt_tools_instances:
+            self.prompt_tools_instances[key] = self.create_prompt_tools_instance(context=context)
+        return self.prompt_tools_instances[key]
+    
+
+    def clear_prompt_tools_instance(self, key):
+        if key in self.prompt_tools_instances:
+            del self.prompt_tools_instances[key]
+
+
+    def create_prompt_tools_instance(self, context:dict={}) -> PromptTools:
+        prompt_tools = None
+        if self.prompt_tools_factory is not None:
+            if isinstance(self.prompt_tools_factory, MechanicianToolsFactory):
+                return self.prompt_tools_factory.create_tools(context=context)
+
+            elif isinstance(self.prompt_tools_factory, MechanicianTools):
+                return self.prompt_tools_factory
+            
+            elif isinstance(self.prompt_tools_factory, list):
+                prompt_tools_instances = []
+                for tool in self.prompt_tools_factory:
+                    if isinstance(tool, MechanicianToolsFactory):
+                        prompt_tools_instances.append(tool.create_tools(context=context))
+                    elif isinstance(tool, PromptTools):
+                        prompt_tools_instances.append(tool)
+                    else:
+                        raise ValueError(f"prompt_tools_factory must be an instance of or list of MechanicianToolsFactory. Received: {tool}")      
+                return PromptToolKit(tools=prompt_tools_instances)
+            else:
+                raise ValueError(f"prompt_tools_factory must be an instance of or a list of MechanicianToolsFactory. Received: {self.prompt_tools_factory}")
+
             
     
 

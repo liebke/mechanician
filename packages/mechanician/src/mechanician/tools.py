@@ -222,3 +222,15 @@ class AIToolKit(MechanicianToolKit, AITools):
         for tool in self.tools:
             ai_instructions += f"\n\n{tool.get_ai_instructions()}"
         return ai_instructions
+
+
+###############################################################################
+## MechanicianToolsFactory
+###############################################################################
+ 
+class MechanicianToolsFactory(ABC): 
+        
+    @abstractmethod
+    def create_tools(self, context:dict={}) -> MechanicianTools:
+        pass
+

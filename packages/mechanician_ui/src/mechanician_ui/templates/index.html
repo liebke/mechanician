@@ -83,12 +83,13 @@ TODO: have way to navigate back to / endpoint after visiting other pages. -->
 
         var user_has_scrolled = false;
         var current_ai_response = null;
+        const username = '{{ username }}';
   
         // Adjust the width on window resize
         window.addEventListener('resize', adjust_input_container_width);
 
         document.addEventListener('DOMContentLoaded', function() {
-            load_messages_from_local_storage(); // Load and display messages from local storage
+            load_messages_from_local_storage(username); // Load and display messages from local storage
             adjust_textarea_height_and_change_button_color();
             check_scroll();
 
@@ -122,7 +123,7 @@ TODO: have way to navigate back to / endpoint after visiting other pages. -->
             });
 
             document.getElementById('new-button').addEventListener('click', function() {
-                localStorage.removeItem('saved_messages');
+                clear_messages_from_local_storage(username);
                 $.ajax({
                     type: "POST",
                     url: "/new",
@@ -140,7 +141,7 @@ TODO: have way to navigate back to / endpoint after visiting other pages. -->
 
             // Initial adjustment on load
             adjust_input_container_width();
-            var socket = check_session_init_ws();
+            var socket = check_session_init_ws(username);
             // Check if there is any text in the textarea when the WebSocket connection is established and send the prompt
             function send_initial_input() {
                 var textarea_value = document.getElementById('input').value;
@@ -148,7 +149,7 @@ TODO: have way to navigate back to / endpoint after visiting other pages. -->
                 console.log(textarea_value);
                 if (socket.readyState === WebSocket.OPEN) {
                     if (textarea_value !== '') {
-                        send_prompt(socket);
+                        send_prompt(socket, username);
                     }
                 }
             }

@@ -9,7 +9,9 @@ from mechanician_ui.secrets import SecretsManager
 from zoneinfo import ZoneInfo
 import json
 from jose import JWTError, jwt
+import logging
 
+logger = logging.getLogger(__name__)
 
 class CredentialsManager(ABC):
 
@@ -86,6 +88,13 @@ class CredentialsManager(ABC):
         pass
 
     @abstractmethod
+    def decode_access_token(self, token):
+        """
+        Decode the access token and return the user's data.
+        """
+        pass
+
+    @abstractmethod
     def update_user_attributes(self, username, password, attributes):
         """
         Update the user's attributes after verifying the password.
@@ -114,7 +123,7 @@ class BasicCredentialsManager(CredentialsManager):
                 with open(self.credentials_filename, "w") as f:
                     pass
             except Exception as e:
-                print(f"Error loading credentials: {e}")
+                logger.info(f"Error loading credentials: {e}")
                 
 
         def write_credentials(self):
@@ -239,7 +248,16 @@ class BasicCredentialsManager(CredentialsManager):
                 ALGORITHM = self.secrets_manager.get_secret("ALGORITHM")
                 payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
                 # Additional validation can be done here
-                print(f"Token payload: {payload}")
                 return True
             except (JWTError, json.JSONDecodeError) as e:
                     return False
+            
+
+        def decode_access_token(self, token):
+            try:
+                SECRET_KEY = self.secrets_manager.get_secret("SECRET_KEY")
+                ALGORITHM = self.secrets_manager.get_secret("ALGORITHM")
+                payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                return payload
+            except JWTError:
+                return None

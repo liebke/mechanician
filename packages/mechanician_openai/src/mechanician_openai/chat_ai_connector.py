@@ -262,7 +262,7 @@ class OpenAIChatConnectorFactory(AIConnectorFactory):
         self.max_thread_workers = max_thread_workers or int(os.getenv("MAX_THREAD_WORKERS", "10"))
 
 
-    def create_ai_connector(self):
+    def create_ai_connector(self, context:dict={}):
         return OpenAIChatConnector(api_key=self.api_key, 
                                    model_name=self.model_name,
                                    base_url=self.base_url,

@@ -95,8 +95,6 @@ class DocumentManagerAITools(AITools):
 
     def create_document(self, input: dict):
         try:
-            print("CREATE_DOCUMENT INPUT:")
-            pprint.pprint(input)
             collection_name = input.get('collection_name')
             document_id = input.get('document_id')
             document = input.get('document')

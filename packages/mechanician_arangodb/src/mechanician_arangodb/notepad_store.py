@@ -1,4 +1,4 @@
-from mechanician.ai_tools.notepads import NotepadStore
+from mechanician.ai_tools.notepads import NotepadStore, NotepadStoreFactory
 from arango import ArangoClient
 import json
 import logging
@@ -14,6 +14,41 @@ logger.setLevel(level=logging.INFO)
 handler = logging.StreamHandler()
 handler.setLevel(logging.INFO)
 logger.addHandler(handler)
+
+
+###############################################################################
+## ArangoFileStoreFactory
+###############################################################################
+  
+class ArangoNotepadStoreFactory(NotepadStoreFactory):
+
+    def __init__(self,
+                 arango_client: ArangoClient, 
+                 database_name: str,
+                 notepad_collection_name="notepads",
+                 db_username: str = 'root' , 
+                 db_password: str = None):
+        
+        self.arango_client = arango_client
+        self.database_name = database_name
+        self.notepad_collection_name = notepad_collection_name
+        self.db_username = db_username
+        self.db_password = db_password
+
+
+    def create_notepad_store(self, notepad_name: str) -> NotepadStore:
+        return ArangoNotepadStore(notepad_name=notepad_name,
+                                  arango_client=self.arango_client,
+                                  database_name=self.database_name,
+                                  notepad_collection_name=self.notepad_collection_name,
+                                  db_username=self.db_username,
+                                  db_password=self.db_password)
+
+
+###############################################################################
+## ArangoFileStore
+###############################################################################
+
 
 class ArangoNotepadStore(NotepadStore):
 
