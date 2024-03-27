@@ -85,12 +85,6 @@ class MechanicianWebApp:
         self.name = name
 
         self.secrets_manager = secrets_manager or BasicSecretsManager(secrets={})
-        # to get a string like this run:
-        # openssl rand -hex 32
-        self.secrets_manager.set_secret("SECRET_KEY", os.getenv("SECRET_KEY", "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"))
-        self.secrets_manager.set_secret("ALGORITHM", os.getenv("ALGORITHM", "HS256"))
-        self.secrets_manager.set_secret("ACCESS_TOKEN_EXPIRE_MINUTES", os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
-
         self.credentials_manager = credentials_manager or BasicCredentialsManager(secrets_manager=self.secrets_manager,
                                                                                   credentials_filename=credentials_file_path)
         dm_admin_username = dm_admin_username or os.getenv("DM_ADMIN_USERNAME", "mechanician")

@@ -10,6 +10,8 @@ from zoneinfo import ZoneInfo
 import json
 from jose import JWTError, jwt
 import logging
+import secrets
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -101,8 +103,18 @@ class CredentialsManager(ABC):
         """
         pass
 
+    @abstractmethod
+    def generate_secret_key(self):
+        """
+        Generate a secret key for use in token signing.
+        """
+        pass
+
 
 class BasicCredentialsManager(CredentialsManager):
+        
+        ALGORITHM = "HS256"
+        ACCESS_TOKEN_EXPIRE_MINUTES = "1440" # 24 hours
     
         def __init__(self, secrets_manager: SecretsManager, credentials_filename: str):
             self.secrets_manager = secrets_manager
@@ -111,6 +123,27 @@ class BasicCredentialsManager(CredentialsManager):
             self.credentials_data = {}
             self.load_credentials()
             self.tokens = {}
+
+            self.secrets_manager.set_secret("SECRET_KEY", 
+                                            os.getenv("SECRET_KEY", 
+                                                      self.generate_secret_key()))
+            
+            self.secrets_manager.set_secret("ALGORITHM", 
+                                            os.getenv("ALGORITHM", self.ALGORITHM))
+            
+            self.secrets_manager.set_secret("ACCESS_TOKEN_EXPIRE_MINUTES", 
+                                            os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 
+                                                      self.ACCESS_TOKEN_EXPIRE_MINUTES))
+
+
+
+        def generate_secret_key(self):
+            # to get a string like this run:
+            # openssl rand -hex 32
+            # Generate a 32-byte (256-bit) hex-encoded secret key
+            secret_key = secrets.token_hex(32)
+            return secret_key
+
 
 
         def load_credentials(self):
