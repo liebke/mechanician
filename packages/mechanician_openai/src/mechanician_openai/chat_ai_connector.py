@@ -79,9 +79,13 @@ class OpenAIChatConnector(StreamingAIConnector):
     ###############################################################################
             
     def submit_prompt(self, prompt, role="user"):
+        # Add the user's prompt to the messages
+        if prompt is not None:
+            self.messages.append({"role": role, "content": prompt})
+
         no_content = True
         while no_content:
-            stream = self.get_stream(prompt, role=role)
+            stream = self.get_stream()
             for content in self.process_stream(stream):
                 if content is None:
                     no_content = True
@@ -95,12 +99,8 @@ class OpenAIChatConnector(StreamingAIConnector):
     ## GET_PROMPT
     ###############################################################################
 
-    def get_stream(self, prompt, role="user"):
-        client = self.client
-        # Create a new message with user prompt
-        if prompt is not None:
-            self.messages.append({"role": role, "content": prompt})
-            
+    def get_stream(self):
+        client = self.client            
         if not self.ai_tool_instructions:
             stream = client.chat.completions.create(
                 model=self.model_name,
@@ -192,7 +192,7 @@ class OpenAIChatConnector(StreamingAIConnector):
 
         # if the assistant responded with tool calls, call the function handler for each tool_call,
         # and add each response to the message history
-        if(tool_calls != []):
+        elif(tool_calls != []):
             if os.getenv("CALL_TOOLS_IN_PARALLEL") == "True":
                 if (len(tool_calls) > len(futures)):
                     tc = tool_calls[-1]

@@ -180,8 +180,9 @@ class MechanicianWebApp:
                 if k != "function_name":
                     input_text += f' {k}="{v}"'
 
-            ai_instance = self.get_ai_instance(access_token, context=self.get_context(access_token))
-            prompt_tools=self.get_prompt_tools_instance(access_token, context=self.get_context(access_token))
+            username = user.get("username", access_token)
+            ai_instance = self.get_ai_instance(username, context=self.get_context(access_token))
+            prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(access_token))
             generated_prompt = self.preprocess_prompt(ai_instance, input_text, prompt_tools)
             return JSONResponse(content=generated_prompt)
         
@@ -339,9 +340,11 @@ class MechanicianWebApp:
             token = request.cookies.get("access_token")
             # get sid from token
             sid = self.token_to_sids.get(token, None)
+            user = self.credentials_manager.get_user_by_token(token)
+            username = user.get("username", token)
             # clear ai instance
             if sid:
-                self.clear_ai_instance(sid)
+                self.clear_ai_instance(username)
 
             response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
             return response
@@ -366,7 +369,7 @@ class MechanicianWebApp:
                 return response
 
             token = request.cookies.get("access_token")
-            prompt_tools=self.get_prompt_tools_instance(token, context=self.get_context(token))
+            prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(token))
             return self.templates.TemplateResponse("prompt_tools.html", 
                                                    {"request": request,
                                                     "prompt_tool_instructions": prompt_tools.get_tool_instructions(),
@@ -456,15 +459,19 @@ class MechanicianWebApp:
                 "user_role": user.get("user_role", "User"), 
                 "access_token_data": access_token_data}
     
+
     def merge_client_message_history(self, message_history, client_message_history):
+        merged_message_history = []
         if not message_history:
-            return client_message_history
+            merged_message_history = client_message_history
         else:
             only_system_messages = [msg for msg in message_history if msg.get("role", "system") == "system"]
             if len(only_system_messages) == len(message_history):
-                return message_history + client_message_history
+                merged_message_history = message_history + client_message_history
             else:
-                return message_history
+                merged_message_history = message_history
+
+        return merged_message_history
 
 
     async def generate_text(self, websocket: WebSocket, data: dict):
@@ -477,12 +484,14 @@ class MechanicianWebApp:
             logger.error("Invalid token. Closing connection.")
             return
         
-        ai_instance = self.get_ai_instance(websocket, context=self.get_context(token))
+        user = self.credentials_manager.get_user_by_token(token)
+        username = user.get("username", token)
+        ai_instance = self.get_ai_instance(username, context=self.get_context(token))
         merged_message_history = self.merge_client_message_history(ai_instance.ai_connector.get_messages(), client_message_history)
         ai_instance.ai_connector.set_messages(merged_message_history)
         processed_prompt = self.preprocess_prompt(ai_instance, 
                                                   input_text, 
-                                                  prompt_tools=self.get_prompt_tools_instance(websocket, context=self.get_context(token)))
+                                                  prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(token)))
         if processed_prompt.get("status", "noop") == "error":
             await websocket.send_text(json.dumps(processed_prompt))
             return
@@ -490,9 +499,11 @@ class MechanicianWebApp:
         if prompt == '':
             return
         try:
+            if prompt is not None:
+                ai_instance.ai_connector.messages.append({"role": "user", "content": prompt})
             no_content = True
             while no_content:
-                stream = ai_instance.ai_connector.get_stream(prompt)
+                stream = ai_instance.ai_connector.get_stream()
                 for content in ai_instance.ai_connector.process_stream(stream):
                     if self.stop_generation:
                         self.stop_generation = False
@@ -528,9 +539,11 @@ class MechanicianWebApp:
         self.active_tasks.pop(sid, None)
         # Perform additional cleanup as necessary
         token = self.sid_to_tokens.get(sid, None)
+        user = self.credentials_manager.get_user_by_token(token)
+        username = user.get("username", token)
         if token:
-            self.clear_ai_instance(token)
-            self.clear_prompt_tools_instance(token)
+            self.clear_ai_instance(username)
+            self.clear_prompt_tools_instance(username)
             self.sid_to_tokens.pop(sid, None)
             self.token_to_sids.pop(token, None)
 
@@ -551,26 +564,26 @@ class MechanicianWebApp:
             raise credentials_exception
 
 
-    def get_ai_instance(self, sid, context:dict={}) -> TAGAI:
-        if sid not in self.ai_instances:
-            self.ai_instances[sid] = self.ai_factory.create_ai_instance(context=context)
-        return self.ai_instances[sid]
+    def get_ai_instance(self, username, context:dict={}) -> TAGAI:
+        if username not in self.ai_instances:
+            self.ai_instances[username] = self.ai_factory.create_ai_instance(context=context)
+        return self.ai_instances[username]
     
 
-    def clear_ai_instance(self, sid):
-        if sid in self.ai_instances:
-            del self.ai_instances[sid]
+    def clear_ai_instance(self, username):
+        if username in self.ai_instances:
+            del self.ai_instances[username]
 
 
-    def get_prompt_tools_instance(self, key, context:dict={}) -> PromptTools:
-        if key not in self.prompt_tools_instances:
-            self.prompt_tools_instances[key] = self.create_prompt_tools_instance(context=context)
-        return self.prompt_tools_instances[key]
+    def get_prompt_tools_instance(self, username, context:dict={}) -> PromptTools:
+        if username not in self.prompt_tools_instances:
+            self.prompt_tools_instances[username] = self.create_prompt_tools_instance(context=context)
+        return self.prompt_tools_instances[username]
     
 
-    def clear_prompt_tools_instance(self, key):
-        if key in self.prompt_tools_instances:
-            del self.prompt_tools_instances[key]
+    def clear_prompt_tools_instance(self, username):
+        if username in self.prompt_tools_instances:
+            del self.prompt_tools_instances[username]
 
 
     def create_prompt_tools_instance(self, context:dict={}) -> PromptTools:
