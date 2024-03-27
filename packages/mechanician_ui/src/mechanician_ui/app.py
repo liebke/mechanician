@@ -96,7 +96,6 @@ class MechanicianWebApp:
                 admin_attrs = {"user_role": "Admin", "name": "Mechanician Admin"}
                 self.credentials_manager.add_credentials(dm_admin_username, dm_admin_password, admin_attrs)
 
-        self.client_connections = {}
         self.ai_factory = TAGAIFactory(ai_connector_factory=ai_connector_factory,
                                        name = self.name,
                                        ai_tools_factory = self.ai_tools_factory,
@@ -120,8 +119,8 @@ class MechanicianWebApp:
         self.setup_websocket_events()
 
         self.active_tasks: Dict[str, asyncio.Task] = {}
-        self.client_websockets: Dict[str, WebSocket] = {}
-        self.websocket_tokens: Dict[WebSocket, str] = {}
+        self.sid_to_tokens: Dict[WebSocket, str] = {}
+        self.token_to_sids: Dict[str, str] = {}
 
 
     async def __call__(self, scope, receive, send):
@@ -338,8 +337,8 @@ class MechanicianWebApp:
             logger.debug("Starting new session...")
             # get token from cookie
             token = request.cookies.get("access_token")
-            # get sid from client_connections
-            sid = self.client_connections.get(token, None)
+            # get sid from token
+            sid = self.token_to_sids.get(token, None)
             # clear ai instance
             if sid:
                 self.clear_ai_instance(sid)
@@ -411,9 +410,8 @@ class MechanicianWebApp:
             auth_data = json.loads(auth_data)
             token = auth_data.get("token", "")
             sid = str(websocket.client)
-            self.client_connections[token] = sid
-            self.client_websockets[token] = websocket
-            self.websocket_tokens[websocket] = token
+            self.token_to_sids[token] = sid
+            self.sid_to_tokens[sid] = token
             if self.credentials_manager.verify_access_token(token):
                 logger.debug("Token verified")
                 return True
@@ -428,6 +426,7 @@ class MechanicianWebApp:
         except Exception as e:
             logger.error(f"Unexpected error during authentication: {e}")
             await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
+            self.cleanup(sid)
             return False
 
 
@@ -461,7 +460,8 @@ class MechanicianWebApp:
     async def generate_text(self, websocket: WebSocket, data: dict):
         """The actual text generation logic."""
         input_text = data.get("data", "")
-        token = self.websocket_tokens.get(websocket, None)
+        sid = str(websocket.client)
+        token = self.sid_to_tokens.get(sid, None)
         if token is None:
             logger.error("Invalid token. Closing connection.")
             return
@@ -498,6 +498,7 @@ class MechanicianWebApp:
             logger.error(f"Error processing AI response: {e}")
             await websocket.send_text(json.dumps({"error": str(e)}))
 
+
     async def stop_text_generation(self, websocket: WebSocket):
         """Cancels the text generation task."""
         sid = str(websocket.client)
@@ -506,12 +507,19 @@ class MechanicianWebApp:
             logger.debug("Text generation stopped.")
             self.active_tasks.pop(sid, None)
 
+
     def cleanup(self, sid: str):
         """Clean up resources when the WebSocket connection is closed."""
         if task := self.active_tasks.get(sid):
             task.cancel()
         self.active_tasks.pop(sid, None)
         # Perform additional cleanup as necessary
+        token = self.sid_to_tokens.get(sid, None)
+        if token:
+            self.clear_ai_instance(token)
+            self.clear_prompt_tools_instance(token)
+            self.sid_to_tokens.pop(sid, None)
+            self.token_to_sids.pop(token, None)
 
 
     def verify_access_token(self, request: Request):
