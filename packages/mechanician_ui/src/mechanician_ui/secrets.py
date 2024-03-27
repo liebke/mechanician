@@ -13,11 +13,11 @@ class SecretsManager(ABC):
 
 class BasicSecretsManager(SecretsManager):
 
-    def __init__(self, secrets: dict):
+    def __init__(self, secrets: dict = {}):
         self.secrets = secrets
 
     def get_secret(self, secret_name: str) -> str:
-        return self.secrets[secret_name]
+        return self.secrets.get(secret_name, None)
     
     def set_secret(self, secret_name: str, secret_value: str):
         self.secrets[secret_name] = secret_value

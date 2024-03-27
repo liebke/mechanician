@@ -124,16 +124,20 @@ class BasicCredentialsManager(CredentialsManager):
             self.load_credentials()
             self.tokens = {}
 
-            self.secrets_manager.set_secret("SECRET_KEY", 
-                                            os.getenv("SECRET_KEY", 
-                                                      self.generate_secret_key()))
+            secret_key = self.secrets_manager.get_secret("SECRET_KEY")
+            if not secret_key:
+                self.secrets_manager.set_secret("SECRET_KEY", 
+                                                os.getenv("SECRET_KEY", self.generate_secret_key()))
             
-            self.secrets_manager.set_secret("ALGORITHM", 
-                                            os.getenv("ALGORITHM", self.ALGORITHM))
+            algorithm = self.secrets_manager.get_secret("ALGORITHM")
+            if not algorithm:
+                self.secrets_manager.set_secret("ALGORITHM", 
+                                                os.getenv("ALGORITHM", self.ALGORITHM))
             
-            self.secrets_manager.set_secret("ACCESS_TOKEN_EXPIRE_MINUTES", 
-                                            os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 
-                                                      self.ACCESS_TOKEN_EXPIRE_MINUTES))
+            access_token_expire_minutes = self.secrets_manager.get_secret("ACCESS_TOKEN_EXPIRE_MINUTES")
+            if not access_token_expire_minutes:
+                self.secrets_manager.set_secret("ACCESS_TOKEN_EXPIRE_MINUTES", 
+                                                os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", self.ACCESS_TOKEN_EXPIRE_MINUTES))
 
 
 
