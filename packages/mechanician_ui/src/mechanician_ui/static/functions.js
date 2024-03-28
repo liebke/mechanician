@@ -10,8 +10,6 @@
                 let content_with_breaks = prompt_text.replace(/\n/g, '<br>');
                 user_message_container.append($('<p class="message-text">').html(content_with_breaks));
                 $('#messages').append(user_message_container);
-                save_messages_to_local_storage({'role': 'assistant'}, username);
-                save_messages_to_local_storage({'role': 'user', 'content': prompt_text}, username);
                 if (new_connection) {
                     message_history = get_messages_from_local_storage(username);
                     socket.send(JSON.stringify({data: prompt_text, type: 'prompt', message_history: message_history}));
@@ -20,6 +18,8 @@
                 else {
                     socket.send(JSON.stringify({data: prompt_text, type: 'prompt'}));
                 }
+                save_messages_to_local_storage({'role': 'assistant'}, username);
+                save_messages_to_local_storage({'role': 'user', 'content': prompt_text}, username);
                 $('#input').val('');
                 adjust_textarea_height_and_change_button_color();
                 current_ai_response = null;

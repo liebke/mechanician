@@ -500,6 +500,14 @@ class MechanicianWebApp:
             else:
                 merged_message_history = message_history
 
+        # print("message_history:")
+        # pprint(message_history)
+        # print("-----------------------------------\n\n\n")
+        # print("client_message_history:")
+        # pprint(client_message_history)
+        # print("-----------------------------------\n\n\n")
+        # print(f"merged_message_history:")
+        # pprint(merged_message_history)
         return merged_message_history
 
 
