@@ -14,6 +14,11 @@
             "event": {
                 "type": "string",
                 "description": "The name of the event."
+              },
+              "template": {
+                "type": "string",
+                "default": "event_invite.md",
+                "description": "The name of the prompt template file to use."
               }
           },
           "required": [
@@ -38,6 +43,11 @@
               "sender": {
                   "type": "string",
                   "description": "The sender of the email."
+                },
+                "template": {
+                  "type": "string",
+                  "default": "sales_email.md",
+                  "description": "The name of the prompt template file to use."
                 }
             },
             "required": [
@@ -62,6 +72,11 @@
               "case_id": {
                   "type": "string",
                   "description": "The customer care case ID."
+                },
+                "template": {
+                  "type": "string",
+                  "default": "customer_service_message.md",
+                  "description": "The name of the prompt template file to use."
                 }
             },
             "required": [
@@ -82,6 +97,11 @@
               "company": {
                 "type": "string",
                 "description": "The name of the company."
+              },
+              "template": {
+                "type": "string",
+                "default": "product_newsletter.md",
+                "description": "The name of the prompt template file to use."
               }
             },
             "required": [
@@ -102,6 +122,11 @@
               "customer": {
                 "type": "string",
                 "description": "The name of the customer."
+                },
+                "template": {
+                  "type": "string",
+                  "default": "customer_summarization.md",
+                  "description": "The name of the prompt template file to use."
                 }
             },
             "required": [

@@ -123,6 +123,17 @@ class MiddleEarthCRMPromptTools(PromptTools):
         self.prompt_template_directory = prompt_template_directory
         self.crm = MiddleEarthCRM(crm_data_directory=crm_data_directory)
 
+
+    def get_prompt_template(self, prompt_template_name:str):
+        print(f"MiddleEarthCRMPromptTools.get_prompt_template called with prompt_template_name: {prompt_template_name}")
+        template = PromptTemplate(template_filename=prompt_template_name, 
+                                  template_directory=self.prompt_template_directory)
+        print(f"MiddleEarthCRMPromptTools.get_prompt_template: template.template_str: {template.template_str}")
+        return template.template_str    
+    
+    def save_prompt_template(self, prompt_template_name:str, prompt_template:str):
+        pass
+
     def event_invite(self, params):
         prompt_template_name = params.get("template") or "event_invite.md"
         event_title = params.get("event")

@@ -377,6 +377,35 @@ class MechanicianWebApp:
                                                     "ai_name": self.name,
                                                     "name": display_name,
                                                     "user_role": user_role})
+        
+
+        @self.app.get("/prompt_tools/templates/{template_name}")
+        async def prompt_tools_templates(request: Request):
+            try:
+                self.verify_access_token(request)
+                user_data = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+                if user_data is None:
+                    response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                    return response
+
+            except HTTPException as e:
+                logger.error(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+
+            username = user_data.get("username", None)
+            if username is None:
+                return JSONResponse(content={"error": "No username provided."})
+            
+            # get prompt template name from url path
+            template_name = request.path_params.get("template_name", None)
+            token = request.cookies.get("access_token")
+            prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(token))
+            if template_name is None:
+                return JSONResponse(content={"error": "No prompt template name provided."})
+            else:
+                prompt_template = prompt_tools.get_prompt_template(prompt_template_name=template_name)
+                return JSONResponse(content=prompt_template)
 
         
 

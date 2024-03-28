@@ -106,13 +106,9 @@ class MechanicianToolKit(MechanicianTools):
 ## PROMPT TOOLS
 ###############################################################################
         
-class PromptTools(MechanicianTools):
+class PromptTools(MechanicianTools, ABC):
 
     tool_instruction_file_name = "prompt_tool_instructions.json"
-
-    # def __init__(self):
-        # self.tool_instruction_file_name = "prompt_tool_instructions.json"
-
 
     def parse_command_line(self, command_line):
         tokens = shlex.split(command_line)
@@ -132,6 +128,14 @@ class PromptTools(MechanicianTools):
                 arg_dict[arg] = None
 
         return {"function_name": command_name, "params": arg_dict}
+    
+    @abstractmethod
+    def get_prompt_template(self, prompt_template_name):
+        pass
+
+    @abstractmethod
+    def save_prompt_template(self, prompt_template_name, prompt_template):
+        pass
 
         
 
@@ -143,6 +147,19 @@ class PromptToolKit(MechanicianToolKit, PromptTools):
     def __init__(self, 
                  tools: List[MechanicianTools]):
         super().__init__(tools)
+
+    def get_prompt_template(self, prompt_template_name):
+        for tool in self.tools:
+            if hasattr(tool, "get_prompt_template"):
+                template = tool.get_prompt_template(prompt_template_name)
+                if template:
+                    return template
+
+    def save_prompt_template(self, prompt_template_name, prompt_template):
+        for tool in self.tools:
+            if hasattr(tool, "save_prompt_template"):
+                tool.save_prompt_template(prompt_template_name, prompt_template)
+                return
 
 
 ###############################################################################

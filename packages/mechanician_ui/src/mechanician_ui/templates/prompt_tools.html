@@ -141,7 +141,7 @@
             word-wrap: break-word; /* To break long words if necessary */
         }
 
-        #prompt {
+        #prompt, #prompt_template {
             width: 500px;
             font-size: 14px;
             height: 300px;
@@ -239,7 +239,10 @@
                 // Re-append the hidden input every time the form is generated/updated
                 hidden_input.value = form_name; // Update the value to the current form name
                 form.appendChild(hidden_input); // Ensure it's always part of the form
+
+                load_prompt_template();
             });
+
 
             schema_json.forEach(f => {
                 const option = document.createElement('option');
@@ -252,7 +255,24 @@
             form.appendChild(hidden_input);
             form_container.appendChild(select_container);
             // form_container.appendChild(select);
+
+
+
+            const prompt_template = document.createElement('textarea');
+            prompt_template.id = 'prompt_template';
+            prompt_template.name = 'prompt_template';
+            prompt_template.classList.add('prompt_template');
+            prompt_template.readOnly = true;
+            // const form_container = document.getElementById('form-container');
+            const prompt_template_form = document.createElement('form');
+            prompt_template_form.appendChild(prompt_template);
+            form_container.appendChild(prompt_template_form);
+            // form.appendChild(prompt_template);
+
+
             form_container.appendChild(form);
+
+
             // Initialize form with the first function's parameters by default
             if (schema_json.length > 0) {
                 generate_form_fields(form, schema_json[0].function);
@@ -261,6 +281,23 @@
             }
         }
 
+        function load_prompt_template() {
+            const template_name = document.getElementById('template').value; // 'this' refers to the template input field
+
+                if(template_name) { // Check if templateName is not empty
+                    const template_url = `/prompt_tools/templates/${template_name}`;
+
+                    fetch(template_url)
+                        .then(response => response.json())
+                        .then(template_data => {
+                            // Process the fetched template data as needed
+                            // For example, storing it in a global variable or directly in a hidden form field
+                            // console.log('Template data:', template_data);
+                            document.getElementById('prompt_template').value = template_data; // Assuming you want to display it in an input field with ID 'prompt'
+                        })
+                        .catch(error => console.error('Error loading template:', error));
+                }
+        }
 
         function generate_form_fields(form, func) {
             form.innerHTML = ''; // Clear previous fields
@@ -280,6 +317,9 @@
                 input.id = key;
                 input.name = key;
                 // Set placeholder to the name of the property or any other dynamic value as needed
+                if (value.default !== undefined) {
+                    input.value = value.default;
+                }
                 input.placeholder = key; // Use the property description as the placeholder text
                 input_group.appendChild(label);
                 input_group.appendChild(input);
@@ -313,6 +353,7 @@
                 generated_prompt.classList.add('generated-prompt');
                 generated_prompt.readOnly = true;
                 prompt_form.appendChild(generated_prompt);
+
                 const prompt_submit_button = document.createElement('button');
                 prompt_submit_button.type = 'submit';
                 prompt_submit_button.id = 'prompt_submit_button';
@@ -380,13 +421,19 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data); // Add this to see what the server is actually returning
+                    // console.log(data); // Add this to see what the server is actually returning
                     document.getElementById('prompt').value = data.prompt;
                 })
                 .catch((error) => {
                     console.error('Error:', error);
                 });
             });
+
+            document.getElementById('template').addEventListener('change', function() {
+                load_prompt_template();
+            });
+
+            load_prompt_template();
 
         });
     </script>
