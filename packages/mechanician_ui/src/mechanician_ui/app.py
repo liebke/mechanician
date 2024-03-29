@@ -1,27 +1,21 @@
 from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect, status, Depends, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
-# from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from mechanician.ai_connectors import AIConnectorFactory
 from mechanician import TAGAI, TAGAIFactory
 from typing import Dict
 import json
 import asyncio
-from pprint import pprint
 import pkg_resources
-from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit, MechanicianToolsFactory
+from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit, MechanicianToolsFactory, PromptToolsFactory
 import os
-
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from fastapi.responses import HTMLResponse
 from starlette.responses import Response, RedirectResponse  # Import Response for setting cookies
-from mechanician_ui.secrets import SecretsManager, BasicSecretsManager
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from mechanician_ui.auth import CredentialsManager, BasicCredentialsManager
-
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
-
 import logging
+from mechanician.resources import ResourceConnectorFactory
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -59,6 +53,8 @@ class MechanicianWebApp:
 
     def __init__(self, 
                  ai_connector_factory: 'AIConnectorFactory',
+                 resource_connector_factory = None,
+                 prompt_template_directory="./templates",
                  prompt_tools_factory=None,
                  ai_instructions=None, 
                  ai_tool_instructions=None,
@@ -67,7 +63,6 @@ class MechanicianWebApp:
                  ai_instruction_file_name="ai_instructions.md",
                  ai_tools_factory=None, 
                  name="Daring Mechanician AI",
-                 secrets_manager: SecretsManager=None,
                  credentials_manager: CredentialsManager=None,
                  credentials_file_path="./credentials.json",
                  dm_admin_username=None,
@@ -76,6 +71,11 @@ class MechanicianWebApp:
         # Initialize class variables
         self.ai_connector_factory = ai_connector_factory
         self.prompt_tools_factory = prompt_tools_factory
+        # if resource_connector_factory is instance of ResourceConnectorFactory, then create PromptToolsFactory
+        if isinstance(resource_connector_factory, ResourceConnectorFactory) and prompt_tools_factory is None:
+            print("Creating PromptToolsFactory from ResourceConnectorFactory")
+            self.prompt_tools_factory = PromptToolsFactory(resource_connector_factory = resource_connector_factory,
+                                                           prompt_template_directory=prompt_template_directory)  
         self.ai_instructions = ai_instructions
         self.ai_tool_instructions = ai_tool_instructions
         self.instruction_set_directory = instruction_set_directory
@@ -83,10 +83,7 @@ class MechanicianWebApp:
         self.ai_instruction_file_name = ai_instruction_file_name
         self.ai_tools_factory = ai_tools_factory
         self.name = name
-
-        self.secrets_manager = secrets_manager or BasicSecretsManager(secrets={})
-        self.credentials_manager = credentials_manager or BasicCredentialsManager(secrets_manager=self.secrets_manager,
-                                                                                  credentials_filename=credentials_file_path)
+        self.credentials_manager = credentials_manager or BasicCredentialsManager(credentials_filename=credentials_file_path)
         dm_admin_username = dm_admin_username or os.getenv("DM_ADMIN_USERNAME", "mechanician")
         if not self.credentials_manager.user_exists(dm_admin_username):
             dm_admin_password = dm_admin_password or os.getenv("DM_ADMIN_PASSWORD", None)
@@ -174,16 +171,14 @@ class MechanicianWebApp:
 
             form_data = await request.form()
             form_data_dict = dict(form_data)
-            input_text = f"/call {form_data_dict.get('function_name')}"
-            # add parameters to input_text
-            for k, v in form_data_dict.items():
-                if k != "function_name":
-                    input_text += f' {k}="{v}"'
-
+            function_name = form_data_dict.get("function_name", "")
+            prompt_template = form_data_dict.get("prompt_template", "")
+            # remove function_name, prompt_template from form_data_dict
+            form_data_dict.pop("function_name", None)
+            form_data_dict.pop("prompt_template", None)
             username = user.get("username", access_token)
-            ai_instance = self.get_ai_instance(username, context=self.get_context(access_token))
             prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(access_token))
-            generated_prompt = self.preprocess_prompt(ai_instance, input_text, prompt_tools)
+            generated_prompt = prompt_tools.generate_prompt(function_name, prompt_template, params=form_data_dict)
             return JSONResponse(content=generated_prompt)
         
 

@@ -13,51 +13,47 @@ handler.setLevel(logging.INFO)
 logger.addHandler(handler)
 
 ###############################################################################
-## RESOURCE CONNECTOR TOOLS
+## RESOURCE CONNECTOR
 ###############################################################################
         
 class ResourceConnector(ABC):
 
-    def get_instructions(self):
-        if hasattr(self, "resource_instructions"):
-            return self.instructions
-        
-        if hasattr(self, "instruction_set_directory"):
-            resource_set_directory = self.instruction_set_directory
-        else:
-            directory_name = 'src/instructions'
-            resource_set_directory = os.path.join(os.getcwd(), directory_name)
+    def query(self, query_name:str, params:dict=None):
+        try:            
+            if hasattr(self, query_name):
+                meth = getattr(self, query_name)
+                
+                if meth:
+                    if params is None:
+                        response = meth()
+                        if response is not None:
+                            return {"status": "success", "resources": response}
+                    else:
+                        response = meth(params)
+                        if response is not None:
+                            return {"status": "success", "resources": response}
+            else:
+                error_msg = f"Unknown function: {query_name}"
+                logger.info(error_msg)
+                return {"status": "success", "resources": error_msg}
+            
+        except Exception as e:
+            error_msg = f"Error calling function {query_name}: {e}"
+            logger.error(error_msg)
+            # Return empty response so that it's skipped
+            return {"status": "error", "resources": error_msg}
 
-        if hasattr(self, "resource_instruction_file_name"):
-            resource_instruction_path = os.path.join(resource_set_directory, self.resource_instruction_file_name)
-        else:
-            resource_instruction_path = os.path.join(resource_set_directory, "resource_instructions.json")
-        
-        print(f"resource_instruction_path: {resource_instruction_path}")
-        if os.path.exists(resource_instruction_path):
-            print(f"Loading Resource Instructions from {resource_instruction_path}")
-            with open(resource_instruction_path, 'r') as file:
-                logger.info(f"Loading Resource Instructions from {resource_instruction_path}")
-                ai_tool_instructions = json.loads(file.read())
-            return ai_tool_instructions
-        else:
-            return []
-    
 
-    @abstractmethod
-    def list_resources(self):
-        pass
-    
 
-    @abstractmethod
-    def get_resource(self, params:dict=None):
-        pass
+###############################################################################
+## RESOURCE CONNECTOR FACTORY
+###############################################################################
 
+class ResourceConnectorFactory(ABC):
 
     @abstractmethod
-    def list_resources(self, params:dict=None):
+    def create_connector(self, context:dict={}):
         pass
-
 
 
 ###############################################################################

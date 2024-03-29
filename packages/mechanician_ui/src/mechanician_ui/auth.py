@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
 from typing import Optional
 from passlib.context import CryptContext
-from mechanician_ui.secrets import SecretsManager
+from mechanician_ui.secrets import SecretsManager, BasicSecretsManager
 from zoneinfo import ZoneInfo
 import json
 from jose import JWTError, jwt
@@ -116,8 +116,8 @@ class BasicCredentialsManager(CredentialsManager):
         ALGORITHM = "HS256"
         ACCESS_TOKEN_EXPIRE_MINUTES = "1440" # 24 hours
     
-        def __init__(self, secrets_manager: SecretsManager, credentials_filename: str):
-            self.secrets_manager = secrets_manager
+        def __init__(self, credentials_filename: str, secrets_manager: SecretsManager=None):
+            self.secrets_manager = secrets_manager or BasicSecretsManager(secrets={})
             self.credentials_filename = credentials_filename
             self.pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
             self.credentials_data = {}

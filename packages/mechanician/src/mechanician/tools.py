@@ -5,6 +5,9 @@ import shlex
 import os
 import json
 import traceback
+from mechanician.templates import PromptTemplate
+from mechanician.resources import ResourceConnector, ResourceConnectorFactory
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -31,7 +34,6 @@ class MechanicianTools(ABC):
             directory_name = 'src/instructions'
             instruction_set_directory = os.path.join(os.getcwd(), directory_name)
 
-
         if hasattr(self, "tool_instruction_file_name"):
             tool_instruction_path = os.path.join(instruction_set_directory, self.tool_instruction_file_name)
         else:
@@ -53,23 +55,23 @@ class MechanicianTools(ABC):
                 
                 if meth:
                     if params is None:
-                        prompt = meth()
-                        if prompt is not None:
-                            return {"status": "success", "prompt": prompt}
+                        response = meth()
+                        if response is not None:
+                            return {"status": "success", "response": response}
                     else:
-                        prompt = meth(params)
-                        if prompt is not None:
-                            return {"status": "success", "prompt": prompt}
+                        response = meth(params)
+                        if response is not None:
+                            return {"status": "success", "response": response}
             else:
                 error_msg = f"Unknown function: {function_name}"
                 logger.info(error_msg)
-                return {"status": "success", "prompt": error_msg}
+                return {"status": "success", "response": error_msg}
             
         except Exception as e:
             error_msg = f"Error calling function {function_name}: {e}"
             logger.error(error_msg)
-            # Return empty prompt so that it's skipped
-            return {"status": "error", "prompt": error_msg}
+            # Return empty response so that it's skipped
+            return {"status": "error", "response": error_msg}
 
 
 
@@ -106,9 +108,56 @@ class MechanicianToolKit(MechanicianTools):
 ## PROMPT TOOLS
 ###############################################################################
         
-class PromptTools(MechanicianTools, ABC):
+# class PromptTools(MechanicianTools, ABC):
+
+#     tool_instruction_file_name = "prompt_tool_instructions.json"
+
+#     def parse_command_line(self, command_line):
+#         tokens = shlex.split(command_line)
+#         if len(tokens) < 2 or tokens[0] != '/call':
+#             return {"error": f"Invalid /call command: {command_line}"}
+
+#         command_name = tokens[1]
+#         args = tokens[2:]
+#         # Parse arguments into a dictionary if they are in the form arg=value
+#         arg_dict = {}
+#         for arg in args:
+#             if '=' in arg:
+#                 key, value = arg.split('=', 1)
+#                 arg_dict[key] = value
+#             else:
+#                 arg_dict[arg] = None
+
+#         return {"function_name": command_name, "params": arg_dict}
+    
+    
+#     @abstractmethod
+#     def generate_prompt(self, function_name:str, prompt_template_str:str, params:dict={}):
+#         pass
+
+#     @abstractmethod
+#     def get_prompt_template(self, prompt_template_name):
+#         pass
+
+#     @abstractmethod
+#     def save_prompt_template(self, prompt_template_name, prompt_template):
+#         pass
+
+        
+###############################################################################
+## PROMPT TOOLS
+###############################################################################
+
+class PromptTools(MechanicianTools):
 
     tool_instruction_file_name = "prompt_tool_instructions.json"
+
+    def __init__(self, 
+                 resource_connector: 'ResourceConnector'=None,
+                 prompt_template_directory="./templates",):
+        self.resource_connector = resource_connector
+        self.prompt_template_directory = prompt_template_directory
+
 
     def parse_command_line(self, command_line):
         tokens = shlex.split(command_line)
@@ -117,7 +166,6 @@ class PromptTools(MechanicianTools, ABC):
 
         command_name = tokens[1]
         args = tokens[2:]
-
         # Parse arguments into a dictionary if they are in the form arg=value
         arg_dict = {}
         for arg in args:
@@ -128,25 +176,64 @@ class PromptTools(MechanicianTools, ABC):
                 arg_dict[arg] = None
 
         return {"function_name": command_name, "params": arg_dict}
-    
-    @abstractmethod
-    def get_prompt_template(self, prompt_template_name):
-        pass
+  
 
-    @abstractmethod
-    def save_prompt_template(self, prompt_template_name, prompt_template):
-        pass
-
+    def generate_prompt(self, function_name:str, prompt_template_str:str, params:dict={}):
+        if not prompt_template_str:
+            return f"Prompt Template not found for {function_name}"
         
+        response = self.resource_connector.query(function_name, params=params)
+        if response.get("status") == "error":
+            raise ValueError(response.get("response"))
+        
+        resources = response.get("resources")
+        prompt_template = PromptTemplate(template_str=prompt_template_str)
+        prompt_template.add_resources(resources)
+        prompt = prompt_template.generate_prompt()
+        return {"status": "success", "prompt": prompt}
+    
+
+    def get_prompt_template(self, prompt_template_name):
+        if hasattr(self, "prompt_templates"):
+            for template in self.prompt_templates:
+                if template.name == prompt_template_name:
+                    return template.template_str
+        return None
+    
+    
+    def get_prompt_template(self, prompt_template_name:str):
+        template = PromptTemplate(template_filename=prompt_template_name, 
+                                  template_directory=self.prompt_template_directory)
+        return template.template_str 
+
+
+    def save_prompt_template(self, prompt_template_name, prompt_template):
+        if hasattr(self, "prompt_templates"):
+            for template in self.prompt_templates:
+                if template.name == prompt_template_name:
+                    template.template_str = prompt_template
+                    return
+        return None
+   
 
 ###############################################################################
-## MECHANICIAN TOOL KIT
+## PROMPT TOOL KIT
 ###############################################################################
 
 class PromptToolKit(MechanicianToolKit, PromptTools):
     def __init__(self, 
                  tools: List[MechanicianTools]):
         super().__init__(tools)
+
+    def generate_prompt(self, function_name:str, prompt_template_str:str, params:dict={}):
+        for tool in self.tools:
+            if hasattr(tool, "generate_prompt"):
+                try:
+                    return tool.generate_prompt(function_name, prompt_template_str, params)
+                except Exception as e:
+                    logger.error(f"Error generating prompt: {e}")
+                    return f"Error generating prompt: {e}"
+        return f"Prompt generation not supported by {function_name}"
 
     def get_prompt_template(self, prompt_template_name):
         for tool in self.tools:
@@ -251,3 +338,23 @@ class MechanicianToolsFactory(ABC):
     def create_tools(self, context:dict={}) -> MechanicianTools:
         pass
 
+
+###############################################################################
+## PROMPT TOOLS FACTORY
+###############################################################################
+
+class PromptToolsFactory(MechanicianToolsFactory):
+
+    def __init__(self, 
+                 resource_connector_factory: ResourceConnectorFactory,
+                 prompt_template_directory:str="./templates"):
+        self.resource_connector_factory = resource_connector_factory
+        self.prompt_template_directory = prompt_template_directory
+
+
+    def create_tools(self, context:dict={}) -> MechanicianTools:
+        resource_connector = self.resource_connector_factory.create_connector(context)
+        return PromptTools(resource_connector=resource_connector,
+                           prompt_template_directory=self.prompt_template_directory)
+    
+ 

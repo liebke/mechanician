@@ -108,5 +108,16 @@ class PromptTemplate:
 
     def add_resource(self, resource_name: str, resource_data: dict):
         self.resources.append(PromptResource(resource_name, resource_data))
+
+
+    def add_resources(self, resources: List[dict]):
+        for resource in resources:
+            resource_name = resource.get('name')
+            if resource_name is None:
+                raise ValueError("Resource name is required")
+            resource_data = resource.get('data')
+            if resource_data is None:
+                raise ValueError("Resource data is required")
+            self.resources.append(PromptResource(resource_name, resource_data))
         
 
