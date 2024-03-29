@@ -1,22 +1,22 @@
-from mechanician_openai import OpenAIChatConnectorFactory
+from mechanician_openai import OpenAIChatConnectorProvisioner
 import os
 import logging
 from dotenv import load_dotenv
-from mechanician.resources import ResourceConnector, ResourceConnectorFactory
+from mechanician.resources import ResourceConnector, ResourceConnectorProvisioner
 from mechanician_ui import MechanicianWebApp
 import uvicorn
-from mechanician.ai_tools.notepads import UserNotepadAIToolsFactory
-from mechanician_arangodb.notepad_store import ArangoNotepadStoreFactory
+from mechanician.ai_tools.notepads import UserNotepadAIToolsProvisioner
+from mechanician_arangodb.notepad_store import ArangoNotepadStoreProvisioner
 from arango import ArangoClient
 from .middle_earth_crm import MiddleEarthCRM
 
 logger = logging.getLogger(__name__)
 
 ###############################################################################
-## MiddleEarthCRMConnectorFactory
+## MiddleEarthCRMConnectorProvisioner
 ###############################################################################
     
-class MiddleEarthCRMConnectorFactory(ResourceConnectorFactory):
+class CRMConnectorProvisioner(ResourceConnectorProvisioner):
         
         def __init__(self, crm_data_directory="./data"):
             self.crm_data_directory = crm_data_directory
@@ -25,14 +25,14 @@ class MiddleEarthCRMConnectorFactory(ResourceConnectorFactory):
         def create_connector(self, context: dict={}):
             # Use the context to control access to resources provided by the connector.
             # ...
-            return MiddleEarthCRMConnector(crm_data_directory=self.crm_data_directory)
+            return CRMConnector(crm_data_directory=self.crm_data_directory)
 
 
 ###############################################################################
 ## MiddleEarthCRMConnector
 ###############################################################################
 
-class MiddleEarthCRMConnector(ResourceConnector):
+class CRMConnector(ResourceConnector):
 
     def __init__(self, crm_data_directory="./data"):
         self.crm = MiddleEarthCRM(crm_data_directory=crm_data_directory)
@@ -120,19 +120,19 @@ def init_app():
     database_name="test_notepad_db"
     notepad_collection_name="notepads"
     arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
-    arango_notepad_store_factory = ArangoNotepadStoreFactory(arango_client=arango_client, 
-                                                             database_name=database_name,
-                                                             notepad_collection_name=notepad_collection_name,
-                                                             db_username=os.getenv("ARANGO_USERNAME"),
-                                                             db_password=os.getenv("ARANGO_PASSWORD"))
-    arango_notepad_tools_factory = UserNotepadAIToolsFactory(notepad_store_factory=arango_notepad_store_factory)
-    ai_connector_factory = OpenAIChatConnectorFactory(api_key=os.getenv("OPENAI_API_KEY"), 
-                                                      model_name=os.getenv("OPENAI_MODEL_NAME"))
-    crm_connector_factory = MiddleEarthCRMConnectorFactory(crm_data_directory="./data")
+    notepad_store_provisioner = ArangoNotepadStoreProvisioner(arango_client=arango_client, 
+                                                              database_name=database_name,
+                                                              notepad_collection_name=notepad_collection_name,
+                                                              db_username=os.getenv("ARANGO_USERNAME"),
+                                                              db_password=os.getenv("ARANGO_PASSWORD"))
+    notepad_tools_provisioner = UserNotepadAIToolsProvisioner(notepad_store_provisioner=notepad_store_provisioner)
+    ai_connector_provisioner = OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"), 
+                                                              model_name=os.getenv("OPENAI_MODEL_NAME"))
+    crm_connector_provisioner = CRMConnectorProvisioner(crm_data_directory="./data")
 
-    return MechanicianWebApp(ai_connector_factory=ai_connector_factory,
-                             ai_tools_factory=[arango_notepad_tools_factory],
-                             resource_connector_factory = crm_connector_factory,
+    return MechanicianWebApp(ai_connector_provisioner=ai_connector_provisioner,
+                             ai_tools_provisioner=[notepad_tools_provisioner],
+                             resource_connector_provisioner=crm_connector_provisioner,
                              prompt_template_directory="./templates",
                              name="MiddleEarth CRM AI")
 

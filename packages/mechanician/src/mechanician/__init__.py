@@ -1,2 +1,2 @@
-from .tagai import TAGAI, TAGAIFactory
+from .tagai import TAGAI, TAGAIProvisioner
 from . import shell

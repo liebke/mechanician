@@ -68,11 +68,11 @@ class StreamingAIConnector(AIConnector):
 
 
 ###############################################################################
-## AIConnectorFactory
+## AIConnectorProvisioner
 ###############################################################################
 
 
-class AIConnectorFactory(ABC):
+class AIConnectorProvisioner(ABC):
     @abstractmethod
     def create_ai_connector(self, context:dict={}):
         pass

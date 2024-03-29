@@ -49,7 +49,7 @@ class ResourceConnector(ABC):
 ## RESOURCE CONNECTOR FACTORY
 ###############################################################################
 
-class ResourceConnectorFactory(ABC):
+class ResourceConnectorProvisioner(ABC):
 
     @abstractmethod
     def create_connector(self, context:dict={}):

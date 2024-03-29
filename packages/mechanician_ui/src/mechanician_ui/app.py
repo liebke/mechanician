@@ -1,12 +1,12 @@
 from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect, status, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
-from mechanician.ai_connectors import AIConnectorFactory
-from mechanician import TAGAI, TAGAIFactory
+from mechanician.ai_connectors import AIConnectorProvisioner
+from mechanician import TAGAI, TAGAIProvisioner
 from typing import Dict
 import json
 import asyncio
 import pkg_resources
-from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit, MechanicianToolsFactory, PromptToolsFactory
+from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit, MechanicianToolsProvisioner, PromptToolsProvisioner
 import os
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from starlette.responses import Response, RedirectResponse  # Import Response for setting cookies
@@ -15,7 +15,7 @@ from mechanician_ui.auth import CredentialsManager, BasicCredentialsManager
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 import logging
-from mechanician.resources import ResourceConnectorFactory
+from mechanician.resources import ResourceConnectorProvisioner
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -52,16 +52,16 @@ class MechanicianWebApp:
     stop_generation = False
 
     def __init__(self, 
-                 ai_connector_factory: 'AIConnectorFactory',
-                 resource_connector_factory = None,
+                 ai_connector_provisioner: 'AIConnectorProvisioner',
+                 resource_connector_provisioner = None,
                  prompt_template_directory="./templates",
-                 prompt_tools_factory=None,
+                 prompt_tools_provisioner=None,
                  ai_instructions=None, 
                  ai_tool_instructions=None,
                  instruction_set_directory=None,
                  tool_instruction_file_name="ai_tool_instructions.json",
                  ai_instruction_file_name="ai_instructions.md",
-                 ai_tools_factory=None, 
+                 ai_tools_provisioner=None, 
                  name="Daring Mechanician AI",
                  credentials_manager: CredentialsManager=None,
                  credentials_file_path="./credentials.json",
@@ -69,19 +69,19 @@ class MechanicianWebApp:
                  dm_admin_password=None):
         
         # Initialize class variables
-        self.ai_connector_factory = ai_connector_factory
-        self.prompt_tools_factory = prompt_tools_factory
-        # if resource_connector_factory is instance of ResourceConnectorFactory, then create PromptToolsFactory
-        if isinstance(resource_connector_factory, ResourceConnectorFactory) and prompt_tools_factory is None:
-            print("Creating PromptToolsFactory from ResourceConnectorFactory")
-            self.prompt_tools_factory = PromptToolsFactory(resource_connector_factory = resource_connector_factory,
+        self.ai_connector_provisioner = ai_connector_provisioner
+        self.prompt_tools_provisioner = prompt_tools_provisioner
+        # if resource_connector_provisioner is instance of ResourceConnectorProvisioner, then create PromptToolsProvisioner
+        if isinstance(resource_connector_provisioner, ResourceConnectorProvisioner) and prompt_tools_provisioner is None:
+            print("Creating PromptToolsProvisioner from ResourceConnectorProvisioner")
+            self.prompt_tools_provisioner = PromptToolsProvisioner(resource_connector_provisioner = resource_connector_provisioner,
                                                            prompt_template_directory=prompt_template_directory)  
         self.ai_instructions = ai_instructions
         self.ai_tool_instructions = ai_tool_instructions
         self.instruction_set_directory = instruction_set_directory
         self.tool_instruction_file_name = tool_instruction_file_name
         self.ai_instruction_file_name = ai_instruction_file_name
-        self.ai_tools_factory = ai_tools_factory
+        self.ai_tools_provisioner = ai_tools_provisioner
         self.name = name
         self.credentials_manager = credentials_manager or BasicCredentialsManager(credentials_filename=credentials_file_path)
         dm_admin_username = dm_admin_username or os.getenv("DM_ADMIN_USERNAME", "mechanician")
@@ -93,9 +93,9 @@ class MechanicianWebApp:
                 admin_attrs = {"user_role": "Admin", "name": "Mechanician Admin"}
                 self.credentials_manager.add_credentials(dm_admin_username, dm_admin_password, admin_attrs)
 
-        self.ai_factory = TAGAIFactory(ai_connector_factory=ai_connector_factory,
+        self.ai_provisioner = TAGAIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
                                        name = self.name,
-                                       ai_tools_factory = self.ai_tools_factory,
+                                       ai_tools_provisioner = self.ai_tools_provisioner,
                                        ai_instructions = self.ai_instructions,
                                        ai_tool_instructions = self.ai_tool_instructions,
                                        instruction_set_directory = self.instruction_set_directory,
@@ -598,7 +598,7 @@ class MechanicianWebApp:
 
     def get_ai_instance(self, username, context:dict={}) -> TAGAI:
         if username not in self.ai_instances:
-            self.ai_instances[username] = self.ai_factory.create_ai_instance(context=context)
+            self.ai_instances[username] = self.ai_provisioner.create_ai_instance(context=context)
         return self.ai_instances[username]
     
 
@@ -620,25 +620,25 @@ class MechanicianWebApp:
 
     def create_prompt_tools_instance(self, context:dict={}) -> PromptTools:
         prompt_tools = None
-        if self.prompt_tools_factory is not None:
-            if isinstance(self.prompt_tools_factory, MechanicianToolsFactory):
-                return self.prompt_tools_factory.create_tools(context=context)
+        if self.prompt_tools_provisioner is not None:
+            if isinstance(self.prompt_tools_provisioner, MechanicianToolsProvisioner):
+                return self.prompt_tools_provisioner.create_tools(context=context)
 
-            elif isinstance(self.prompt_tools_factory, MechanicianTools):
-                return self.prompt_tools_factory
+            elif isinstance(self.prompt_tools_provisioner, MechanicianTools):
+                return self.prompt_tools_provisioner
             
-            elif isinstance(self.prompt_tools_factory, list):
+            elif isinstance(self.prompt_tools_provisioner, list):
                 prompt_tools_instances = []
-                for tool in self.prompt_tools_factory:
-                    if isinstance(tool, MechanicianToolsFactory):
+                for tool in self.prompt_tools_provisioner:
+                    if isinstance(tool, MechanicianToolsProvisioner):
                         prompt_tools_instances.append(tool.create_tools(context=context))
                     elif isinstance(tool, PromptTools):
                         prompt_tools_instances.append(tool)
                     else:
-                        raise ValueError(f"prompt_tools_factory must be an instance of or list of MechanicianToolsFactory. Received: {tool}")      
+                        raise ValueError(f"prompt_tools_provisioner must be an instance of or list of MechanicianToolsProvisioner. Received: {tool}")      
                 return PromptToolKit(tools=prompt_tools_instances)
             else:
-                raise ValueError(f"prompt_tools_factory must be an instance of or a list of MechanicianToolsFactory. Received: {self.prompt_tools_factory}")
+                raise ValueError(f"prompt_tools_provisioner must be an instance of or a list of MechanicianToolsProvisioner. Received: {self.prompt_tools_provisioner}")
 
             
     

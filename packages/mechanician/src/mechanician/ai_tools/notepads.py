@@ -1,4 +1,4 @@
-from mechanician.tools import AITools, MechanicianToolsFactory
+from mechanician.tools import AITools, MechanicianToolsProvisioner
 from abc import ABC, abstractmethod
 import json
 import logging
@@ -246,25 +246,25 @@ class NotepadFileStore(NotepadStore):
 
 
 ###############################################################################
-## NotepadStoreFactory
+## NotepadStoreProvisioner
 ###############################################################################
   
-class NotepadStoreFactory(ABC):
+class NotepadStoreProvisioner(ABC):
     @abstractmethod
     def create_notepad_store(self, notepad_name: str) -> NotepadStore:
         pass
  
 
 ###############################################################################
-## NotepadAIToolsFactory
+## NotepadAIToolsProvisioner
 ###############################################################################
   
-class NotepadAIToolsFactory(MechanicianToolsFactory):
+class NotepadAIToolsProvisioner(MechanicianToolsProvisioner):
     
     def __init__(self,
-                 notepad_store_factory: NotepadStoreFactory,):
+                 notepad_store_provisioner: NotepadStoreProvisioner,):
         
-        self.notepad_store_factory = notepad_store_factory
+        self.notepad_store_provisioner = notepad_store_provisioner
 
 
     def create_tools(self, context: dict={}):
@@ -272,28 +272,28 @@ class NotepadAIToolsFactory(MechanicianToolsFactory):
         if not notepad_name:
             # generate random notepad name
             notepad_name = f"notepad_{str(uuid.uuid4())}"
-        notepad_store = self.notepad_store_factory.create_notepad_store(notepad_name=notepad_name)
+        notepad_store = self.notepad_store_provisioner.create_notepad_store(notepad_name=notepad_name)
         return NotepadAITools(notepad_store=notepad_store)
 
 
 ###############################################################################
-## UserNotepadAIToolsFactory
+## UserNotepadAIToolsProvisioner
 ###############################################################################
 
-class UserNotepadAIToolsFactory(NotepadAIToolsFactory):
+class UserNotepadAIToolsProvisioner(NotepadAIToolsProvisioner):
 
     def create_tools(self, context: dict={}):
         notepad_name = context.get("username", None)
         context["notepad_name"] = notepad_name
-        return super(UserNotepadAIToolsFactory, self).create_tools(context=context)
+        return super(UserNotepadAIToolsProvisioner, self).create_tools(context=context)
 
 
 
 ###############################################################################
-## NotepadFileStoreFactory
+## NotepadFileStoreProvisioner
 ###############################################################################
   
-class NotepadFileStoreFactory(NotepadStoreFactory):
+class NotepadFileStoreProvisioner(NotepadStoreProvisioner):
     def __init__(self,
                  notepad_directory_name: str = "notepads",):
         self.notepad_directory_name = notepad_directory_name

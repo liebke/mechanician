@@ -6,7 +6,7 @@ import os
 import json
 import traceback
 from mechanician.templates import PromptTemplate
-from mechanician.resources import ResourceConnector, ResourceConnectorFactory
+from mechanician.resources import ResourceConnector, ResourceConnectorProvisioner
 from pprint import pprint
 
 logger = logging.getLogger(__name__)
@@ -329,10 +329,10 @@ class AIToolKit(MechanicianToolKit, AITools):
 
 
 ###############################################################################
-## MechanicianToolsFactory
+## MechanicianToolsProvisioner
 ###############################################################################
  
-class MechanicianToolsFactory(ABC): 
+class MechanicianToolsProvisioner(ABC): 
         
     @abstractmethod
     def create_tools(self, context:dict={}) -> MechanicianTools:
@@ -343,17 +343,17 @@ class MechanicianToolsFactory(ABC):
 ## PROMPT TOOLS FACTORY
 ###############################################################################
 
-class PromptToolsFactory(MechanicianToolsFactory):
+class PromptToolsProvisioner(MechanicianToolsProvisioner):
 
     def __init__(self, 
-                 resource_connector_factory: ResourceConnectorFactory,
+                 resource_connector_provisioner: ResourceConnectorProvisioner,
                  prompt_template_directory:str="./templates"):
-        self.resource_connector_factory = resource_connector_factory
+        self.resource_connector_provisioner = resource_connector_provisioner
         self.prompt_template_directory = prompt_template_directory
 
 
     def create_tools(self, context:dict={}) -> MechanicianTools:
-        resource_connector = self.resource_connector_factory.create_connector(context)
+        resource_connector = self.resource_connector_provisioner.create_connector(context)
         return PromptTools(resource_connector=resource_connector,
                            prompt_template_directory=self.prompt_template_directory)
     

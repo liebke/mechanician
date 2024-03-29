@@ -1,6 +1,6 @@
 
 from openai import OpenAI
-from mechanician.ai_connectors import StreamingAIConnector, AIConnectorFactory
+from mechanician.ai_connectors import StreamingAIConnector, AIConnectorProvisioner
 from mechanician.tools import AITools
 from mechanician.util import SimpleStreamPrinter
 import json
@@ -242,10 +242,10 @@ class OpenAIChatConnector(StreamingAIConnector):
 
 
 ###############################################################################
-## OpenAIChatConnectorFactory
+## OpenAIChatConnectorProvisioner
 ###############################################################################
 
-class OpenAIChatConnectorFactory(AIConnectorFactory):
+class OpenAIChatConnectorProvisioner(AIConnectorProvisioner):
 
     def __init__(self,
                  model_name=None,

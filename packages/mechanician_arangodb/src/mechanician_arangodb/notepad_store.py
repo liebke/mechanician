@@ -1,4 +1,4 @@
-from mechanician.ai_tools.notepads import NotepadStore, NotepadStoreFactory
+from mechanician.ai_tools.notepads import NotepadStore, NotepadStoreProvisioner
 from arango import ArangoClient
 import json
 import logging
@@ -17,10 +17,10 @@ logger.addHandler(handler)
 
 
 ###############################################################################
-## ArangoFileStoreFactory
+## ArangoFileStoreProvisioner
 ###############################################################################
   
-class ArangoNotepadStoreFactory(NotepadStoreFactory):
+class ArangoNotepadStoreProvisioner(NotepadStoreProvisioner):
 
     def __init__(self,
                  arango_client: ArangoClient, 

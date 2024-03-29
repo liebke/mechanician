@@ -1,6 +1,6 @@
 
-from mechanician.ai_connectors import AIConnector, AIConnectorFactory
-from mechanician.tools import AITools, AIToolKit, MechanicianTools, MechanicianToolsFactory
+from mechanician.ai_connectors import AIConnector, AIConnectorProvisioner
+from mechanician.tools import AITools, AIToolKit, MechanicianTools, MechanicianToolsProvisioner
 import json
 import os
 import logging
@@ -185,24 +185,24 @@ class TAGAI():
 
 
 ###############################################################################
-## TAGAIFactory
+## TAGAIProvisioner
 ###############################################################################
  
-class TAGAIFactory(ABC):
+class TAGAIProvisioner(ABC):
     def __init__(self,
-                 ai_connector_factory: 'AIConnectorFactory',
+                 ai_connector_provisioner: 'AIConnectorProvisioner',
                  ai_instructions=None, 
                  ai_tool_instructions=None,
                  instruction_set_directory=None,
                  tool_instruction_file_name="ai_tool_instructions.json",
                  ai_instruction_file_name="ai_instructions.md",
-                 ai_tools_factory=None, 
+                 ai_tools_provisioner=None, 
                  name="Daring Mechanician AI"):
         
         # TAGAI parameters
-        self.ai_connector_factory = ai_connector_factory
+        self.ai_connector_provisioner = ai_connector_provisioner
         self.name = name
-        self.ai_tools_factory = ai_tools_factory
+        self.ai_tools_provisioner = ai_tools_provisioner
         self.ai_instructions = ai_instructions
         self.ai_tool_instructions = ai_tool_instructions
         self.instruction_set_directory = instruction_set_directory
@@ -211,21 +211,21 @@ class TAGAIFactory(ABC):
         
         
     def create_ai_instance(self, context={}) -> TAGAI:
-        ai_connector = self.ai_connector_factory.create_ai_connector(context=context)
-        if self.ai_tools_factory is not None:
-            if isinstance(self.ai_tools_factory, AITools):
+        ai_connector = self.ai_connector_provisioner.create_ai_connector(context=context)
+        if self.ai_tools_provisioner is not None:
+            if isinstance(self.ai_tools_provisioner, AITools):
                 ai_tools = ai_tools
-            elif isinstance(self.ai_tools_factory, MechanicianToolsFactory):
+            elif isinstance(self.ai_tools_provisioner, MechanicianToolsProvisioner):
                 ai_tools = ai_tools.create_tools(context=context)
-            elif isinstance(self.ai_tools_factory, list):
+            elif isinstance(self.ai_tools_provisioner, list):
                 ai_tools_instances = []
-                for at in self.ai_tools_factory:
-                    if isinstance(at, MechanicianToolsFactory):
+                for at in self.ai_tools_provisioner:
+                    if isinstance(at, MechanicianToolsProvisioner):
                         ai_tools_instances.append(at.create_tools(context=context))
                     elif isinstance(at, MechanicianTools):
                         ai_tools_instances.append(at)
                     else:
-                        raise ValueError(f"tools must be an instance or list of instances of MechanicianTools or MechanicianToolsFactory. Received: {ai_tools}")
+                        raise ValueError(f"tools must be an instance or list of instances of MechanicianTools or MechanicianToolsProvisioner. Received: {ai_tools}")
                     
                 ai_tools = AIToolKit(tools=ai_tools_instances)
             else:
