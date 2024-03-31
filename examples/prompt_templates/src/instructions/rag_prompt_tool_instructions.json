@@ -1,0 +1,26 @@
+[
+    {
+      "type": "function",
+      "function": {
+        "name": "rag_query",
+        "description": "Performs a RAG query using a Chroma Vector Database.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string",
+              "description": "The question to answer."
+            },
+              "template": {
+                "type": "string",
+                "default": "rag_query.md",
+                "description": "The name of the prompt template file to use."
+              }
+          },
+          "required": [
+            "query"
+          ]
+        }
+      }
+    }
+]

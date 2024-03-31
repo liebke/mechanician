@@ -9,6 +9,11 @@ from mechanician.ai_tools.notepads import UserNotepadAIToolsProvisioner
 from mechanician_arangodb.notepad_store import ArangoNotepadStoreProvisioner
 from arango import ArangoClient
 from .middle_earth_crm import MiddleEarthCRM
+from pprint import pprint
+
+import chromadb
+from chromadb.utils import embedding_functions
+
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +115,59 @@ class CRMConnector(ResourceConnector):
                 {"name": "customer_inventory", "data": customer_inventory}]
 
 
+###############################################################################
+## ChromaConnectorProvisioner
+###############################################################################
+    
+class ChromaConnectorProvisioner(ResourceConnectorProvisioner):
+        
+        def __init__(self, collection_name="wikipedia_collection"):
+            self.collection_name = collection_name
+    
+
+        def create_connector(self, context: dict={}):
+            # Use the context to control access to resources provided by the connector.
+            # ...
+            return ChromaConnector(collection_name=self.collection_name)
+
+
+###############################################################################
+## ChromaConnector
+###############################################################################
+
+# docker run -p 8080:8000 chromadb/chroma
+class ChromaConnector(ResourceConnector):
+    def __init__(self, collection_name, data_path="./data/chromadb"):
+
+        self.collection_name = collection_name
+        self.data_path = data_path
+        self.embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
+        
+
+    def get_collection(self):
+        # chroma_client = chromadb.PersistentClient(path=self.data_path)
+        chroma_client = chromadb.HttpClient(host='127.0.0.1', port=8080)
+        return chroma_client.get_or_create_collection(name=self.collection_name,
+                                                      embedding_function=self.embedding_func,
+                                                      metadata={"hnsw:space": "cosine"})
+
+
+    def rag_query(self, params):
+        question = params.get("question")
+        results = self.get_collection().query(query_texts=[question],
+                                              n_results=20)
+        print("RESULTS: ")
+        pprint(results)
+        documents = results.get("documents")[0]
+        metadatas = results.get("metadatas")[0]
+        data = []
+        for i in range(len(documents)):
+            data.append({"source": metadatas[i].get("source"), "text": documents[i]})
+
+        return [{"name": "question", "data": question},
+                {"name": "context", "data": data}]
+    
+
 
 
 ###############################################################################
@@ -130,14 +188,54 @@ def init_app():
                                                               model_name=os.getenv("OPENAI_MODEL_NAME"))
     crm_connector_provisioner = CRMConnectorProvisioner(crm_data_directory="./data")
 
+    chroma_connector_provisioner = ChromaConnectorProvisioner(collection_name="wikipedia_collection")
+
     return MechanicianWebApp(ai_connector_provisioner=ai_connector_provisioner,
                              ai_tools_provisioner=[notepad_tools_provisioner],
-                             resource_connector_provisioner=crm_connector_provisioner,
+                            #  resource_connector_provisioner=crm_connector_provisioner,
+                             resource_connector_provisioner=chroma_connector_provisioner,
                              prompt_template_directory="./templates",
-                             name="MiddleEarth CRM AI")
+                             name="MiddleEarth CRM AI",
+                             prompt_tool_instruction_file_name="rag_prompt_tool_instructions.json",)
+
+
+
+
+
+# def query_chroma(collection_name, query_text):
+#     import chromadb
+#     chroma_client = chromadb.Client()
+#     collection = chroma_client.get_collection(name=collection_name)
+#     # Query the collection
+#     results = collection.query(
+#         query_texts=[query_text],
+#         n_results=2
+#     )
+
+#     metadatas = results.get("metadatas")
+#     for metadata_list in metadatas:
+#         for metadata in metadata_list:
+#             print("SOURCE: ", metadata.get("source"))
+# Example usage:
+# chroma_test("https://en.wikipedia.org/wiki/Example", "This is a query document")
+
+# def run_chroma_test():
+#     load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Mechanician")
+#     load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Artificial_intelligence")
+#     load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)")
+#     query_chroma("wikipedia_collection", "what is Scaled dot-product attention?")
+
+
+# def load_chroma_data():
+#     # load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Mechanician")
+#     # load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Artificial_intelligence")
+#     # load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)")
+#     load_pdf_into_chroma("wikipedia_collection", "/Users/davidliebke/Documents/learning_llms/papers/attention_is_all_you_need.pdf")
 
 
 def run_app():
+    # load_chroma_data()
+
     load_dotenv()
     uvicorn.run(init_app(), 
                 host="0.0.0.0", 
@@ -148,6 +246,7 @@ def run_app():
 
 if __name__ == '__main__':
     run_app()
+    # load_chroma_data()
 
 
 

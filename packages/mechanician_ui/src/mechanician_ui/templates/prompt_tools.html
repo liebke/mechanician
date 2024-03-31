@@ -141,7 +141,7 @@
             word-wrap: break-word; /* To break long words if necessary */
         }
 
-        #prompt, #prompt_template {
+        #prompt, #prompt_template, #prompt_resources {
             width: 500px;
             font-size: 14px;
             height: 300px;
@@ -276,6 +276,25 @@
                 }
         }
 
+        function load_prompt_resources(form_data) {
+            fetch('/prompt_tools/resources', {
+                    method: 'POST',
+                    body: form_data, 
+                    headers: {
+                        // If you're sending JSON, you'll need this header
+                        // 'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('prompt_resources').value = JSON.stringify(data.resources, null, 2);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+
+
         function generate_form_fields(form, func) {
             form.innerHTML = ''; // Clear previous fields
             const title = document.createElement('p');
@@ -313,6 +332,16 @@
                 submit_button.textContent = 'Generate Prompt';
                 form.appendChild(submit_button);
             }
+
+            const prompt_resources = document.createElement('textarea');
+            prompt_resources.id = 'prompt_resources';
+            prompt_resources.name = 'prompt_resources';
+            prompt_resources.classList.add('prompt_resources');
+            prompt_resources.readOnly = true;
+            form.appendChild(prompt_resources);
+
+
+
 
             if (!document.getElementById('prompt-form')) {
                 // const prompt_form_container = document.getElementById('form-container');
@@ -381,6 +410,7 @@
                 e.preventDefault(); // Prevent the default form submission
                 const form_data = new FormData(this); // 'this' refers to the form
                 form_data.append('prompt_template', document.getElementById('prompt_template').value);
+                load_prompt_resources(form_data);
 
                 fetch('/call_prompt_tool', {
                     method: 'POST',

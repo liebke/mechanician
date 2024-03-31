@@ -55,6 +55,8 @@ class MechanicianWebApp:
                  ai_connector_provisioner: 'AIConnectorProvisioner',
                  resource_connector_provisioner = None,
                  prompt_template_directory="./templates",
+                 prompt_tool_instruction_file_name:str=None,
+                 prompt_instructions_directory:str=None,
                  prompt_tools_provisioner=None,
                  ai_instructions=None, 
                  ai_tool_instructions=None,
@@ -75,7 +77,9 @@ class MechanicianWebApp:
         if isinstance(resource_connector_provisioner, ResourceConnectorProvisioner) and prompt_tools_provisioner is None:
             print("Creating PromptToolsProvisioner from ResourceConnectorProvisioner")
             self.prompt_tools_provisioner = PromptToolsProvisioner(resource_connector_provisioner = resource_connector_provisioner,
-                                                           prompt_template_directory=prompt_template_directory)  
+                                                                   prompt_template_directory=prompt_template_directory,
+                                                                   prompt_instructions_directory=prompt_instructions_directory,
+                                                                   prompt_tool_instruction_file_name=prompt_tool_instruction_file_name)  
         self.ai_instructions = ai_instructions
         self.ai_tool_instructions = ai_tool_instructions
         self.instruction_set_directory = instruction_set_directory
@@ -401,6 +405,38 @@ class MechanicianWebApp:
             else:
                 prompt_template = prompt_tools.get_prompt_template(prompt_template_name=template_name)
                 return JSONResponse(content=prompt_template)
+            
+
+        @self.app.post("/prompt_tools/resources")
+        async def prompt_tools_resources(request: Request):
+            try:
+                self.verify_access_token(request)
+                user_data = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+                if user_data is None:
+                    response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                    return response
+
+            except HTTPException as e:
+                logger.error(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+
+            username = user_data.get("username", None)
+            if username is None:
+                return JSONResponse(content={"error": "No username provided."})
+            
+            # get prompt template name from url path
+            form_data = await request.form()
+            form_data_dict = dict(form_data)
+            function_name = form_data_dict.get("function_name", "")
+
+            token = request.cookies.get("access_token")
+            prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(token))
+            if function_name is None:
+                return JSONResponse(content={"error": "No function name provided."})
+            else:
+                resources = prompt_tools.get_resources(function_name=function_name, params=form_data_dict)
+                return JSONResponse(content=resources)
 
         
 
