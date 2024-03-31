@@ -7,12 +7,10 @@ from chromadb.utils import embedding_functions
 import chromadb
 import argparse
 
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 20
 
 def load_url_into_chroma(collection_name, url):
-    # pip install chromadb
-    # pip install beautifulsoup4
-    # pip install requests
-
     # Fetch webpage content
     response = requests.get(url)
     webpage_content = response.text
@@ -22,8 +20,8 @@ def load_url_into_chroma(collection_name, url):
 
     text_splitter = CharacterTextSplitter(
         separator = "\n",
-        chunk_size = 200,
-        chunk_overlap = 0
+        chunk_size = CHUNK_SIZE,
+        chunk_overlap = CHUNK_OVERLAP,
     )
     splits = text_splitter.split_text(text_content)
     metadata = []

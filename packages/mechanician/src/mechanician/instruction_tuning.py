@@ -1,5 +1,5 @@
 import json
-from mechanician import TAGAI
+from mechanician import AI
 from mechanician.ai_connectors import AIConnector
 from mechanician.tools import AITools
 from rich.console import Console
@@ -49,7 +49,7 @@ def instruction_auto_tuning_ai(ai_connector: AIConnector,
     tools = AutoTuningAITools(tuning_session_dir=tuning_session_dir,
                               instructions_dir=instructions_dir)
     
-    ai = TAGAI(ai_connector=ai_connector, 
+    ai = AI(ai_connector=ai_connector, 
                ai_instructions=tuner_instructions, 
                ai_tool_instructions=auto_tuner_tool_instructions,
                ai_tools=tools,

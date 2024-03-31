@@ -16,7 +16,7 @@ doc_tools = DocumentManagerAITools(arango_client, database_name=database_name)
 ```
 
 ```python
-ai = TAGAI(ai_connector=ai_connector, 
+ai = AI(ai_connector=ai_connector, 
            instruction_set_directory="./instructions",
            ai_tools=doc_tools,
            name="Movie Document Manager AI")

@@ -11,6 +11,7 @@ from mechanician_arangodb.notepad_store import ArangoNotepadStoreProvisioner
 from arango import ArangoClient
 from .middle_earth_crm import MiddleEarthCRM
 from pprint import pprint
+from mechanician.ai import AIProvisioner
 
 import chromadb
 from chromadb.utils import embedding_functions
@@ -173,19 +174,24 @@ class ChromaConnector(ResourceConnector):
 ###############################################################################
     
 def init_app():
-    database_name="test_notepad_db"
-    notepad_collection_name="notepads"
+
+    # Set up UserNotepad AI Tools Provisioner
     arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
     notepad_store_provisioner = ArangoNotepadStoreProvisioner(arango_client=arango_client, 
-                                                              database_name=database_name,
-                                                              notepad_collection_name=notepad_collection_name,
+                                                              database_name="test_notepad_db",
+                                                              notepad_collection_name="notepads",
                                                               db_username=os.getenv("ARANGO_USERNAME"),
                                                               db_password=os.getenv("ARANGO_PASSWORD"))
     notepad_tools_provisioner = UserNotepadAIToolsProvisioner(notepad_store_provisioner=notepad_store_provisioner)
 
+    # Set up the AI provisioner
     ai_connector_provisioner = OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"), 
                                                               model_name=os.getenv("OPENAI_MODEL_NAME"))
+    ai_provisioner = AIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
+                                   name = "MiddleEarth CRM AI",
+                                   ai_tools_provisioners = [notepad_tools_provisioner])
     
+    # Set up the Prompt Tools provisioners
     crm_connector_provisioner = CRMConnectorProvisioner(crm_data_directory="./data")
     crm_tools_provisioner = PromptToolsProvisioner(resource_connector_provisioner = crm_connector_provisioner,
                                                    prompt_template_directory="./templates",
@@ -197,11 +203,11 @@ def init_app():
                                                       prompt_template_directory="./templates",
                                                       prompt_instructions_directory="./src/instructions",
                                                       prompt_tool_instruction_file_name="rag_prompt_tool_instructions.json") 
-
-    return MechanicianWebApp(ai_connector_provisioner=ai_connector_provisioner,
-                             ai_tools_provisioners=[notepad_tools_provisioner],
-                             prompt_tools_provisioners=[crm_tools_provisioner, chroma_tools_provisioner],
-                             name="MiddleEarth CRM AI")
+    
+    # Set up the Mechanician Web App
+    return MechanicianWebApp(ai_provisioner=ai_provisioner,
+                             prompt_tools_provisioners=[crm_tools_provisioner, 
+                                                        chroma_tools_provisioner])
 
 
 def run_app():

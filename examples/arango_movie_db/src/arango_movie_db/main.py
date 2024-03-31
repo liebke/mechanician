@@ -1,4 +1,4 @@
-from mechanician import TAGAI, shell
+from mechanician import AI, shell
 from mechanician_openai import OpenAIChatConnector, OpenAIAssistantsConnector
 from mechanician_arangodb import DocumentManagerAITools
 from arango import ArangoClient
@@ -24,7 +24,7 @@ def init_ai(database_name="test_db"):
     else:
         ai_connector = OpenAIChatConnector(api_key=api_key, model_name=model_name)
 
-    ai = TAGAI(ai_connector=ai_connector, 
+    ai = AI(ai_connector=ai_connector, 
                instruction_set_directory="./instructions",
                ai_tools=doc_tools,
                name="Movie Document Manager AI")

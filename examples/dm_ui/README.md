@@ -79,7 +79,7 @@ Now, generate the invitation to your hobbit friends.
 
 #### Contact
 
-[crm.json](https://github.com/liebke/mechanician/blob/main/examples/prompt_templates/crm_data.json)
+[crm.json](https://github.com/liebke/mechanician/blob/main/examples/dm_ui/crm_data.json)
 
 
 ```json
@@ -327,12 +327,12 @@ Gandalf the White
 
 ### Prompt Templates & Tools Example Project
 
-[Example Project](https://github.com/liebke/mechanician/tree/main/examples/prompt_templates)
+[Example Project](https://github.com/liebke/mechanician/tree/main/examples/dm_ui)
 
 
 ### Prompt Templates
 
-[party_invite.md](https://github.com/liebke/mechanician/blob/main/examples/prompt_templates/templates/party_invite.md)
+[party_invite.md](https://github.com/liebke/mechanician/blob/main/examples/dm_ui/templates/party_invite.md)
 
 ```python
 from mechanician.templates import PromptTemplate
@@ -365,7 +365,7 @@ from mechanician.tools import PromptTools
 
 ### MiddleEarthCRMPromptTools
 
-[crm_prompt_tools.py](https://github.com/liebke/mechanician/blob/64fbc65f8eba19183a831294d0015cf5c8178082/examples/prompt_templates/src/prompt_templates/main.py#L84)
+[crm_prompt_tools.py](https://github.com/liebke/mechanician/blob/64fbc65f8eba19183a831294d0015cf5c8178082/examples/dm_ui/src/dm_ui/main.py#L84)
 
 ```python
 class MiddleEarthCRMPromptTools(PromptTools):
@@ -471,8 +471,8 @@ Contact Bilbo Baggins promptly to affirm case prioritization and offer support f
 Create a virtual environment and install the requirements.
 
 ```bash
-conda create -n dm_prompt_template_env python=3.11
-conda activate dm_prompt_template_env
+conda create -n dm_ui_env python=3.11
+conda activate dm_ui_env
 ```
 
 Install the example project using pip:
@@ -524,5 +524,5 @@ uvicorn.run("mechanician_ui.main:app", host="127.0.0.1", port=8000, ssl_keyfile=
 
 ```bash
 conda deactivate
-conda remove --name dm_prompt_template_env --all
+conda remove --name dm_ui_env --all
 ```

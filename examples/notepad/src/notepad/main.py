@@ -1,4 +1,4 @@
-from mechanician import TAGAI, shell
+from mechanician import AI, shell
 from mechanician_openai import OpenAIChatConnector
 # from mechanician_mistral.mistral_ai_connector import MistralAIConnector
 from notepad.weather_ai_tools import MiddleEarthWeatherAITools
@@ -43,7 +43,7 @@ def init_ai(notepad_name, notepad_directory_name="./notepads"):
     # END ArangoDB notepad store
 
     notepad_tools = NotepadAITools(notepad_store=notepad_file_store)
-    ai = TAGAI(ai_connector=ai_connector, 
+    ai = AI(ai_connector=ai_connector, 
                ai_tools=[ex_tools, arango_notepad_tools],
                name="Notepad-Enabled AI")
     return ai

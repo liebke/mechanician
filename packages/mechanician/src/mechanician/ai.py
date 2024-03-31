@@ -9,7 +9,7 @@ from abc import ABC, abstractmethod
 
 logger = logging.getLogger(__name__)
 
-class TAGAI():
+class AI():
 
     ###############################################################################
     ## INIT
@@ -185,10 +185,10 @@ class TAGAI():
 
 
 ###############################################################################
-## TAGAIProvisioner
+## AIProvisioner
 ###############################################################################
  
-class TAGAIProvisioner(ABC):
+class AIProvisioner(ABC):
     def __init__(self,
                  ai_connector_provisioner: 'AIConnectorProvisioner',
                  ai_instructions=None, 
@@ -205,7 +205,7 @@ class TAGAIProvisioner(ABC):
         self.ai_instruction_file_name = ai_instruction_file_name
         
         
-    def create_ai_instance(self, context={}) -> TAGAI:
+    def create_ai_instance(self, context={}) -> AI:
         ai_connector = self.ai_connector_provisioner.create_ai_connector(context=context)
         if self.ai_tools_provisioners is not None:
             if isinstance(self.ai_tools_provisioners, AITools):
@@ -226,7 +226,7 @@ class TAGAIProvisioner(ABC):
             else:
                 raise ValueError(f"tools must be an instance of AITools or a list of AITools. Received: {ai_tools}")
 
-        ai = TAGAI(ai_connector=ai_connector, 
+        ai = AI(ai_connector=ai_connector, 
                    name = self.name,
                    ai_tools = ai_tools,
                    ai_instructions = self.ai_instructions,

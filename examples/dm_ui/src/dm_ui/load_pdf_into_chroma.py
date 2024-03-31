@@ -6,6 +6,9 @@ import PyPDF2
 import argparse
 
 
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 20
+
 def load_pdf_into_chroma(collection_name, pdf_path):
     # Now we can load our PDF in PyPDF2 from memory
     # pip install PyPDF2
@@ -41,8 +44,8 @@ def load_text_into_chroma(collection_name, doc_id, doc_source, doc_pages:list[di
         collection = chroma_client.get_collection(name=collection_name)
 
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=500,
-        chunk_overlap=20,
+        chunk_size=CHUNK_SIZE,
+        chunk_overlap=CHUNK_OVERLAP,
         length_function=len,
         is_separator_regex=False,
     )
@@ -85,6 +88,5 @@ if __name__ == "__main__":
 
 # Example usage:
 # scripts/load_pdf.sh -f /Users/davidliebke/Documents/learning_llms/papers/attention_is_all_you_need.pdf -c wikipedia_collection
-# scripts/load_pdf.sh --collection wikipedia_collection --file /Users/davidliebke/Documents/learning_llms/papers/bedrock-ug.pdf
-# scripts/load_pdf.sh --collection wikipedia_collection --file /Users/davidliebke/Documents/learning_llms/papers/mixtral_7b.pdf
-# scripts/load_pdf.sh --collection wikipedia_collection --file /Users/davidliebke/Documents/learning_llms/papers/TMF915_AI_Management_API_User_Guide_v4.0.0.pdf
+# scripts/load_pdf.sh --collection wikipedia_collection --file ~/Documents/learning_llms/papers/bedrock-ug.pdf
+# scripts/load_pdf.sh --collection wikipedia_collection --file ~/Documents/learning_llms/papers/mixtral_7b.pdf

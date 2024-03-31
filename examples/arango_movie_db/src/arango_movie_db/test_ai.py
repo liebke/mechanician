@@ -1,4 +1,4 @@
-from mechanician import TAGAI
+from mechanician import AI
 from mechanician_openai import OpenAIChatConnector
 from mechanician.testing import run_task_evaluation
 from arango_movie_db.main import init_ai
@@ -70,7 +70,7 @@ instructions = """
 def ai_evaluator():
      ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
                                         model_name=os.getenv("OPENAI_MODEL_NAME"))
-     return TAGAI(ai_connector,
+     return AI(ai_connector,
                   ai_instructions=instructions, 
                   name="Task Evaluator")
                                     

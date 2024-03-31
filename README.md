@@ -70,7 +70,7 @@ See [Getting Started with AI-Driven Testing](#getting-started-with-ai-driven-tes
 ## Getting Started Guide: Table of Contents
 
   - [Getting Started with Daring Mechanician](#getting-started-with-daring-mechanician)
-    - [TAGAI Class](#tagai-class)
+    - [AI Class](#ai-class)
     - [AITools Abstract Class](#aitools-abstract-class)
     - [Instruction Sets](#instruction-sets)
       - [AI Instructions](#ai-instructions)
@@ -133,21 +133,21 @@ The [```examples```](https://github.com/liebke/mechanician/tree/main/examples) d
 
 The next few sections will cover the core classes and concepts used to build and run **Tool Augmented Generative AI** (TAG AI) applications.
 
-* TAGAI Class
+* AI Class
 * AITools Abstract Class
 * Instruction Sets
 * AIConnector Classes
 * Mechanician Shell
 
 
-### TAGAI Class
+### AI Class
 
-The TAGAI class is used to create instance of a **Tool Augmented Generative AI**.
+The AI class is used to create instance of a **Tool Augmented Generative AI**.
 
 ```python
-from mechanician import TAGAI
+from mechanician import AI
 
-ai = TAGAI(ai_connector=ai_connector,
+ai = AI(ai_connector=ai_connector,
            ai_instructions=ai_instructions,
            ai_tool_instructions=tool_instructions,
            ai_tools=tools)
@@ -157,13 +157,13 @@ Alternatively, you can pass an `instruction_set_directory` to the constructor, a
 
 
 ```python
-ai = TAGAI(ai_connector=OpenAIChatConnector(),
+ai = AI(ai_connector=OpenAIChatConnector(),
            instruction_set_directory="./instructions",
            ai_tools=tools)
 ```
 
 
-The `TAGAI` class takes the following parameters:
+The `AI` class takes the following parameters:
 
 * [AIConnector](#aiconnector-classes): Provides a connection to an LLM API, such as the OpenAI Chat API or the OpenAI Assistants API.
 
@@ -172,7 +172,7 @@ The `TAGAI` class takes the following parameters:
 * [Instruction Set Directory](#instruction-sets): The directory containing the instruction for the TAG AI, describing its role and behaviors, and the instructions for the tools used by the AI.
 
 
-Here are some examples of how to use the `TAGAI` class:
+Here are some examples of how to use the `AI` class:
 
 * [mechanician_tmdb/main.py](https://github.com/liebke/mechanician/blob/0f5b4a9d344f384499d2ed9aa01b0115f60c2acb/examples/tmdb/src/mechanician_tmdb/main.py#L17): a TAG AI that uses `TMDbAITools` for interacting with the The Movie Database (TMDb) API, the `OpenAIChatConnector` to connect to the OpenAI Chat API.
 
@@ -211,20 +211,20 @@ Examples of AITools classes:
 
 ### Instruction Sets
 
-If you pass an `instruction_set_directory` to the `TAGAI` constructor, it will load the the *ai_instructions* and *ai_tool_instructions* from the designated directory. 
+If you pass an `instruction_set_directory` to the `AI` constructor, it will load the the *ai_instructions* and *ai_tool_instructions* from the designated directory. 
 
 ```python
-ai = TAGAI(ai_connector=OpenAIChatConnector(),
+ai = AI(ai_connector=OpenAIChatConnector(),
            instruction_set_directory="./instructions",
            ai_tools=tools)
 ```
 
 The default name and location of the directory is **./instructions**, and the default names for the instruction files are **ai_instructions.md** and **ai_tool_instructions.json**.
 
-Alternatively, you can pass the *ai_instructions* and *ai_tool_instructions* directly to the `TAGAI` constructor.
+Alternatively, you can pass the *ai_instructions* and *ai_tool_instructions* directly to the `AI` constructor.
 
 ```python
-ai = TAGAI(ai_connector=ai_connector,
+ai = AI(ai_connector=ai_connector,
            ai_instructions=ai_instructions,
            ai_tool_instructions=tool_instructions,
            ai_tools=tools)
@@ -337,7 +337,7 @@ shell.run(ai)
 
 See the [arango_movie_db example](https://github.com/liebke/mechanician/tree/main/examples/arango_movie_db) to see how to use the **Instruction Auto-Tuning** (IAT) process to refine the instructions for a **Movie Document Database Assistant**.
 
-Use the `save_tuning_session` method of the TAGAI class to save the current tuning session,
+Use the `save_tuning_session` method of the AI class to save the current tuning session,
 
 ```python
 ai.save_tuning_session()
@@ -491,7 +491,7 @@ doc_tools = DocumentManagerAITools(arango_client, database_name=database_name)
 ```
 
 ```python
-ai = TAGAI(ai_connector=ai_connector, 
+ai = AI(ai_connector=ai_connector, 
            instruction_set_directory="./instructions",
            ai_tools=doc_tools,
            name="Movie Document Manager AI")

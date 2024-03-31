@@ -1,4 +1,4 @@
-from mechanician import TAGAI
+from mechanician import AI
 from mechanician.util import print_markdown
 from rich.console import Console 
 import logging
@@ -33,7 +33,7 @@ def get_multiline_input():
 ## PREPRCOESS_PROMPT
 ###############################################################################
 
-def preprocess_prompt(ai: 'TAGAI', prompt: str, prompt_tools: 'PromptTools' = None):
+def preprocess_prompt(ai: 'AI', prompt: str, prompt_tools: 'PromptTools' = None):
 
     # Load a file
     if prompt.startswith('/file'):
@@ -115,7 +115,7 @@ def print_header(name):
 ## RUN
 ###############################################################################
 
-def run(ai: TAGAI, prompt_tools:'MechanicianTools' = None):
+def run(ai: AI, prompt_tools:'MechanicianTools' = None):
 
     if prompt_tools is not None:
         if isinstance(prompt_tools, MechanicianTools):

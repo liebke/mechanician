@@ -2,7 +2,7 @@ from mechanician.testing import QandATest, run_q_and_a_evaluations
 import unittest
 from mechanician_tmdb.main import init_ai
 from mechanician_openai import OpenAIChatConnector
-from mechanician import TAGAI
+from mechanician import AI
 import logging
 import os
 from dotenv import load_dotenv
@@ -17,7 +17,7 @@ def ai_evaluator():
     instructions = """You are a test-evaluator for an AI assistant. You are given a question and an answer. Your job is to determine if the answer is correct. If the answer is correct, respond with PASS. If the answer is incorrect, respond with FAIL."""
     ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
                                          model_name=os.getenv("OPENAI_MODEL_NAME"))
-    return TAGAI(ai_connector,
+    return AI(ai_connector,
                  ai_instructions=instructions, 
                  name="QandA Test Evaluator")
 

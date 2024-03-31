@@ -1,4 +1,4 @@
-from mechanician import TAGAI, shell
+from mechanician import AI, shell
 from mechanician_openai import OpenAIChatConnector
 # from mechanician_openai import OpenAIAssistantsConnector
 from mechanician_tmdb.tmdb_ai_tools import TMDbAITools
@@ -18,7 +18,7 @@ def init_ai():
     # Initialize the connection to the AI assistant
     ai_connector = OpenAIChatConnector(api_key=os.getenv("OPENAI_API_KEY"), 
                                          model_name=os.getenv("OPENAI_MODEL_NAME"))
-    ai = TAGAI(ai_connector,
+    ai = AI(ai_connector,
                instruction_set_directory="./instructions",
                ai_tools=tmdb_tools,
                name="TMDB AI" )

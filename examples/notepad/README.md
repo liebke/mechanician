@@ -121,14 +121,14 @@ notepad_tools = NotepadAITools(notepad_store=notepad_store)
 
 ### Self-Explanatory AITools
 
-The `NotepadAITools` class can be described as "self-explanatory", meaning it provides the `get_tool_instructions` and `get_ai_instructions` methods that will be used by the `TAGAI` class to retrieve the instructions sets.
+The `NotepadAITools` class can be described as "self-explanatory", meaning it provides the `get_tool_instructions` and `get_ai_instructions` methods that will be used by the `AI` class to retrieve the instructions sets.
 
-This means that you don't need to pass the `ai_instructions` and `ai_tool_instructions` parameters to the `TAGAI` when initializing it, as it can get them directly from the `NotepadAITools` instance.
+This means that you don't need to pass the `ai_instructions` and `ai_tool_instructions` parameters to the `AI` when initializing it, as it can get them directly from the `NotepadAITools` instance.
 
 ```python
-from mechanician import TAGAI, shell
+from mechanician import AI, shell
 
-ai = TAGAI(ai_connector=ai_connector, 
+ai = AI(ai_connector=ai_connector, 
            ai_tools=notepad_tools,
            name="Notepad-Enabled AI")
 
@@ -137,16 +137,16 @@ shell.run(ai)
 
 
 
-### Passing Multiple AITools to a TAGAI
+### Passing Multiple AITools to a AI
 
-You can now pass a list of self-explanatory *AITools* to the *TAGAI* class using the `tools` parameter.
+You can now pass a list of self-explanatory *AITools* to the *AI* class using the `tools` parameter.
 
 ```python
 from ex_tools import MiddleEarthWeatherAITools
 
 weather_tools = MiddleEarthWeatherAITools()
 
-ai = TAGAI(ai_connector=ai_connector, 
+ai = AI(ai_connector=ai_connector, 
            ai_tools=[notepad_tools, weather_tools],
            name="Notepad-Enabled AI")
 ```
@@ -156,7 +156,7 @@ Each instance of `AITools` should use the same "self-explanatory" approach as `N
 
 ### Writing Self-Explanatory AITools
 
-When creating new sub-classes of [AITools](https://github.com/liebke/mechanician/blob/main/packages/mechanician/src/mechanician/ai_tools.py), you will want to provide both the `ai_instructions` and `ai_tool_instructions` so that the `TAGAI` class can successfully provide instructions to the AI on how to use your tools.
+When creating new sub-classes of [AITools](https://github.com/liebke/mechanician/blob/main/packages/mechanician/src/mechanician/ai_tools.py), you will want to provide both the `ai_instructions` and `ai_tool_instructions` so that the `AI` class can successfully provide instructions to the AI on how to use your tools.
 
 You can do this by:
 

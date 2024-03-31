@@ -1,7 +1,7 @@
 from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect, status, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
-from mechanician.ai_connectors import AIConnectorProvisioner
-from mechanician import TAGAI, TAGAIProvisioner
+# from mechanician.ai_connectors import AIConnectorProvisioner
+from mechanician import AI, AIProvisioner
 from typing import Dict
 import json
 import asyncio
@@ -49,25 +49,19 @@ class MechanicianWebApp:
     stop_generation = False
 
     def __init__(self, 
-                 ai_connector_provisioner: 'AIConnectorProvisioner',
+                 ai_provisioner: 'AIProvisioner',
                  prompt_tools_provisioners=None,
-                 ai_instructions=None, 
-                 instruction_set_directory=None,
-                 ai_instruction_file_name=None,
-                 ai_tools_provisioners=None, 
-                 name="Daring Mechanician AI Assistant",
                  credentials_manager: CredentialsManager=None,
                  credentials_file_path="./credentials.json",
                  dm_admin_username=None,
                  dm_admin_password=None):
         
-        self.ai_connector_provisioner = ai_connector_provisioner
+        if ai_provisioner is None:
+            raise ValueError("ai_provisioner must be provided")
+
+        self.ai_provisioner = ai_provisioner
         self.prompt_tools_provisioners = prompt_tools_provisioners
-        self.ai_instructions = ai_instructions
-        self.instruction_set_directory = instruction_set_directory
-        self.ai_instruction_file_name = ai_instruction_file_name
-        self.ai_tools_provisioners = ai_tools_provisioners
-        self.name = name
+        self.name = self.ai_provisioner.name
         self.credentials_manager = credentials_manager or BasicCredentialsManager(credentials_filename=credentials_file_path)
         dm_admin_username = dm_admin_username or os.getenv("DM_ADMIN_USERNAME", "mechanician")
         if not self.credentials_manager.user_exists(dm_admin_username):
@@ -78,20 +72,12 @@ class MechanicianWebApp:
                 admin_attrs = {"user_role": "Admin", "name": "Mechanician Admin"}
                 self.credentials_manager.add_credentials(dm_admin_username, dm_admin_password, admin_attrs)
 
-        self.ai_provisioner = TAGAIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
-                                                name = self.name,
-                                                ai_tools_provisioners = self.ai_tools_provisioners,
-                                                ai_instructions = self.ai_instructions,
-                                                instruction_set_directory = self.instruction_set_directory,
-                                                ai_instruction_file_name = self.ai_instruction_file_name)
-
-
         self.app = FastAPI()
         template_directory = pkg_resources.resource_filename('mechanician_ui', 'templates')
         static_files_directory = pkg_resources.resource_filename('mechanician_ui', 'static')
         self.templates = Jinja2Templates(directory=template_directory)
         self.app.mount("/static", StaticFiles(directory=static_files_directory), name="static")
-        self.ai_instances: Dict[str, TAGAI] = {}
+        self.ai_instances: Dict[str, AI] = {}
         self.prompt_tools_instances: Dict[str, PromptTools] = {}
         self.setup_routes()
         self.setup_websocket_events()
@@ -550,14 +536,6 @@ class MechanicianWebApp:
             else:
                 merged_message_history = message_history
 
-        # print("message_history:")
-        # pprint(message_history)
-        # print("-----------------------------------\n\n\n")
-        # print("client_message_history:")
-        # pprint(client_message_history)
-        # print("-----------------------------------\n\n\n")
-        # print(f"merged_message_history:")
-        # pprint(merged_message_history)
         return merged_message_history
 
 
@@ -651,7 +629,7 @@ class MechanicianWebApp:
             raise credentials_exception
 
 
-    def get_ai_instance(self, username, context:dict={}) -> TAGAI:
+    def get_ai_instance(self, username, context:dict={}) -> AI:
         if username not in self.ai_instances:
             self.ai_instances[username] = self.ai_provisioner.create_ai_instance(context=context)
         return self.ai_instances[username]
@@ -702,7 +680,7 @@ class MechanicianWebApp:
     ## PREPRCOESS_PROMPT
     ###############################################################################
 
-    def preprocess_prompt(self, ai: 'TAGAI', prompt: str, prompt_tools: 'PromptTools' = None):
+    def preprocess_prompt(self, ai: 'AI', prompt: str, prompt_tools: 'PromptTools' = None):
         if prompt.startswith('/call'):
             parsed_prompt = prompt_tools.parse_command_line(prompt)
             if parsed_prompt is None:

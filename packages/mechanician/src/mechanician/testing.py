@@ -1,6 +1,6 @@
 from mechanician.util import print_markdown
 # from mechanician.ai_connectors import AIConnector
-from mechanician import TAGAI
+from mechanician import AI
 from rich.console import Console
 from typing import List
 import logging
@@ -34,7 +34,7 @@ class QandATest:
 ## RUN_Q_AND_A_EVALUATIONS
 ###############################################################################
 
-def run_q_and_a_evaluations(ai: TAGAI, tests: List[QandATest], ai_evaluator:TAGAI=None):
+def run_q_and_a_evaluations(ai: AI, tests: List[QandATest], ai_evaluator:AI=None):
     # If ai_evaluator is None, have the ai self-evaluate
     if ai_evaluator is None:
         ai_evaluator = ai
@@ -104,7 +104,7 @@ def run_q_and_a_evaluations(ai: TAGAI, tests: List[QandATest], ai_evaluator:TAGA
 ## RUN_TASK_EVALUATION
 ###############################################################################
 
-def run_task_evaluation(ai: TAGAI, ai_evaluator: TAGAI, start_prompt: str="START"):
+def run_task_evaluation(ai: AI, ai_evaluator: AI, start_prompt: str="START"):
     messages = []
     console = Console()
     prompt = start_prompt
