@@ -192,34 +192,29 @@ class TAGAIProvisioner(ABC):
     def __init__(self,
                  ai_connector_provisioner: 'AIConnectorProvisioner',
                  ai_instructions=None, 
-                 ai_tool_instructions=None,
                  instruction_set_directory=None,
-                 tool_instruction_file_name="ai_tool_instructions.json",
-                 ai_instruction_file_name="ai_instructions.md",
-                 ai_tools_provisioner=None, 
+                 ai_instruction_file_name=None,
+                 ai_tools_provisioners=None, 
                  name="Daring Mechanician AI"):
         
-        # TAGAI parameters
         self.ai_connector_provisioner = ai_connector_provisioner
         self.name = name
-        self.ai_tools_provisioner = ai_tools_provisioner
+        self.ai_tools_provisioners = ai_tools_provisioners
         self.ai_instructions = ai_instructions
-        self.ai_tool_instructions = ai_tool_instructions
         self.instruction_set_directory = instruction_set_directory
-        self.tool_instruction_file_name = tool_instruction_file_name
         self.ai_instruction_file_name = ai_instruction_file_name
         
         
     def create_ai_instance(self, context={}) -> TAGAI:
         ai_connector = self.ai_connector_provisioner.create_ai_connector(context=context)
-        if self.ai_tools_provisioner is not None:
-            if isinstance(self.ai_tools_provisioner, AITools):
+        if self.ai_tools_provisioners is not None:
+            if isinstance(self.ai_tools_provisioners, AITools):
                 ai_tools = ai_tools
-            elif isinstance(self.ai_tools_provisioner, MechanicianToolsProvisioner):
+            elif isinstance(self.ai_tools_provisioners, MechanicianToolsProvisioner):
                 ai_tools = ai_tools.create_tools(context=context)
-            elif isinstance(self.ai_tools_provisioner, list):
+            elif isinstance(self.ai_tools_provisioners, list):
                 ai_tools_instances = []
-                for at in self.ai_tools_provisioner:
+                for at in self.ai_tools_provisioners:
                     if isinstance(at, MechanicianToolsProvisioner):
                         ai_tools_instances.append(at.create_tools(context=context))
                     elif isinstance(at, MechanicianTools):
@@ -235,9 +230,7 @@ class TAGAIProvisioner(ABC):
                    name = self.name,
                    ai_tools = ai_tools,
                    ai_instructions = self.ai_instructions,
-                   ai_tool_instructions = self.ai_tool_instructions,
                    instruction_set_directory = self.instruction_set_directory,
-                   tool_instruction_file_name = self.tool_instruction_file_name,
                    ai_instruction_file_name = self.ai_instruction_file_name )
         return ai
 

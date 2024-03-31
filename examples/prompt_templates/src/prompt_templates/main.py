@@ -3,6 +3,7 @@ import os
 import logging
 from dotenv import load_dotenv
 from mechanician.resources import ResourceConnector, ResourceConnectorProvisioner
+from mechanician.tools import PromptToolsProvisioner
 from mechanician_ui import MechanicianWebApp
 import uvicorn
 from mechanician.ai_tools.notepads import UserNotepadAIToolsProvisioner
@@ -138,7 +139,6 @@ class ChromaConnectorProvisioner(ResourceConnectorProvisioner):
 # docker run -p 8080:8000 chromadb/chroma
 class ChromaConnector(ResourceConnector):
     def __init__(self, collection_name, data_path="./data/chromadb"):
-
         self.collection_name = collection_name
         self.data_path = data_path
         self.embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
@@ -156,8 +156,6 @@ class ChromaConnector(ResourceConnector):
         question = params.get("question")
         results = self.get_collection().query(query_texts=[question],
                                               n_results=20)
-        print("RESULTS: ")
-        pprint(results)
         documents = results.get("documents")[0]
         metadatas = results.get("metadatas")[0]
         data = []
@@ -184,58 +182,29 @@ def init_app():
                                                               db_username=os.getenv("ARANGO_USERNAME"),
                                                               db_password=os.getenv("ARANGO_PASSWORD"))
     notepad_tools_provisioner = UserNotepadAIToolsProvisioner(notepad_store_provisioner=notepad_store_provisioner)
+
     ai_connector_provisioner = OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"), 
                                                               model_name=os.getenv("OPENAI_MODEL_NAME"))
+    
     crm_connector_provisioner = CRMConnectorProvisioner(crm_data_directory="./data")
-
+    crm_tools_provisioner = PromptToolsProvisioner(resource_connector_provisioner = crm_connector_provisioner,
+                                                   prompt_template_directory="./templates",
+                                                   prompt_instructions_directory="./src/instructions",
+                                                   prompt_tool_instruction_file_name="crm_prompt_tool_instructions.json") 
+     
     chroma_connector_provisioner = ChromaConnectorProvisioner(collection_name="wikipedia_collection")
+    chroma_tools_provisioner = PromptToolsProvisioner(resource_connector_provisioner = chroma_connector_provisioner,
+                                                      prompt_template_directory="./templates",
+                                                      prompt_instructions_directory="./src/instructions",
+                                                      prompt_tool_instruction_file_name="rag_prompt_tool_instructions.json") 
 
     return MechanicianWebApp(ai_connector_provisioner=ai_connector_provisioner,
-                             ai_tools_provisioner=[notepad_tools_provisioner],
-                            #  resource_connector_provisioner=crm_connector_provisioner,
-                             resource_connector_provisioner=chroma_connector_provisioner,
-                             prompt_template_directory="./templates",
-                             name="MiddleEarth CRM AI",
-                             prompt_tool_instruction_file_name="rag_prompt_tool_instructions.json",)
-
-
-
-
-
-# def query_chroma(collection_name, query_text):
-#     import chromadb
-#     chroma_client = chromadb.Client()
-#     collection = chroma_client.get_collection(name=collection_name)
-#     # Query the collection
-#     results = collection.query(
-#         query_texts=[query_text],
-#         n_results=2
-#     )
-
-#     metadatas = results.get("metadatas")
-#     for metadata_list in metadatas:
-#         for metadata in metadata_list:
-#             print("SOURCE: ", metadata.get("source"))
-# Example usage:
-# chroma_test("https://en.wikipedia.org/wiki/Example", "This is a query document")
-
-# def run_chroma_test():
-#     load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Mechanician")
-#     load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Artificial_intelligence")
-#     load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)")
-#     query_chroma("wikipedia_collection", "what is Scaled dot-product attention?")
-
-
-# def load_chroma_data():
-#     # load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Mechanician")
-#     # load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Artificial_intelligence")
-#     # load_url_into_chroma("wikipedia_collection", "https://en.wikipedia.org/wiki/Transformer_(deep_learning_architecture)")
-#     load_pdf_into_chroma("wikipedia_collection", "/Users/davidliebke/Documents/learning_llms/papers/attention_is_all_you_need.pdf")
+                             ai_tools_provisioners=[notepad_tools_provisioner],
+                             prompt_tools_provisioners=[crm_tools_provisioner, chroma_tools_provisioner],
+                             name="MiddleEarth CRM AI")
 
 
 def run_app():
-    # load_chroma_data()
-
     load_dotenv()
     uvicorn.run(init_app(), 
                 host="0.0.0.0", 
@@ -246,7 +215,6 @@ def run_app():
 
 if __name__ == '__main__':
     run_app()
-    # load_chroma_data()
 
 
 

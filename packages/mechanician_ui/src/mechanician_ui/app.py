@@ -6,16 +6,15 @@ from typing import Dict
 import json
 import asyncio
 import pkg_resources
-from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit, MechanicianToolsProvisioner, PromptToolsProvisioner
+from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit, MechanicianToolsProvisioner
 import os
-from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from starlette.responses import Response, RedirectResponse  # Import Response for setting cookies
+from fastapi.security import OAuth2PasswordRequestForm
+from starlette.responses import Response, RedirectResponse
 from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
 from mechanician_ui.auth import CredentialsManager, BasicCredentialsManager
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 import logging
-from mechanician.resources import ResourceConnectorProvisioner
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -41,8 +40,6 @@ class UserUpdate(BaseModel):
     confirm_new_password: str
     user_role: str
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
   
 ###############################################################################
 ## MechanicianWebApp class
@@ -53,39 +50,23 @@ class MechanicianWebApp:
 
     def __init__(self, 
                  ai_connector_provisioner: 'AIConnectorProvisioner',
-                 resource_connector_provisioner = None,
-                 prompt_template_directory="./templates",
-                 prompt_tool_instruction_file_name:str=None,
-                 prompt_instructions_directory:str=None,
-                 prompt_tools_provisioner=None,
+                 prompt_tools_provisioners=None,
                  ai_instructions=None, 
-                 ai_tool_instructions=None,
                  instruction_set_directory=None,
-                 tool_instruction_file_name="ai_tool_instructions.json",
-                 ai_instruction_file_name="ai_instructions.md",
-                 ai_tools_provisioner=None, 
-                 name="Daring Mechanician AI",
+                 ai_instruction_file_name=None,
+                 ai_tools_provisioners=None, 
+                 name="Daring Mechanician AI Assistant",
                  credentials_manager: CredentialsManager=None,
                  credentials_file_path="./credentials.json",
                  dm_admin_username=None,
                  dm_admin_password=None):
         
-        # Initialize class variables
         self.ai_connector_provisioner = ai_connector_provisioner
-        self.prompt_tools_provisioner = prompt_tools_provisioner
-        # if resource_connector_provisioner is instance of ResourceConnectorProvisioner, then create PromptToolsProvisioner
-        if isinstance(resource_connector_provisioner, ResourceConnectorProvisioner) and prompt_tools_provisioner is None:
-            print("Creating PromptToolsProvisioner from ResourceConnectorProvisioner")
-            self.prompt_tools_provisioner = PromptToolsProvisioner(resource_connector_provisioner = resource_connector_provisioner,
-                                                                   prompt_template_directory=prompt_template_directory,
-                                                                   prompt_instructions_directory=prompt_instructions_directory,
-                                                                   prompt_tool_instruction_file_name=prompt_tool_instruction_file_name)  
+        self.prompt_tools_provisioners = prompt_tools_provisioners
         self.ai_instructions = ai_instructions
-        self.ai_tool_instructions = ai_tool_instructions
         self.instruction_set_directory = instruction_set_directory
-        self.tool_instruction_file_name = tool_instruction_file_name
         self.ai_instruction_file_name = ai_instruction_file_name
-        self.ai_tools_provisioner = ai_tools_provisioner
+        self.ai_tools_provisioners = ai_tools_provisioners
         self.name = name
         self.credentials_manager = credentials_manager or BasicCredentialsManager(credentials_filename=credentials_file_path)
         dm_admin_username = dm_admin_username or os.getenv("DM_ADMIN_USERNAME", "mechanician")
@@ -98,24 +79,20 @@ class MechanicianWebApp:
                 self.credentials_manager.add_credentials(dm_admin_username, dm_admin_password, admin_attrs)
 
         self.ai_provisioner = TAGAIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
-                                       name = self.name,
-                                       ai_tools_provisioner = self.ai_tools_provisioner,
-                                       ai_instructions = self.ai_instructions,
-                                       ai_tool_instructions = self.ai_tool_instructions,
-                                       instruction_set_directory = self.instruction_set_directory,
-                                       tool_instruction_file_name = self.tool_instruction_file_name,
-                                       ai_instruction_file_name = self.ai_instruction_file_name)
+                                                name = self.name,
+                                                ai_tools_provisioners = self.ai_tools_provisioners,
+                                                ai_instructions = self.ai_instructions,
+                                                instruction_set_directory = self.instruction_set_directory,
+                                                ai_instruction_file_name = self.ai_instruction_file_name)
 
 
         self.app = FastAPI()
-        # Get the path to the templates directory
         template_directory = pkg_resources.resource_filename('mechanician_ui', 'templates')
         static_files_directory = pkg_resources.resource_filename('mechanician_ui', 'static')
         self.templates = Jinja2Templates(directory=template_directory)
         self.app.mount("/static", StaticFiles(directory=static_files_directory), name="static")
         self.ai_instances: Dict[str, TAGAI] = {}
         self.prompt_tools_instances: Dict[str, PromptTools] = {}
-        # Setup routes and WebSocket events
         self.setup_routes()
         self.setup_websocket_events()
 
@@ -130,6 +107,9 @@ class MechanicianWebApp:
 
     def setup_routes(self):
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET / ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.get("/", response_class=HTMLResponse)
         async def index_get(request: Request):
             user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
@@ -146,6 +126,9 @@ class MechanicianWebApp:
                                                     "name": user.get("name", username),})
         
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # POST / ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.post("/", response_class=HTMLResponse)
         async def index_post(request: Request):
             user = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
@@ -166,6 +149,9 @@ class MechanicianWebApp:
                                                     "prompt": prompt,})
         
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # POST /call_prompt_tool ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.post("/call_prompt_tool", response_class=HTMLResponse)
         async def call_prompt_tool(request: Request):
             access_token = request.cookies.get("access_token")
@@ -186,7 +172,9 @@ class MechanicianWebApp:
             return JSONResponse(content=generated_prompt)
         
 
-
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # POST /token ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.post("/token")
         async def login_for_access_token(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
             username = form_data.username
@@ -202,12 +190,18 @@ class MechanicianWebApp:
             return {"access_token": access_token, "token_type": "bearer"}
         
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /login ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.get("/login")
         async def login(request: Request):
             return self.templates.TemplateResponse("login.html", 
                                                    {"request": request})
         
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /create_user ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.get("/create_user")
         async def create_user_get(request: Request):
             try:
@@ -236,6 +230,9 @@ class MechanicianWebApp:
                                                     "name": display_name})
         
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # POST /create_user ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.post("/create_user")
         async def create_user_post(request: Request, user: UserCreate):
             try:
@@ -266,7 +263,9 @@ class MechanicianWebApp:
             return {"message": "User created successfully"}
         
 
-
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /user ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.get("/user")
         async def user_get(request: Request):
             try:
@@ -293,6 +292,9 @@ class MechanicianWebApp:
                                                     "user_role": user_role})
         
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # POST /user ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.post("/user")
         async def user_post(request: Request, user: UserUpdate):
             try:
@@ -324,6 +326,9 @@ class MechanicianWebApp:
             return {"message": "User update successfully"}
         
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # POST /logout ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.post("/logout")
         def logout():
             logger.debug("Logging out...")
@@ -332,6 +337,9 @@ class MechanicianWebApp:
             return response
         
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # POST /new ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.post("/new")
         def new_session(request: Request):
             logger.debug("Starting new session...")
@@ -349,6 +357,9 @@ class MechanicianWebApp:
             return response
         
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /prompt_tools ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.get("/prompt_tools")
         async def prompt_tools(request: Request):
             try:
@@ -378,6 +389,9 @@ class MechanicianWebApp:
                                                     "user_role": user_role})
         
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /prompt_tools/templates/{template_name} ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.get("/prompt_tools/templates/{template_name}")
         async def prompt_tools_templates(request: Request):
             try:
@@ -407,6 +421,9 @@ class MechanicianWebApp:
                 return JSONResponse(content=prompt_template)
             
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # POST /prompt_tools/resources ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.post("/prompt_tools/resources")
         async def prompt_tools_resources(request: Request):
             try:
@@ -425,7 +442,6 @@ class MechanicianWebApp:
             if username is None:
                 return JSONResponse(content={"error": "No username provided."})
             
-            # get prompt template name from url path
             form_data = await request.form()
             form_data_dict = dict(form_data)
             function_name = form_data_dict.get("function_name", "")
@@ -442,6 +458,9 @@ class MechanicianWebApp:
 
     def setup_websocket_events(self):
 
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # WEBSOCKET /ws ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         @self.app.websocket("/ws")
         async def websocket_endpoint(websocket: WebSocket):
             await websocket.accept()
@@ -656,16 +675,16 @@ class MechanicianWebApp:
 
     def create_prompt_tools_instance(self, context:dict={}) -> PromptTools:
         prompt_tools = None
-        if self.prompt_tools_provisioner is not None:
-            if isinstance(self.prompt_tools_provisioner, MechanicianToolsProvisioner):
-                return self.prompt_tools_provisioner.create_tools(context=context)
+        if self.prompt_tools_provisioners is not None:
+            if isinstance(self.prompt_tools_provisioners, MechanicianToolsProvisioner):
+                return self.prompt_tools_provisioners.create_tools(context=context)
 
-            elif isinstance(self.prompt_tools_provisioner, MechanicianTools):
-                return self.prompt_tools_provisioner
+            elif isinstance(self.prompt_tools_provisioners, MechanicianTools):
+                return self.prompt_tools_provisioners
             
-            elif isinstance(self.prompt_tools_provisioner, list):
+            elif isinstance(self.prompt_tools_provisioners, list):
                 prompt_tools_instances = []
-                for tool in self.prompt_tools_provisioner:
+                for tool in self.prompt_tools_provisioners:
                     if isinstance(tool, MechanicianToolsProvisioner):
                         prompt_tools_instances.append(tool.create_tools(context=context))
                     elif isinstance(tool, PromptTools):
@@ -674,7 +693,7 @@ class MechanicianWebApp:
                         raise ValueError(f"prompt_tools_provisioner must be an instance of or list of MechanicianToolsProvisioner. Received: {tool}")      
                 return PromptToolKit(tools=prompt_tools_instances)
             else:
-                raise ValueError(f"prompt_tools_provisioner must be an instance of or a list of MechanicianToolsProvisioner. Received: {self.prompt_tools_provisioner}")
+                raise ValueError(f"prompt_tools_provisioner must be an instance of or a list of MechanicianToolsProvisioner. Received: {self.prompt_tools_provisioners}")
 
             
     

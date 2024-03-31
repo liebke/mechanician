@@ -18,6 +18,10 @@ logger.addHandler(handler)
         
 class ResourceConnector(ABC):
 
+    def has_function(self, function_name:str):
+        return hasattr(self, function_name)
+    
+
     def query(self, query_name:str, params:dict=None):
         try:            
             if hasattr(self, query_name):
@@ -35,13 +39,13 @@ class ResourceConnector(ABC):
             else:
                 error_msg = f"Unknown function: {query_name}"
                 logger.info(error_msg)
-                return {"status": "success", "resources": error_msg}
+                return {"status": "error", "error_message": error_msg}
             
         except Exception as e:
             error_msg = f"Error calling function {query_name}: {e}"
             logger.error(error_msg)
             # Return empty response so that it's skipped
-            return {"status": "error", "resources": error_msg}
+            return {"status": "error", "error_message": error_msg}
 
 
 

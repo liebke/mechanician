@@ -24,6 +24,9 @@ logger.addHandler(handler)
         
 class MechanicianTools(ABC):
 
+    def has_function(self, function_name:str):
+        return hasattr(self, function_name)
+
     def get_tool_instructions(self):
         if hasattr(self, "tool_instructions"):
             return self.tool_instructions
@@ -44,8 +47,6 @@ class MechanicianTools(ABC):
             with open(tool_instruction_path, 'r') as file:
                 logger.info(f"Loading Tool Instructions from {tool_instruction_path}")
                 tool_instructions = json.loads(file.read())
-            print("Tool Instructions:")
-            print(tool_instructions)
             return tool_instructions
         else:
             return []
@@ -118,17 +119,21 @@ class PromptTools(MechanicianTools):
                  resource_connector: 'ResourceConnector'=None,
                  prompt_template_directory="./templates",
                  prompt_tool_instruction_file_name:str="prompt_tool_instructions.json",
-                 prompt_instructions_directory:str="src/instructions",):
+                 prompt_instructions_directory:str="src/instructions"):
+        
         self.resource_connector = resource_connector
         if not self.resource_connector:
             raise ValueError("Resource Connector not provided")
         
         self.prompt_template_directory = prompt_template_directory or "./templates"
-
         self.tool_instruction_file_name = prompt_tool_instruction_file_name or "prompt_tool_instructions.json"
-
         self.instruction_set_directory = prompt_instructions_directory or "src/instructions"
 
+
+
+    def has_function(self, function_name:str):
+        return self.resource_connector.has_function(function_name)
+    
 
     def parse_command_line(self, command_line):
         tokens = shlex.split(command_line)
@@ -153,7 +158,11 @@ class PromptTools(MechanicianTools):
         if not prompt_template_str:
             return f"Prompt Template not found for {function_name}"
         
-        response = self.resource_connector.query(function_name, params=params)
+        if self.resource_connector.has_function(function_name):
+            response = self.resource_connector.query(function_name, params=params)
+        else:
+            response = None
+
         if response.get("status") == "error":
             raise ValueError(response.get("response"))
         
@@ -164,17 +173,12 @@ class PromptTools(MechanicianTools):
         return {"status": "success", "prompt": prompt}
     
 
-    # def get_prompt_template(self, prompt_template_name):
-    #     if hasattr(self, "prompt_templates"):
-    #         for template in self.prompt_templates:
-    #             if template.name == prompt_template_name:
-    #                 return template.template_str
-    #     return None
-
     def get_resources(self, function_name:str, params:dict={}):
         if self.resource_connector:
-            return self.resource_connector.query(function_name, params=params)
-        return []
+            if self.resource_connector.has_function(function_name):
+                return self.resource_connector.query(function_name, params=params)
+            else:
+                return None
     
     
     def get_prompt_template(self, prompt_template_name:str):
@@ -196,15 +200,24 @@ class PromptToolKit(MechanicianToolKit, PromptTools):
                  tools: List[MechanicianTools]):
         super().__init__(tools)
 
+
     def generate_prompt(self, function_name:str, prompt_template_str:str, params:dict={}):
+        response = None
         for tool in self.tools:
             if hasattr(tool, "generate_prompt"):
-                try:
-                    return tool.generate_prompt(function_name, prompt_template_str, params)
-                except Exception as e:
-                    logger.error(f"Error generating prompt: {e}")
-                    return f"Error generating prompt: {e}"
-        return f"Prompt generation not supported by {function_name}"
+                if tool.has_function(function_name):
+                    try:
+                        response = tool.generate_prompt(function_name, prompt_template_str, params=params)
+                    except Exception as e:
+                        logger.error(f"Error generating prompt for {function_name}: {e}")
+
+        if response:
+            return response
+        else:
+            error_msg = f"Prompt generation not supported by any available tool for {function_name}"
+            logger.error(error_msg)
+            return {"status": "error", "error": error_msg}
+
 
     def get_prompt_template(self, prompt_template_name):
         for tool in self.tools:
@@ -212,6 +225,23 @@ class PromptToolKit(MechanicianToolKit, PromptTools):
                 template = tool.get_prompt_template(prompt_template_name)
                 if template:
                     return template
+                
+
+    def get_resources(self, function_name: str, params: dict = {}):
+        resources = None
+        for tool in self.tools:
+            if hasattr(tool, "get_resources"):
+                if tool.has_function(function_name):
+                    try:
+                        resources = tool.get_resources(function_name=function_name, params=params)
+                    except Exception as e:
+                        logger.error(f"Error generating prompt for {function_name}: {e}")
+
+                if resources:
+                    return resources
+                
+        return {"status": "error", "error": f"Resources not found for {function_name}"}
+
 
     def save_prompt_template(self, prompt_template_name, prompt_template):
         for tool in self.tools:
