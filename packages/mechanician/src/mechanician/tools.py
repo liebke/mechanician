@@ -280,24 +280,24 @@ class AITools(MechanicianTools):
             return ""
 
 
-    def call_function(self, function_name, call_id=None, params=None):
+    def call_function(self, function_name, call_id=None, params:dict=None):
         try:
             # get method by name if it exists
             if hasattr(self, function_name):
                 meth = getattr(self, function_name)
                 # check that method exists
-                if meth:
-                    if params is None:
-                        # call method without args
+                if meth:                        
+                    if isinstance(params, str):
+                        # call method with args
+                        resp = meth(json.loads(params.strip()))
+                        if resp is not None:
+                            return resp
+                    elif isinstance(params, dict):
                         resp = meth(params)
                         if resp is not None:
                             return resp
-                    elif params.strip():
-                        # call method with args
-                        resp = meth(json.loads(params))
-                        if resp is not None:
-                            return resp
                     else:
+                        # call method without args
                         resp = meth(params)
                         if resp is not None:
                             return resp

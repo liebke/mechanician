@@ -344,6 +344,18 @@ class NotepadAITools(AITools):
         logger.info(resp)
         return resp
     
+    
+    def get_note(self, params:dict):
+        note_name = params.get("note_name")
+        if not note_name:
+            resp = "Note name is required"
+            logger.info(resp)
+            return resp
+        
+        resp = self.notepad_store.get_note(note_name)
+        logger.info(resp)
+        return resp
+    
 
     def list_notes(self, params:dict):
         resp = self.notepad_store.list_notes()

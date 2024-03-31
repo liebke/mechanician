@@ -15,6 +15,7 @@ from mechanician_ui.auth import CredentialsManager, BasicCredentialsManager
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 import logging
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -156,6 +157,27 @@ class MechanicianWebApp:
             prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(access_token))
             generated_prompt = prompt_tools.generate_prompt(function_name, prompt_template, params=form_data_dict)
             return JSONResponse(content=generated_prompt)
+        
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # POST /call_ai_tool ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        @self.app.post("/call_ai_tool", response_class=HTMLResponse)
+        async def call_ai_tool(request: Request):
+            access_token = request.cookies.get("access_token")
+            user = self.credentials_manager.get_user_by_token(access_token)
+            if user is None:
+                raise HTTPException(status_code=401, detail="Unauthorized: Invalid credentials")
+
+            form_data = await request.form()
+            form_data_dict = dict(form_data)
+            function_name = form_data_dict.get("function_name", "")
+            # remove function_name, prompt_template from form_data_dict
+            form_data_dict.pop("function_name", None)
+            username = user.get("username", access_token)
+            ai_tools=self.get_ai_instance(username, context=self.get_context(access_token)).ai_tools
+            response = ai_tools.call_function(function_name, params=form_data_dict)
+            return JSONResponse(content=response)
         
 
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -342,6 +364,37 @@ class MechanicianWebApp:
             response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
             return response
         
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /ai_tools ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        @self.app.get("/ai_tools")
+        async def ai_tools(request: Request):
+            try:
+                self.verify_access_token(request)
+                user_data = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+                if user_data is None:
+                    response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                    return response
+                
+                username = user_data.get("username", "")
+                display_name = user_data.get("name", username)
+                user_role = user_data.get("user_role", "User")
+            except HTTPException as e:
+                logger.error(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+
+            token = request.cookies.get("access_token")
+            ai_tools=self.get_ai_instance(username, context=self.get_context(token)).ai_tools
+            return self.templates.TemplateResponse("ai_tools.html", 
+                                                   {"request": request,
+                                                    "ai_tool_instructions": ai_tools.get_tool_instructions(),
+                                                    "username": username,
+                                                    "ai_name": self.name,
+                                                    "name": display_name,
+                                                    "user_role": user_role})
+
 
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         # GET /prompt_tools ROUTE

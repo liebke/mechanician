@@ -125,12 +125,7 @@ class ArangoNotepadStore(NotepadStore):
     def list_notes(self) -> str:
         try:
             doc = self.doc_mgr.get_document(self.database, self.notepad_collection_name, self.notepad_name)
-            resp =  json.dumps(doc, indent=2)
-            # DEBUG
-            logger.debug(f"Notes from Notepad '{self.notepad_name}':")
-            logger.debug(pprint.pformat(resp))
-            # END DEBUG
-            return resp
+            return doc
         
         except Exception as e:
             message = str(e)
@@ -142,18 +137,10 @@ class ArangoNotepadStore(NotepadStore):
         try:
             if (note_name is None):
                 resp = "note_name is required."
-                # DEBUG
-                logger.debug(resp)
-                # END DEBUG
                 return resp
                         
             note = self.notepad.get(note_name, None)
-            resp = f"Note '{note_name}' from Notepad '{self.notepad_name}':\n"
-            resp += pprint.pformat(note)
-            # DEBUG
-            logger.debug(resp)
-            # END DEBUG
-            return resp
+            return note
         
         except Exception as e:
             message = str(e)

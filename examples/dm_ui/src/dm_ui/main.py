@@ -16,6 +16,8 @@ from mechanician.ai import AIProvisioner
 import chromadb
 from chromadb.utils import embedding_functions
 
+from dm_ui.tmdb_ai_tools import TMDbAIToolsProvisioner
+
 
 logger = logging.getLogger(__name__)
 
@@ -184,12 +186,15 @@ def init_app():
                                                               db_password=os.getenv("ARANGO_PASSWORD"))
     notepad_tools_provisioner = UserNotepadAIToolsProvisioner(notepad_store_provisioner=notepad_store_provisioner)
 
+    tmdb_tools_provisioner = TMDbAIToolsProvisioner(api_key=os.getenv("TMDB_READ_ACCESS_TOKEN"))
+
     # Set up the AI provisioner
     ai_connector_provisioner = OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"), 
                                                               model_name=os.getenv("OPENAI_MODEL_NAME"))
     ai_provisioner = AIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
                                    name = "MiddleEarth CRM AI",
-                                   ai_tools_provisioners = [notepad_tools_provisioner])
+                                   ai_tools_provisioners = [notepad_tools_provisioner,
+                                                            tmdb_tools_provisioner])
     
     # Set up the Prompt Tools provisioners
     crm_connector_provisioner = CRMConnectorProvisioner(crm_data_directory="./data")
