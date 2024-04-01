@@ -152,13 +152,34 @@
             background-color: #222;
             color: white;
         }
+
+
+        #header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* This spreads out the flex items */
+            padding: 0 20px; /* Adjust this padding to ensure there's space at the edges of the header */
+            height: 60px; /* Adjust based on your design */
+        }
+
+        #header .select-container {
+            margin-right: auto; /* This pushes the select container to the left */
+            margin-top: -10px;
+            margin-left: 210px; /* Adjust this value to reduce the gap between the sidebar and select-container */
+        }
+
     </style>
     
 </head>
 <body>
 
     <div id="header">
-        <div id="title">AI Tools</div>
+        <!-- <div id="title">AI Tools</div> -->
+        <div class="select-container">
+            <select>
+                <option value="{{ai_name}}">{{ai_name}}</option>
+            </select>
+        </div>
         <button id="close_button">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M6.34315 6.34338L17.6569 17.6571M17.6569 6.34338L6.34315 17.6571" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -167,7 +188,8 @@
     </div>
 
     <div id="sidebar">
-        <h1>Daring Mechanician</h1>
+        <!-- <h1>Daring Mechanician</h1> -->
+        <h1>AI Tools</h1>
         <!-- Additional sidebar content here -->
         <div id="sidebar-button-container" class="sidebar-button-container">
         

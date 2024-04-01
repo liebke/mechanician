@@ -21,10 +21,8 @@
         display: flex;
         align-items: center;
         padding-top: 0px;
-
         justify-content: space-between;
     }
-
     
     #title {
         text-align: left;
@@ -248,8 +246,6 @@
         font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
     }
 
-    
-
     #sidebar button {
         display: flex; /* Use flexbox layout */
         align-items: center; /* Center items vertically */
@@ -267,13 +263,10 @@
         border-radius: 2px; /* Adjust rounded corners */
     }
     
-    
-
     #sidebar button:hover {
         background-color: #222; /* Lighter grey on hover */
     }
-
-    
+ 
 
 .sidebar-button-container-username {
     margin: 0; /* Remove default margins */
@@ -302,4 +295,106 @@
 /* Adjust the #content, #header, and #footer to account for the sidebar */
 #content, #header, #footer {
     margin-left: 10%; /* Push them to the right to make space for the sidebar */
+}
+
+
+#header select {
+    font-size: 18px;
+    font-weight: 300;
+    width: 100%;
+    color: white;
+    background-color: #222; /* Set a flat background color */
+    border: none; /* A light border for a flat effect */
+    border-radius: 0; /* Remove rounded corners if desired */
+    box-shadow: none; /* Remove any shadow effects */
+    appearance: none; /* Attempt to disable native OS styling */
+    -webkit-appearance: none; /* Specifically for WebKit browsers */
+    -moz-appearance: none; /* Specifically for Mozilla browsers */
+    outline: none; /* Remove focus outline */
+}
+
+#header select, select:focus {
+    font-family: Helvetica, Arial, sans-serif; /* Specify a fallback font like Arial */
+    font-size: 18px; /* Adjust as needed */
+    font-weight: 300; /* Adjust as needed */
+    width: 100%;
+    color: white;
+    background-color: #222; /* Set a flat background color */
+    border: none; /* A light border for a flat effect */
+    border-radius: 0; /* Remove rounded corners if desired */
+    box-shadow: none; /* Remove any shadow effects */
+    appearance: none; /* Attempt to disable native OS styling */
+    -webkit-appearance: none; /* Specifically for WebKit browsers */
+    -moz-appearance: none; /* Specifically for Mozilla browsers */
+    outline: none; /* Remove focus outline */
+}
+
+
+ /* Custom arrow */
+ #header select::-ms-expand {
+    display: none; /* Hide the default arrow in IE */
+}
+
+#header .select-container {
+    width: calc(100% - 260px - 100px); /* Adjust the width if necessary */
+    position: relative;
+    display: inline-block;
+    padding-top: 5px;
+    background-color: #222;
+    border: 1px solid #777;
+    margin-top: 5px; /* Adjust as needed */
+    margin-left: 150px; /* Sidebar width + 20px spacing */
+    margin-right: 20px; /* Right margin for additional spacing, adjust as needed */
+    color: #777;
+    border-radius: 5px;
+}
+
+
+#header .select-container select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: transparent;
+    border: none;
+    padding: 5px 8px 5px 10px;
+    margin: 0;
+    color: white;
+    cursor: pointer;
+}
+
+#header .select-container::after {
+    content: '\25BE'; /* Unicode for down arrow */
+    position: absolute;
+    top: 0;
+    right: 10px;
+    bottom: 0;
+    color: white;
+    pointer-events: none; /* Makes it non-interactive */
+    display: flex;
+    align-items: center;
+}
+
+#header .select-container select::-ms-expand {
+    display: none; /* For IE11 */
+}
+
+
+/* Hover effect for the select container */
+#header .select-container:hover {
+    border: 1px solid white; /* Example: change border color on hover */
+}
+
+/* Hover effect for the select element */
+#header .select-container:hover select {
+    color: white; /* Example: change text color on hover */
+}
+
+/* Hover effect for the custom arrow */
+#header .select-container:hover::after {
+    color: white; /* Example: change arrow color on hover */
+}
+
+/* Custom arrow */
+#header select::-ms-expand {
+display: none; /* Hide the default arrow in IE */
 }

@@ -39,127 +39,148 @@
 
 
 
-        .form-container input {
-            display: block; /* Make sure inputs and button are block-level, causing them to stack */
-            width: 100%; /* Full width of their container */
-            font-size: 14px;
-            padding: 10px;
-            margin-bottom: 10px; /* Space between elements */
-            border-radius: 5px;
-            outline: none; /* Remove focus outline */
-        }
+    .form-container input {
+        display: block; /* Make sure inputs and button are block-level, causing them to stack */
+        width: 100%; /* Full width of their container */
+        font-size: 14px;
+        padding: 10px;
+        margin-bottom: 10px; /* Space between elements */
+        border-radius: 5px;
+        outline: none; /* Remove focus outline */
+    }
 
 
 
-        select {
-            font-size: 20px;
-            width: 100%;
-            color: white;
-            background-color: #222; /* Set a flat background color */
-            border: none; /* A light border for a flat effect */
-            border-radius: 0; /* Remove rounded corners if desired */
-            box-shadow: none; /* Remove any shadow effects */
-            appearance: none; /* Attempt to disable native OS styling */
-            -webkit-appearance: none; /* Specifically for WebKit browsers */
-            -moz-appearance: none; /* Specifically for Mozilla browsers */
-            outline: none; /* Remove focus outline */
-        }
+    select {
+        font-size: 20px;
+        width: 100%;
+        color: white;
+        background-color: #222; /* Set a flat background color */
+        border: none; /* A light border for a flat effect */
+        border-radius: 0; /* Remove rounded corners if desired */
+        box-shadow: none; /* Remove any shadow effects */
+        appearance: none; /* Attempt to disable native OS styling */
+        -webkit-appearance: none; /* Specifically for WebKit browsers */
+        -moz-appearance: none; /* Specifically for Mozilla browsers */
+        outline: none; /* Remove focus outline */
+    }
 
-        /* Custom arrow */
-        select::-ms-expand {
-            display: none; /* Hide the default arrow in IE */
-        }
-
-        .select-container {
-            width: 100%;
-            flex-grow: 1;
-            position: relative;
-            display: inline-block;
-            background-color: #222;
-            border: 1px solid #777;
-            margin-left: 0px;
-            color: #777;
-            border-radius: 5px;
-        }
-
-        .select-container select {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-color: transparent;
-            border: none;
-            padding: 5px 8px 5px 10px;
-            margin: 0;
-            color: white;
-            cursor: pointer;
-        }
-
-        .select-container::after {
-            content: '\25BE'; /* Unicode for down arrow */
-            position: absolute;
-            top: 0;
-            right: 10px;
-            bottom: 0;
-            color: white;
-            pointer-events: none; /* Makes it non-interactive */
-            display: flex;
-            align-items: center;
-        }
-
-        .select-container select::-ms-expand {
-            display: none; /* For IE11 */
-        }
-
-
-        /* Hover effect for the select container */
-        .select-container:hover {
-            border: 1px solid white; /* Example: change border color on hover */
-        }
-
-        /* Hover effect for the select element */
-        .select-container:hover select {
-            color: white; /* Example: change text color on hover */
-        }
-
-        /* Hover effect for the custom arrow */
-        .select-container:hover::after {
-            color: white; /* Example: change arrow color on hover */
-        }
-
-
-
-        /* Custom arrow */
-        select::-ms-expand {
+    /* Custom arrow */
+    select::-ms-expand {
         display: none; /* Hide the default arrow in IE */
-        }
+    }
+
+    .select-container {
+        width: 100%;
+        flex-grow: 1;
+        position: relative;
+        display: inline-block;
+        background-color: #222;
+        border: 1px solid #777;
+        margin-left: 0px;
+        color: #777;
+        border-radius: 5px;
+    }
+
+    .select-container select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: transparent;
+        border: none;
+        padding: 5px 8px 5px 10px;
+        margin: 0;
+        color: white;
+        cursor: pointer;
+    }
+
+    .select-container::after {
+        content: '\25BE'; /* Unicode for down arrow */
+        position: absolute;
+        top: 0;
+        right: 10px;
+        bottom: 0;
+        color: white;
+        pointer-events: none; /* Makes it non-interactive */
+        display: flex;
+        align-items: center;
+    }
+
+    .select-container select::-ms-expand {
+        display: none; /* For IE11 */
+    }
 
 
-        .function-label {
-            max-width: 400px; /* Adjust as needed */
-            display: inline-block; /* Or block */
-            white-space: normal; /* Ensures text can wrap */
-            word-wrap: break-word; /* To break long words if necessary */
-        }
+    /* Hover effect for the select container */
+    .select-container:hover {
+        border: 1px solid white; /* Example: change border color on hover */
+    }
 
-        #prompt, #prompt_template, #prompt_resources {
-            width: 500px;
-            font-size: 14px;
-            height: 300px;
-            margin-top: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            outline: none; /* Remove focus outline */
-            background-color: #222;
-            color: white;
-        }
+    /* Hover effect for the select element */
+    .select-container:hover select {
+        color: white; /* Example: change text color on hover */
+    }
+
+    /* Hover effect for the custom arrow */
+    .select-container:hover::after {
+        color: white; /* Example: change arrow color on hover */
+    }
+
+
+
+    /* Custom arrow */
+    select::-ms-expand {
+    display: none; /* Hide the default arrow in IE */
+    }
+
+
+    .function-label {
+        max-width: 400px; /* Adjust as needed */
+        display: inline-block; /* Or block */
+        white-space: normal; /* Ensures text can wrap */
+        word-wrap: break-word; /* To break long words if necessary */
+    }
+
+    #prompt, #prompt_template, #prompt_resources {
+        width: 500px;
+        font-size: 14px;
+        height: 300px;
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        outline: none; /* Remove focus outline */
+        background-color: #222;
+        color: white;
+    }
+
+
+    #header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; /* This spreads out the flex items */
+        padding: 0 20px; /* Adjust this padding to ensure there's space at the edges of the header */
+        height: 60px; /* Adjust based on your design */
+    }
+
+    #header .select-container {
+        margin-right: auto; /* This pushes the select container to the left */
+        margin-top: -10px;
+        margin-left: 210px; /* Adjust this value to reduce the gap between the sidebar and select-container */
+    }
+
     </style>
     
 </head>
 <body>
 
     <div id="header">
-        <div id="title">Prompt Tools</div>
-        <!-- <button id="close_button">&#10006;</button> -->
+        <div class="select-container">
+            <select>
+                <option value="{{ai_name}}">{{ai_name}}</option>
+            </select>
+        </div>
+        <!-- <div id="title">Prompt Tools</div> -->
+
         <button id="close_button">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M6.34315 6.34338L17.6569 17.6571M17.6569 6.34338L6.34315 17.6571" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
@@ -168,7 +189,8 @@
     </div>
 
     <div id="sidebar">
-        <h1>Daring Mechanician</h1>
+        <!-- <h1>Daring Mechanician</h1> -->
+        <h1>Prompt Tools</h1>
         <!-- Additional sidebar content here -->
         <div id="sidebar-button-container" class="sidebar-button-container">
         
