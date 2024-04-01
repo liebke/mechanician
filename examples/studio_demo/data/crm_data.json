@@ -1,0 +1,1011 @@
+{"contacts": [
+    {
+        "name": {
+            "first": "Bilbo",
+            "last": "Baggins"
+        },
+        "address": "Bag End, Hobbiton, Westfarthing, The Shire",
+        "relationship": "Adventurer, Ring-finder",
+        "interests": [
+            "Writing",
+            "Storytelling",
+            "Elvish languages"
+        ],
+        "family": [
+            "Baggins family"
+        ]
+    },    
+    {
+        "name": {
+            "first": "Frodo",
+            "last": "Baggins"
+        },
+        "address": "Bag End, Hobbiton, Westfarthing, The Shire",
+        "relationship": "Ring-bearer",
+        "interests": [
+            "Reading",
+            "Walking"
+        ],
+        "family": [
+            "Baggins family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Samwise",
+            "last": "Gamgee"
+        },
+        "address": "Bagshot Row, Hobbiton, Westfarthing, The Shire",
+        "relationship": "Gardener and Friend",
+        "interests": [
+            "Gardening",
+            "Poetry"
+        ],
+        "family": [
+            "Gamgee family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Meriadoc",
+            "last": "Brandybuck"
+        },
+        "address": "Brandy Hall, Buckland, The Shire",
+        "relationship": "Master of Buckland",
+        "interests": [
+            "History",
+            "Horse-riding"
+        ],
+        "family": [
+            "Brandybuck family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Peregrin",
+            "last": "Took"
+        },
+        "address": "The Great Smials, Tuckborough, Tookland, Westfarthing",
+        "relationship": "Thain of the Shire",
+        "interests": [
+            "Sword-fighting",
+            "Adventuring"
+        ],
+        "family": [
+            "Took family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Gandalf",
+            "last": "the Grey"
+        },
+        "address": "N/A",
+        "relationship": "Wizard",
+        "interests": [
+            "Magic",
+            "Wisdom"
+        ],
+        "family": [
+            "Istari"
+        ]
+    },
+    {
+        "name": {
+            "first": "Aragorn",
+            "last": "son of Arathorn"
+        },
+        "address": "Minas Tirith, Gondor",
+        "relationship": "King of Gondor and Arnor",
+        "interests": [
+            "Leadership",
+            "Tracking"
+        ],
+        "family": [
+            "House of Telcontar"
+        ]
+    },
+    {
+        "name": {
+            "first": "Legolas",
+            "last": "Greenleaf"
+        },
+        "address": "Mirkwood",
+        "relationship": "Prince of the Woodland Realm",
+        "interests": [
+            "Archery",
+            "Nature"
+        ],
+        "family": [
+            "Elven royalty"
+        ]
+    },
+    {
+        "name": {
+            "first": "Gimli",
+            "last": "son of Glóin"
+        },
+        "address": "Erebor",
+        "relationship": "Warrior",
+        "interests": [
+            "Smithing",
+            "Axe-fighting"
+        ],
+        "family": [
+            "Line of Durin"
+        ]
+    },
+    {
+        "name": {
+            "first": "Boromir",
+            "last": "of Gondor"
+        },
+        "address": "Minas Tirith, Gondor",
+        "relationship": "Captain of the White Tower",
+        "interests": [
+            "Warfare",
+            "Horn-blowing"
+        ],
+        "family": [
+            "House of Hurin"
+        ]
+    },
+    {
+        "name": {
+            "first": "Théoden",
+            "last": "King of Rohan"
+        },
+        "address": "Edoras, Rohan",
+        "relationship": "King",
+        "interests": [
+            "Horse-riding",
+            "Leadership"
+        ],
+        "family": [
+            "House of Eorl"
+        ]
+    },
+    {
+        "name": {
+            "first": "Éomer",
+            "last": "son of Éomund"
+        },
+        "address": "Edoras, Rohan",
+        "relationship": "King of Rohan (after Théoden)",
+        "interests": [
+            "Horse-lord",
+            "Warfare"
+        ],
+        "family": [
+            "House of Eorl"
+        ]
+    },
+    {
+        "name": {
+            "first": "Éowyn",
+            "last": "daughter of Éomund"
+        },
+        "address": "Edoras, Rohan",
+        "relationship": "Lady of Rohan",
+        "interests": [
+            "Sword-fighting",
+            "Healing"
+        ],
+        "family": [
+            "House of Eorl"
+        ]
+    },
+    {
+        "name": {
+            "first": "Gríma",
+            "last": "Wormtongue"
+        },
+        "address": "Edoras, Rohan",
+        "relationship": "Advisor",
+        "interests": [
+            "Manipulation",
+            "Espionage"
+        ],
+        "family": [
+            "Rohan (by association)"
+        ]
+    },
+    {
+        "name": {
+            "first": "Sauron",
+            "last": ""
+        },
+        "address": "Barad-dûr, Mordor",
+        "relationship": "Dark Lord",
+        "interests": [
+            "Domination",
+            "Ring-crafting",
+            "Dark magic"
+        ],
+        "family": [
+            "Ainur"
+        ]
+    },
+    {
+        "name": {
+            "first": "Saruman",
+            "last": "the White"
+        },
+        "address": "Orthanc, Isengard",
+        "relationship": "Wizard, Head of the White Council",
+        "interests": [
+            "Industry",
+            "Magic",
+            "Power"
+        ],
+        "family": [
+            "Istari"
+        ]
+    },    
+    {
+        "name": {
+            "first": "Lobelia",
+            "last": "Sackville-Baggins"
+        },
+        "address": "Hardbottle, The Shire",
+        "relationship": "Unwelcome relative",
+        "interests": [
+            "Snooping",
+            "Acquiring silver spoons",
+            "Intruding on Bag End"
+        ],
+        "family": [
+            "Sackville-Baggins family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Otho",
+            "last": "Sackville-Baggins"
+        },
+        "address": "Hardbottle, The Shire",
+        "relationship": "Ambitious relative",
+        "interests": [
+            "Property acquisition",
+            "Social climbing"
+        ],
+        "family": [
+            "Sackville-Baggins family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Lotho",
+            "last": "Sackville-Baggins"
+        },
+        "address": "Hardbottle, The Shire",
+        "relationship": "Troublesome offspring",
+        "interests": [
+            "Undermining Bilbo",
+            "Business ventures of dubious nature"
+        ],
+        "family": [
+            "Sackville-Baggins family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Folco",
+            "last": "Boffin"
+        },
+        "address": "5 Chubb Lane, Michel Delving, Westfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Local politics",
+            "Gardening"
+        ],
+        "family": ["Boffin family"]
+    },
+    {
+        "name": {
+            "first": "Fredegar",
+            "last": "Bolger"
+        },
+        "address": "7 Grub Street, Hobbiton, Westfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Eating",
+            "Jokes"
+        ],
+        "family": [
+            "Bolger family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Pearl",
+            "last": "Took"
+        },
+        "address": "Tookbank Towers, Tookbank, Westfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Fashion",
+            "Social gatherings"
+        ],
+        "family": [
+            "Took clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Ruby",
+            "last": "Gamgee"
+        },
+        "address": "1 Bagshot Row, Hobbiton, Westfarthing",
+        "relationship": "Relative",
+        "interests": [
+            "Cooking",
+            "Family gatherings"
+        ],
+        "family": [
+            "Gamgee family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Dinodas",
+            "last": "Brandybuck"
+        },
+        "address": "Overhill Underhay, Overhill, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Fishing",
+            "Storytelling"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Eglantine",
+            "last": "Banks"
+        },
+        "address": "4 Winding Way, Frogmorton, Eastfarthing",
+        "relationship": "Acquaintance",
+        "interests": [
+            "Botany",
+            "Tea parties"
+        ],
+        "family": []
+    },
+    {
+        "name": {
+            "first": "Hal",
+            "last": "Hornblower"
+        },
+        "address": "6 Long Cleeve, Northfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Pipe smoking",
+            "Folk tales"
+        ],
+        "family": [
+            "Hornblower family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Bell",
+            "last": "Goodchild"
+        },
+        "address": "1 High Lane, Scary, Eastfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Baking",
+            "Local lore"
+        ],
+        "family": []
+    },
+    {
+        "name": {
+            "first": "Doderic",
+            "last": "Proudfoot"
+        },
+        "address": "3 Proudfoot Path, Longbottom, Southfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Astronomy",
+            "Walking"
+        ],
+        "family": [
+            "Proudfoot clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Melilot",
+            "last": "Brandybuck"
+        },
+        "address": "Brandy Hall, Bucklebury, Buckland, Eastfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Dancing",
+            "Singing"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Nob",
+            "last": "Bell"
+        },
+        "address": "5 Greenholm Greenway, Greenholm, Westfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Gardening",
+            "Bird watching"
+        ],
+        "family": []
+    },
+    {
+        "name": {
+            "first": "Cora",
+            "last": "Burrows"
+        },
+        "address": "The Marish Meadery, Marish, Eastfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Mead making",
+            "Cooking"
+        ],
+        "family": [
+            "Burrows family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Griffo",
+            "last": "Boffin"
+        },
+        "address": "2 Bridgefields Wall, Buckland, Eastfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Reading",
+            "History"
+        ],
+        "family": [
+            "Boffin family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Milo",
+            "last": "Burrows"
+        },
+        "address": "Whitfurrows Farmstead, Whitfurrows, Eastfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Farming",
+            "Market trading"
+        ],
+        "family": [
+            "Burrows family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Primrose",
+            "last": "Gamgee"
+        },
+        "address": "1 Bagshot Row, Hobbiton, Westfarthing",
+        "relationship": "Relative",
+        "interests": [
+            "Gardening",
+            "Family"
+        ],
+        "family": [
+            "Gamgee family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Berilac",
+            "last": "Brandybuck"
+        },
+        "address": "Overhill Underhay, Overhill, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Adventures",
+            "Boating"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Hugo",
+            "last": "Bracegirdle"
+        },
+        "address": "2 Cotton Road, Bywater, Westfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Fishing",
+            "Local festivals"
+        ],
+        "family": [
+            "Bracegirdle family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Sigismond",
+            "last": "Took"
+        },
+        "address": "Tookbank Towers, Tookbank, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Horse riding",
+            "Archery"
+        ],
+        "family": [
+            "Took clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Linda",
+            "last": "Baggins"
+        },
+        "address": "3 Brookbank Street, Bywater, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Embroidery",
+            "Tea parties"
+        ],
+        "family": [
+            "Baggins family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Marmaduke",
+            "last": "Brandybuck"
+        },
+        "address": "Brandy Hall, Bucklebury, Buckland, Eastfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Fishing",
+            "Storytelling"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Pansy",
+            "last": "Bolger"
+        },
+        "address": "5 Chubb Lane, Michel Delving, Westfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Cooking",
+            "Gossip"
+        ],
+        "family": [
+            "Bolger family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Adalgrim",
+            "last": "Took"
+        },
+        "address": "The Great Smials, Tuckborough, Tookland, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Farming",
+            "Hunting"
+        ],
+        "family": [
+            "Took clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Esmeralda",
+            "last": "(Took) Brandybuck"
+        },
+        "address": "Brandy Hall, Bucklebury, Buckland, Eastfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Gardening",
+            "Cooking"
+        ],
+        "family": [
+            "Took and Brandybuck families"
+        ]
+    },
+    {
+        "name": {
+            "first": "Robin",
+            "last": "Smallburrow"
+        },
+        "address": "4 Winding Way, Frogmorton, Eastfarthing",
+        "relationship": "Friend",
+        "interests": [
+            "Fishing",
+            "Local festivals"
+        ],
+        "family": [
+            "Smallburrow family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Celandine",
+            "last": "Brandybuck"
+        },
+        "address": "Nobottle Vineyard, Nobottle, Westfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Wine making",
+            "Gardening"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Rufus",
+            "last": "Burrows"
+        },
+        "address": "7 Grub Street, Hobbiton, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Farming",
+            "Cooking"
+        ],
+        "family": [
+            "Burrows family"
+        ]
+    },
+    {
+        "name": {
+            "first": "Paladin",
+            "last": "Took II"
+        },
+        "address": "Tookbank Towers, Tookbank, Westfarthing",
+        "relationship": "Distant relative",
+        "interests": [
+            "Horse riding",
+            "Fishing"
+        ],
+        "family": [
+            "Took clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Eglantine",
+            "last": "(Banks) Took"
+        },
+        "address": "The Great Smials, Tuckborough, Tookland, Westfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Gardening",
+            "Tea parties"
+        ],
+        "family": [
+            "Took and Banks families"
+        ]
+    },
+    {
+        "name": {
+            "first": "Saradoc",
+            "last": "Brandybuck"
+        },
+        "address": "Brandy Hall, Bucklebury, Buckland, Eastfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Fishing",
+            "Boating"
+        ],
+        "family": [
+            "Brandybuck clan"
+        ]
+    },
+    {
+        "name": {
+            "first": "Esmeralda",
+            "last": "Took"
+        },
+        "address": "The Great Smials, Tuckborough, Tookland, Westfarthing",
+        "relationship": "Cousin",
+        "interests": [
+            "Cooking",
+            "Embroidery"
+        ],
+        "family": [
+            "Took clan"
+        ]
+    }
+],
+"events": [
+    {
+        "title": "Bilbo's Eleventy-First Birthday",
+        "date": "22 September 1401 Shire Reckoning",
+        "location": "Bag End, Hobbiton, Westfarthing",
+        "organizer": "Bilbo Baggins",
+        "description": "A splendid party with enchantments and surprises. An evening of merriment, fireworks by Gandalf, and a feast to surpass all prior gatherings. Friends and relatives are invited to join in celebration. Gifts unnecessary, but presence cherished.",
+        "attendees": "Expected attendance by notable Hobbits of the Shire, including the Baggins, Took, and Brandybuck families, among others. Special guest Gandalf the Grey.",
+        "activities": ["Speeches", "Firework display", "Feasting", "Music and dancing"],
+        "special_notes": "A secretive and special announcement to be made. Come for the surprises, stay for the fellowship.",
+        "RSVP_required": true,
+        "dress_code": "Festive attire recommended"
+      },
+      {
+        "title": "Frodo's Farewell Party",
+        "date": "22 September 1418 Shire Reckoning",
+        "location": "Bag End, Hobbiton, Westfarthing",
+        "organizer": "Frodo Baggins",
+        "description": "A cozy gathering under the stars to bid farewell to Frodo Baggins as he embarks on an unexpected journey. An evening of heartfelt goodbyes, stories, and shared memories. Friends and kin are warmly invited for a night of camaraderie and to wish Frodo well on his adventures ahead.",
+        "attendees": "Close friends and family, including members of the Baggins, Took, and Brandybuck families. Special invitations to Samwise Gamgee, Meriadoc Brandybuck, and Peregrin Took.",
+        "activities": ["Farewell speeches", "Storytelling", "Light refreshments and drinks", "Music"],
+        "special_notes": "This gathering is intimate, marking both an end and a beginning. Let's make this night memorable for Frodo with our support and love.",
+        "RSVP_required": true,
+        "dress_code": "Casual evening attire"
+      },
+      {
+        "title": "The Battle of Bywater",
+        "date": "3 November 1419 Shire Reckoning",
+        "location": "Bywater, The Shire",
+        "organizer": "Meriadoc Brandybuck and Peregrin Took",
+        "description": "A call to arms for all free Hobbits of the Shire to stand against the tyranny of Sharkey's Men. This marks the climax of our struggle to reclaim the peace and freedom of our homeland. We rally at Bywater to face these invaders, driven by the courage of the Shirefolk and the leadership of the returning heroes of the Fellowship. Together, we fight for the Shire!",
+        "attendees": "Hobbits of the Shire, including the Tooks, Brandybucks, Bagginses, and Gamgees, along with any who dare stand against the oppression of our lands. Special leadership by Merry and Pippin.",
+        "activities": ["Rallying the Shirefolk", "Strategic confrontation", "Liberation of the Shire"],
+        "special_notes": "This battle signifies our resolve and unity. Let it be remembered as the day we reclaimed our freedom and the beauty of the Shire. Weapons and courage required.",
+        "RSVP_required": false,
+        "dress_code": "Battle-ready attire"
+      },
+      {
+        "title": "The Wedding of Aragorn and Arwen",
+        "date": "Midsummer, 3019 Third Age",
+        "location": "Minas Tirith, Gondor",
+        "organizer": "King Elessar (Aragorn II)",
+        "description": "In the blessed city of Minas Tirith, under the banner of the White Tree, the Kingdom of Men witnesses the union of King Elessar of Gondor and Arwen Undómiel, daughter of Elrond. This joyous event not only unites two hearts but also heralds the merging of the Eldar and the Edain, ushering in the dominion of Men and the long-awaited peace of the Fourth Age. All of Gondor and representatives from realms far and wide are invited to celebrate this momentous occasion.",
+        "attendees": "Nobles of Gondor, Elves of Rivendell and Lothlórien, representatives from the Shire, Rohan, Dwarves of Erebor, and dignitaries from across Middle-earth. Special guests include Gandalf, Frodo Baggins, Samwise Gamgee, Meriadoc Brandybuck, Peregrin Took, Legolas Greenleaf, and Gimli son of Glóin.",
+        "activities": ["Ceremony in the Court of the Fountain", "Feasting and celebrations in the Citadel", "Songs and dances from the various peoples of Middle-earth", "Speeches and blessings"],
+        "special_notes": "The wedding symbolizes the hope and renewal for all the Free Peoples of Middle-earth, marking a new era of peace and prosperity.",
+        "RSVP_required": true,
+        "dress_code": "Formal attire fitting for a royal celebration"
+      },
+      {
+        "title": "The Battle of the Pelennor Fields",
+        "date": "15 March 3019 Third Age",
+        "location": "Pelennor Fields, outside Minas Tirith, Gondor",
+        "organizer": "Denethor II, Steward of Gondor, and Gandalf the White",
+        "description": "A call to arms to defend the White City against the forces of Sauron. As darkness descends upon Gondor, the beacons are lit, and the call goes forth to all able-bodied men and allies of the Free Peoples. Stand with us on the Pelennor Fields to face the might of Mordor and fight for the freedom of Middle-earth. Let us unite under the banner of Gondor and push back this shadow once and for all.",
+        "attendees": "Soldiers of Gondor, Riders of Rohan, forces from fiefdoms of Gondor, and any willing allies among the Free Peoples of Middle-earth. Key figures include King Théoden of Rohan, Prince Imrahil of Dol Amroth, Éomer, Éowyn, and the Grey Company.",
+        "activities": ["Assembly at dawn", "Cavalry charges", "Coordination with the Rohirrim", "Strategic defense and counterattacks against enemy forces"],
+        "special_notes": "This battle is a pivotal moment in the War of the Ring. Courage, honor, and unity will be our guiding lights. For Gondor, for freedom!",
+        "RSVP_required": false,
+        "dress_code": "Battle regalia and armor"
+      } 
+      
+    ],
+
+    "customer_inventories": [
+        {
+            "customer_id": "Bilbo Baggins",
+            "inventory": [
+                {
+                    "item": "The One Ring",
+                    "description": "A golden ring found in Gollum's cave",
+                    "dateAcquired": "TA 2941",
+                    "source": "Found/Inherited",
+                    "price": "N/A"
+                },
+                {
+                    "item": "Mithril Shirt",
+                    "description": "A dwarven chain mail shirt given by Thorin Oakenshield",
+                    "dateAcquired": "TA 2941",
+                    "source": "Gift",
+                    "price": "Priceless"
+                },
+                {
+                    "item": "Sting",
+                    "description": "A short sword acquired in a troll hoard",
+                    "dateAcquired": "TA 2941",
+                    "source": "Found",
+                    "price": "N/A"
+                },
+                {
+                    "item": "Worn Travel Cloak",
+                    "description": "A sturdy cloak used throughout Bilbo's adventures",
+                    "dateAcquired": "TA 2941",
+                    "source": "Purchased",
+                    "price": "Modest"
+                },
+                {
+                    "item": "Party Supplies",
+                    "description": "Food, beverages, and decorations for Bilbo's eleventy-first birthday party",
+                    "dateAcquired": "TA 3001",
+                    "source": "Purchased",
+                    "price": "Generous"
+                },
+                {
+                    "item": "Fireworks",
+                    "description": "Special fireworks for the party, made by Gandalf",
+                    "dateAcquired": "TA 3001",
+                    "source": "Purchased from Gandalf",
+                    "price": "Substantial"
+                },
+                {
+                    "item": "Red Book of Westmarch",
+                    "description": "A book for Bilbo's memoirs, later continued by Frodo",
+                    "dateAcquired": "TA 3001",
+                    "source": "Made",
+                    "price": "Sentimental"
+                },
+                {
+                    "item": "Pipe and Tobacconist Supplies",
+                    "description": "Quality pipe-weed and smoking accessories",
+                    "dateAcquired": "Various",
+                    "source": "Purchased",
+                    "price": "Recurrent"
+                }
+            ]
+        }        
+        
+    ],
+    "products":
+        [
+            {
+                "productID": "001",
+                "name": "Deluxe Writing Set",
+                "description": "A high-quality quill, ink set, and parchment for writing tales of adventures and memoirs.",
+                "category": "Stationery",
+                "interests": ["Writing", "Storytelling"],
+                "price": "Affordable"
+            },
+            {
+                "productID": "002",
+                "name": "Hobbit-sized Adventure Gear",
+                "description": "Custom-sized outdoor gear for the adventurous hobbit, including a backpack, waterproof cloak, and maps of Middle-earth.",
+                "category": "Adventure Gear",
+                "interests": ["Adventuring", "Exploring"],
+                "price": "Premium"
+            },
+            {
+                "productID": "003",
+                "name": "Elvish Language Course",
+                "description": "An immersive course on the Elvish languages, taught by esteemed Elven scholars.",
+                "category": "Education",
+                "interests": ["Elvish languages", "Learning"],
+                "price": "Exclusive"
+            },
+            {
+                "productID": "004",
+                "name": "Shire Cookbook",
+                "description": "A collection of traditional Shire recipes, including Bilbo's favorites, perfect for any feast or party.",
+                "category": "Books",
+                "interests": ["Cooking", "Culture"],
+                "price": "Affordable"
+            },
+            {
+                "productID": "005",
+                "name": "Premium Pipe-weed Sampler",
+                "description": "A selection of the finest pipe-weed from across the Shire, including Old Toby and Longbottom Leaf.",
+                "category": "Tobacconist",
+                "interests": ["Smoking", "Relaxation"],
+                "price": "Moderate"
+            },
+            {
+                "productID": "006",
+                "name": "Miniature Garden Toolkit",
+                "description": "A set of precision tools for tending to a hobbit-hole's garden, designed for the finest detail work.",
+                "category": "Gardening",
+                "interests": ["Gardening", "Horticulture"],
+                "price": "Reasonable"
+            },
+            {
+                "productID": "007",
+                "name": "Firework Making Kit",
+                "description": "A beginner's kit for making simple fireworks, with a guide penned by Gandalf himself. For entertainment use only.",
+                "category": "Hobby",
+                "interests": ["Fireworks", "Celebrations"],
+                "price": "Expensive"
+            },
+
+            {
+                "productID": "101",
+                "name": "Orb of Far-seeing",
+                "description": "A crystal ball capable of distant communication and surveillance, perfect for coordinating vast armies and spying on enemies.",
+                "category": "Sorcery Tools",
+                "interests": ["Domination", "Surveillance"],
+                "price": "Exorbitant"
+            },
+            {
+                "productID": "102",
+                "name": "Ring-forging Kit",
+                "description": "Includes enchanted anvils, hammers, and rare metals. Ideal for crafting rings of power, imbued with spells for control and influence.",
+                "category": "Blacksmithing",
+                "interests": ["Ring-crafting", "Magic"],
+                "price": "Priceless"
+            },
+            {
+                "productID": "103",
+                "name": "Dark Magic Grimoire",
+                "description": "A tome of forbidden knowledge containing spells, rituals, and dark enchantments. Not for the faint-hearted.",
+                "category": "Books",
+                "interests": ["Dark magic", "Power"],
+                "price": "Forbidden"
+            },
+            {
+                "productID": "104",
+                "name": "Army Enlistment Software",
+                "description": "State-of-the-art management software for raising and organizing vast armies, including orcs, trolls, and other dark creatures.",
+                "category": "Software",
+                "interests": ["Domination", "Warfare"],
+                "price": "Strategic Value"
+            },
+            {
+                "productID": "105",
+                "name": "Fortress Expansion Plans",
+                "description": "Architectural designs for expanding dark fortresses, incorporating dread and despair into every brick and spire.",
+                "category": "Architecture",
+                "interests": ["Domination", "Construction"],
+                "price": "Monumental"
+            },
+            {
+                "productID": "106",
+                "name": "Infernal Workshop Equipment",
+                "description": "Advanced equipment for the creation of weapons of war and torture devices. Includes blueprints for upgrades to existing armaments.",
+                "category": "Warfare",
+                "interests": ["Industry", "Weaponry"],
+                "price": "Catastrophic"
+            },
+            {
+                "productID": "107",
+                "name": "Telepathic Network Setup",
+                "description": "An arcane system that establishes a mental link between the user and subordinates, ensuring unwavering loyalty and instant command relay.",
+                "category": "Sorcery Tools",
+                "interests": ["Control", "Communication"],
+                "price": "Incalculable"
+            }
+        ],
+
+        "customer_cases": [
+            {
+                "case_id": "001",
+                "customer_name": "Sméagol",
+                "complaint": "Product led to immediate and severe addiction. Side effects included extreme possessiveness, identity crisis, and a drastically altered physical appearance. Long-term use resulted in social isolation and homicidal tendencies.",
+                "resolution_requested": "Requesting a full refund or an exchange for a product that doesn't cause eternal damnation.",
+                "status": "Pending investigation"
+            },
+            {
+                "case_id": "002",
+                "customer_name": "Bilbo Baggins",
+                "complaint": "Product caused unexpected longevity and an overwhelming desire to be deceitful. Difficulties in relinquishing the product despite clear negative impact on personal relationships and well-being.",
+                "resolution_requested": "Seeking assurance that no lasting effects will remain and compensation for emotional distress.",
+                "status": "Under review"
+            },
+            {
+                "case_id": "003",
+                "customer_name": "Frodo Baggins",
+                "complaint": "Product caused intense psychological trauma, physical harm, and persistent pursuit by hostile forces. Usage led to near-fatal attraction to volcanic environments.",
+                "resolution_requested": "Demands a comprehensive recovery package, including medical care, mental health services, and assurances of no further pursuit by product-related entities.",
+                "status": "Awaiting further action"
+            },
+            {
+                "case_id": "004",
+                "customer_name": "Samwise Gamgee",
+                "complaint": "Temporary interaction with product resulted in immediate exposure to risk and danger, including but not limited to giant spiders and multiple instances of kidnapping. Product use observed to cause significant harm to close friend.",
+                "resolution_requested": "Requests a safer work environment and hazard pay, along with a guarantee of safety for all future ring-bearers.",
+                "status": "Referred to health and safety"
+            }
+        ]
+        
+        
+}

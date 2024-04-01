@@ -26,9 +26,9 @@ mechanician_workflow_example.egg-info
 mechanician_mistral.egg-info
 docs/_*
 examples/_*
-mechanician_ui.egg-info
-examples/dm_ui/credentials.json
-examples/dm_ui/certs/cert.pem
-examples/dm_ui/certs/key.pem
-examples/dm_ui/data/chromadb
+mechanician_studio.egg-info
+examples/studio_demo/credentials.json
+examples/studio_demo/certs/cert.pem
+examples/studio_demo/certs/key.pem
+examples/studio_demo/data/chromadb
 

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create User - Daring Mechanician</title>
+    <link rel="stylesheet" href="./static/styles.css">
+    <link rel="stylesheet" href="./static/form_styles.css">
+    <style>
+
+        select {
+            font-size: 14px;
+            width: 100%;
+            color: white;
+            background-color: #222; /* Set a flat background color */
+            border: none; /* A light border for a flat effect */
+            border-radius: 0; /* Remove rounded corners if desired */
+            box-shadow: none; /* Remove any shadow effects */
+            appearance: none; /* Attempt to disable native OS styling */
+            -webkit-appearance: none; /* Specifically for WebKit browsers */
+            -moz-appearance: none; /* Specifically for Mozilla browsers */
+            outline: none; /* Remove focus outline */
+        }
+
+        /* Custom arrow */
+        select::-ms-expand {
+            display: none; /* Hide the default arrow in IE */
+        }
+
+        .select-container {
+            width: 100%;
+            flex-grow: 1;
+            position: relative;
+            display: inline-block;
+            background-color: #222;
+            border: 1px solid #777;
+            margin-left: 0px;
+            color: #777;
+            border-radius: 5px;
+        }
+
+        .select-container select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: transparent;
+            border: none;
+            padding: 5px 8px 5px 10px;
+            margin: 0;
+            color: white;
+            cursor: pointer;
+        }
+
+        .select-container::after {
+            content: '\25BE'; /* Unicode for down arrow */
+            position: absolute;
+            top: 0;
+            right: 10px;
+            bottom: 0;
+            color: white;
+            pointer-events: none; /* Makes it non-interactive */
+            display: flex;
+            align-items: center;
+        }
+
+        .select-container select::-ms-expand {
+            display: none; /* For IE11 */
+        }
+
+
+        /* Hover effect for the select container */
+        .select-container:hover {
+            border: 1px solid white; /* Example: change border color on hover */
+        }
+
+        /* Hover effect for the select element */
+        .select-container:hover select {
+            color: white; /* Example: change text color on hover */
+        }
+
+        /* Hover effect for the custom arrow */
+        .select-container:hover::after {
+            color: white; /* Example: change arrow color on hover */
+        }
+
+
+
+/* Custom arrow */
+select::-ms-expand {
+  display: none; /* Hide the default arrow in IE */
+}
+
+/* You might need to add a custom dropdown arrow using background-image for select or wrapping it inside a div with a custom arrow icon */
+
+
+    </style>
+</head>
+<body>
+    <div id="header">
+        <div id="title">Add User</div>
+        <!-- <button id="close_button">&#10006;</button> -->
+        <button id="close_button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.34315 6.34338L17.6569 17.6571M17.6569 6.34338L6.34315 17.6571" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </button>
+    </div>
+    
+     <!-- Sidebar remains unchanged from your login.html -->
+     <div id="sidebar">
+        <h1>Daring Mechanician</h1>
+        <!-- Additional sidebar content here -->
+        <div id="sidebar-button-container" class="sidebar-button-container">
+           
+            <button id="user-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md">
+                    <path d="M11.6439 3C10.9352 3 10.2794 3.37508 9.92002 3.98596L9.49644 4.70605C8.96184 5.61487 7.98938 6.17632 6.93501 6.18489L6.09967 6.19168C5.39096 6.19744 4.73823 6.57783 4.38386 7.19161L4.02776 7.80841C3.67339 8.42219 3.67032 9.17767 4.01969 9.7943L4.43151 10.5212C4.95127 11.4386 4.95127 12.5615 4.43151 13.4788L4.01969 14.2057C3.67032 14.8224 3.67339 15.5778 4.02776 16.1916L4.38386 16.8084C4.73823 17.4222 5.39096 17.8026 6.09966 17.8083L6.93502 17.8151C7.98939 17.8237 8.96185 18.3851 9.49645 19.294L9.92002 20.014C10.2794 20.6249 10.9352 21 11.6439 21H12.3561C13.0648 21 13.7206 20.6249 14.08 20.014L14.5035 19.294C15.0381 18.3851 16.0106 17.8237 17.065 17.8151L17.9004 17.8083C18.6091 17.8026 19.2618 17.4222 19.6162 16.8084L19.9723 16.1916C20.3267 15.5778 20.3298 14.8224 19.9804 14.2057L19.5686 13.4788C19.0488 12.5615 19.0488 11.4386 19.5686 10.5212L19.9804 9.7943C20.3298 9.17767 20.3267 8.42219 19.9723 7.80841L19.6162 7.19161C19.2618 6.57783 18.6091 6.19744 17.9004 6.19168L17.065 6.18489C16.0106 6.17632 15.0382 5.61487 14.5036 4.70605L14.08 3.98596C13.7206 3.37508 13.0648 3 12.3561 3H11.6439Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="2"></circle>
+                </svg>
+                &nbsp;{{ name }}</button>
+
+            <button id="logout-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md">
+                    <path d="M11 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H11" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M20 12H11M20 12L16 16M20 12L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                &nbsp;logout</button>
+        </div>
+    </div>
+    </div>
+
+    <div class="form-container">
+        <div class="input-group">
+            <label for="name">Display Name</label>
+            <input type="text" id="name" placeholder="Display Name">
+        </div>
+        <div class="input-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Username">
+        </div>
+        <div class="input-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Password">
+        </div>
+        <div class="input-group">
+            <label for="confirm_password">Confirm Password</label>
+            <input type="password" id="confirm_password" placeholder="Confirm Password">
+        </div>
+        <div class="input-group">
+            <label for="select-container" style="padding-right:5px; margin-right:0px;">User Role&nbsp;&nbsp;</label>
+            <div class="select-container">
+                <select id="user_role">
+                  <option value="User">User</option>
+                  <option value="Admin">Admin</option>
+                </select>
+              </div>
+        </div>
+        
+        <button id="create_user_button">Create</button>
+    </div>
+    
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="./static/functions.js"></script>
+    <script>
+            function create_user() {
+                var name = $('#name').val();
+                var username = $('#username').val();
+                var password = $('#password').val();
+                var confirm_password = $('#confirm_password').val();
+                var user_role = $('#user_role').val();
+
+                if(password !== confirm_password) {
+                    alert("Passwords do not match.");
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "/create_user",
+                    data: JSON.stringify({ // Convert the data to a JSON string
+                        name: name, 
+                        username: username, 
+                        password: password,
+                        confirm_password: confirm_password,
+                        user_role: user_role
+                    }),
+                    contentType: "application/json; charset=utf-8", // Set the content type to JSON
+                    dataType: "json", // Expect JSON in response from the server
+                    success: function(data) {
+                        alert("User created successfully.");
+                        window.location.href = "/create_user"; // Redirect to the login page after account creation
+                    },
+                    error: function(response) {
+                        var errorMessage = "User creation failed: ";
+                        if (response.responseJSON && response.responseJSON.detail) {
+                            errorMessage += response.responseJSON.detail;
+                        } else {
+                            errorMessage += "An unexpected error occurred.";
+                        }
+                        alert(errorMessage);
+                    }
+                });
+            }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Select the close button using its ID
+            var closeButton = document.getElementById('close_button');
+
+            // Add a click event listener to the close button
+            closeButton.addEventListener('click', function() {
+                // Redirect to the homepage
+                window.location.href = '/';
+            });
+
+            // document.getElementById('username').focus();
+            document.getElementById('create_user_button').addEventListener('click', create_user);
+            document.getElementById('confirm_password').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') { // Checking if the key pressed is 'Enter'
+                    create_user();
+                }
+            });
+
+            document.getElementById('user-button').addEventListener('click', function() {
+                window.location.href = "/user";
+            });
+
+            document.getElementById('logout-button').addEventListener('click', function() {
+                perform_logout();
+            });
+
+        });
+    </script>
+</body>
+</html>

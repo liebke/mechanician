@@ -1,0 +1,3 @@
+recursive-include src/templates *.html
+recursive-include src/static *.css
+recursive-include src/static *.js
