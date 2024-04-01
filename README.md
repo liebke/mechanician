@@ -12,12 +12,19 @@ The core `mechanician` package provides modules for building, testing, and tunin
 
 The `mechanician-openai` package provides `AIConnectors` for both OpenAI's *Chat* API and *Assistants* API, and there are plans to create connectors for more LLMs with *tool-call* support, especially local LLMs.
 
+The `mechanician-studio` package provides a multi-user web interface for interacting with the tool-equipped AIs.
+
 The `mechanician-arangodb` module provides `AITools` that let AIs interact with the [ArangoDB](https://arangodb.com) graph database.
 
 
-<img src="docs/images/notepad_todo_animated.gif" alt="Daring Mechanician Notepads"  style="max-width: 100%; height: auto float: right;">
+<img src="docs/images/notepad_todo_animated.gif" alt="Daring Mechanician Studio Login"  style="max-width: 100%; height: auto float: right;">
 
-<img src="docs/images/event_invite_animated.gif" alt="Daring Mechanician Notepads"  style="max-width: 100%; height: auto float: right;">
+<img src="docs/images/event_invite_animated.gif" alt="Daring Mechanician Studio Prompt Tools Event Invite"  style="max-width: 100%; height: auto float: right;">
+
+<img src="docs/images/chroma_query_animated_1.gif" alt="Daring Mechanician Studio Prompt Tools Chroma Query 1"  style="max-width: 100%; height: auto float: right;">
+
+
+<img src="docs/images/chroma_query_animated_2.gif" alt="Daring Mechanician Studio Prompt Tools Chroma Query 2"  style="max-width: 100%; height: auto float: right;">
 
 
 # Tool Augmented Generation (TAG)
