@@ -191,10 +191,14 @@ def init_app():
     # Set up the AI provisioner
     ai_connector_provisioner = OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"), 
                                                               model_name=os.getenv("OPENAI_MODEL_NAME"))
-    ai_provisioner = AIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
-                                   name = "MiddleEarth CRM AI",
-                                   ai_tools_provisioners = [notepad_tools_provisioner,
-                                                            tmdb_tools_provisioner])
+    ai_provisioner_notepad_only = AIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
+                                                name = "Notepad Only AI",
+                                                ai_tools_provisioners = [notepad_tools_provisioner])
+    
+    ai_provisioner_tmdb = AIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
+                                        name = "TMDB AI",
+                                        ai_tools_provisioners = [notepad_tools_provisioner,
+                                                                 tmdb_tools_provisioner])
     
     # Set up the Prompt Tools provisioners
     crm_connector_provisioner = CRMConnectorProvisioner(crm_data_directory="./data")
@@ -210,7 +214,7 @@ def init_app():
                                                       prompt_tool_instruction_file_name="rag_prompt_tool_instructions.json") 
     
     # Set up the Mechanician Web App
-    return MechanicianWebApp(ai_provisioner=ai_provisioner,
+    return MechanicianWebApp(ai_provisioners=[ai_provisioner_notepad_only, ai_provisioner_tmdb],
                              prompt_tools_provisioners=[crm_tools_provisioner, 
                                                         chroma_tools_provisioner])
 

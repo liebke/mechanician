@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>AI Tools - Daring Mechanician</title>
+    <title>Daring Mechanician - AI Tools</title>
     <link rel="stylesheet" href="./static/styles.css">
     <link rel="stylesheet" href="./static/form_styles.css">
     <style>
@@ -176,8 +176,8 @@
     <div id="header">
         <!-- <div id="title">AI Tools</div> -->
         <div class="select-container">
-            <select>
-                <option value="{{ai_name}}">{{ai_name}}</option>
+            <select id="ai_name">
+                <!-- <option value="{{ai_name}}">{{ai_name}}</option> -->
             </select>
         </div>
         <button id="close_button">
@@ -188,7 +188,7 @@
     </div>
 
     <div id="sidebar">
-        <!-- <h1>Daring Mechanician</h1> -->
+        <!-- <h1>Mechanician Studio</h1> -->
         <h1>AI Tools</h1>
         <!-- Additional sidebar content here -->
         <div id="sidebar-button-container" class="sidebar-button-container">
@@ -322,6 +322,10 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        const ai_names = {{ ai_names | tojson }};
+        const initial_ai_name = '{{ ai_name }}';
+        generate_ai_name_select_options(ai_names, initial_ai_name); // Generate AI name select options
+
         // Assuming schema_json is defined somewhere or is dynamically generated
         const schema_json = {{ ai_tool_instructions | tojson | safe }};
         create_form(schema_json);
@@ -341,6 +345,8 @@
         document.getElementById('call_tool_form')?.addEventListener('submit', function(e) {
             e.preventDefault();
             const form_data = new FormData(this);
+            let ai_name = document.getElementById('ai_name').value;
+            form_data.append('ai_name', ai_name);
 
             fetch('/call_ai_tool', {
                 method: 'POST',

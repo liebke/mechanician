@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Prompt Tools - Daring Mechanician</title>
+    <title>Daring Mechanician - Prompt Tools</title>
     <link rel="stylesheet" href="./static/styles.css">
     <link rel="stylesheet" href="./static/form_styles.css">
     <style>
@@ -175,8 +175,8 @@
 
     <div id="header">
         <div class="select-container">
-            <select>
-                <option value="{{ai_name}}">{{ai_name}}</option>
+            <select id="ai_name">
+                <!-- <option value="{{ai_name}}">{{ai_name}}</option> -->
             </select>
         </div>
         <!-- <div id="title">Prompt Tools</div> -->
@@ -189,7 +189,7 @@
     </div>
 
     <div id="sidebar">
-        <!-- <h1>Daring Mechanician</h1> -->
+        <!-- <h1>Mechanician Studio</h1> -->
         <h1>Prompt Tools</h1>
         <!-- Additional sidebar content here -->
         <div id="sidebar-button-container" class="sidebar-button-container">
@@ -291,6 +291,8 @@
         }
 
         function load_prompt_resources(form_data) {
+            let ai_name = document.getElementById('ai_name').value;
+            form_data.append('ai_name', ai_name);
             fetch('/prompt_tools/resources', {
                     method: 'POST',
                     body: form_data, 
@@ -378,12 +380,35 @@
                 prompt_submit_button.id = 'prompt_submit_button';
                 prompt_submit_button.textContent = 'Send Prompt';
                 prompt_form.appendChild(prompt_submit_button);
+
+                // Listen for the form's submit event
+                prompt_form.addEventListener('submit', function(event) {
+                    event.preventDefault(); // Prevent the default form submission
+
+                    // Create a hidden input to store the ai_name value
+                    const ai_name_input = document.createElement('input');
+                    ai_name_input.type = 'hidden';
+                    ai_name_input.name = 'ai_name';
+                    ai_name_input.value = get_ai_name(); // Assuming you have a function to get the ai_name value
+
+                    // Append the hidden input to the form
+                    prompt_form.appendChild(ai_name_input);
+
+                    // Now submit the form
+                    prompt_form.submit();
+                });
+
+                
                 form_container.appendChild(prompt_form);
             }
         }
 
 
         document.addEventListener('DOMContentLoaded', function() {
+            const ai_names = {{ ai_names | tojson }};
+            const initial_ai_name = '{{ ai_name }}';
+            generate_ai_name_select_options(ai_names, initial_ai_name); // Generate AI name select options
+
             // Assuming schema_json is the JSON object from your example
             const schema_json = {{ prompt_tool_instructions | tojson | safe }};
             create_form(schema_json);
@@ -392,7 +417,8 @@
             // Add a click event listener to the close button
             closeButton.addEventListener('click', function() {
                 // Redirect to the homepage
-                window.location.href = '/';
+                // window.location.href = '/';
+                window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name());
             });
 
             document.getElementById('user-button').addEventListener('click', function() {

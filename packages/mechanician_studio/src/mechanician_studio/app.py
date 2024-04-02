@@ -16,6 +16,7 @@ from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
 import logging
 from pprint import pprint
+from typing import List
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -50,19 +51,22 @@ class MechanicianWebApp:
     stop_generation = False
 
     def __init__(self, 
-                 ai_provisioner: 'AIProvisioner',
+                 ai_provisioners: List['AIProvisioner'],
                  prompt_tools_provisioners=None,
                  credentials_manager: CredentialsManager=None,
                  credentials_file_path="./credentials.json",
                  dm_admin_username=None,
                  dm_admin_password=None):
         
-        if ai_provisioner is None:
-            raise ValueError("ai_provisioner must be provided")
+        if ai_provisioners is None:
+            raise ValueError("ai_provisioners must be provided")
 
-        self.ai_provisioner = ai_provisioner
+        self.ai_provisioners = ai_provisioners
         self.prompt_tools_provisioners = prompt_tools_provisioners
-        self.name = self.ai_provisioner.name
+        # create a list of AI names
+        self.ai_names = []
+        for aip in self.ai_provisioners:
+            self.ai_names.append(aip.name)
         self.credentials_manager = credentials_manager or BasicCredentialsManager(credentials_filename=credentials_file_path)
         dm_admin_username = dm_admin_username or os.getenv("DM_ADMIN_USERNAME", "mechanician")
         if not self.credentials_manager.user_exists(dm_admin_username):
@@ -106,9 +110,15 @@ class MechanicianWebApp:
             else:
                 username = user.get("username", "")
 
+            # get ai_name from query parameter
+            ai_name = request.query_params.get("ai_name")
+            if ai_name is None:
+                ai_name = self.ai_names[0]
+
             return self.templates.TemplateResponse("index.html", 
                                                    {"request": request,
-                                                    "ai_name": self.name,
+                                                    "ai_names": self.ai_names,
+                                                    "ai_name": ai_name,
                                                     "username": username,
                                                     "name": user.get("name", username),})
         
@@ -128,9 +138,11 @@ class MechanicianWebApp:
             form_data = await request.form()
             form_data_dict = dict(form_data)
             prompt = form_data_dict.get("prompt", "")
+            ai_name = form_data_dict.get("ai_name")
             return self.templates.TemplateResponse("index.html", 
                                                    {"request": request,
-                                                    "ai_name": self.name,
+                                                    "ai_names": self.ai_names,
+                                                    "ai_name": ai_name,
                                                     "username": username,
                                                     "name": user.get("name", username),
                                                     "prompt": prompt,})
@@ -175,7 +187,8 @@ class MechanicianWebApp:
             # remove function_name, prompt_template from form_data_dict
             form_data_dict.pop("function_name", None)
             username = user.get("username", access_token)
-            ai_tools=self.get_ai_instance(username, context=self.get_context(access_token)).ai_tools
+            ai_name = form_data_dict.get("ai_name")
+            ai_tools=self.get_ai_instance(username=username, ai_name=ai_name, context=self.get_context(access_token)).ai_tools
             response = ai_tools.call_function(function_name, params=form_data_dict)
             return JSONResponse(content=response)
         
@@ -233,7 +246,7 @@ class MechanicianWebApp:
             
             return self.templates.TemplateResponse("create_user.html",
                                                    {"request": request,
-                                                    "ai_name": self.name,
+                                                    "ai_names": self.ai_names,
                                                     "username": username,
                                                     "name": display_name})
         
@@ -295,7 +308,7 @@ class MechanicianWebApp:
             return self.templates.TemplateResponse("user.html", 
                                                    {"request": request,
                                                     "username": username,
-                                                    "ai_name": self.name,
+                                                    "ai_names": self.ai_names,
                                                     "name": display_name,
                                                     "user_role": user_role})
         
@@ -386,12 +399,14 @@ class MechanicianWebApp:
                 return response
 
             token = request.cookies.get("access_token")
-            ai_tools=self.get_ai_instance(username, context=self.get_context(token)).ai_tools
+            ai_name = request.query_params.get("ai_name")
+            ai_tools=self.get_ai_instance(username=username, ai_name=ai_name, context=self.get_context(token)).ai_tools
             return self.templates.TemplateResponse("ai_tools.html", 
                                                    {"request": request,
                                                     "ai_tool_instructions": ai_tools.get_tool_instructions(),
                                                     "username": username,
-                                                    "ai_name": self.name,
+                                                    "ai_names": self.ai_names,
+                                                    "ai_name": ai_name,
                                                     "name": display_name,
                                                     "user_role": user_role})
 
@@ -419,11 +434,13 @@ class MechanicianWebApp:
 
             token = request.cookies.get("access_token")
             prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(token))
+            ai_name = request.query_params.get("ai_name") or self.ai_names[0]
             return self.templates.TemplateResponse("prompt_tools.html", 
                                                    {"request": request,
                                                     "prompt_tool_instructions": prompt_tools.get_tool_instructions(),
                                                     "username": username,
-                                                    "ai_name": self.name,
+                                                    "ai_names": self.ai_names,
+                                                    "ai_name": ai_name,
                                                     "name": display_name,
                                                     "user_role": user_role})
         
@@ -595,6 +612,7 @@ class MechanicianWebApp:
     async def generate_text(self, websocket: WebSocket, data: dict):
         """The actual text generation logic."""
         input_text = data.get("data", "")
+        ai_name = data.get("ai_name", "")
         client_message_history = data.get("message_history", [])
         sid = str(websocket.client)
         token = self.sid_to_tokens.get(sid, None)
@@ -604,7 +622,7 @@ class MechanicianWebApp:
         
         user = self.credentials_manager.get_user_by_token(token)
         username = user.get("username", token)
-        ai_instance = self.get_ai_instance(username, context=self.get_context(token))
+        ai_instance = self.get_ai_instance(username=username, ai_name=ai_name, context=self.get_context(token))
         merged_message_history = self.merge_client_message_history(ai_instance.ai_connector.get_messages(), client_message_history)
         ai_instance.ai_connector.set_messages(merged_message_history)
         processed_prompt = self.preprocess_prompt(ai_instance, 
@@ -682,10 +700,17 @@ class MechanicianWebApp:
             raise credentials_exception
 
 
-    def get_ai_instance(self, username, context:dict={}) -> AI:
+    def get_ai_instance(self, username:str, ai_name:str, context:dict={}) -> AI:
         if username not in self.ai_instances:
-            self.ai_instances[username] = self.ai_provisioner.create_ai_instance(context=context)
-        return self.ai_instances[username]
+            # get ai provisioner by name
+            ai_provisioner = None
+            for aip in self.ai_provisioners:
+                if aip.name == ai_name:
+                    ai_provisioner = aip
+                    break
+            self.ai_instances[(username, ai_name)] = ai_provisioner.create_ai_instance(context=context)
+
+        return self.ai_instances[(username, ai_name)]
     
 
     def clear_ai_instance(self, username):

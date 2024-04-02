@@ -2,7 +2,7 @@
         var generating_text = false;
         var new_connection = false;
 
-        function send_prompt(socket, username) {
+        function send_prompt(socket, username, ai_name) {
             var prompt_text = $('#input').val().trim();
             if (prompt_text) {
                 let user_message_container = $('<div class="message-container">');
@@ -11,15 +11,20 @@
                 user_message_container.append($('<p class="message-text">').html(content_with_breaks));
                 $('#messages').append(user_message_container);
                 if (new_connection) {
-                    message_history = get_messages_from_local_storage(username);
-                    socket.send(JSON.stringify({data: prompt_text, type: 'prompt', message_history: message_history}));
+                    message_history = get_messages_from_local_storage(username, ai_name);
+                    socket.send(JSON.stringify({data: prompt_text, 
+                                                type: 'prompt', 
+                                                ai_name: ai_name,
+                                                message_history: message_history}));
                     new_connection = false;
                 }
                 else {
-                    socket.send(JSON.stringify({data: prompt_text, type: 'prompt'}));
+                    socket.send(JSON.stringify({data: prompt_text,
+                                                ai_name: ai_name,
+                                                type: 'prompt'}));
                 }
-                save_messages_to_local_storage({'role': 'assistant'}, username);
-                save_messages_to_local_storage({'role': 'user', 'content': prompt_text}, username);
+                save_messages_to_local_storage({'role': 'assistant'}, username, ai_name);
+                save_messages_to_local_storage({'role': 'user', 'content': prompt_text}, username, ai_name);
                 $('#input').val('');
                 adjust_textarea_height_and_change_button_color();
                 current_ai_response = null;
@@ -28,7 +33,7 @@
         }
 
 
-        function check_session_init_ws(username) {
+        function check_session_init_ws(username, ai_name) {
             var ws_protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
             var socket = new WebSocket(ws_protocol + window.location.host + "/ws");
             var token = localStorage.getItem('jwt_token');
@@ -36,17 +41,17 @@
                 window.location.href = "/login";
             } else {
                 // Only initialize WebSocket connection if the session check passes
-                init_web_socket(socket, username);
+                init_web_socket(socket, username, ai_name);
             }
 
             document.getElementById('send').addEventListener('click', function() {
-                send_prompt(socket, username);
+                send_prompt(socket, username, get_ai_name());
             });
 
             document.getElementById('input').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    send_prompt(socket, username);
+                    send_prompt(socket, username, get_ai_name());
                 }
             });
 
@@ -63,7 +68,7 @@
                         // Place the file content into the input field
                         document.getElementById('input').value = e.target.result;
                         adjust_textarea_height_and_change_button_color();
-                        send_prompt(socket, username);
+                        send_prompt(socket, username, get_ai_name());
                     };
 
                     // Read the text file
@@ -154,7 +159,7 @@
                 
                 // Re-attach the original event listener for the send functionality
                 stop_button.removeEventListener('click', function() {stop_generating(socket); }); 
-                stop_button.addEventListener('click', function() {send_prompt(socket, username); }); 
+                stop_button.addEventListener('click', function() {send_prompt(socket, username, get_ai_name()); }); 
             }
         }
         
@@ -162,7 +167,7 @@
                 // Your function to send a stop message over the websocket
                 console.log("Stop generating");
                 if (socket && socket.readyState === WebSocket.OPEN) {
-                    socket.send(JSON.stringify({type: 'stop'})); // Example message format
+                    socket.send(JSON.stringify({type: 'stop', ai_name: get_ai_name()})); // Example message format
                 }
         }
         
@@ -187,11 +192,28 @@
                     <rect x="4.5" y="4.5" width="7" height="7" fill="white" rx="1"/>
                 </svg>
                 `;
-                send_button.removeEventListener('click', function() {send_prompt(socket, username); }); 
+                send_button.removeEventListener('click', function() {send_prompt(socket, username, get_ai_name()); }); 
                 send_button.addEventListener('click',function() {stop_generating(socket);});
             }
         }
         
+
+        function generate_ai_name_select_options(ai_names, defaultValue) {
+            const selectElement = document.getElementById('ai_name');
+            selectElement.innerHTML = ''; // Clear existing options if any
+            
+            ai_names.forEach(name => {
+                const optionElement = document.createElement('option');
+                optionElement.value = name;
+                optionElement.textContent = name;
+                // Check if the current name is the default value
+                if(name === defaultValue) {
+                    optionElement.selected = true;
+                }
+                selectElement.appendChild(optionElement);
+            });
+        }
+
         
         function init_web_socket(socket, username) {
             console.log('Initializing WebSocket connection...');
@@ -201,7 +223,7 @@
                 new_connection = true;
                 var token = localStorage.getItem('jwt_token');
                 // Send the token to the server to authenticate the WebSocket connection
-                socket.send(JSON.stringify({token: token, type: 'token'}));
+                socket.send(JSON.stringify({token: token, ai_name: get_ai_name(), type: 'token'}));
 
                 let sys_message_container = $('<div class="message-container">');
                 sys_message_container.append($('<p class="message-header">').html("System"));
@@ -223,7 +245,7 @@
             // Modify your onmessage function to call transform_send_to_stop
             socket.onmessage = function(event) {
                 var msg = event.data;
-                save_messages_to_local_storage({'role': 'assistant', 'content': msg}, username); // Save each incoming message to local storage
+                save_messages_to_local_storage({'role': 'assistant', 'content': msg}, username, get_ai_name()); // Save each incoming message to local storage
                 display_message(msg); // Display the incoming message
                 transform_send_to_stop(socket); // Transform the send button into the stop button
             };
@@ -251,20 +273,31 @@
         }
 
 
+        function convert_to_keyword(input_string) {
+            return input_string.toLowerCase().replace(/\s+/g, '_');
+        }
 
+        function get_local_storage_key(username, ai_name) {
+            let ai_name_kw = convert_to_keyword(ai_name);
+            return username ? `${username}_${ai_name_kw}_saved_messages` : 'saved_messages';
+        }
 
         // Function to save messages to local storage
-        function save_messages_to_local_storage(message, username) {
+        function save_messages_to_local_storage(message, username, ai_name) {
             // Retrieve existing messages from local storage
-            const storage_key = username ? `${username}_saved_messages` : 'saved_messages';
+            const storage_key = get_local_storage_key(username, ai_name);
             let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
             messages.push(message); // Add new message to the array
             localStorage.setItem(storage_key, JSON.stringify(messages)); // Save back to local storage
         }
 
+        function clear_messages_display() {
+            $('#messages').empty();
+        }
+
         // Function to load and display messages from local storage
-        function load_messages_from_local_storage(username) {
-            const storage_key = username ? `${username}_saved_messages` : 'saved_messages';
+        function load_messages_from_local_storage(username, ai_name) {
+            const storage_key = get_local_storage_key(username, ai_name);
             let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
             messages.forEach(function(msg) {
                 display_stored_message(msg); // Function to display a message
@@ -272,8 +305,8 @@
         }
 
 
-        function get_messages_from_local_storage(username) {
-            const storage_key = username ? `${username}_saved_messages` : 'saved_messages';
+        function get_messages_from_local_storage(username, ai_name) {
+            const storage_key = get_local_storage_key(username, ai_name);
             let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
             let formated_messages = [];
             let current_ai_response = '';
@@ -310,9 +343,12 @@
             return formated_messages;
         }
         
+        function get_ai_name() {
+            return document.getElementById('ai_name').value;
+        }
 
-        function clear_messages_from_local_storage(username) {
-            const storage_key = username ? `${username}_saved_messages` : 'saved_messages';
+        function clear_messages_from_local_storage(username, ai_name) {
+            const storage_key = get_local_storage_key(username, ai_name);
             localStorage.removeItem(storage_key);
         }
 

@@ -14,7 +14,7 @@ TODO: have way to navigate back to / endpoint after visiting other pages. -->
 <body>    
     <!-- Sidebar -->
     <div id="sidebar">
-        <h1>Daring Mechanician</h1>
+        <h1>Mechanician Studio</h1>
         <!-- Add additional sidebar content here -->
         
         <div id="sidebar-button-container-id" class="sidebar-button-container">
@@ -63,8 +63,8 @@ TODO: have way to navigate back to / endpoint after visiting other pages. -->
     <div id="header">
         <!-- <div id="title">{{ ai_name }}</div> -->
         <div class="select-container">
-            <select>
-                <option value="{{ai_name}}">{{ai_name}}</option>
+            <select id="ai_name">
+                <!-- <option value="{{ai_name}}">{{ai_name}}</option> -->
             </select>
         </div>
     </div>
@@ -107,7 +107,12 @@ TODO: have way to navigate back to / endpoint after visiting other pages. -->
         window.addEventListener('resize', adjust_input_container_width);
 
         document.addEventListener('DOMContentLoaded', function() {
-            load_messages_from_local_storage(username); // Load and display messages from local storage
+            const ai_names = {{ ai_names | tojson }};
+            const initial_ai_name = '{{ ai_name }}';
+            generate_ai_name_select_options(ai_names, initial_ai_name); // Generate AI name select options
+
+            clear_messages_display();
+            load_messages_from_local_storage(username, get_ai_name()); // Load and display messages from local storage
             adjust_textarea_height_and_change_button_color();
             check_scroll();
 
@@ -137,21 +142,24 @@ TODO: have way to navigate back to / endpoint after visiting other pages. -->
             });
 
             document.getElementById('prompt-tools-button').addEventListener('click', function() {
-                window.location.href = "/prompt_tools";
+                window.location.href = "/prompt_tools?ai_name=" + encodeURIComponent(get_ai_name());
             });
 
             document.getElementById('ai-tools-button').addEventListener('click', function() {
-                window.location.href = "/ai_tools";
+                window.location.href = "/ai_tools?ai_name=" + encodeURIComponent(get_ai_name());
             });
 
+
             document.getElementById('new-button').addEventListener('click', function() {
-                clear_messages_from_local_storage(username);
+
+                clear_messages_from_local_storage(username, get_ai_name());
                 $.ajax({
                     type: "POST",
                     url: "/new",
                     success: function(data) {
                         // Redirect or update UI on successful logout
-                        window.location.href = "/";
+                        // window.location.href = "/";
+                        window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name());
                     },
                     error: function(response) {
                         // Handle error
@@ -163,7 +171,7 @@ TODO: have way to navigate back to / endpoint after visiting other pages. -->
 
             // Initial adjustment on load
             adjust_input_container_width();
-            var socket = check_session_init_ws(username);
+            var socket = check_session_init_ws(username, get_ai_name());
             // Check if there is any text in the textarea when the WebSocket connection is established and send the prompt
             function send_initial_input() {
                 var textarea_value = document.getElementById('input').value;
@@ -171,10 +179,19 @@ TODO: have way to navigate back to / endpoint after visiting other pages. -->
                 console.log(textarea_value);
                 if (socket.readyState === WebSocket.OPEN) {
                     if (textarea_value !== '') {
-                        send_prompt(socket, username);
+                        send_prompt(socket, username, get_ai_name());
                     }
                 }
             }
+
+            const ai_name_select = document.getElementById('ai_name');
+            ai_name_select.addEventListener('change', function() {
+                console.log('ai_name_select change event');
+                clear_messages_display();
+                load_messages_from_local_storage(username, get_ai_name()); // Load and display messages from local storage
+                adjust_textarea_height_and_change_button_color();
+                check_scroll();
+            });
             
             setTimeout(send_initial_input, 500);
              
