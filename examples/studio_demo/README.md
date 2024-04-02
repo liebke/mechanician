@@ -55,7 +55,7 @@ uvicorn.run("mechanician_studio.main:app", host="127.0.0.1", port=8000, ssl_keyf
 ```
 
 
-#### Run the interactive TAG AI shell:
+#### Run the Mechanician Studio:
 
 ```bash
 ./scripts/run.sh

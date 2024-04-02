@@ -52,6 +52,7 @@ The `mechanician-studio` package provides a multi-user web interface for interac
 
 See the [Mechanician Studio Example](https://github.com/liebke/mechanician/tree/main/examples/studio_demo) for a demonstration of how to use the `mechanician-studio` package.
 
+The following Mechanician Studio examples shows a setup with 2 customized AIs, two different AITools, *Notepads* and *TMDb*, and two different PromptTools, *CRM* and *Chroma*.
 
 
 ## MechanicianStudio Class
@@ -59,9 +60,9 @@ See the [Mechanician Studio Example](https://github.com/liebke/mechanician/tree/
 ```python
 from mechanician_studio import MechanicianStudio
 
-MechanicianStudio(ai_provisioners=[ai_provisioner_notepad_only, ai_provisioner_tmdb],
-                  prompt_tools_provisioners=[crm_tools_provisioner, 
-                                             chroma_tools_provisioner])
+studio = MechanicianStudio(ai_provisioners=[ai_provisioner_notepad_only, ai_provisioner_tmdb],
+                                            prompt_tools_provisioners=[crm_tools_provisioner, 
+                                                                       chroma_tools_provisioner])
 ```
 
 ## AIConnectorProvisioner Class
@@ -69,8 +70,8 @@ MechanicianStudio(ai_provisioners=[ai_provisioner_notepad_only, ai_provisioner_t
 ```python
 from mechanician_openai import OpenAIChatConnectorProvisioner
 
-OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"), 
-                               model_name=os.getenv("OPENAI_MODEL_NAME"))
+ai_connector_provisioner = OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"), 
+                                                          model_name=os.getenv("OPENAI_MODEL_NAME"))
 ```
 
 ## AIProvisioner Class
@@ -78,9 +79,16 @@ OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"),
 ```python
 from mechanician import AIProvisioner
 
-AIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
-              name = "TMDB AI",
-              ai_tools_provisioners = [tmdb_tools_provisioner])
+ai_provisioner_tmdb = AIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
+                                    name = "TMDB AI",
+                                    ai_tools_provisioners = [notepad_tools_provisioner,
+                                                             tmdb_tools_provisioner])
+```
+
+```python
+ai_provisioner_notepad_only = AIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
+                                            name = "Notepad Only AI",
+                                            ai_tools_provisioners = [notepad_tools_provisioner])
 ```
 
 ## AIToolsProvisioner Class
@@ -88,17 +96,30 @@ AIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
 ```python
 from studio_demo.tmdb_ai_tools import TMDbAIToolsProvisioner
 
-TMDbAIToolsProvisioner(api_key=os.getenv("TMDB_READ_ACCESS_TOKEN"))
+tmdb_tools_provisioner = TMDbAIToolsProvisioner(api_key=os.getenv("TMDB_READ_ACCESS_TOKEN"))
 ```
 
 See [tmdb_ai_tools.py](https://github.com/liebke/mechanician/blob/main/examples/studio_demo/src/studio_demo/tmdb_ai_tools.py) for More Details
 
 
+```python
+from mechanician_arangodb.notepad_store import ArangoNotepadStoreProvisioner
+from arango import ArangoClient
+
+arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
+notepad_store_provisioner = ArangoNotepadStoreProvisioner(arango_client=arango_client, 
+                                                          database_name="test_notepad_db",
+                                                          notepad_collection_name="notepads",
+                                                          db_username=os.getenv("ARANGO_USERNAME"),
+                                                          db_password=os.getenv("ARANGO_PASSWORD"))
+notepad_tools_provisioner = UserNotepadAIToolsProvisioner(notepad_store_provisioner=notepad_store_provisioner)
+```
+
 ## PromptToolsProvisioner Class
 
 ```python
 from mechanician.tools import PromptToolsProvisioner
-from studio_demo.chroma_prompt_tools import ChromaConnectorProvisioner
+from mechanician.chroma import ChromaConnectorProvisioner
 
 chroma_connector_provisioner = ChromaConnectorProvisioner(collection_name="studio_demo_collection")
 
@@ -107,16 +128,50 @@ chroma_tools_provisioner = PromptToolsProvisioner(resource_connector_provisioner
                                                   prompt_instructions_directory="./src/instructions",
                                                   prompt_tool_instruction_file_name="rag_prompt_tool_instructions.json") 
 ```
-See [chroma_prompt_tools.py](https://github.com/liebke/mechanician/blob/main/examples/studio_demo/src/studio_demo/chroma_prompt_tools.py) for More Details
+See [chroma_connector.py](https://github.com/liebke/mechanician/blob/main/packages/mechanician_chroma/src/mechanician_chroma/chroma_connector.py) for More Details
 
+```python
+from studio_demo.crm_connector import CRMConnectorProvisioner
+
+crm_connector_provisioner = CRMConnectorProvisioner(crm_data_directory="./data")
+crm_tools_provisioner = PromptToolsProvisioner(resource_connector_provisioner = crm_connector_provisioner,
+                                               prompt_template_directory="./templates",
+                                               prompt_instructions_directory="./src/instructions",
+                                               prompt_tool_instruction_file_name="crm_prompt_tool_instructions.json") 
+```
+
+See [crm_connector.py](https://github.com/liebke/mechanician/blob/main/packages/mechanician_chroma/src/mechanician_chroma/crm_connector.py) for More Details
 
 
 ## Run Mechanician Studio
 
+### SSL Certificates for Local Development: mkcert
+
+https://github.com/FiloSottile/mkcert
+
+```bash
+brew install mkcert
+mkcert -install
+```
+
+```bash
+mkdir certs
+mkcert -key-file ./certs/key.pem -cert-file ./certs/cert.pem localhost 127.0.0.1 ::1
+```
+
+```bash
+export SSL_KEYFILE="./certs/key.pem"
+export SSL_CERTFILE="./certs/cert.pem"
+```
+
+```bash
+uvicorn.run("mechanician_studio.main:app", host="127.0.0.1", port=8000, ssl_keyfile="./certs/key.pem", ssl_certfile="./certs/cert.pem")
+```
+
 ```python
 import uvicorn
 
-uvicorn.run(init_studio(), 
+uvicorn.run(studio, 
             host="0.0.0.0", 
             port=8000,
             ssl_keyfile=os.getenv("SSL_KEYFILE"),
