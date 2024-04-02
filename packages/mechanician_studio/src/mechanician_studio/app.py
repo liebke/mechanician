@@ -244,9 +244,12 @@ class MechanicianWebApp:
                 response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
                 return response
             
+            ai_name = request.query_params.get("ai_name")
+            
             return self.templates.TemplateResponse("create_user.html",
                                                    {"request": request,
                                                     "ai_names": self.ai_names,
+                                                    "ai_name": ai_name,
                                                     "username": username,
                                                     "name": display_name})
         
@@ -305,10 +308,13 @@ class MechanicianWebApp:
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
             
+            ai_name = request.query_params.get("ai_name")
+            
             return self.templates.TemplateResponse("user.html", 
                                                    {"request": request,
                                                     "username": username,
                                                     "ai_names": self.ai_names,
+                                                    "ai_name": ai_name,
                                                     "name": display_name,
                                                     "user_role": user_role})
         

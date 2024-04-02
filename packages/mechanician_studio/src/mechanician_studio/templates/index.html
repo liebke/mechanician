@@ -138,7 +138,8 @@ TODO: have way to navigate back to / endpoint after visiting other pages. -->
             });
 
             document.getElementById('user-button').addEventListener('click', function() {
-                window.location.href = "/user";
+                // window.location.href = "/user";
+                window.location.href = "/user?ai_name=" + encodeURIComponent(get_ai_name());
             });
 
             document.getElementById('prompt-tools-button').addEventListener('click', function() {

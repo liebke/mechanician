@@ -130,7 +130,7 @@
             // Add a click event listener to the close button
             closeButton.addEventListener('click', function() {
                 // Redirect to the homepage
-                window.location.href = '/';
+                window.location.href = "/?ai_name=" + encodeURIComponent('{{ ai_name }}');
             });
 
             // document.getElementById('username').focus();
@@ -142,7 +142,7 @@
             });
 
             document.getElementById('add-users-button').addEventListener('click', function() {
-                window.location.href = "/create_user";
+                window.location.href = "/create_user?ai_name=" + encodeURIComponent('{{ ai_name }}');
             });
 
             document.getElementById('logout-button').addEventListener('click', function() {

@@ -207,7 +207,7 @@ select::-ms-expand {
             // Add a click event listener to the close button
             closeButton.addEventListener('click', function() {
                 // Redirect to the homepage
-                window.location.href = '/';
+                window.location.href = "/?ai_name=" + encodeURIComponent('{{ ai_name }}');
             });
 
             // document.getElementById('username').focus();
