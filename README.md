@@ -18,10 +18,21 @@ The `mechanician-arangodb` module provides `AITools` that let AIs interact with 
 
 # Mechanician Studio
 
+The `mechanician-studio` package provides a multi-user web interface where each user has their own personal instances of PromptTools and AIs equipped with AITools that can all be customized to each user. For instance in the following screenshot the user interacts with an AI with access to a user-specific Notepad tool that lets it read and take notes, providing a mechanism for the AI to remember details about the user across multiple interactions.
+
 
 <img src="docs/images/notepad_todo_animated.gif" alt="Daring Mechanician Studio Login"  style="max-width: 100%; height: auto float: right;">
 
+
+## Prompt Tools: CRM Query
+
+In the following screenshot, the user uses Prompt Tools that let them create *prompts* using Prompt Templates that are populated by queries to a CRM system. After entering the query parameters and clicking the "Generate Prompt" button, the user is presented with the query results, referred to as Prompt Resources, and a *generated prompt* that merges these resources into the Prompt Template at the top of the screen. Clicking on the "Send Prompt" button sends the generated prompt to the AI, which then generates a response.
+
 <img src="docs/images/event_invite_animated.gif" alt="Daring Mechanician Studio Prompt Tools Event Invite"  style="max-width: 100%; height: auto float: right;">
+
+## Prompt Tools: Vector Database Query
+
+In the following screenshots, the user uses Prompt Tools that let them create *prompts* using Prompt Templates that are populated by queries to a Chroma vector database.
 
 <img src="docs/images/chroma_query_animated_1.gif" alt="Daring Mechanician Studio Prompt Tools Chroma Query 1"  style="max-width: 100%; height: auto float: right;">
 
