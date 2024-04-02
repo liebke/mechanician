@@ -1,1 +1,1 @@
-from .app import MechanicianWebApp
+from .studio import MechanicianStudio

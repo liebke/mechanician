@@ -47,7 +47,7 @@ class UserUpdate(BaseModel):
 ## MechanicianWebApp class
 ###############################################################################
  
-class MechanicianWebApp:
+class MechanicianStudio:
     stop_generation = False
 
     def __init__(self, 

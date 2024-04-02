@@ -3,18 +3,17 @@ import os
 import logging
 from dotenv import load_dotenv
 from mechanician.resources import ResourceConnector, ResourceConnectorProvisioner
-from mechanician.tools import PromptToolsProvisioner
-from mechanician_studio import MechanicianWebApp
+from mechanician_studio import MechanicianStudio
 import uvicorn
 from mechanician.ai_tools.notepads import UserNotepadAIToolsProvisioner
 from mechanician_arangodb.notepad_store import ArangoNotepadStoreProvisioner
 from arango import ArangoClient
-from .middle_earth_crm import MiddleEarthCRM
 from pprint import pprint
-from mechanician.ai import AIProvisioner
+from mechanician import AIProvisioner
 
-import chromadb
-from chromadb.utils import embedding_functions
+from mechanician.tools import PromptToolsProvisioner
+from studio_demo.chroma_prompt_tools import ChromaConnectorProvisioner
+from studio_demo.middle_earth_crm import MiddleEarthCRM
 
 from studio_demo.tmdb_ai_tools import TMDbAIToolsProvisioner
 
@@ -119,63 +118,13 @@ class CRMConnector(ResourceConnector):
                 {"name": "customer_inventory", "data": customer_inventory}]
 
 
-###############################################################################
-## ChromaConnectorProvisioner
-###############################################################################
-    
-class ChromaConnectorProvisioner(ResourceConnectorProvisioner):
-        
-        def __init__(self, collection_name="studio_demo_collection"):
-            self.collection_name = collection_name
-    
-
-        def create_connector(self, context: dict={}):
-            # Use the context to control access to resources provided by the connector.
-            # ...
-            return ChromaConnector(collection_name=self.collection_name)
-
-
-###############################################################################
-## ChromaConnector
-###############################################################################
-
-# docker run -p 8080:8000 chromadb/chroma
-class ChromaConnector(ResourceConnector):
-    def __init__(self, collection_name, data_path="./data/chromadb"):
-        self.collection_name = collection_name
-        self.data_path = data_path
-        self.embedding_func = embedding_functions.SentenceTransformerEmbeddingFunction(model_name="all-MiniLM-L6-v2")
-        
-
-    def get_collection(self):
-        # chroma_client = chromadb.PersistentClient(path=self.data_path)
-        chroma_client = chromadb.HttpClient(host='127.0.0.1', port=8080)
-        return chroma_client.get_or_create_collection(name=self.collection_name,
-                                                      embedding_function=self.embedding_func,
-                                                      metadata={"hnsw:space": "cosine"})
-
-
-    def chroma_query(self, params):
-        question = params.get("question")
-        results = self.get_collection().query(query_texts=[question],
-                                              n_results=20)
-        documents = results.get("documents")[0]
-        metadatas = results.get("metadatas")[0]
-        data = []
-        for i in range(len(documents)):
-            data.append({"source": metadatas[i].get("source"), "text": documents[i]})
-
-        return [{"name": "question", "data": question},
-                {"name": "context", "data": data}]
-    
-
 
 
 ###############################################################################
 ## Main application initialization
 ###############################################################################
     
-def init_app():
+def init_studio():
 
     # Set up UserNotepad AI Tools Provisioner
     arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
@@ -213,15 +162,15 @@ def init_app():
                                                       prompt_instructions_directory="./src/instructions",
                                                       prompt_tool_instruction_file_name="rag_prompt_tool_instructions.json") 
     
-    # Set up the Mechanician Web App
-    return MechanicianWebApp(ai_provisioners=[ai_provisioner_notepad_only, ai_provisioner_tmdb],
+    # Set up the Mechanician Studio
+    return MechanicianStudio(ai_provisioners=[ai_provisioner_notepad_only, ai_provisioner_tmdb],
                              prompt_tools_provisioners=[crm_tools_provisioner, 
                                                         chroma_tools_provisioner])
 
 
-def run_app():
+def run_studio():
     load_dotenv()
-    uvicorn.run(init_app(), 
+    uvicorn.run(init_studio(), 
                 host="0.0.0.0", 
                 port=8000,
                 ssl_keyfile=os.getenv("SSL_KEYFILE"),
@@ -229,7 +178,7 @@ def run_app():
 
 
 if __name__ == '__main__':
-    run_app()
+    run_studio()
 
 
 
