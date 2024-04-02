@@ -12,7 +12,7 @@ from pprint import pprint
 from mechanician import AIProvisioner
 
 from mechanician.tools import PromptToolsProvisioner
-from studio_demo.chroma_prompt_tools import ChromaConnectorProvisioner
+from mechanician_chroma.chroma_connector import ChromaConnectorProvisioner
 from studio_demo.middle_earth_crm import MiddleEarthCRM
 
 from studio_demo.tmdb_ai_tools import TMDbAIToolsProvisioner

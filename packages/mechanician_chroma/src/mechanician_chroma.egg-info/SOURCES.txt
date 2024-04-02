@@ -1,0 +1,9 @@
+README.md
+setup.py
+src/mechanician_chroma/__init__.py
+src/mechanician_chroma/chroma_connector.py
+src/mechanician_chroma.egg-info/PKG-INFO
+src/mechanician_chroma.egg-info/SOURCES.txt
+src/mechanician_chroma.egg-info/dependency_links.txt
+src/mechanician_chroma.egg-info/requires.txt
+src/mechanician_chroma.egg-info/top_level.txt

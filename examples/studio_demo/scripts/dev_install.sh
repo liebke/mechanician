@@ -8,6 +8,8 @@ cd ../mechanician_studio &&
 ./scripts/install.sh &&
 cd ../mechanician_arangodb &&
 ./scripts/install.sh &&
+cd ../mechanician_chroma &&
+./scripts/install.sh &&
 cd ../../examples/studio_demo &&
 pip install -e .
 
