@@ -1,4 +1,6 @@
 
+<img src="../../docs/images/dm_chroma_1600x840.png" alt="Daring Mechanician Chroma Resource Connector"  style="max-width: 100%; height: auto float: right;">
+
 # Daring Mechanician-Chroma
 
 This package provides **Daring Mechanician** `ResourceConnector` for interacting with Chroma Embedding database.

@@ -26,44 +26,43 @@ def init_studio():
 
     # Set up UserNotepad AI Tools Provisioner
     arango_client = ArangoClient(hosts=os.getenv("ARANGO_HOST"))
-    notepad_store_provisioner = ArangoNotepadStoreProvisioner(arango_client=arango_client, 
-                                                              database_name="test_notepad_db",
-                                                              notepad_collection_name="notepads",
-                                                              db_username=os.getenv("ARANGO_USERNAME"),
-                                                              db_password=os.getenv("ARANGO_PASSWORD"))
-    notepad_tools_provisioner = UserNotepadAIToolsProvisioner(notepad_store_provisioner=notepad_store_provisioner)
+    notepad_store = ArangoNotepadStoreProvisioner(arango_client=arango_client, 
+                                                  database_name="test_notepad_db",
+                                                  notepad_collection_name="notepads",
+                                                  db_username=os.getenv("ARANGO_USERNAME"),
+                                                  db_password=os.getenv("ARANGO_PASSWORD"))
+    notepad_tools = UserNotepadAIToolsProvisioner(notepad_store_provisioner=notepad_store)
 
-    tmdb_tools_provisioner = TMDbAIToolsProvisioner(api_key=os.getenv("TMDB_READ_ACCESS_TOKEN"))
+    tmdb_tools = TMDbAIToolsProvisioner(api_key=os.getenv("TMDB_READ_ACCESS_TOKEN"))
 
     # Set up the AI provisioner
-    ai_connector_provisioner = OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"), 
-                                                              model_name=os.getenv("OPENAI_MODEL_NAME"))
-    ai_provisioner_notepad_only = AIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
-                                                name = "Notepad Only AI",
-                                                ai_tools_provisioners = [notepad_tools_provisioner])
+    ai_connector = OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"), 
+                                                  model_name=os.getenv("OPENAI_MODEL_NAME"))
+    notepad_only_ai = AIProvisioner(ai_connector_provisioner=ai_connector,
+                                    name = "Notepad Only AI",
+                                    ai_tools_provisioners = [notepad_tools])
     
-    ai_provisioner_tmdb = AIProvisioner(ai_connector_provisioner=ai_connector_provisioner,
-                                        name = "TMDB AI",
-                                        ai_tools_provisioners = [notepad_tools_provisioner,
-                                                                 tmdb_tools_provisioner])
+    tmdb_ai = AIProvisioner(ai_connector_provisioner=ai_connector,
+                            name = "TMDB AI",
+                            ai_tools_provisioners = [notepad_tools,
+                                                        tmdb_tools])
     
     # Set up the Prompt Tools provisioners
-    crm_connector_provisioner = CRMConnectorProvisioner(crm_data_directory="./data")
-    crm_tools_provisioner = PromptToolsProvisioner(resource_connector_provisioner = crm_connector_provisioner,
-                                                   prompt_template_directory="./templates",
-                                                   prompt_instructions_directory="./src/instructions",
-                                                   prompt_tool_instruction_file_name="crm_prompt_tool_instructions.json") 
+    crm_connector = CRMConnectorProvisioner(crm_data_directory="./data")
+    crm_tools = PromptToolsProvisioner(resource_connector_provisioner = crm_connector,
+                                       prompt_template_directory="./templates",
+                                       prompt_instructions_directory="./src/instructions",
+                                       prompt_tool_instruction_file_name="crm_prompt_tool_instructions.json") 
      
-    chroma_connector_provisioner = ChromaConnectorProvisioner(collection_name="studio_demo_collection")
-    chroma_tools_provisioner = PromptToolsProvisioner(resource_connector_provisioner = chroma_connector_provisioner,
-                                                      prompt_template_directory="./templates",
-                                                      prompt_instructions_directory="./src/instructions",
-                                                      prompt_tool_instruction_file_name="rag_prompt_tool_instructions.json") 
+    chroma_connector = ChromaConnectorProvisioner(collection_name="studio_demo_collection")
+    chroma_tools = PromptToolsProvisioner(resource_connector_provisioner = chroma_connector,
+                                          prompt_template_directory="./templates",
+                                          prompt_instructions_directory="./src/instructions",
+                                          prompt_tool_instruction_file_name="rag_prompt_tool_instructions.json") 
     
     # Set up the Mechanician Studio
-    return MechanicianStudio(ai_provisioners=[ai_provisioner_notepad_only, ai_provisioner_tmdb],
-                             prompt_tools_provisioners=[crm_tools_provisioner, 
-                                                        chroma_tools_provisioner])
+    return MechanicianStudio(ai_provisioners=[notepad_only_ai, tmdb_ai],
+                             prompt_tools_provisioners=[crm_tools, chroma_tools])
 
 
 def run_studio():
