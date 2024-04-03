@@ -19,15 +19,23 @@ load_dotenv()
     
 class TMDbAIToolsProvisioner(MechanicianToolsProvisioner):
         
-        def __init__(self, api_key, tool_instruction_file_name="tmdb_ai_tools_instructions.json"):
+        def __init__(self, api_key, 
+                     tool_instruction_file_name="tmdb_ai_tools_instructions.json",
+                     ai_instructions_file_name="tmdb_ai_instructions.md",
+                     instruction_set_directory="./src/instructions"):
             self.api_key = api_key
             self.tool_instruction_file_name = tool_instruction_file_name
+            self.ai_instructions_file_name = ai_instructions_file_name
+            self.instruction_set_directory = instruction_set_directory
     
 
         def create_tools(self, context: dict={}):
             # Use the context to control access to resources provided by the connector.
             # ...
-            return TMDbAITools(api_key=self.api_key)
+            return TMDbAITools(api_key=self.api_key,
+                               tool_instruction_file_name=self.tool_instruction_file_name,
+                               ai_instructions_file_name=self.ai_instructions_file_name,
+                               instruction_set_directory=self.instruction_set_directory)
 
 
 ###############################################################################
@@ -37,12 +45,18 @@ class TMDbAIToolsProvisioner(MechanicianToolsProvisioner):
 class TMDbAITools(AITools):
     """Class for interacting with the TMDb API."""
 
-    def __init__(self, api_key, tool_instruction_file_name="tmdb_ai_tools_instructions.json"):
-        self.api_key = api_key
-        self.tool_instruction_file_name = tool_instruction_file_name
-        self.base_url = "https://api.themoviedb.org/3"
-        self.headers = {'Authorization': f'Bearer {self.api_key}'}
-        self.config = self.get_tmdb_configuration()
+    def __init__(self, api_key, 
+                 tool_instruction_file_name="tmdb_ai_tools_instructions.json",
+                 ai_instructions_file_name="tmdb_ai_instructions.md",
+                 instruction_set_directory="./src/instructions"):
+                
+                self.api_key = api_key
+                self.tool_instruction_file_name = tool_instruction_file_name
+                self.ai_instructions_file_name = ai_instructions_file_name
+                self.instruction_set_directory = instruction_set_directory
+                self.base_url = "https://api.themoviedb.org/3"
+                self.headers = {'Authorization': f'Bearer {self.api_key}'}
+                self.config = self.get_tmdb_configuration()
 
 
     def get_tmdb_configuration(self):

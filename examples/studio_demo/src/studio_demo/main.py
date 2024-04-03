@@ -33,7 +33,8 @@ def init_studio():
                                                   db_password=os.getenv("ARANGO_PASSWORD"))
     notepad_tools = UserNotepadAIToolsProvisioner(notepad_store_provisioner=notepad_store)
 
-    tmdb_tools = TMDbAIToolsProvisioner(api_key=os.getenv("TMDB_READ_ACCESS_TOKEN"))
+    tmdb_tools = TMDbAIToolsProvisioner(api_key=os.getenv("TMDB_READ_ACCESS_TOKEN"),
+                                        instruction_set_directory="./src/instructions")
 
     # Set up the AI provisioner
     ai_connector = OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"), 
@@ -45,7 +46,7 @@ def init_studio():
     tmdb_ai = AIProvisioner(ai_connector_provisioner=ai_connector,
                             name = "TMDB AI",
                             ai_tools_provisioners = [notepad_tools,
-                                                        tmdb_tools])
+                                                     tmdb_tools])
     
     # Set up the Prompt Tools provisioners
     crm_connector = CRMConnectorProvisioner(crm_data_directory="./data")

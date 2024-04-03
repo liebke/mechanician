@@ -1,6 +1,5 @@
 from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect, status, Depends, HTTPException
 from fastapi.templating import Jinja2Templates
-# from mechanician.ai_connectors import AIConnectorProvisioner
 from mechanician import AI, AIProvisioner
 from typing import Dict
 import json
@@ -191,6 +190,54 @@ class AIStudio:
             ai_tools=self.get_ai_instance(username=username, ai_name=ai_name, context=self.get_context(access_token)).ai_tools
             response = ai_tools.call_function(function_name, params=form_data_dict)
             return JSONResponse(content=response)
+        
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /get_ai_settings ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        @self.app.get("/get_ai_settings", response_class=HTMLResponse)
+        async def get_ai_settings(request: Request):
+            
+            access_token = request.cookies.get("access_token")
+            user = self.credentials_manager.get_user_by_token(access_token)
+            if user is None:
+                raise HTTPException(status_code=401, detail="Unauthorized: Invalid credentials")
+
+            username = user.get("username", access_token)
+            ai_name = request.query_params.get("ai_name")
+            ai_instance = self.get_ai_instance(username=username, ai_name=ai_name, context=self.get_context(access_token))
+            ai_instructions=ai_instance.ai_instructions
+            ai_tool_instructions=ai_instance.ai_tool_instructions
+            response = {"ai_instructions": ai_instructions, "ai_tool_instructions": ai_tool_instructions}
+            return JSONResponse(content=response)
+        
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /ai_settings ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        @self.app.get("/ai_settings", response_class=HTMLResponse)
+        async def ai_settings(request: Request):
+            try:
+                self.verify_access_token(request)
+            except HTTPException as e:
+                logger.error(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+            
+            access_token = request.cookies.get("access_token")
+            user = self.credentials_manager.get_user_by_token(access_token)
+            if user is None:
+                raise HTTPException(status_code=401, detail="Unauthorized: Invalid credentials")
+
+            username = user.get("username", access_token)
+            display_name = user.get("name", username)
+            ai_name = request.query_params.get("ai_name")
+            return self.templates.TemplateResponse("ai_settings.html",
+                                                   {"request": request,
+                                                    "ai_names": self.ai_names,
+                                                    "ai_name": ai_name,
+                                                    "username": username,
+                                                    "name": display_name})
         
 
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

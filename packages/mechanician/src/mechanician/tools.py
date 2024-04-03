@@ -266,8 +266,8 @@ class AITools(MechanicianTools):
             directory_name = 'instructions'
             instruction_set_directory = os.path.join(os.getcwd(), directory_name)
 
-        if hasattr(self, "ai_instruction_file_name"):
-            ai_instruction_path = os.path.join(instruction_set_directory, self.ai_instruction_file_name)
+        if hasattr(self, "ai_instructions_file_name"):
+            ai_instruction_path = os.path.join(instruction_set_directory, self.ai_instructions_file_name)
         else:
             ai_instruction_path = os.path.join(instruction_set_directory, "ai_instructions.md")
 
@@ -277,6 +277,7 @@ class AITools(MechanicianTools):
                 ai_instructions = file.read()
             return ai_instructions
         else:
+            logger.info(f"AI Instructions not found at {ai_instruction_path}")
             return ""
 
 

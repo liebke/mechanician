@@ -3,7 +3,7 @@
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
-# Daring Mechanician-UI
+# Daring Mechanician AI Studio Demo
 
 This package provides the **Daring Mechanician** FastAPI-based user interface.
 
@@ -31,5 +31,5 @@ mkcert -key-file ./certs/key.pem -cert-file ./certs/cert.pem localhost 127.0.0.1
 ```
 
 ```bash
-uvicorn.run("mechanician_studio.main:app", host="127.0.0.1", port=8000, ssl_keyfile="./certs/key.pem", ssl_certfile="./certs/cert.pem")
+uvicorn.run("mechanician_studio.main:studio", host="127.0.0.1", port=8000, ssl_keyfile="./certs/key.pem", ssl_certfile="./certs/cert.pem")
 ```

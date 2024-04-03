@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Daring Mechanician - Prompt Tools</title>
+    <link rel="stylesheet" href="./static/styles.css">
+    <link rel="stylesheet" href="./static/form_styles.css">
+    <style>
+
+    html, body {
+        height: 100%; /* Ensure full height */
+        margin: 0; /* Reset margins */
+        overflow: hidden; /* Prevent body scrolling */
+        display: flex;
+        flex-direction: column; /* Vertical stacking */
+    }
+
+    .main-container {
+        flex: 1; /* Flex to fill available space */
+        display: flex;
+        flex-direction: column; /* Stack children vertically */
+        overflow-y: auto; /* Scroll vertically as needed */
+        max-height: 90vh; /* Limit to viewport height */
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 50px;
+        border-radius: 5px;
+        text-align: left;
+        width: auto; /* Adapt width */
+        box-sizing: border-box; /* Include padding in width/height */
+        /* Removed max-height to allow natural expansion within .main-container */
+        /* No overflow-y here, as .main-container handles the scrolling */
+    }
+
+
+
+    .form-container input {
+        display: block; /* Make sure inputs and button are block-level, causing them to stack */
+        width: 100%; /* Full width of their container */
+        font-size: 14px;
+        padding: 10px;
+        margin-bottom: 10px; /* Space between elements */
+        border-radius: 5px;
+        outline: none; /* Remove focus outline */
+    }
+
+
+
+    select {
+        font-size: 20px;
+        width: 100%;
+        color: white;
+        background-color: #222; /* Set a flat background color */
+        border: none; /* A light border for a flat effect */
+        border-radius: 0; /* Remove rounded corners if desired */
+        box-shadow: none; /* Remove any shadow effects */
+        appearance: none; /* Attempt to disable native OS styling */
+        -webkit-appearance: none; /* Specifically for WebKit browsers */
+        -moz-appearance: none; /* Specifically for Mozilla browsers */
+        outline: none; /* Remove focus outline */
+    }
+
+    /* Custom arrow */
+    select::-ms-expand {
+        display: none; /* Hide the default arrow in IE */
+    }
+
+    .select-container {
+        width: 100%;
+        flex-grow: 1;
+        position: relative;
+        display: inline-block;
+        background-color: #222;
+        border: 1px solid #777;
+        margin-left: 0px;
+        color: #777;
+        border-radius: 5px;
+    }
+
+    .select-container select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: transparent;
+        border: none;
+        padding: 5px 8px 5px 10px;
+        margin: 0;
+        color: white;
+        cursor: pointer;
+    }
+
+    .select-container::after {
+        content: '\25BE'; /* Unicode for down arrow */
+        position: absolute;
+        top: 0;
+        right: 10px;
+        bottom: 0;
+        color: white;
+        pointer-events: none; /* Makes it non-interactive */
+        display: flex;
+        align-items: center;
+    }
+
+    .select-container select::-ms-expand {
+        display: none; /* For IE11 */
+    }
+
+
+    /* Hover effect for the select container */
+    .select-container:hover {
+        border: 1px solid white; /* Example: change border color on hover */
+    }
+
+    /* Hover effect for the select element */
+    .select-container:hover select {
+        color: white; /* Example: change text color on hover */
+    }
+
+    /* Hover effect for the custom arrow */
+    .select-container:hover::after {
+        color: white; /* Example: change arrow color on hover */
+    }
+
+
+
+    /* Custom arrow */
+    select::-ms-expand {
+    display: none; /* Hide the default arrow in IE */
+    }
+
+
+    .function-label {
+        max-width: 400px; /* Adjust as needed */
+        display: inline-block; /* Or block */
+        white-space: normal; /* Ensures text can wrap */
+        word-wrap: break-word; /* To break long words if necessary */
+    }
+
+    #ai_instructions, #ai_tool_instructions {
+        width: 500px;
+        font-size: 14px;
+        height: 300px;
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 5px;
+        outline: none; /* Remove focus outline */
+        background-color: #222;
+        color: white;
+    }
+
+
+    #header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; /* This spreads out the flex items */
+        padding: 0 20px; /* Adjust this padding to ensure there's space at the edges of the header */
+        height: 60px; /* Adjust based on your design */
+    }
+
+    #header .select-container {
+        margin-right: auto; /* This pushes the select container to the left */
+        margin-top: -10px;
+        margin-left: 210px; /* Adjust this value to reduce the gap between the sidebar and select-container */
+    }
+
+    </style>
+    
+</head>
+<body>
+
+    <div id="header">
+        <div class="select-container">
+            <select id="ai_name">
+                <!-- <option value="{{ai_name}}">{{ai_name}}</option> -->
+            </select>
+        </div>
+        <!-- <div id="title">Prompt Tools</div> -->
+
+        <button id="close_button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.34315 6.34338L17.6569 17.6571M17.6569 6.34338L6.34315 17.6571" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div id="sidebar">
+        <!-- <h1>Mechanician AI Studio</h1> -->
+        <h1>Prompt Tools</h1>
+        <!-- Additional sidebar content here -->
+        <div id="sidebar-button-container" class="sidebar-button-container">
+        
+            <button id="user-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md">
+                    <path d="M11.6439 3C10.9352 3 10.2794 3.37508 9.92002 3.98596L9.49644 4.70605C8.96184 5.61487 7.98938 6.17632 6.93501 6.18489L6.09967 6.19168C5.39096 6.19744 4.73823 6.57783 4.38386 7.19161L4.02776 7.80841C3.67339 8.42219 3.67032 9.17767 4.01969 9.7943L4.43151 10.5212C4.95127 11.4386 4.95127 12.5615 4.43151 13.4788L4.01969 14.2057C3.67032 14.8224 3.67339 15.5778 4.02776 16.1916L4.38386 16.8084C4.73823 17.4222 5.39096 17.8026 6.09966 17.8083L6.93502 17.8151C7.98939 17.8237 8.96185 18.3851 9.49645 19.294L9.92002 20.014C10.2794 20.6249 10.9352 21 11.6439 21H12.3561C13.0648 21 13.7206 20.6249 14.08 20.014L14.5035 19.294C15.0381 18.3851 16.0106 17.8237 17.065 17.8151L17.9004 17.8083C18.6091 17.8026 19.2618 17.4222 19.6162 16.8084L19.9723 16.1916C20.3267 15.5778 20.3298 14.8224 19.9804 14.2057L19.5686 13.4788C19.0488 12.5615 19.0488 11.4386 19.5686 10.5212L19.9804 9.7943C20.3298 9.17767 20.3267 8.42219 19.9723 7.80841L19.6162 7.19161C19.2618 6.57783 18.6091 6.19744 17.9004 6.19168L17.065 6.18489C16.0106 6.17632 15.0382 5.61487 14.5036 4.70605L14.08 3.98596C13.7206 3.37508 13.0648 3 12.3561 3H11.6439Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path><circle cx="12" cy="12" r="2.5" stroke="currentColor" stroke-width="2"></circle>
+                </svg>
+                &nbsp;{{ name }}</button>
+
+            <button id="logout-button">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md">
+                    <path d="M11 3H7C5.89543 3 5 3.89543 5 5V19C5 20.1046 5.89543 21 7 21H11" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path><path d="M20 12H11M20 12L16 16M20 12L16 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                &nbsp;logout</button>
+        </div>
+    </div>
+    </div>
+
+    <div class="main-container">
+        <div id="form-container" class="form-container">
+            <h3>AI Settings</h3>
+            <textarea id="ai_instructions" name="ai_instructions" class="ai_instructions"></textarea>
+            <h3>AI Tool Instructions</h3>
+            <textarea id="ai_tool_instructions" name="ai_tool_instructions" class="ai_tool_instructions"></textarea>
+        </div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="./static/functions.js"></script>
+    <script type="text/javascript">
+
+        const username = '{{username}}';
+
+        function load_ai_settings() {
+                const ai_settings_url = `/get_ai_settings?ai_name=${ get_ai_name() }`;
+                fetch(ai_settings_url)
+                    .then(response => response.json())
+                    .then(settings_data => {
+                        console.log(settings_data);
+                        document.getElementById('ai_instructions').value = settings_data.ai_instructions;
+                        document.getElementById('ai_tool_instructions').value = JSON.stringify(settings_data.ai_tool_instructions, null, 2);
+                    })
+                    .catch(error => console.error('Error loading AI Settings:', error));
+        }
+
+       
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const ai_names = {{ ai_names | tojson }};
+            const initial_ai_name = '{{ ai_name }}';
+            generate_ai_name_select_options(ai_names, initial_ai_name); // Generate AI name select options
+
+            // Select the close button using its ID
+            var closeButton = document.getElementById('close_button');
+            // Add a click event listener to the close button
+            closeButton.addEventListener('click', function() {
+                // Redirect to the homepage
+                window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name());
+            });
+
+            document.getElementById('user-button').addEventListener('click', function() {
+                window.location.href = "/user";
+            });
+
+            document.getElementById('logout-button').addEventListener('click', function() {
+                perform_logout();
+            });
+
+            const ai_name_select = document.getElementById('ai_name');
+            ai_name_select.addEventListener('change', function() {
+                console.log('ai_name_select change event');
+                load_ai_settings();
+            });
+
+            load_ai_settings();
+
+        });
+    </script>
+</body>
+</html>

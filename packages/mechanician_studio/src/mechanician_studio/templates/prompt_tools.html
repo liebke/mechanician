@@ -258,6 +258,11 @@
             // Initial appending of the hidden input
             form.appendChild(hidden_input);
             form_container.appendChild(select_container);
+
+            const prompt_template_title = document.createElement('p');
+            prompt_template_title.textContent = "Prompt Template";
+            form_container.appendChild(prompt_template_title);
+
             const prompt_template = document.createElement('textarea');
             prompt_template.id = 'prompt_template';
             prompt_template.name = 'prompt_template';
@@ -349,6 +354,10 @@
                 form.appendChild(submit_button);
             }
 
+            const resource_title = document.createElement('p');
+            resource_title.textContent = "Prompt Resources";
+            form.appendChild(resource_title);
+
             const prompt_resources = document.createElement('textarea');
             prompt_resources.id = 'prompt_resources';
             prompt_resources.name = 'prompt_resources';
@@ -367,6 +376,9 @@
                 prompt_form.action = '/'; // Set the action to submit the form to the root URL '/'
                 prompt_form.method = 'POST'; // Set the method to 'POST'
                 
+                const prompt_title = document.createElement('p');
+                prompt_title.textContent = "Generated Prompt";
+                form.appendChild(prompt_title);
 
                 const generated_prompt = document.createElement('textarea');
                 generated_prompt.id = 'prompt';
