@@ -162,7 +162,7 @@ You can do this by:
 
 * Including the class variables, `ai_instructions` and `ai_tool_instructions` directly.
 
-* Including the class variables `instruction_set_directory`, `ai_instruction_file_name`, and `tool_instruction_file_name` indicating where the instruction files can be found
+* Including the class variables `instruction_set_directory`, `ai_instruction_file_name`, and `tool_instructions_file_name` indicating where the instruction files can be found
 
 * Just placing the respective instruction files in the default locations, `./instructions/ai_instructions.md` and `./instructions/ai_tool_instructions.json`.
 
@@ -171,7 +171,7 @@ The default `get_ai_instructions` and `get_tool_instructions` methods of the `AI
 
 * Look for the existence of either `self.ai_instructions` or `self.ai_tool_instructions` and return those if they exist.
 
-* Otherwise they will look for the exitence of `self.instruction_set_directory`, `self.tool_instruction_file_name`, and `self.ai_instruction_file_name` and use those to read the instructions for their respective files. 
+* Otherwise they will look for the exitence of `self.instruction_set_directory`, `self.tool_instructions_file_name`, and `self.ai_instruction_file_name` and use those to read the instructions for their respective files. 
  
 * But if none of those exist, they will use the default values of `./instructions` for the `instruction_set_directory` and `ai_tool_instructions.json` and `ai_instructions.md` for the `ai_tool_instructions_file_name` and `ai_instruction_file_name`, respectively, 
  

@@ -37,8 +37,8 @@ class MechanicianTools(ABC):
             directory_name = 'src/instructions'
             instruction_set_directory = os.path.join(os.getcwd(), directory_name)
 
-        if hasattr(self, "tool_instruction_file_name"):
-            tool_instruction_path = os.path.join(instruction_set_directory, self.tool_instruction_file_name)
+        if hasattr(self, "tool_instructions_file_name"):
+            tool_instruction_path = os.path.join(instruction_set_directory, self.tool_instructions_file_name)
         else:
             tool_instruction_path = os.path.join(instruction_set_directory, "tool_instructions.json")
         
@@ -118,7 +118,7 @@ class PromptTools(MechanicianTools):
     def __init__(self, 
                  resource_connector: 'ResourceConnector'=None,
                  prompt_template_directory="./templates",
-                 prompt_tool_instruction_file_name:str="prompt_tool_instructions.json",
+                 prompt_tool_instructions_file_name:str="prompt_tool_instructions.json",
                  prompt_instructions_directory:str="src/instructions"):
         
         self.resource_connector = resource_connector
@@ -126,7 +126,7 @@ class PromptTools(MechanicianTools):
             raise ValueError("Resource Connector not provided")
         
         self.prompt_template_directory = prompt_template_directory or "./templates"
-        self.tool_instruction_file_name = prompt_tool_instruction_file_name or "prompt_tool_instructions.json"
+        self.tool_instructions_file_name = prompt_tool_instructions_file_name or "prompt_tool_instructions.json"
         self.instruction_set_directory = prompt_instructions_directory or "src/instructions"
 
 
@@ -350,11 +350,11 @@ class PromptToolsProvisioner(MechanicianToolsProvisioner):
     def __init__(self, 
                  resource_connector_provisioner: ResourceConnectorProvisioner,
                  prompt_template_directory:str="./templates",
-                 prompt_tool_instruction_file_name:str="prompt_tool_instructions.json",
+                 prompt_tool_instructions_file_name:str="prompt_tool_instructions.json",
                  prompt_instructions_directory:str="./instructions"):
         self.resource_connector_provisioner = resource_connector_provisioner
         self.prompt_template_directory = prompt_template_directory
-        self.prompt_tool_instruction_file_name = prompt_tool_instruction_file_name
+        self.prompt_tool_instructions_file_name = prompt_tool_instructions_file_name
         self.prompt_instructions_directory = prompt_instructions_directory
 
 
@@ -362,7 +362,7 @@ class PromptToolsProvisioner(MechanicianToolsProvisioner):
         resource_connector = self.resource_connector_provisioner.create_connector(context)
         return PromptTools(resource_connector=resource_connector,
                            prompt_template_directory=self.prompt_template_directory,
-                           prompt_tool_instruction_file_name=self.prompt_tool_instruction_file_name,
+                           prompt_tool_instructions_file_name=self.prompt_tool_instructions_file_name,
                            prompt_instructions_directory=self.prompt_instructions_directory)
     
  

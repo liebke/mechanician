@@ -94,7 +94,10 @@ notepad_only_ai = AIProvisioner(ai_connector_provisioner=ai_connector,
 ```python
 from studio_demo.tmdb_ai_tools import TMDbAIToolsProvisioner
 
-tmdb_tools = TMDbAIToolsProvisioner(api_key=os.getenv("TMDB_READ_ACCESS_TOKEN"))
+tmdb_tools = TMDbAIToolsProvisioner(api_key=os.getenv("TMDB_READ_ACCESS_TOKEN"),
+                                    instruction_set_directory="./src/instructions",
+                                    ai_instructions_file_name="tmdb_ai_instructions.md",
+                                    tool_instructions_file_name="tmdb_ai_tool_instructions.json")
 ```
 
 See [tmdb_ai_tools.py](https://github.com/liebke/mechanician/blob/main/examples/studio_demo/src/studio_demo/tmdb_ai_tools.py) for More Details
@@ -124,7 +127,7 @@ chroma_connector = ChromaConnectorProvisioner(collection_name="studio_demo_colle
 chroma_tools = PromptToolsProvisioner(resource_connector_provisioner = chroma_connector,
                                       prompt_template_directory="./templates",
                                       prompt_instructions_directory="./src/instructions",
-                                      prompt_tool_instruction_file_name="rag_prompt_tool_instructions.json") 
+                                      prompt_tool_instructions_file_name="rag_prompt_tool_instructions.json") 
 ```
 See [chroma_connector.py](https://github.com/liebke/mechanician/blob/main/packages/mechanician_chroma/src/mechanician_chroma/chroma_connector.py) in the [mechanician-chroma](https://github.com/liebke/mechanician/tree/main/packages/mechanician_chroma) package for More Details
 
@@ -135,7 +138,7 @@ crm_connector = CRMConnectorProvisioner(crm_data_directory="./data")
 crm_tools = PromptToolsProvisioner(resource_connector_provisioner = crm_connector,
                                    prompt_template_directory="./templates",
                                    prompt_instructions_directory="./src/instructions",
-                                   prompt_tool_instruction_file_name="crm_prompt_tool_instructions.json") 
+                                   prompt_tool_instructions_file_name="crm_prompt_tool_instructions.json") 
 ```
 
 See [crm_connector.py](https://github.com/liebke/mechanician/blob/main/packages/mechanician_chroma/src/mechanician_chroma/crm_connector.py) for More Details

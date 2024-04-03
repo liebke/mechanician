@@ -219,7 +219,7 @@ class AIStudio:
         async def ai_settings(request: Request):
             try:
                 self.verify_access_token(request)
-            except HTTPException as e:
+            except Exception as e:
                 logger.error(f"Error validating token: {e}")
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response

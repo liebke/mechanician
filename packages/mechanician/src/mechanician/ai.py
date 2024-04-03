@@ -20,7 +20,7 @@ class AI():
                  ai_instructions=None, 
                  ai_tool_instructions=None,
                  instruction_set_directory=None,
-                 tool_instruction_file_name="ai_tool_instructions.json",
+                 tool_instructions_file_name="ai_tool_instructions.json",
                  ai_instruction_file_name="ai_instructions.md",
                  ai_tools=None, 
                  name="Mechanician AI"):
@@ -49,8 +49,8 @@ class AI():
 
         if (instruction_set_directory is not None) and (ai_tool_instructions is None):
             self.instruction_set_directory = instruction_set_directory
-            self.tool_instruction_file_name = tool_instruction_file_name
-            self.load_ai_tool_instructions(instruction_set_directory, tool_instruction_file_name)
+            self.tool_instructions_file_name = tool_instructions_file_name
+            self.load_ai_tool_instructions(instruction_set_directory, tool_instructions_file_name)
 
         if ai_tools is not None:
             if isinstance(ai_tools, AITools):
@@ -82,8 +82,8 @@ class AI():
             logger.info("AI Instructions will not be loaded from file")
 
 
-    def load_ai_tool_instructions(self, instruction_set_directory, tool_instruction_file_name):
-        tool_instruction_path = os.path.join(instruction_set_directory, tool_instruction_file_name)
+    def load_ai_tool_instructions(self, instruction_set_directory, tool_instructions_file_name):
+        tool_instruction_path = os.path.join(instruction_set_directory, tool_instructions_file_name)
         if os.path.exists(tool_instruction_path):
             with open(tool_instruction_path, 'r') as file:
                 logger.info(f"Loading Tool Instructions from {tool_instruction_path}")
