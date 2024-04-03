@@ -1,5 +1,5 @@
 from mechanician_openai import OpenAIChatConnectorProvisioner
-from mechanician_studio import MechanicianStudio
+from mechanician_studio import AIStudio
 from mechanician.ai_tools.notepads import UserNotepadAIToolsProvisioner
 from mechanician_arangodb.notepad_store import ArangoNotepadStoreProvisioner
 from arango import ArangoClient
@@ -60,8 +60,8 @@ def init_studio():
                                           prompt_instructions_directory="./src/instructions",
                                           prompt_tool_instruction_file_name="rag_prompt_tool_instructions.json") 
     
-    # Set up the Mechanician Studio
-    return MechanicianStudio(ai_provisioners=[notepad_only_ai, tmdb_ai],
+    # Set up the Mechanician AI Studio
+    return AIStudio(ai_provisioners=[notepad_only_ai, tmdb_ai],
                              prompt_tools_provisioners=[crm_tools, chroma_tools])
 
 

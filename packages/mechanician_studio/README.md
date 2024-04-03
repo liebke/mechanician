@@ -1,5 +1,5 @@
 
-<img src="../../docs/images/studio_demo_1600x840.png" alt="Daring Mechanician Studio"  style="max-width: 100%; height: auto float: right;">
+<img src="../../docs/images/studio_demo_1600x840.png" alt="Daring Mechanician AI Studio"  style="max-width: 100%; height: auto float: right;">
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 

@@ -1,11 +1,11 @@
 
 
-<img src="../../docs/images/dm_studio_1600x840.png" alt="Daring Mechanician Studio Demo"  style="max-width: 100%; height: auto float: right;">
+<img src="../../docs/images/dm_studio_1600x840.png" alt="Daring Mechanician AI Studio Demo"  style="max-width: 100%; height: auto float: right;">
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
 
-# Daring Mechanician Studio Demo
+# Daring Mechanician AI Studio Demo
 
 
 ## Install
@@ -88,7 +88,7 @@ docker start arangodb-instance
 
 
 
-#### Run the Mechanician Studio:
+#### Run the Mechanician AI Studio:
 
 ```bash
 python3 -m studio_demo.main

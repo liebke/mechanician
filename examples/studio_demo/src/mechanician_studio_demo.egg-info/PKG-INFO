@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: mechanician_studio_demo
 Version: 0.1
-Summary: Daring Mechanician Studio Demo.
+Summary: Daring Mechanician AI Studio Demo.
 Home-page: https://github.com/liebke/mechanician
 Author: David Edgar Liebke
 Author-email: david@gmail.com
@@ -15,12 +15,12 @@ Requires-Dist: python-dotenv>=0.17.1
 
 
 
-<img src="../../docs/images/dm_studio_1600x840.png" alt="Daring Mechanician Studio"  style="max-width: 100%; height: auto float: right;">
+<img src="../../docs/images/dm_studio_1600x840.png" alt="Daring Mechanician AI Studio"  style="max-width: 100%; height: auto float: right;">
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
 
-# Daring Mechanician Studio
+# Daring Mechanician AI Studio
 
 
 ## Install

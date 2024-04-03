@@ -1,1 +1,1 @@
-from .studio import MechanicianStudio
+from .studio import AIStudio

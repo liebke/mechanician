@@ -18,12 +18,12 @@ The `mechanician-arangodb` package provides an example of `AITools` that let AIs
 The `mechanician-chroma` package provides an example of a `ResourceConnector` for the [Chroma](https://docs.trychroma.com) Embeddings database that enables `PromptTools` to use Chroma as a resource for `PromptTemplates`.
 
 
-# Mechanician Studio
+# Mechanician AI Studio
 
 The `mechanician-studio` package provides a multi-user web interface where each user has their own personal instances of PromptTools and AIs equipped with AITools that can all be customized to each user. For instance in the following screenshot the user interacts with an AI with access to a user-specific Notepad tool that lets it read and take notes, providing a mechanism for the AI to remember details about the user across multiple interactions.
 
 
-<img src="docs/images/notepad_todo_animated.gif" alt="Daring Mechanician Studio Login"  style="max-width: 100%; height: auto float: right;">
+<img src="docs/images/notepad_todo_animated.gif" alt="Daring Mechanician AI Studio Login"  style="max-width: 100%; height: auto float: right;">
 
 
 
@@ -31,37 +31,37 @@ The `mechanician-studio` package provides a multi-user web interface where each 
 
 In the following screenshot, the user uses Prompt Tools that let them create *prompts* using Prompt Templates that are populated by queries to a CRM system. After entering the query parameters and clicking the "Generate Prompt" button, the user is presented with the query results, referred to as Prompt Resources, and a *generated prompt* that merges these resources into the Prompt Template at the top of the screen. Clicking on the "Send Prompt" button sends the generated prompt to the AI, which then generates a response.
 
-<img src="docs/images/event_invite_animated.gif" alt="Daring Mechanician Studio Prompt Tools Event Invite"  style="max-width: 100%; height: auto float: right;">
+<img src="docs/images/event_invite_animated.gif" alt="Daring Mechanician AI Studio Prompt Tools Event Invite"  style="max-width: 100%; height: auto float: right;">
 
 
 ## Prompt Tools: Vector Database Query
 
 In the following screenshots, the user uses Prompt Tools that let them create *prompts* using Prompt Templates that are populated by queries to a Chroma vector database.
 
-<img src="docs/images/chroma_query_animated_1.gif" alt="Daring Mechanician Studio Prompt Tools Chroma Query 1"  style="max-width: 100%; height: auto float: right;">
+<img src="docs/images/chroma_query_animated_1.gif" alt="Daring Mechanician AI Studio Prompt Tools Chroma Query 1"  style="max-width: 100%; height: auto float: right;">
 
 Once the prompt has been generated you can *send* it to the AI, which will generate a response based on the prompt.
 
-<img src="docs/images/chroma_query_animated_2.gif" alt="Daring Mechanician Studio Prompt Tools Chroma Query 2"  style="max-width: 100%; height: auto float: right;">
+<img src="docs/images/chroma_query_animated_2.gif" alt="Daring Mechanician AI Studio Prompt Tools Chroma Query 2"  style="max-width: 100%; height: auto float: right;">
 
 
 
-## Mechanician Studio Example
+## Mechanician AI Studio Example
 
 The `mechanician-studio` package provides a multi-user web interface for interacting with the tool-equipped AIs.
 
-See the [Mechanician Studio Example](https://github.com/liebke/mechanician/tree/main/examples/studio_demo) for a demonstration of how to use the `mechanician-studio` package.
+See the [Mechanician AI Studio Example](https://github.com/liebke/mechanician/tree/main/examples/studio_demo) for a demonstration of how to use the `mechanician-studio` package.
 
-The following Mechanician Studio examples shows a setup with 2 customized AIs, two different AITools, *Notepads* and *TMDb*, and two different PromptTools, *CRM* and *Chroma*.
+The following Mechanician AI Studio examples shows a setup with 2 customized AIs, two different AITools, *Notepads* and *TMDb*, and two different PromptTools, *CRM* and *Chroma*.
 
 
-## MechanicianStudio Class
+## AIStudio Class
 
 ```python
-from mechanician_studio import MechanicianStudio
+from mechanician_studio import AIStudio
 
-studio = MechanicianStudio(ai_provisioners=[notepad_only_ai, tmdb_ai],
-                           prompt_tools_provisioners=[crm_tools, chroma_tools])
+ai_studio = AIStudio(ai_provisioners=[notepad_only_ai, tmdb_ai],
+                     prompt_tools_provisioners=[crm_tools, chroma_tools])
 ```
 
 ## AIConnectorProvisioner Class
@@ -144,7 +144,7 @@ See [crm_connector.py](https://github.com/liebke/mechanician/blob/main/packages/
 ```python
 import uvicorn
 
-uvicorn.run(studio, 
+uvicorn.run(ai_studio, 
             host="0.0.0.0", 
             port=8000, 
             ssl_keyfile="./certs/key.pem", 
@@ -152,7 +152,7 @@ uvicorn.run(studio,
 ```
 
 
-## Run The Mechanician Studio Demo
+## Run The Mechanician AI Studio Demo
 
-See the [Mechanician Studio Demo](https://github.com/liebke/mechanician/blob/main/examples/studio_demo/README.md) for details on of how to run the demo.
+See the [Mechanician AI Studio Demo](https://github.com/liebke/mechanician/blob/main/examples/studio_demo/README.md) for details on of how to run the demo.
 

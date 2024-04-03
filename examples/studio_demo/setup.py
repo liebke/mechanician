@@ -16,7 +16,7 @@ setup(
     ],
     author='David Edgar Liebke',
     author_email='david@gmail.com',
-    description='Daring Mechanician Studio Demo.',
+    description='Daring Mechanician AI Studio Demo.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     url='https://github.com/liebke/mechanician',
