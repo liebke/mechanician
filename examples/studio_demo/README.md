@@ -1,11 +1,11 @@
 
 
-<img src="../../docs/images/dm_studio_1600x840.png" alt="Daring Mechanician Studio"  style="max-width: 100%; height: auto float: right;">
+<img src="../../docs/images/dm_studio_1600x840.png" alt="Daring Mechanician Studio Demo"  style="max-width: 100%; height: auto float: right;">
 
 <p style="clear: both; margin-top: 0; font-family: 'Tratatello', serif; color: darkgrey;">
 
 
-# Daring Mechanician Studio
+# Daring Mechanician Studio Demo
 
 
 ## Install
@@ -51,14 +51,47 @@ mkcert -key-file ./certs/key.pem -cert-file ./certs/cert.pem localhost 127.0.0.1
 ```
 
 ```bash
-uvicorn.run("mechanician_studio.main:app", host="127.0.0.1", port=8000, ssl_keyfile="./certs/key.pem", ssl_certfile="./certs/cert.pem")
+uvicorn.run("mechanician_studio.main:app", 
+            host="127.0.0.1", 
+            port=8000, 
+            ssl_keyfile="./certs/key.pem", 
+            ssl_certfile="./certs/cert.pem")
 ```
+
+### Start the Chroma Database
+
+```bash
+docker run -p 8080:8000 chromadb/chroma
+```
+
+
+### Start the Arango Database
+
+Set your environment variables:
+
+```bash
+ARANGO_ROOT_PASSWORD=<YOUR_ARANGODB_ROOT_PASSWORD>
+ARANGO_HOST=http://localhost:8529
+```
+
+```bash
+docker pull arangodb/arangodb
+```
+
+```bash
+docker run -e ARANGO_ROOT_PASSWORD=${ARANGO_ROOT_PASSWORD} -p 8529:8529 -d --name arangodb-instance arangodb/arangodb
+```
+
+```bash
+docker start arangodb-instance
+```
+
 
 
 #### Run the Mechanician Studio:
 
 ```bash
-./scripts/run.sh
+python3 -m studio_demo.main
 ```
 
 
@@ -67,4 +100,8 @@ uvicorn.run("mechanician_studio.main:app", host="127.0.0.1", port=8000, ssl_keyf
 ```bash
 conda deactivate
 conda remove --name studio_demo_env --all
+```
+
+```bash
+docker stop arangodb-instance
 ```

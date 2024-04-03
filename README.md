@@ -141,30 +141,18 @@ crm_tools = PromptToolsProvisioner(resource_connector_provisioner = crm_connecto
 See [crm_connector.py](https://github.com/liebke/mechanician/blob/main/packages/mechanician_chroma/src/mechanician_chroma/crm_connector.py) for More Details
 
 
-## Run Mechanician Studio
-
-### SSL Certificates for Local Development: mkcert
-
-https://github.com/FiloSottile/mkcert
-
-```bash
-brew install mkcert
-mkcert -install
-```
-
-```bash
-mkdir certs
-mkcert -key-file ./certs/key.pem -cert-file ./certs/cert.pem localhost 127.0.0.1 ::1
-```
-
-```bash
-export SSL_KEYFILE="./certs/key.pem"
-export SSL_CERTFILE="./certs/cert.pem"
-```
-
-
 ```python
 import uvicorn
 
-uvicorn.run(studio, host="0.0.0.0", port=8000, ssl_keyfile="./certs/key.pem", ssl_certfile="./certs/cert.pem")
+uvicorn.run(studio, 
+            host="0.0.0.0", 
+            port=8000, 
+            ssl_keyfile="./certs/key.pem", 
+            ssl_certfile="./certs/cert.pem")
 ```
+
+
+## Run The Mechanician Studio Demo
+
+See the [Mechanician Studio Demo](https://github.com/liebke/mechanician/blob/main/examples/studio_demo/README.md) for details on of how to run the demo.
+
