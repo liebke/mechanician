@@ -168,6 +168,17 @@
         margin-left: 210px; /* Adjust this value to reduce the gap between the sidebar and select-container */
     }
 
+    #form-container h1 {
+        text-align: center; /* Center the arrow horizontally */
+        padding-top: 20px; /* Add margin to the top for spacing between the top of the sidebar */
+        padding-bottom: 0px;
+        margin-left: 0px; /* Add margin to the left for spacing from the edge */
+
+        color: white; /* Title color */
+        font-size: 18px; /* Title font size */
+        font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+    }
+
     </style>
     
 </head>
@@ -211,9 +222,9 @@
 
     <div class="main-container">
         <div id="form-container" class="form-container">
-            <h3>AI Settings</h3>
+            <h1>AI Settings</h1>
             <textarea id="ai_instructions" name="ai_instructions" class="ai_instructions" readonly=true></textarea>
-            <h3>AI Tool Instructions</h3>
+            <h1>AI Tool Instructions</h1>
             <textarea id="ai_tool_instructions" name="ai_tool_instructions" class="ai_tool_instructions" readonly=true></textarea>
         </div>
     </div>

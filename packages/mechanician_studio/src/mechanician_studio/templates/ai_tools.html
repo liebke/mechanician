@@ -168,6 +168,17 @@
             margin-left: 210px; /* Adjust this value to reduce the gap between the sidebar and select-container */
         }
 
+        #form-container h1 {
+            text-align: left; /* Center the arrow horizontally */
+            padding-top: 20px; /* Add margin to the top for spacing between the top of the sidebar */
+            padding-bottom: 0px;
+            margin-left: 0px; /* Add margin to the left for spacing from the edge */
+
+            color: white; /* Title color */
+            font-size: 18px; /* Title font size */
+            font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+        }
+
     </style>
     
 </head>
@@ -309,6 +320,10 @@
             response_form.action = '/'; // Set the action to submit the form to the root URL '/'
             response_form.method = 'POST'; // Set the method to 'POST'
             
+
+            const response_title = document.createElement('h1');
+            response_title.textContent = 'Response';
+            form_container.appendChild(response_title);
 
             const response = document.createElement('textarea');
             response.id = 'response';
