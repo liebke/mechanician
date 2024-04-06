@@ -224,7 +224,7 @@
 
                 let sys_message_container = $('<div class="message-container">');
                 sys_message_container.append($('<p class="message-header">').html("System"));
-                current_sys_response = $('<p class="message-text">').text("Connected to AI...");
+                current_sys_response = $('<p class="message-text">').text("Connected to " + get_ai_name() + "...");
                 sys_message_container.append(current_sys_response);
                 $('#messages').append(sys_message_container);
                 check_scroll(); // Check scroll after connecting
@@ -345,6 +345,26 @@
             }
             current_ai_response.append(content_with_breaks);
             check_scroll(); // Check scroll after receiving a response
+        }
+
+        function list_ai_tools(username, ai_name) {
+            // Create a new Promise
+            return new Promise(function(resolve, reject) {
+                // Get the conversation IDs from the server /list_conversations endpoint
+                $.ajax({
+                    type: "GET",
+                    url: "/list_ai_tools",
+                    data: {ai_name: ai_name},
+                    success: function(data) {
+                        // Resolve the Promise with the data
+                        resolve(data);
+                    },
+                    error: function(response) {
+                        // Reject the Promise with the error
+                        reject("Failed to list AI Tools: " + response);
+                    }
+                });
+            });
         }
 
         function list_conversations(username, ai_name) {

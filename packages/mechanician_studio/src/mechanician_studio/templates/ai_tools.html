@@ -186,10 +186,8 @@
 
     <div id="header">
         <input type="hidden" id="conversation_id" value="{{ conversation_id }}">
-        <!-- <div id="title">AI Tools</div> -->
         <div class="select-container">
             <select id="ai_name">
-                <!-- <option value="{{ai_name}}">{{ai_name}}</option> -->
             </select>
         </div>
         <button id="close_button">
@@ -200,7 +198,6 @@
     </div>
 
     <div id="sidebar">
-        <!-- <h1>Mechanician AI Studio</h1> -->
         <h1>AI Tools</h1>
         <!-- Additional sidebar content here -->
         <div id="sidebar-button-container" class="sidebar-button-container">
@@ -272,6 +269,26 @@
             hidden_input.value = schema_json[0].function.name;
             form.appendChild(hidden_input);
         }
+
+        document.getElementById('call_tool_form')?.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const form_data = new FormData(this);
+            form_data.append('ai_name', get_ai_name());
+            form_data.append('conversation_id', get_conversation_id());
+
+            fetch('/call_ai_tool', {
+                method: 'POST',
+                body: form_data,
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('response').value = JSON.stringify(data, null, 2);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        });
+
     }
 
     function clear_reponse() {
@@ -290,7 +307,6 @@
             input_group.classList.add('input-group');
             const label = document.createElement('label');
             label.htmlFor = key;
-            // label.textContent = value.description;
             label.textContent = key;
             const input = document.createElement('input');
             input.type = 'text';
@@ -309,7 +325,7 @@
             const submit_button = document.createElement('button');
             submit_button.type = 'submit';
             submit_button.id = 'call_tool_button';
-            submit_button.textContent = 'Call Prompt Tool';
+            submit_button.textContent = 'Call AI Tool';
             form.appendChild(submit_button);
         }
 
@@ -318,10 +334,6 @@
             const form_container = document.getElementById('form-container');
             const response_form = document.createElement('form');
             response_form.id = 'response-form';
-            response_form.action = '/'; // Set the action to submit the form to the root URL '/'
-            response_form.method = 'POST'; // Set the method to 'POST'
-            
-
             const response_title = document.createElement('h1');
             response_title.textContent = 'Response';
             form_container.appendChild(response_title);
@@ -342,9 +354,10 @@
         const initial_ai_name = '{{ ai_name }}';
         generate_ai_name_select_options(ai_names, initial_ai_name); // Generate AI name select options
 
-        // Assuming schema_json is defined somewhere or is dynamically generated
-        const schema_json = {{ ai_tool_instructions | tojson | safe }};
-        create_form(schema_json);
+        list_ai_tools(username, get_ai_name())
+                .then(function(data) {
+                    create_form(data);
+                });
 
         document.getElementById('close_button').addEventListener('click', function() {
             window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name()) + '&conversation_id=' + get_conversation_id();
@@ -358,26 +371,15 @@
             // Logic for logout-button click
         });
 
-        document.getElementById('call_tool_form')?.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const form_data = new FormData(this);
-            let ai_name = document.getElementById('ai_name').value;
-            form_data.append('ai_name', ai_name);
-            form_data.append('conversation_id', get_conversation_id());
-
-            fetch('/call_ai_tool', {
-                method: 'POST',
-                body: form_data,
-            })
-            .then(response => response.json())
-            .then(data => {
-                // document.getElementById('response').value = data;
-                document.getElementById('response').value = JSON.stringify(data, null, 2);
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
+        const ai_name_select = document.getElementById('ai_name');
+        ai_name_select.addEventListener('change', function() {
+            list_ai_tools(username, get_ai_name())
+                .then(function(data) {
+                    create_form(data);
+                });
         });
+
+
     });
 </script>
 

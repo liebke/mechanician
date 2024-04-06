@@ -586,18 +586,10 @@ class AIStudio:
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
 
-            token = request.cookies.get("access_token")
             ai_name = request.query_params.get("ai_name")
             conversation_id = request.query_params.get("conversation_id")
-            ai_instance = self.get_ai_instance(username=username, 
-                                               ai_name=ai_name,
-                                               # We don't need to pass conversation_id here
-                                               conversation_id=None,
-                                               context=self.get_context(token))
-            ai_tools = ai_instance.ai_tools
             return self.templates.TemplateResponse("ai_tools.html", 
                                                    {"request": request,
-                                                    "ai_tool_instructions": ai_tools.get_tool_instructions(),
                                                     "username": username,
                                                     "ai_names": self.ai_names,
                                                     "ai_name": ai_name,
@@ -605,6 +597,44 @@ class AIStudio:
                                                     "name": display_name,
                                                     "user_role": user_role})
 
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /list_ai_tools ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        @self.app.get("/list_ai_tools")
+        async def list_ai_tools(request: Request):
+            try:
+                self.verify_access_token(request)
+                user_data = self.credentials_manager.get_user_by_token(request.cookies.get("access_token"))
+                if user_data is None:
+                    response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                    return response
+
+            except HTTPException as e:
+                logger.error(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+
+            username = user_data.get("username", None)
+            if username is None:
+                return JSONResponse(content={"error": "No username provided."})
+            
+            ai_name = request.query_params.get("ai_name") or self.ai_names[0]
+
+            token = request.cookies.get("access_token")
+            ai_instance = self.get_ai_instance(username, 
+                                                      ai_name, 
+                                                      conversation_id=None, 
+                                                      context=self.get_context(token))
+            if ai_instance is None:
+                return JSONResponse(content={"error": "No AI instance found."})
+            
+            ai_tool_instructions = ai_instance.ai_tool_instructions
+            if ai_tool_instructions is None:
+                return JSONResponse(content={"error": "No function name provided."})
+            else:
+                return JSONResponse(content=ai_tool_instructions)
+            
 
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         # GET /prompt_tools ROUTE

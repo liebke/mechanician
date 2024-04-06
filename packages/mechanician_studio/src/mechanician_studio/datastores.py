@@ -144,9 +144,47 @@ class UserDataFileStore(UserDataStore):
         if conversation_id is None and conversation_id != "":
             conversation_id = datetime.now().strftime("%Y%m%d%H%M%S")
             
+        # Clear empty conversations before creating a new one
+        self.clear_empty_conversations(username, ai_name)
+
         self.set_conversation_history(username, ai_name, conversation_id, [])
         return conversation_id
     
+
+    def clear_empty_conversations(self, username: str, ai_name: str):
+        logger.info("Clearing empty conversations")
+        conversations_dir = os.path.join(self.DATA_DIR, f"users/{username}/conversations/{self.sanitize_for_filename(ai_name)}")
+        try:
+            for filename in os.listdir(conversations_dir):
+                file_path = os.path.join(conversations_dir, filename)
+                with open(file_path, "r", encoding="utf-8") as file:
+                    # Initialize a flag to indicate the presence of user messages
+                    has_user_messages = False
+
+                    # Attempt to read each line (message) in the file
+                    for line in file:
+                        try:
+                            message = json.loads(line.strip())
+                            # Check if the message is from a user
+                            if message.get("role") == "user":
+                                has_user_messages = True
+                                break  # Stop reading further as we found a user message
+                        except json.JSONDecodeError:
+                            # Handle lines that do not contain valid JSON
+                            continue
+                    
+                    # If no user messages were found, delete the conversation file
+                    if not has_user_messages:
+                        logger.info(f"Deleting conversation file without user messages: {file_path}")
+                        os.remove(file_path)
+
+        except FileNotFoundError:
+            # Handle the case where the conversations directory does not exist
+            logger.error("No conversations directory found.")
+
+
+        
+        
 
     def delete_conversation(self, username: str, ai_name: str, conversation_id: str) -> bool:
         """
