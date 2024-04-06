@@ -141,19 +141,6 @@
         word-wrap: break-word; /* To break long words if necessary */
     }
 
-    #prompt, #prompt_template, #prompt_resources {
-        width: 500px;
-        font-size: 14px;
-        height: 300px;
-        margin-top: 10px;
-        padding: 10px;
-        border-radius: 5px;
-        outline: none; /* Remove focus outline */
-        background-color: #222;
-        color: white;
-    }
-
-
     #header {
         display: flex;
         align-items: center;
@@ -169,14 +156,37 @@
     }
 
     #conversations-list a {
-        text-align: left; /* Adjust if necessary for links */
-        padding-top: 20px; /* Spacing above each link */
-        margin-left: 0; /* Spacing from the edge; adjust if the links are nested further */
-        color: white; /* Text color */
-        font-size: 18px; /* Text size */
-        font-weight: 300; /* Text weight */
-        display: block; /* Make each link behave like a block for proper padding/margin */
+        text-align: left;
+        padding-top: 20px;
+        margin-left: 0;
+        color: white;
+        font-size: 18px;
+        font-weight: 300;
+        display: block;
+        text-decoration: none; /* Remove underline from links */
     }
+
+    #conversations-list a:hover {
+        text-decoration: underline; /* Adds underline on hover */
+    }
+
+    #conversations-list ul {
+        list-style: none; /* Remove default bullets */
+        padding-left: 0; /* Optional: remove padding if you want the bullets closer to the edge */
+    }
+
+    #conversations-list ul li::before {
+        content: "\1F4C4"; /* Unicode for the 'Page Facing Up' emoji */
+        margin-right: 10px; /* Adjust as needed */
+        /* Other styling as before */
+    }
+
+
+    #conversations-list ul li {
+        display: flex;
+        align-items: center; /* Aligns the bullet and the text nicely */
+    }
+
 
 
     </style>
@@ -187,10 +197,8 @@
     <div id="header">
         <div class="select-container">
             <select id="ai_name">
-                <!-- <option value="{{ai_name}}">{{ai_name}}</option> -->
             </select>
         </div>
-        <!-- <div id="title">Prompt Tools</div> -->
 
         <button id="close_button">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -201,7 +209,7 @@
 
     <div id="sidebar">
         <!-- <h1>Mechanician AI Studio</h1> -->
-        <h1>Prompt Tools</h1>
+        <h1>Conversations</h1>
         <!-- Additional sidebar content here -->
         <div id="sidebar-button-container" class="sidebar-button-container">
         
@@ -242,11 +250,11 @@
                     if (data.length > 0) {
                         const list = document.createElement('ul');
                         data.forEach(function(conversation) {
-                            const item = document.createElement('li');
+                            const item = document.createElement('li');                            
                             const link = document.createElement('a');
                             const encodedAiName = encodeURIComponent(get_ai_name()); // URL encode AI name
                             link.href = `/?conversation_id=${conversation.conversation_id}&ai_name=${encodedAiName}`;
-                            link.textContent = conversation.timestamp; // Label link with the timestamp
+                            link.innerHTML = conversation.timestamp; // Label link with the timestamp
                             item.appendChild(link);
                             list.appendChild(item);
                         });
