@@ -4,6 +4,15 @@ import os
 import json
 from datetime import datetime
 import re
+import logging
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.INFO)
+
+handler = logging.StreamHandler()
+handler.setLevel(logging.INFO)
+logger.addHandler(handler)
 
 
 ###############################################################################
@@ -39,6 +48,15 @@ class UserDataStore(ABC):
         Abstract method to start a new conversation, returning a new conversation ID.
         """
         pass
+
+
+    @abstractmethod
+    def delete_conversation(self, username: str, ai_name: str, conversation_id: str) -> bool:
+        """
+        Abstract method to delete a conversation.
+        """
+        pass
+
     
     @abstractmethod
     def get_ai_instructions(self, username: str, ai_name: str) -> str:
@@ -130,6 +148,29 @@ class UserDataFileStore(UserDataStore):
         return conversation_id
     
 
+    def delete_conversation(self, username: str, ai_name: str, conversation_id: str) -> bool:
+        """
+        Deletes the specified conversation file for a given username, AI name, and conversation ID.
+        
+        :param username: Username of the conversation owner.
+        :param ai_name: AI name associated with the conversation.
+        :param conversation_id: ID of the conversation to delete.
+        :return: True if the file was successfully deleted, False otherwise.
+        """
+        file_path = self._get_conversation_file_path(username, ai_name, conversation_id)
+        try:
+            # Check if the file exists before attempting to delete
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                return True
+            else:
+                logger.info(f"No file exists for conversation ID {conversation_id}")
+                return False
+        except Exception as e:
+            logger.error(f"Error deleting conversation file: {e}")
+            return False
+        
+
     def get_most_recent_conversation_id(self, username: str, ai_name: str) -> str:
         """
         Retrieves the ID of the most recent conversation for a given username and AI name.
@@ -154,30 +195,56 @@ class UserDataFileStore(UserDataStore):
         
         return None  # Return an empty string if no conversations are found or the directory doesn't exist
 
-
-    def list_conversations(self, username: str, ai_name: str) -> List[str]:
+        
+    def list_conversations(self, username: str, ai_name: str) -> List[Dict[str, str]]:
         """
-        Returns a list of conversation IDs for a given username and AI name, 
+        Returns a list of conversation IDs and the first user message for a given username and AI name,
         sorted to have the most recent conversations at the top.
 
         :param username: The username to look up.
         :param ai_name: The AI name to look up.
-        :return: A list of conversation IDs, with the most recent at the top.
+        :return: A list of dictionaries, each with conversation_id, timestamp, and description (first user message).
         """
         sanitized_ai_name = self.sanitize_for_filename(ai_name)
         conversations_dir = os.path.join(self.DATA_DIR, f"users/{username}/conversations/{sanitized_ai_name}")
 
+        conversation_details = []
+
         try:
             # List all conversation files and sort them in reverse to have the most recent first
             conversations_files = sorted(os.listdir(conversations_dir), reverse=True)
-            # Extract the conversation ID from each filename assuming the format '<conversation_id>.jsonl'
-            conversation_ids = [file.split('.')[0] for file in conversations_files]
-            return [{"conversation_id": conv_id, "timestamp": self._convert_to_date_format(conv_id)} for conv_id in conversation_ids]
+
+            for file_name in conversations_files:
+                conversation_id = file_name.split('.')[0]
+                file_path = os.path.join(conversations_dir, file_name)
+                description = self._get_first_user_message(file_path)
+                
+                conversation_details.append({
+                    "conversation_id": conversation_id,
+                    "timestamp": self._convert_to_date_format(conversation_id),
+                    "description": description
+                })
 
         except FileNotFoundError:
             # If the directory doesn't exist, there are no conversations for this AI
             return []
-        
+
+        return conversation_details
+
+    def _get_first_user_message(self, file_path: str) -> str:
+        """
+        Extracts the "content" of the first message by a user from a .jsonl file.
+
+        :param file_path: Path to the conversation file.
+        :return: The content of the first user message, or an empty string if not found.
+        """
+        with open(file_path, "r", encoding="utf-8") as file:
+            for line in file:
+                message = json.loads(line.strip())
+                if message.get("role") == "user":
+                    return message.get("content", "")
+        return ""  # Return an empty string if no user message is found
+    
 
     def append_message_to_conversation(self, username: str, ai_name: str, conversation_id: str, message: Dict):
         file_path = self._get_conversation_file_path(username, ai_name, conversation_id)

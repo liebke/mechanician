@@ -286,6 +286,36 @@ class AIStudio:
                                                     "name": display_name})
         
 
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # DELETE /conversations/<CONVERSATION_ID> ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        @self.app.delete("/conversations/{ai_name}/{conversation_id}", response_class=HTMLResponse)
+        async def delete_conversation(request: Request, ai_name: str, conversation_id: str):
+            try:
+                self.verify_access_token(request)
+            except Exception as e:
+                logger.error(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+
+            access_token = request.cookies.get("access_token")
+            user = self.credentials_manager.get_user_by_token(access_token)
+            if user is None:
+                raise HTTPException(status_code=401, detail="Unauthorized: Invalid credentials")
+            
+            username = user.get("username", access_token)
+            result = self.user_data_store.delete_conversation(username, ai_name, conversation_id)
+
+            if not result:
+                raise HTTPException(status_code=404, detail="Conversation not found")
+
+            # Redirect or respond after deletion. Adjust based on your application's flow.
+            # For example, redirecting back to the conversations list:
+            return RedirectResponse(url=f"/conversations?ai_name={request.query_params.get('ai_name')}", status_code=status.HTTP_303_SEE_OTHER)
+
+        
+
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         # GET /get_ai_settings ROUTE
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
