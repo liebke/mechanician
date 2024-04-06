@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Daring Mechanician - Prompt Tools</title>
+    <title>Daring Mechanician - Conversations</title>
     <link rel="stylesheet" href="./static/styles.css">
     <link rel="stylesheet" href="./static/form_styles.css">
     <style>
@@ -141,7 +141,7 @@
         word-wrap: break-word; /* To break long words if necessary */
     }
 
-    #ai_instructions, #ai_tool_instructions {
+    #prompt, #prompt_template, #prompt_resources {
         width: 500px;
         font-size: 14px;
         height: 300px;
@@ -168,16 +168,16 @@
         margin-left: 210px; /* Adjust this value to reduce the gap between the sidebar and select-container */
     }
 
-    #form-container h1 {
-        text-align: center; /* Center the arrow horizontally */
-        padding-top: 20px; /* Add margin to the top for spacing between the top of the sidebar */
-        padding-bottom: 0px;
-        margin-left: 0px; /* Add margin to the left for spacing from the edge */
-
-        color: white; /* Title color */
-        font-size: 18px; /* Title font size */
-        font-weight: 300; /* Makes the font thinner, assuming Helvetica supports this weight */
+    #conversations-list a {
+        text-align: left; /* Adjust if necessary for links */
+        padding-top: 20px; /* Spacing above each link */
+        margin-left: 0; /* Spacing from the edge; adjust if the links are nested further */
+        color: white; /* Text color */
+        font-size: 18px; /* Text size */
+        font-weight: 300; /* Text weight */
+        display: block; /* Make each link behave like a block for proper padding/margin */
     }
+
 
     </style>
     
@@ -185,7 +185,6 @@
 <body>
 
     <div id="header">
-        <input type="hidden" id="conversation_id" value="{{ conversation_id }}">
         <div class="select-container">
             <select id="ai_name">
                 <!-- <option value="{{ai_name}}">{{ai_name}}</option> -->
@@ -223,10 +222,7 @@
 
     <div class="main-container">
         <div id="form-container" class="form-container">
-            <h1>AI Settings</h1>
-            <textarea id="ai_instructions" name="ai_instructions" class="ai_instructions" readonly=true></textarea>
-            <h1>AI Tool Instructions</h1>
-            <textarea id="ai_tool_instructions" name="ai_tool_instructions" class="ai_tool_instructions" readonly=true></textarea>
+            <div id="conversations-list"></div>
         </div>
     </div>
 
@@ -237,31 +233,50 @@
 
         const username = '{{username}}';
 
-        function load_ai_settings() {
-                const ai_settings_url = `/get_ai_settings?ai_name=${ get_ai_name() }&conversation_id=${ get_conversation_id() }`;
-                fetch(ai_settings_url)
-                    .then(response => response.json())
-                    .then(settings_data => {
-                        console.log(settings_data);
-                        document.getElementById('ai_instructions').value = settings_data.ai_instructions;
-                        document.getElementById('ai_tool_instructions').value = JSON.stringify(settings_data.ai_tool_instructions, null, 2);
-                    })
-                    .catch(error => console.error('Error loading AI Settings:', error));
+        function load_conversations() {
+            list_conversations(username, get_ai_name())
+                .then(function(data) {
+                    const container = document.getElementById('conversations-list');
+                    container.innerHTML = ''; // Clear previous content
+
+                    if (data.length > 0) {
+                        const list = document.createElement('ul');
+                        data.forEach(function(conversation) {
+                            const item = document.createElement('li');
+                            const link = document.createElement('a');
+                            const encodedAiName = encodeURIComponent(get_ai_name()); // URL encode AI name
+                            link.href = `/?conversation_id=${conversation.conversation_id}&ai_name=${encodedAiName}`;
+                            link.textContent = conversation.timestamp; // Label link with the timestamp
+                            item.appendChild(link);
+                            list.appendChild(item);
+                        });
+                        container.appendChild(list);
+                    } else {
+                        container.textContent = 'No conversations found.';
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Failed to load conversations:', error);
+                    const container = document.getElementById('conversations-list');
+                    container.textContent = 'Failed to load conversations.';
+                });
         }
 
-       
+        
+
 
         document.addEventListener('DOMContentLoaded', function() {
             const ai_names = {{ ai_names | tojson }};
             const initial_ai_name = '{{ ai_name }}';
             generate_ai_name_select_options(ai_names, initial_ai_name); // Generate AI name select options
 
+            load_conversations();
             // Select the close button using its ID
             var closeButton = document.getElementById('close_button');
             // Add a click event listener to the close button
             closeButton.addEventListener('click', function() {
                 // Redirect to the homepage
-                window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name()) + "&conversation_id=" + get_conversation_id();
+                window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name());
             });
 
             document.getElementById('user-button').addEventListener('click', function() {
@@ -272,13 +287,12 @@
                 perform_logout();
             });
 
-            const ai_name_select = document.getElementById('ai_name');
-            ai_name_select.addEventListener('change', function() {
-                console.log('ai_name_select change event');
-                load_ai_settings();
-            });
 
-            load_ai_settings();
+            const ai_name_select = document.getElementById('ai_name');
+                ai_name_select.addEventListener('change', function() {
+                    load_conversations();
+                });
+
 
         });
     </script>

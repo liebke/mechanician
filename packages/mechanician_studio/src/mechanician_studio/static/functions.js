@@ -2,7 +2,7 @@
         var generating_text = false;
         var new_connection = false;
 
-        function send_prompt(socket, username, ai_name) {
+        function send_prompt(socket, username, ai_name, conversation_id) {
             var prompt_text = $('#input').val().trim();
             if (prompt_text) {
                 let user_message_container = $('<div class="message-container">');
@@ -11,20 +11,18 @@
                 user_message_container.append($('<p class="message-text">').html(content_with_breaks));
                 $('#messages').append(user_message_container);
                 if (new_connection) {
-                    message_history = get_messages_from_local_storage(username, ai_name);
                     socket.send(JSON.stringify({data: prompt_text, 
                                                 type: 'prompt', 
                                                 ai_name: ai_name,
-                                                message_history: message_history}));
+                                                conversation_id: conversation_id}));
                     new_connection = false;
                 }
                 else {
                     socket.send(JSON.stringify({data: prompt_text,
                                                 ai_name: ai_name,
+                                                conversation_id: conversation_id,
                                                 type: 'prompt'}));
                 }
-                save_messages_to_local_storage({'role': 'assistant'}, username, ai_name);
-                save_messages_to_local_storage({'role': 'user', 'content': prompt_text}, username, ai_name);
                 $('#input').val('');
                 adjust_textarea_height_and_change_button_color();
                 current_ai_response = null;
@@ -45,13 +43,13 @@
             }
 
             document.getElementById('send').addEventListener('click', function() {
-                send_prompt(socket, username, get_ai_name());
+                send_prompt(socket, username, get_ai_name(), get_conversation_id());
             });
 
             document.getElementById('input').addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    send_prompt(socket, username, get_ai_name());
+                    send_prompt(socket, username, get_ai_name(), get_conversation_id());
                 }
             });
 
@@ -68,7 +66,7 @@
                         // Place the file content into the input field
                         document.getElementById('input').value = e.target.result;
                         adjust_textarea_height_and_change_button_color();
-                        send_prompt(socket, username, get_ai_name());
+                        send_prompt(socket, username, get_ai_name(), get_conversation_id());
                     };
 
                     // Read the text file
@@ -146,7 +144,6 @@
             // If the stop button exists, transform it back into the send button
             if (stop_button) {
                 // Restore the button's ID, class attributes, and inner HTML to match the original send button
-                // stop_button.id = 'send';
                 stop_button.className = ''; // Set this to the original class of the send button if it had any
                 stop_button.setAttribute('aria-label', 'send prompt'); // Remove the aria-label or set it to the original if needed
                 
@@ -159,7 +156,7 @@
                 
                 // Re-attach the original event listener for the send functionality
                 stop_button.removeEventListener('click', function() {stop_generating(socket); }); 
-                stop_button.addEventListener('click', function() {send_prompt(socket, username, get_ai_name()); }); 
+                stop_button.addEventListener('click', function() {send_prompt(socket, username, get_ai_name(), get_conversation_id()); }); 
             }
         }
         
@@ -167,7 +164,7 @@
                 // Your function to send a stop message over the websocket
                 console.log("Stop generating");
                 if (socket && socket.readyState === WebSocket.OPEN) {
-                    socket.send(JSON.stringify({type: 'stop', ai_name: get_ai_name()})); // Example message format
+                    socket.send(JSON.stringify({type: 'stop', ai_name: get_ai_name(), conversation_id: get_conversation_id()})); // Example message format
                 }
         }
         
@@ -192,7 +189,7 @@
                     <rect x="4.5" y="4.5" width="7" height="7" fill="white" rx="1"/>
                 </svg>
                 `;
-                send_button.removeEventListener('click', function() {send_prompt(socket, username, get_ai_name()); }); 
+                send_button.removeEventListener('click', function() {send_prompt(socket, username, get_ai_name(), get_conversation_id()); }); 
                 send_button.addEventListener('click',function() {stop_generating(socket);});
             }
         }
@@ -223,7 +220,7 @@
                 new_connection = true;
                 var token = localStorage.getItem('jwt_token');
                 // Send the token to the server to authenticate the WebSocket connection
-                socket.send(JSON.stringify({token: token, ai_name: get_ai_name(), type: 'token'}));
+                socket.send(JSON.stringify({token: token, ai_name: get_ai_name(), conversation_id: get_conversation_id(), type: 'token'}));
 
                 let sys_message_container = $('<div class="message-container">');
                 sys_message_container.append($('<p class="message-header">').html("System"));
@@ -245,7 +242,7 @@
             // Modify your onmessage function to call transform_send_to_stop
             socket.onmessage = function(event) {
                 var msg = event.data;
-                save_messages_to_local_storage({'role': 'assistant', 'content': msg}, username, get_ai_name()); // Save each incoming message to local storage
+                // save_messages_to_local_storage({'role': 'assistant', 'content': msg}, username, get_ai_name()); // Save each incoming message to local storage
                 display_message(msg); // Display the incoming message
                 transform_send_to_stop(socket); // Transform the send button into the stop button
             };
@@ -273,83 +270,67 @@
         }
 
 
-        function convert_to_keyword(input_string) {
-            return input_string.toLowerCase().replace(/\s+/g, '_');
-        }
+        // function convert_to_keyword(input_string) {
+        //     return input_string.toLowerCase().replace(/\s+/g, '_');
+        // }
 
-        function get_local_storage_key(username, ai_name) {
-            let ai_name_kw = convert_to_keyword(ai_name);
-            return username ? `${username}_${ai_name_kw}_saved_messages` : 'saved_messages';
-        }
+        // function get_local_storage_key(username, ai_name) {
+        //     let ai_name_kw = convert_to_keyword(ai_name);
+        //     return username ? `${username}_${ai_name_kw}_saved_messages` : 'saved_messages';
+        // }
 
         // Function to save messages to local storage
-        function save_messages_to_local_storage(message, username, ai_name) {
-            // Retrieve existing messages from local storage
-            const storage_key = get_local_storage_key(username, ai_name);
-            let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
-            messages.push(message); // Add new message to the array
-            localStorage.setItem(storage_key, JSON.stringify(messages)); // Save back to local storage
-        }
+        // function save_messages_to_local_storage(message, username, ai_name) {
+        //     // Retrieve existing messages from local storage
+        //     const storage_key = get_local_storage_key(username, ai_name);
+        //     let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
+        //     messages.push(message); // Add new message to the array
+        //     localStorage.setItem(storage_key, JSON.stringify(messages)); // Save back to local storage
+        // }
 
         function clear_messages_display() {
             $('#messages').empty();
         }
 
         // Function to load and display messages from local storage
-        function load_messages_from_local_storage(username, ai_name) {
-            const storage_key = get_local_storage_key(username, ai_name);
-            let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
-            messages.forEach(function(msg) {
-                display_stored_message(msg); // Function to display a message
-            });
-        }
+        // function load_messages_from_local_storage(username, ai_name) {
+        //     const storage_key = get_local_storage_key(username, ai_name);
+        //     let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
+        //     messages.forEach(function(msg) {
+        //         display_stored_message(msg); // Function to display a message
+        //     });
+        // }
 
 
-        function get_messages_from_local_storage(username, ai_name) {
-            const storage_key = get_local_storage_key(username, ai_name);
-            let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
-            let formated_messages = [];
-            let current_ai_response = '';
-            let current_user_response = '';
-            let current_role = '';
-        
-            messages.forEach(function(msg) {
-                // Ensure msg.content is not undefined or null
-                const content = msg.content || '';
-        
-                if (msg.role == "assistant") {
-                    if (current_role == "user" && current_user_response) {
-                        formated_messages.push({'role': current_role, 'content': current_user_response});
-                        current_user_response = '';
+        function load_conversation_history(username, ai_name, conversation_id) {
+            // Get the conversation history from the server /conversation_history endpoint
+            $.ajax({
+                type: "GET",
+                url: "/conversation_history",
+                data: {username: username, ai_name: ai_name, conversation_id: conversation_id},
+                success: function(data) {
+                    // Load the conversation history into the chat window
+                    if (data.conversation_history) {
+                        data.conversation_history.forEach(function(msg) {
+                            display_stored_message(msg); // Function to display a message
+                        });
                     }
-                    current_ai_response += content;
-                } else if (msg.role == "user") {
-                    if (current_role == "assistant" && current_ai_response) {
-                        formated_messages.push({'role': current_role, 'content': current_ai_response});
-                        current_ai_response = '';
-                    }
-                    current_user_response += content;
+                },
+                error: function(response) {
+                    // Handle error
+                    console.log("Failed to load conversation history:", response);
                 }
-                current_role = msg.role;
             });
-        
-            // Handle any remaining content after the last message
-            if (current_role == "assistant" && current_ai_response) {
-                formated_messages.push({'role': current_role, 'content': current_ai_response});
-            } else if (current_role == "user" && current_user_response) {
-                formated_messages.push({'role': current_role, 'content': current_user_response});
-            }
-        
-            return formated_messages;
         }
-        
+
+
         function get_ai_name() {
             return document.getElementById('ai_name').value;
         }
 
-        function clear_messages_from_local_storage(username, ai_name) {
-            const storage_key = get_local_storage_key(username, ai_name);
-            localStorage.removeItem(storage_key);
+
+        function get_conversation_id() {
+            return document.getElementById('conversation_id').value;
         }
 
         // Function to display a message
@@ -366,18 +347,40 @@
             check_scroll(); // Check scroll after receiving a response
         }
 
+        function list_conversations(username, ai_name) {
+            // Create a new Promise
+            return new Promise(function(resolve, reject) {
+                // Get the conversation IDs from the server /list_conversations endpoint
+                $.ajax({
+                    type: "GET",
+                    url: "/list_conversations",
+                    data: {username: username, ai_name: ai_name},
+                    success: function(data) {
+                        // Resolve the Promise with the data
+                        resolve(data);
+                    },
+                    error: function(response) {
+                        // Reject the Promise with the error
+                        reject("Failed to list conversation IDs: " + response);
+                    }
+                });
+            });
+        }
+
+        function set_conversation_id(conversation_id) {
+            document.getElementById('conversation_id').value = conversation_id;
+        }
+
         // Function to display a message
         function display_stored_message(msg) {
             if (msg.role == "assistant") {
                 if ('content' in msg) {
                     let content_with_breaks = msg.content.replace(/\n/g, '<br>');
-                    if (!current_ai_response) {
-                        let ai_message_container = $('<div class="message-container">');
-                        ai_message_container.append($('<p class="message-header">').html("AI"));
-                        current_ai_response = $('<p class="message-text">');
-                        ai_message_container.append(current_ai_response);
-                        $('#messages').append(ai_message_container);
-                    }
+                    let ai_message_container = $('<div class="message-container">');
+                    ai_message_container.append($('<p class="message-header">').html("AI"));
+                    current_ai_response = $('<p class="message-text">');
+                    ai_message_container.append(current_ai_response);
+                    $('#messages').append(ai_message_container);
                     current_ai_response.append(content_with_breaks);
                 }
                 else {

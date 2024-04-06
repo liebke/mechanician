@@ -24,11 +24,13 @@ logger.addHandler(handler)
         
 class MechanicianTools(ABC):
 
+    tool_instructions = None
+
     def has_function(self, function_name:str):
         return hasattr(self, function_name)
 
     def get_tool_instructions(self):
-        if hasattr(self, "tool_instructions"):
+        if hasattr(self, "tool_instructions") and self.tool_instructions is not None:
             return self.tool_instructions
         
         if hasattr(self, "instruction_set_directory"):
@@ -336,6 +338,8 @@ class AIToolKit(MechanicianToolKit, AITools):
  
 class MechanicianToolsProvisioner(ABC): 
         
+    # TODO: In subclasses, have them check if tool_instructions are provided in context
+    # TODO: If not, load them from the default location
     @abstractmethod
     def create_tools(self, context:dict={}) -> MechanicianTools:
         pass
@@ -360,6 +364,10 @@ class PromptToolsProvisioner(MechanicianToolsProvisioner):
 
     def create_tools(self, context:dict={}) -> MechanicianTools:
         resource_connector = self.resource_connector_provisioner.create_connector(context)
+        # TODO: prompt_tool_instructions = context.get("prompt_tool_instructions", self.prompt_tool_instructions)
+        # TODO: if prompt_tool_instructions is not None:
+        # TODO:   prompt_tools = PromptTools(resource_connector=resource_connector, prompt_tool_instructions=prompt_tool_instructions)
+        # TODO: else:
         return PromptTools(resource_connector=resource_connector,
                            prompt_template_directory=self.prompt_template_directory,
                            prompt_tool_instructions_file_name=self.prompt_tool_instructions_file_name,

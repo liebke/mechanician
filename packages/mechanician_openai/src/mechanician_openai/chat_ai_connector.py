@@ -57,9 +57,9 @@ class OpenAIChatConnector(StreamingAIConnector):
     def _instruct(self, ai_instructions=None, 
                   ai_tool_instructions=None,
                   tools: 'AITools'=None):
-        self.ai_instructions = None
-        self.ai_tool_instructions = None
-        self.tools = None
+        # self.ai_instructions = None
+        # self.ai_tool_instructions = None
+        # self.tools = None
 
         if ai_instructions is not None:
             self.ai_instructions = ai_instructions

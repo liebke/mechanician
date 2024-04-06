@@ -32,3 +32,4 @@ examples/studio_demo/certs/cert.pem
 examples/studio_demo/certs/key.pem
 examples/studio_demo/data/chromadb
 
+examples/studio_demo/data/users

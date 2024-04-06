@@ -50,14 +50,6 @@ mkdir certs
 mkcert -key-file ./certs/key.pem -cert-file ./certs/cert.pem localhost 127.0.0.1 ::1
 ```
 
-```bash
-uvicorn.run("mechanician_studio.main:app", 
-            host="127.0.0.1", 
-            port=8000, 
-            ssl_keyfile="./certs/key.pem", 
-            ssl_certfile="./certs/cert.pem")
-```
-
 ### Start the Chroma Database
 
 ```bash

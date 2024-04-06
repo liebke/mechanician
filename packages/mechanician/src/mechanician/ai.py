@@ -226,11 +226,25 @@ class AIProvisioner(ABC):
             else:
                 raise ValueError(f"tools must be an instance of AITools or a list of AITools. Received: {ai_tools}")
 
+        ai_instructions = context.get("ai_instructions", None)
+        # Check if message_history is provided in the context, and use that if available.
+        conversation_history = context.get("conversation_history", None)
         ai = AI(ai_connector=ai_connector, 
-                   name = self.name,
-                   ai_tools = ai_tools,
-                   ai_instructions = self.ai_instructions,
-                   instruction_set_directory = self.instruction_set_directory,
-                   ai_instruction_file_name = self.ai_instruction_file_name )
+                name = self.name,
+                ai_tools = ai_tools,
+                # DO NOT PASS AI INSTRUCTIONS HERE. DIRECTLY APPEND SYSTEM MESSAGE OR USE STORED MESSAGE HIST WITH SYSTEM MESSAGE.
+                ai_instructions = None,
+                instruction_set_directory = self.instruction_set_directory,
+                ai_instruction_file_name = self.ai_instruction_file_name )
+        # IF AI_INSTRUCTIONS IS NOT NONE, then DO NOT USE MESSAGE HISTORY, Append system message to ai_instructions
+        if ai_instructions is not None:
+            ai.ai_connector.messages.append({"role": "system", "content": ai_instructions})
+        elif conversation_history is not None:
+            ai.ai_connector.messages = conversation_history
+        elif self.ai_instructions is not None:
+            ai.ai_connector.messages.append({"role": "system", "content": self.ai_instructions})
+        else:
+            ai.ai_connector.messages = []
+
         return ai
 

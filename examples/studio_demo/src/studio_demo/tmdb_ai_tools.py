@@ -48,9 +48,12 @@ class TMDbAITools(AITools):
     def __init__(self, api_key, 
                  tool_instructions_file_name="tmdb_ai_tools_instructions.json",
                  ai_instructions_file_name="tmdb_ai_instructions.md",
-                 instruction_set_directory="./src/instructions"):
+                 instruction_set_directory="./src/instructions",
+                 tool_instructions=None,):
                 
                 self.api_key = api_key
+                if tool_instructions is not None:
+                    self.tool_instructions = tool_instructions
                 self.tool_instructions_file_name = tool_instructions_file_name
                 self.ai_instructions_file_name = ai_instructions_file_name
                 self.instruction_set_directory = instruction_set_directory

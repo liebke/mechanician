@@ -185,6 +185,7 @@
 <body>
 
     <div id="header">
+        <input type="hidden" id="conversation_id" value="{{ conversation_id }}">
         <!-- <div id="title">AI Tools</div> -->
         <div class="select-container">
             <select id="ai_name">
@@ -346,7 +347,7 @@
         create_form(schema_json);
 
         document.getElementById('close_button').addEventListener('click', function() {
-            window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name());
+            window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name()) + '&conversation_id=' + get_conversation_id();
         });
 
         document.getElementById('user-button').addEventListener('click', function() {
@@ -362,6 +363,7 @@
             const form_data = new FormData(this);
             let ai_name = document.getElementById('ai_name').value;
             form_data.append('ai_name', ai_name);
+            form_data.append('conversation_id', get_conversation_id());
 
             fetch('/call_ai_tool', {
                 method: 'POST',

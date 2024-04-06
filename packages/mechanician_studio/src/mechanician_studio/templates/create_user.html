@@ -96,6 +96,7 @@ select::-ms-expand {
 </head>
 <body>
     <div id="header">
+        <input type="hidden" id="conversation_id" value="{{ conversation_id }}">
         <div id="title">Add User</div>
         <!-- <button id="close_button">&#10006;</button> -->
         <button id="close_button">
@@ -207,7 +208,7 @@ select::-ms-expand {
             // Add a click event listener to the close button
             closeButton.addEventListener('click', function() {
                 // Redirect to the homepage
-                window.location.href = "/?ai_name=" + encodeURIComponent('{{ ai_name }}');
+                window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name()) + "&conversation_id=" + get_conversation_id();
             });
 
             // document.getElementById('username').focus();
