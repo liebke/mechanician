@@ -130,8 +130,8 @@ class AIStudio:
                 if new_conversation != "true":
                     conversation_id = self.user_data_store.get_most_recent_conversation_id(username, ai_name)
 
-                if conversation_id is None:
-                    conversation_id = self.user_data_store.new_conversation(username, ai_name)                    
+            if conversation_id is None:
+                conversation_id = self.user_data_store.new_conversation(username, ai_name)                    
 
             return self.templates.TemplateResponse("index.html", 
                                                    {"request": request,
@@ -158,7 +158,12 @@ class AIStudio:
             form_data_dict = dict(form_data)
             prompt = form_data_dict.get("prompt", "")
             ai_name = form_data_dict.get("ai_name")
+            new_conversation = request.query_params.get("new_conversation")
             conversation_id = request.query_params.get("conversation_id")
+            if conversation_id is None:
+                if new_conversation != "true":
+                    conversation_id = self.user_data_store.get_most_recent_conversation_id(username, ai_name)
+
             if conversation_id is None:
                 conversation_id = self.user_data_store.new_conversation(username, ai_name)
 
@@ -212,10 +217,10 @@ class AIStudio:
             form_data_dict.pop("function_name", None)
             username = user.get("username", access_token)
             ai_name = form_data_dict.get("ai_name")
+            conversation_id = form_data_dict.get("conversation_id")
             ai_instance=self.get_ai_instance(username=username, 
                                              ai_name=ai_name,
-                                             # We don't need to pass conversation_id here
-                                             conversation_id=None,
+                                             conversation_id=conversation_id,
                                              context=self.get_context(access_token))
             ai_tools = ai_instance.ai_tools
             response = ai_tools.call_function(function_name, params=form_data_dict)
@@ -237,6 +242,9 @@ class AIStudio:
             ai_name = request.query_params.get("ai_name")
             conversation_id = request.query_params.get("conversation_id")
             history = self.user_data_store.get_conversation_history(username, ai_name, conversation_id)
+            if not history:
+                conversation_id = self.user_data_store.get_most_recent_conversation_id(username, ai_name)
+                history = self.user_data_store.get_conversation_history(username, ai_name, conversation_id)
             response = {"conversation_id": conversation_id, "conversation_history": history}
             return JSONResponse(content=response)
         
@@ -278,10 +286,13 @@ class AIStudio:
             username = user.get("username", access_token)
             display_name = user.get("name", username)
             ai_name = request.query_params.get("ai_name")
+            conversation_id = request.query_params.get("conversation_id")
             return self.templates.TemplateResponse("conversations.html",
                                                    {"request": request,
                                                     "ai_names": self.ai_names,
                                                     "ai_name": ai_name,
+                                                    # coversation_id for close button
+                                                    "conversation_id": conversation_id,
                                                     "username": username,
                                                     "name": display_name})
         
@@ -329,10 +340,10 @@ class AIStudio:
 
             username = user.get("username", access_token)
             ai_name = request.query_params.get("ai_name")
+            conversation_id = request.query_params.get("conversation_id")
             ai_instance = self.get_ai_instance(username=username, 
                                                ai_name=ai_name,
-                                               # We don't need to pass conversation_id here
-                                               conversation_id=None,
+                                               conversation_id=conversation_id,
                                                context=self.get_context(access_token))
             ai_instructions=ai_instance.ai_instructions
             ai_tool_instructions=ai_instance.ai_tool_instructions
@@ -360,11 +371,12 @@ class AIStudio:
             username = user.get("username", access_token)
             display_name = user.get("name", username)
             ai_name = request.query_params.get("ai_name")
-            conversation_id = request.query_params.get("conversation_id") or None
+            conversation_id = request.query_params.get("conversation_id")
             return self.templates.TemplateResponse("ai_settings.html",
                                                    {"request": request,
                                                     "ai_names": self.ai_names,
                                                     "ai_name": ai_name,
+                                                    # coversation_id for close button
                                                     "conversation_id": conversation_id,
                                                     "username": username,
                                                     "name": display_name})
@@ -562,6 +574,7 @@ class AIStudio:
             if sid:
                 self.clear_ai_instance(username)
 
+            # response = RedirectResponse(url='/?new_conversation=true', status_code=status.HTTP_303_SEE_OTHER)
             response = RedirectResponse(url='/?new_conversation=true', status_code=status.HTTP_303_SEE_OTHER)
             return response
         
@@ -620,12 +633,12 @@ class AIStudio:
                 return JSONResponse(content={"error": "No username provided."})
             
             ai_name = request.query_params.get("ai_name") or self.ai_names[0]
-
+            conversation_id = request.query_params.get("conversation_id")
             token = request.cookies.get("access_token")
             ai_instance = self.get_ai_instance(username, 
-                                                      ai_name, 
-                                                      conversation_id=None, 
-                                                      context=self.get_context(token))
+                                               ai_name, 
+                                               conversation_id=conversation_id, 
+                                               context=self.get_context(token))
             if ai_instance is None:
                 return JSONResponse(content={"error": "No AI instance found."})
             
@@ -762,7 +775,6 @@ class AIStudio:
                 logger.info("Client disconnected")
                 self.cleanup(sid)
             except Exception as e:
-                # Identify the error type and print it
                 logger.error(f"Unexpected error: {e}")
                 self.cleanup(sid)
 

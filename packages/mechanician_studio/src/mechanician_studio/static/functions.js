@@ -270,36 +270,9 @@
         }
 
 
-        // function convert_to_keyword(input_string) {
-        //     return input_string.toLowerCase().replace(/\s+/g, '_');
-        // }
-
-        // function get_local_storage_key(username, ai_name) {
-        //     let ai_name_kw = convert_to_keyword(ai_name);
-        //     return username ? `${username}_${ai_name_kw}_saved_messages` : 'saved_messages';
-        // }
-
-        // Function to save messages to local storage
-        // function save_messages_to_local_storage(message, username, ai_name) {
-        //     // Retrieve existing messages from local storage
-        //     const storage_key = get_local_storage_key(username, ai_name);
-        //     let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
-        //     messages.push(message); // Add new message to the array
-        //     localStorage.setItem(storage_key, JSON.stringify(messages)); // Save back to local storage
-        // }
-
         function clear_messages_display() {
             $('#messages').empty();
         }
-
-        // Function to load and display messages from local storage
-        // function load_messages_from_local_storage(username, ai_name) {
-        //     const storage_key = get_local_storage_key(username, ai_name);
-        //     let messages = JSON.parse(localStorage.getItem(storage_key)) || [];
-        //     messages.forEach(function(msg) {
-        //         display_stored_message(msg); // Function to display a message
-        //     });
-        // }
 
 
         function load_conversation_history(username, ai_name, conversation_id) {
@@ -310,6 +283,7 @@
                 data: {username: username, ai_name: ai_name, conversation_id: conversation_id},
                 success: function(data) {
                     // Load the conversation history into the chat window
+                    set_conversation_id(data.conversation_id);
                     if (data.conversation_history) {
                         data.conversation_history.forEach(function(msg) {
                             display_stored_message(msg); // Function to display a message
@@ -354,7 +328,7 @@
                 $.ajax({
                     type: "GET",
                     url: "/list_ai_tools",
-                    data: {ai_name: ai_name},
+                    data: {ai_name: ai_name, conversation_id: get_conversation_id()},
                     success: function(data) {
                         // Resolve the Promise with the data
                         resolve(data);

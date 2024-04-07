@@ -161,7 +161,7 @@
             });
 
             document.getElementById('conversations-button').addEventListener('click', function() {
-                window.location.href = "/conversations?ai_name=" + encodeURIComponent(get_ai_name());
+                window.location.href = "/conversations?ai_name=" + encodeURIComponent(get_ai_name()) + "&conversation_id=" + encodeURIComponent(get_conversation_id());
             });
 
             document.getElementById('new-button').addEventListener('click', function() {
@@ -187,8 +187,6 @@
             // Check if there is any text in the textarea when the WebSocket connection is established and send the prompt
             function send_initial_input() {
                 var textarea_value = document.getElementById('input').value;
-                console.log('textarea_value:');
-                console.log(textarea_value);
                 if (socket.readyState === WebSocket.OPEN) {
                     if (textarea_value !== '') {
                         send_prompt(socket, username, get_ai_name(), get_conversation_id());

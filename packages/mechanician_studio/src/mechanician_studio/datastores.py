@@ -141,12 +141,11 @@ class UserDataFileStore(UserDataStore):
 
 
     def new_conversation(self, username: str, ai_name: str, conversation_id=None) -> str:
-        if conversation_id is None and conversation_id != "":
+        if conversation_id is None or conversation_id != "":
             conversation_id = datetime.now().strftime("%Y%m%d%H%M%S")
             
         # Clear empty conversations before creating a new one
         self.clear_empty_conversations(username, ai_name)
-
         self.set_conversation_history(username, ai_name, conversation_id, [])
         return conversation_id
     
@@ -259,6 +258,8 @@ class UserDataFileStore(UserDataStore):
                 
                 conversation_details.append({
                     "conversation_id": conversation_id,
+                    "ai_name": ai_name,
+                    "username": username,
                     "timestamp": self._convert_to_date_format(conversation_id),
                     "description": description
                 })

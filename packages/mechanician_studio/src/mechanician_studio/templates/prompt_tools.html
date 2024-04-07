@@ -441,7 +441,7 @@
             // Add a click event listener to the close button
             closeButton.addEventListener('click', function() {
                 // Redirect to the homepage
-                window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name());
+                window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name()) + "&conversation_id=" + get_conversation_id();
             });
 
             document.getElementById('user-button').addEventListener('click', function() {
