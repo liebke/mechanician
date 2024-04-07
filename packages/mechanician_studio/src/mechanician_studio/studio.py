@@ -116,8 +116,8 @@ class AIStudio:
             if user is None:
                 return self.templates.TemplateResponse("login.html", 
                                                        {"request": request})
-            else:
-                username = user.get("username", "")
+            username = user.get("username", "")
+            user_role = user.get("user_role", "User")
 
             # get ai_name from query parameter
             ai_name = request.query_params.get("ai_name")
@@ -138,6 +138,7 @@ class AIStudio:
                                                     "ai_names": self.ai_names,
                                                     "ai_name": ai_name,
                                                     "username": username,
+                                                    "user_role": user_role,
                                                     "conversation_id": conversation_id,
                                                     "name": user.get("name", username),})
         
