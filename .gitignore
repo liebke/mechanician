@@ -33,3 +33,5 @@ examples/studio_demo/certs/key.pem
 examples/studio_demo/data/chromadb
 
 examples/studio_demo/data/users
+mechanician_chroma.egg-info
+mechanician_studio_demo.egg-info
