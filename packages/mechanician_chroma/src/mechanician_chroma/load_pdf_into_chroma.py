@@ -4,27 +4,29 @@ import chromadb
 # pip install PyPDF2
 import PyPDF2
 import argparse
-from pprint import pprint1
+from pprint import pprint
 
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 20
 
-def load_pdf_into_chroma(collection_name, pdf_path):
-    # Now we can load our PDF in PyPDF2 from memory
-    # pip install PyPDF2
-    # get pdf name
-    pdf_name = pdf_path.split("/")[-1]
+def extract_text_from_pdf(pdf_path):
     read_pdf = PyPDF2.PdfReader(pdf_path)
     count = len(read_pdf.pages)
     pages_txt = []
-    # For each page we extract the text
     for i in range(count):
         page = read_pdf.pages[i]
-        pages_txt.append({"page_id": i, "text": page.extract_text()})
+        pages_txt.append(page.extract_text())
+    return pages_txt
 
-    # We return the PDF name as well as the text inside each pages
-    # return pdf_name, pages_txt
-    load_text_into_chroma(collection_name, pdf_name, pdf_path, pages_txt)
+
+def load_pdf_into_chroma(collection_name, pdf_path):
+    pages_txt = extract_text_from_pdf(pdf_path)
+    pages = []
+    for i in range(len(pages_txt)):
+        pages.append({"page_id": i, "text": pages_txt[i]})
+    
+    pdf_name = pdf_path.split("/")[-1]
+    load_text_into_chroma(collection_name, pdf_name, pdf_path, pages)
     
     
 

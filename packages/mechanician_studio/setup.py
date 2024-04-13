@@ -11,12 +11,10 @@ setup(
         'fastapi>=0.110.0',
         'uvicorn[standard]>=0.13.4',
         'jinja2>=2.11.3',
-
         'python-jose[cryptography]',
         'passlib[bcrypt]',
-        'python-multipart',
-        'aiofiles',
-        'aioprocessing'
+        # 'python-multipart',
+        'aiofiles'
     ],
     author='David Edgar Liebke',
     author_email='david@gmail.com',

@@ -430,7 +430,7 @@ class UserDataFileStore(UserDataStore):
             "file_extension": os.path.splitext(file.filename)[1],
             "ai_name": ai_name,
             "conversation_id": conversation_id,
-            "timestamp": datetime.now().isoformat(),
+            "timestamp": self._convert_to_date_format(datetime.now().strftime("%Y%m%d%H%M%S")),
             "username": username,
             "attributes": attributes
         }

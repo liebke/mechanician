@@ -7,6 +7,7 @@ setup(
     package_dir={'': 'src'},
     install_requires=[
         'rich>=10.0.0',
+        'aioprocessing'
     ],
     author='David Edgar Liebke',
     author_email='david@gmail.com',

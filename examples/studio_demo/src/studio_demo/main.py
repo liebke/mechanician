@@ -12,8 +12,10 @@ import uvicorn
 import os
 import logging
 from dotenv import load_dotenv
-from mechanician_studio.events import EventHandler
 from mechanician_chroma.chroma_ai_tools import ChromaAIToolsProvisioner
+from mechanician_chroma.chroma_resource_handlers import PDFResourceUploadedEventHandler
+from mechanician_studio.resource_handlers import TextResourceUploadedEventHandler
+
 from pprint import pprint
 import traceback
 
@@ -79,9 +81,12 @@ def init_studio():
                                           prompt_instructions_directory="./src/instructions",
                                           prompt_tool_instructions_file_name="rag_prompt_tool_instructions.json") 
     
+    event_handlers = {"resource_uploaded": [PDFResourceUploadedEventHandler(), TextResourceUploadedEventHandler()]}
+
     # Set up the Mechanician AI Studio
     return AIStudio(ai_provisioners=[notepad_only_ai, tmdb_ai, contract_ai],
-                    prompt_tools_provisioners=[crm_tools, chroma_tools])
+                    prompt_tools_provisioners=[crm_tools, chroma_tools],
+                    event_handlers=event_handlers)
 
 
 def run_studio():

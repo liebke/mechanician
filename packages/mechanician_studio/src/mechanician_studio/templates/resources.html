@@ -293,7 +293,7 @@
                             const item = document.createElement('li');
                             item.id = `resource-${resource.resource_id}`; // Set an ID for each resource item
                             item.style.alignItems = 'flex-start'; // Align items to the start
-
+                            console.log(resource)
                             // Prepends the SVG to the list item
                             const svgHTML = `
                                 <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md" style="margin-right: 8px; flex-shrink: 0;">
@@ -315,7 +315,7 @@
                             const encodedAiName = encodeURIComponent(get_ai_name());
                             link.href = `/resources/${username}/${resource.resource_id}?ai_name=${encodedAiName}&conversation_id=${get_conversation_id()}`;
                             const description = document.createElement('div');
-                            link.innerHTML = svgHTML +resource.filename + " - " + resource.timestamp;
+                            link.innerHTML = svgHTML + truncate_string(resource.filename, 50) + " - " + resource.timestamp;
 
                             // Append elements
                             content_container.appendChild(link); // Add timestamp link to content container

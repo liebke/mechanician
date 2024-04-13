@@ -1,18 +1,10 @@
-from mechanician.events import EventHandler
+from typing import Dict, List
 from pprint import pprint
 import traceback
-import logging
-from typing import Dict, List
+from mechanician.events import EventHandler
+from mechanician_chroma.load_pdf_into_chroma import extract_text_from_pdf, load_text_into_chroma
 
-logger = logging.getLogger(__name__)
-logger.setLevel(level=logging.INFO)
-
-handler = logging.StreamHandler()
-handler.setLevel(logging.INFO)
-logger.addHandler(handler)
-
-
-class TextResourceUploadedEventHandler(EventHandler):
+class PDFResourceUploadedEventHandler(EventHandler):
 
     def __init__(self, event_filters:Dict[str, List[str]]=None):
         # event_filters is a dictionary that maps event attributes to lists of values that the attribute must match
@@ -33,11 +25,10 @@ class TextResourceUploadedEventHandler(EventHandler):
             file_path = resource_entry.get("file_path")
             file_type = resource_entry.get("file_type")
             conversation_id = resource_entry.get("conversation_id")
-            if not file_type.startswith("text/"):
+            if not file_type.startswith("application/pdf"):
                 return
             
-            with open(file_path, "r") as f:
-                content = f.read()
+            content = extract_text_from_pdf(file_path)
             prompt = f"""The user has uploaded a file called {filename} of type {file_type}. 
             Use the text below to answer questions from the user on the uploaded document.
             ----------------
@@ -48,7 +39,7 @@ class TextResourceUploadedEventHandler(EventHandler):
             """
             msg = {"role": "system", "content": prompt}
 
-            print("TEXT RESOURCE UPLOADED EVENT HANDLER:")
+            print("PDF RESOURCE UPLOADED EVENT HANDLER:")
             pprint(event)
             print("\n\n\n")
             pprint(msg)

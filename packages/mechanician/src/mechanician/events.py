@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 import asyncio
 from aioprocessing import AioQueue
-from fastapi import FastAPI
 import logging
 
 

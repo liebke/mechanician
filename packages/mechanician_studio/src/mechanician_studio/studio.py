@@ -18,9 +18,8 @@ import logging
 from pprint import pprint
 from typing import List
 import traceback
-# import aiofiles
 from mechanician_studio.datastores import UserDataStore, UserDataFileStore
-from mechanician_studio.events import EventProcessor, EventHandler
+from mechanician.events import EventProcessor, EventHandler
 from mechanician_studio.resource_handlers import TextResourceUploadedEventHandler
 
 logger = logging.getLogger(__name__)
