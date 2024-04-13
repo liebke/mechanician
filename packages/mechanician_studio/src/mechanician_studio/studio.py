@@ -10,7 +10,7 @@ from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit, Mech
 import os
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.responses import Response, RedirectResponse
-from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse
+from fastapi.responses import HTMLResponse, RedirectResponse, JSONResponse, FileResponse
 from mechanician_studio.auth import CredentialsManager, BasicCredentialsManager
 from pydantic import BaseModel
 from fastapi.staticfiles import StaticFiles
@@ -292,6 +292,112 @@ class AIStudio:
             response = ai_tools.call_function(function_name, params=form_data_dict)
             return JSONResponse(content=response)
         
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /list_resources ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        @self.app.get("/list_resources", response_class=HTMLResponse)
+        async def list_resources(request: Request):
+            
+            access_token = request.cookies.get("access_token")
+            user = self.credentials_manager.get_user_by_token(access_token)
+            if user is None:
+                raise HTTPException(status_code=401, detail="Unauthorized: Invalid credentials")
+
+            username = user.get("username", access_token)
+            ai_name = request.query_params.get("ai_name")
+            conversation_ids = self.user_data_store.list_resources(username)
+            return JSONResponse(content=conversation_ids)
+        
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /resources/<USERNAME> ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        @self.app.get("/resources/{username}", response_class=HTMLResponse)
+        async def resources(request: Request, username: str):
+            try:
+                self.verify_access_token(request)
+            except Exception as e:
+                logger.error(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+            
+            access_token = request.cookies.get("access_token")
+            user = self.credentials_manager.get_user_by_token(access_token)
+            if user is None:
+                raise HTTPException(status_code=401, detail="Unauthorized: Invalid credentials")
+
+            display_name = user.get("name", username)
+            ai_name = request.query_params.get("ai_name")
+            conversation_id = request.query_params.get("conversation_id")
+            return self.templates.TemplateResponse("resources.html",
+                                                   {"request": request,
+                                                    "ai_names": self.ai_names,
+                                                    "ai_name": ai_name,
+                                                    # coversation_id for close button
+                                                    "conversation_id": conversation_id,
+                                                    "username": username,
+                                                    "name": display_name})
+        
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # DELETE /resources//<USERNAME>/<RESOURCE_ID> ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        @self.app.delete("/resources/{username}/{resource_id}", response_class=HTMLResponse)
+        async def delete_resource(request: Request, username: str, resource_id: str):
+            try:
+                self.verify_access_token(request)
+            except Exception as e:
+                logger.error(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+
+            access_token = request.cookies.get("access_token")
+            user = self.credentials_manager.get_user_by_token(access_token)
+            if user is None:
+                raise HTTPException(status_code=401, detail="Unauthorized: Invalid credentials")
+            
+            result = self.user_data_store.delete_resource(username, resource_id)
+
+            if not result:
+                raise HTTPException(status_code=404, detail="Resource not found")
+
+            # Redirect or respond after deletion. Adjust based on your application's flow.
+            # For example, redirecting back to the conversations list:
+            return RedirectResponse(url=f"/resources/{username}?ai_name={request.query_params.get('ai_name')}", status_code=status.HTTP_303_SEE_OTHER)
+
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # GET /resources//<USERNAME>/<RESOURCE_ID> ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        @self.app.get("/resources/{username}/{resource_id}", response_class=HTMLResponse)
+        async def get_resource(request: Request, username: str, resource_id: str):
+            try:
+                self.verify_access_token(request)
+            except Exception as e:
+                logger.error(f"Error validating token: {e}")
+                response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
+                return response
+
+            access_token = request.cookies.get("access_token")
+            user = self.credentials_manager.get_user_by_token(access_token)
+            if user is None:
+                raise HTTPException(status_code=401, detail="Unauthorized: Invalid credentials")
+            
+            file = self.user_data_store.get_resource_data(username, resource_id)
+
+            if not file:
+                raise HTTPException(status_code=404, detail="Resource not found")
+
+            resource_entry = self.user_data_store.get_resource_entry(username, resource_id)
+            pprint(resource_entry)
+            file_path = resource_entry.get("file_path")
+            if not file_path:
+                raise HTTPException(status_code=404, detail="Resource not found")
+
+            # Return the file response
+            return FileResponse(path=file_path, filename=f"{resource_id}")
+
 
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         # GET /conversation_history ROUTE

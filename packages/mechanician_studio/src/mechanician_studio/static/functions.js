@@ -365,7 +365,6 @@
         function list_ai_tools(username, ai_name) {
             // Create a new Promise
             return new Promise(function(resolve, reject) {
-                // Get the conversation IDs from the server /list_conversations endpoint
                 $.ajax({
                     type: "GET",
                     url: "/list_ai_tools",
@@ -397,6 +396,27 @@
                     error: function(response) {
                         // Reject the Promise with the error
                         reject("Failed to list conversation IDs: " + response);
+                    }
+                });
+            });
+        }
+
+
+        function list_resources(username, ai_name) {
+            // Create a new Promise
+            return new Promise(function(resolve, reject) {
+                // Get the resource IDs from the server /list_resources endpoint
+                $.ajax({
+                    type: "GET",
+                    url: "/list_resources",
+                    data: {username: username, ai_name: ai_name},
+                    success: function(data) {
+                        // Resolve the Promise with the data
+                        resolve(data);
+                    },
+                    error: function(response) {
+                        // Reject the Promise with the error
+                        reject("Failed to list resource IDs: " + response);
                     }
                 });
             });

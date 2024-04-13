@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import uuid
 from typing import List, Dict
 import os
 import json
@@ -7,7 +8,6 @@ import re
 import logging
 from fastapi import File
 import aiofiles
-# import asyncio
 from pprint import pprint
 
 logger = logging.getLogger(__name__)
@@ -93,6 +93,35 @@ class UserDataStore(ABC):
     async def add_resource_file(self, username: str, ai_name: str, conversation_id: str, file: File, attributes: Dict = None):
         """
         Abstract method to add a resource file for a given username and AI name.
+        """
+        pass
+
+    @abstractmethod
+    def list_resources(self, username: str) -> List[Dict]:
+        """
+        Abstract method to list resources for a given username, AI name.
+        """
+        pass
+
+    @abstractmethod
+    def get_resource_entry(self, username: str, resource_id: str) -> Dict:
+        """
+        Abstract method to get a resource entry for a given username and resource ID.
+        """
+        pass
+
+    @abstractmethod
+    def get_resource_data(self, username: str, resource_id: str) -> File:
+        """
+        Abstract method to get a resource data for a given username and resource ID.
+        """
+        pass
+
+
+    @abstractmethod
+    def delete_resource(self, username: str, resource_id: str) -> bool:
+        """
+        Abstract method to delete a resource for a given username, AI name, and resource ID.
         """
         pass
 
@@ -393,6 +422,8 @@ class UserDataFileStore(UserDataStore):
 
         # Prepare the resource entry
         resource_entry = {
+            # create resource_id that is a unique GUID
+            "resource_id": str(uuid.uuid4()),
             "file_path": file_path,
             "filename": file.filename,
             "file_type": file.content_type,
@@ -432,3 +463,62 @@ class UserDataFileStore(UserDataStore):
   
         return resource_entry
 
+
+    def list_resources(self, username: str) -> List[Dict]:
+        resource_dir = os.path.join(self.data_dir, "users", username, "resources")
+        resource_index_file = os.path.join(resource_dir, "resources.jsonl")
+        resource_index = []
+        try:
+            with open(resource_index_file, "r", encoding="utf-8") as index:
+                for line in index:
+                    resource_entry = json.loads(line)
+                    resource_index.append(resource_entry)
+        except FileNotFoundError:
+            return []
+        return resource_index
+    
+
+    def delete_resource(self, username: str, resource_id: str) -> bool:
+        resource_dir = os.path.join(self.data_dir, "users", username, "resources")
+        resource_index_file = os.path.join(resource_dir, "resources.jsonl")
+        updated = False
+        new_content = []
+        try:
+            with open(resource_index_file, "r", encoding="utf-8") as index:
+                for line in index:
+                    resource_entry = json.loads(line)
+                    if resource_entry['resource_id'] == resource_id:
+                        # Remove the file from the filesystem
+                        os.remove(resource_entry['file_path'])
+                        updated = True
+                    else:
+                        new_content.append(line)
+
+            if updated:
+                with open(resource_index_file, "w", encoding="utf-8") as index:
+                    index.writelines(new_content)
+        except FileNotFoundError:
+            return False
+        return updated
+
+
+    def get_resource_entry(self, username: str, resource_id: str) -> Dict:
+        resource_dir = os.path.join(self.data_dir, "users", username, "resources")
+        resource_index_file = os.path.join(resource_dir, "resources.jsonl")
+        try:
+            with open(resource_index_file, "r", encoding="utf-8") as index:
+                for line in index:
+                    resource_entry = json.loads(line)
+                    if resource_entry['resource_id'] == resource_id:
+                        return resource_entry
+        except FileNotFoundError:
+            return {}
+        return {}
+    
+    
+    def get_resource_data(self, username: str, resource_id: str) -> File:
+        resource_entry = self.get_resource_entry(username, resource_id)
+        if resource_entry:
+            file_path = resource_entry.get("file_path")
+            return File(file_path)
+        return None

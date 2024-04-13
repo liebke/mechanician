@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Daring Mechanician - Uploaded Resources</title>
+    <link rel="stylesheet" href="../static/styles.css">
+    <link rel="stylesheet" href="../static/form_styles.css">
+    <style>
+
+    html, body {
+        height: 100%; /* Ensure full height */
+        margin: 0; /* Reset margins */
+        overflow: hidden; /* Prevent body scrolling */
+        display: flex;
+        flex-direction: column; /* Vertical stacking */
+    }
+
+    .main-container {
+        margin-left: 100px; /* Adjust based on sidebar width */
+        flex: 1; /* Flex to fill available space */
+        display: flex;
+        flex-direction: column; /* Stack children vertically */
+        overflow-y: auto; /* Scroll vertically as needed */
+        max-height: 90vh; /* Limit to viewport height */
+    }
+
+    .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 50px;
+        border-radius: 5px;
+        text-align: left;
+        width: auto; /* Adapt width */
+        box-sizing: border-box; /* Include padding in width/height */
+        /* Removed max-height to allow natural expansion within .main-container */
+        /* No overflow-y here, as .main-container handles the scrolling */
+
+        max-width: 100%; /* Ensure it doesn't exceed the parent width */
+        overflow-x: hidden; /* Hide horizontal overflow */
+    }
+  
+
+
+    .form-container input {
+        display: block; /* Make sure inputs and button are block-level, causing them to stack */
+        width: 100%; /* Full width of their container */
+        font-size: 14px;
+        padding: 10px;
+        margin-bottom: 10px; /* Space between elements */
+        border-radius: 5px;
+        outline: none; /* Remove focus outline */
+    }
+
+
+
+    select {
+        font-size: 20px;
+        width: 100%;
+        color: white;
+        background-color: #222; /* Set a flat background color */
+        border: none; /* A light border for a flat effect */
+        border-radius: 0; /* Remove rounded corners if desired */
+        box-shadow: none; /* Remove any shadow effects */
+        appearance: none; /* Attempt to disable native OS styling */
+        -webkit-appearance: none; /* Specifically for WebKit browsers */
+        -moz-appearance: none; /* Specifically for Mozilla browsers */
+        outline: none; /* Remove focus outline */
+    }
+
+    /* Custom arrow */
+    select::-ms-expand {
+        display: none; /* Hide the default arrow in IE */
+    }
+
+    .select-container {
+        width: 100%;
+        flex-grow: 1;
+        position: relative;
+        display: inline-block;
+        background-color: #222;
+        border: 1px solid #777;
+        margin-left: 0px;
+        color: #777;
+        border-radius: 5px;
+    }
+
+    .select-container select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-color: transparent;
+        border: none;
+        padding: 5px 8px 5px 10px;
+        margin: 0;
+        color: white;
+        cursor: pointer;
+    }
+
+    .select-container::after {
+        content: '\25BE'; /* Unicode for down arrow */
+        position: absolute;
+        top: 0;
+        right: 10px;
+        bottom: 0;
+        color: white;
+        pointer-events: none; /* Makes it non-interactive */
+        display: flex;
+        align-items: center;
+    }
+
+    .select-container select::-ms-expand {
+        display: none; /* For IE11 */
+    }
+
+
+    /* Hover effect for the select container */
+    .select-container:hover {
+        border: 1px solid white; /* Example: change border color on hover */
+    }
+
+    /* Hover effect for the select element */
+    .select-container:hover select {
+        color: white; /* Example: change text color on hover */
+    }
+
+    /* Hover effect for the custom arrow */
+    .select-container:hover::after {
+        color: white; /* Example: change arrow color on hover */
+    }
+
+
+
+    /* Custom arrow */
+    select::-ms-expand {
+    display: none; /* Hide the default arrow in IE */
+    }
+
+
+    .function-label {
+        max-width: 400px; /* Adjust as needed */
+        display: inline-block; /* Or block */
+        white-space: normal; /* Ensures text can wrap */
+        word-wrap: break-word; /* To break long words if necessary */
+    }
+
+    #header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between; /* This spreads out the flex items */
+        padding: 0 20px; /* Adjust this padding to ensure there's space at the edges of the header */
+        height: 60px; /* Adjust based on your design */
+    }
+
+    #header .select-container {
+        margin-right: auto; /* This pushes the select container to the left */
+        margin-top: -10px;
+        margin-left: 210px; /* Adjust this value to reduce the gap between the sidebar and select-container */
+    }
+
+    
+    #resources-list a {
+        text-align: left;
+        display: block; /* Ensures the link is on its own line */
+        color: rgb(150, 150, 150); /* Text color */
+        font-weight: 300; /* Text weight */
+        text-decoration: none; /* No underline by default */
+        overflow: hidden; /* Prevents overflow */
+        text-overflow: ellipsis; /* Adds ellipsis if text overflows */
+        white-space: nowrap; /* Prevents wrapping */
+    }
+
+    #resources-list a:hover {
+        color: white; /* Text color on hover */
+    }
+
+    /* Consolidated styles for div to remove redundancies */
+    #resources-list  div {
+        font-weight: 300; /* Text weight */
+        text-align: left;
+        display: block; /* Ensures div is on its own line */
+        color: white; /* Text color */
+        font-weight: 300; /* Text weight */
+        margin-left: 20px; /* Slightly indents description from the timestamp */
+        overflow: hidden; /* Prevents overflow */
+        text-overflow: ellipsis; /* Adds ellipsis if text overflows */
+        white-space: nowrap; /* Keeps description on a single line */
+        max-width: 90%; /* Limits width to prevent overflow */
+    }
+
+
+    #resources-list ul li {
+        display: flex;
+        align-items: center; /* This should align items vertically in the center */
+        justify-content: space-between; /* Adjust based on layout, ensures content and button are spaced out */
+    }
+
+    #resources-list ul li .content-container {
+        flex-grow: 1; /* Allows the content container to take up available space */
+        display: flex;
+        flex-direction: column; /* Stack link and description vertically */
+        justify-content: center; /* Center content vertically */
+    }
+
+    .button-container button {
+        /* Adjust the delete button's margins if necessary */
+        margin-left: 0px; /* Adds some space between the text and the button */
+        flex-shrink: 0; /* Prevent the button from shrinking */
+        color: rgb(100, 100, 100); /* Text color */
+    }
+
+
+    .button-container button:hover {
+        color: white; /* Text color on hover */
+        background-color: #222; /* Lighter grey on hover */
+    }
+
+    </style>
+</head>
+
+<body>
+
+    <div id="header">
+        <input type="hidden" id="conversation_id" value="{{ conversation_id }}">
+        <div class="select-container">
+            <select id="ai_name">
+            </select>
+        </div>
+
+        <button id="close_button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M6.34315 6.34338L17.6569 17.6571M17.6569 6.34338L6.34315 17.6571" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+        </button>
+    </div>
+
+    <div id="sidebar">
+        <h1>Mechanician AI Studio</h1>
+        <div id="sidebar-button-container" class="sidebar-button-container">
+            <h1>Uploaded Resources</h1>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div id="form-container" class="form-container">
+            <div id="resources-list"></div>
+        </div>
+    </div>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="../static/functions.js"></script>
+    <script type="text/javascript">
+
+        const username = '{{username}}';
+
+        function truncate_string(str, maxLength) {
+            if (str.length > maxLength) {
+                return str.substring(0, maxLength - 3) + "...";
+            } else {
+                return str;
+            }
+        }
+
+        function add_resource_item(text) {
+            const list = document.getElementById('resources-list');
+
+            const item = document.createElement('li');
+            item.innerHTML = `
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md" style="fill: #FFFFFF; vertical-align: middle; margin-right: 8px;">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M6 2C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V4C20 2.89543 19.1046 2 18 2H6ZM6 4H18V20H6V4Z" fill="currentColor"/>
+                    <path d="M8 6H16V8H8V6Z" fill="currentColor"/>
+                    <path d="M8 10H16V12H8V10Z" fill="currentColor"/>
+                    <path d="M8 14H16V16H8V14Z" fill="currentColor"/>
+                </svg>
+                ${text}
+            `;
+
+            list.appendChild(item);
+        }
+
+
+        function load_resources() {
+            list_resources(username, get_ai_name())
+                .then(function(data) {
+                    const container = document.getElementById('resources-list');
+                    container.innerHTML = ''; // Clear previous content
+
+                    if (data.length > 0) {
+                        const list = document.createElement('ul');
+                        data.forEach(function(resource) {
+                            const item = document.createElement('li');
+                            item.id = `resource-${resource.resource_id}`; // Set an ID for each resource item
+                            item.style.alignItems = 'flex-start'; // Align items to the start
+
+                            // Prepends the SVG to the list item
+                            const svgHTML = `
+                                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md" style="margin-right: 8px; flex-shrink: 0;">
+                                    <path fill-rule="evenodd" clip-rule="evenodd" d="M6 2C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V4C20 2.89543 19.1046 2 18 2H6ZM6 4H18V20H6V4Z" fill="#FFFFFF"/>
+                                    <path d="M8 6H16V8H8V6Z" fill="#FFFFFF"/>
+                                    <path d="M8 10H16V12H8V10Z" fill="#FFFFFF"/>
+                                    <path d="M8 14H16V16H8V14Z" fill="#FFFFFF"/>
+                                </svg>
+                            `;
+
+                            // Create a container for the link and description for better control
+                            const content_container = document.createElement('div');
+                            content_container.style.display = 'flex';
+                            content_container.style.flexDirection = 'row';
+                            content_container.style.marginLeft = '20px'; // Align with the icon
+
+                            // Create the link with the timestamp
+                            const link = document.createElement('a');
+                            const encodedAiName = encodeURIComponent(get_ai_name());
+                            link.href = `/resources/${username}/${resource.resource_id}?ai_name=${encodedAiName}&conversation_id=${get_conversation_id()}`;
+                            const description = document.createElement('div');
+                            link.innerHTML = svgHTML +resource.filename + " - " + resource.timestamp;
+
+                            // Append elements
+                            content_container.appendChild(link); // Add timestamp link to content container
+                            content_container.appendChild(description); // Add description to content container
+                            item.appendChild(content_container); // Add content container to item
+                            list.appendChild(item); // Add item to list
+
+
+                            // Button container
+                            const button_container = document.createElement('div');
+                            button_container.className = 'button-container';
+
+                            // Delete button
+                            const delete_button = document.createElement('button');
+                            delete_button.className = 'delete-button';
+                            delete_button.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="icon-md">
+                                <path fill-rule="evenodd" clip-rule="evenodd" d="M10.5555 4C10.099 4 9.70052 4.30906 9.58693 4.75114L9.29382 5.8919H14.715L14.4219 4.75114C14.3083 4.30906 13.9098 4 13.4533 4H10.5555ZM16.7799 5.8919L16.3589 4.25342C16.0182 2.92719 14.8226 2 13.4533 2H10.5555C9.18616 2 7.99062 2.92719 7.64985 4.25342L7.22886 5.8919H4C3.44772 5.8919 3 6.33961 3 6.8919C3 7.44418 3.44772 7.8919 4 7.8919H4.10069L5.31544 19.3172C5.47763 20.8427 6.76455 22 8.29863 22H15.7014C17.2354 22 18.5224 20.8427 18.6846 19.3172L19.8993 7.8919H20C20.5523 7.8919 21 7.44418 21 6.8919C21 6.33961 20.5523 5.8919 20 5.8919H16.7799ZM17.888 7.8919H6.11196L7.30423 19.1057C7.3583 19.6142 7.78727 20 8.29863 20H15.7014C16.2127 20 16.6417 19.6142 16.6958 19.1057L17.888 7.8919ZM10 10C10.5523 10 11 10.4477 11 11V16C11 16.5523 10.5523 17 10 17C9.44772 17 9 16.5523 9 16V11C9 10.4477 9.44772 10 10 10ZM14 10C14.5523 10 15 10.4477 15 11V16C15 16.5523 14.5523 17 14 17C13.4477 17 13 16.5523 13 16V11C13 10.4477 13.4477 10 14 10Z" fill="currentColor"></path>
+                            </svg>`;
+
+                            delete_button.onclick = function() {
+                                const deleteUrl = `/resources/${username}/${resource.resource_id}`; // Template string to construct the URL
+
+                                // Use the Fetch API to send a DELETE request
+                                fetch(deleteUrl, {
+                                    method: 'DELETE', // Specify the method
+                                })
+                                .then(response => {
+                                    if (response.ok) {
+                                        const resource_element = document.getElementById(`resource-${resource.resource_id}`);
+                                        if (resource_element) {
+                                            resource_element.remove(); // Remove the conversation from the DOM
+                                        }
+                                    } else {
+                                        // Handle errors or unsuccessful deletions
+                                        console.error('Failed to delete resource:', resource.resource_id);
+                                    }
+                                })
+                                .catch(error => {
+                                    // Handle network errors
+                                    console.error('Network error while deleting resource:', error);
+                                });
+                            };
+
+
+                            // Append button to its container, then container to the item
+                            button_container.appendChild(delete_button);
+                            item.appendChild(button_container);
+                        });
+                        container.appendChild(list);
+                    } else {
+                        container.textContent = 'No resources found.';
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Failed to load resources:', error);
+                    const container = document.getElementById('resources-list');
+                    container.textContent = 'Failed to load resources.';
+                });
+        }
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const ai_names = {{ ai_names | tojson }};
+            const initial_ai_name = '{{ ai_name }}';
+            generate_ai_name_select_options(ai_names, initial_ai_name); // Generate AI name select options
+
+            load_resources();
+            // Select the close button using its ID
+            var closeButton = document.getElementById('close_button');
+            // Add a click event listener to the close button
+            closeButton.addEventListener('click', function() {
+                // Redirect to the homepage
+                window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name()) + '&conversation_id=' + get_conversation_id();
+            });
+
+            const ai_name_select = document.getElementById('ai_name');
+                ai_name_select.addEventListener('change', function() {
+                    load_resources();
+                });
+
+
+        });
+    </script>
+</body>
+</html>
