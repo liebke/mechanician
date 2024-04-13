@@ -4,7 +4,7 @@ import chromadb
 # pip install PyPDF2
 import PyPDF2
 import argparse
-
+from pprint import pprint1
 
 CHUNK_SIZE = 500
 CHUNK_OVERLAP = 20
@@ -65,7 +65,8 @@ def load_text_into_chroma(collection_name, doc_id, doc_source, doc_pages:list[di
         for split in splits:
             ids.append(f"{doc_id}_{page_id}_{i}")
             i += 1
-
+        print("IDS: ")
+        pprint(ids)
         collection.add(
             documents=splits,  # Add the webpage text content as a document
             metadatas=metadata,  # Metadata about the document source

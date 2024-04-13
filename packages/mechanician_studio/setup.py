@@ -14,7 +14,9 @@ setup(
 
         'python-jose[cryptography]',
         'passlib[bcrypt]',
-        'python-multipart'
+        'python-multipart',
+        'aiofiles',
+        'aioprocessing'
     ],
     author='David Edgar Liebke',
     author_email='david@gmail.com',

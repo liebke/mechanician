@@ -1,0 +1,19 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "query",
+            "description": "Queries the database for information on contract terms and conditions",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "question": {
+                        "type": "string",
+                        "description": "the query to perform."
+                    }
+                },
+                "required": ["query"]
+            }
+        }
+    }
+]

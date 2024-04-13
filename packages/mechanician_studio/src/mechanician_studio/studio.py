@@ -1,4 +1,5 @@
-from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect, status, Depends, HTTPException
+from fastapi import FastAPI, WebSocket, Request, WebSocketDisconnect, status, Depends, HTTPException, File, Form, UploadFile, HTTPException
+from datetime import datetime
 from fastapi.templating import Jinja2Templates
 from mechanician import AI, AIProvisioner
 from typing import Dict
@@ -17,8 +18,9 @@ import logging
 from pprint import pprint
 from typing import List
 import traceback
-
+# import aiofiles
 from mechanician_studio.datastores import UserDataStore, UserDataFileStore
+from mechanician_studio.events import EventProcessor, EventHandler
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -54,6 +56,7 @@ class AIStudio:
 
     def __init__(self, 
                  ai_provisioners: List['AIProvisioner'],
+                 event_handlers: Dict[str, List[EventHandler]],
                  prompt_tools_provisioners=None,
                  credentials_manager: CredentialsManager=None,
                  credentials_file_path="./credentials.json",
@@ -69,7 +72,7 @@ class AIStudio:
         
         if ai_provisioners is None:
             raise ValueError("ai_provisioners must be provided")
-
+        
         self.ai_provisioners = ai_provisioners
         self.prompt_tools_provisioners = prompt_tools_provisioners
         # create a list of AI names
@@ -100,12 +103,44 @@ class AIStudio:
         self.sid_to_tokens: Dict[WebSocket, str] = {}
         self.token_to_sids: Dict[str, str] = {}
 
+        self.event_handlers = event_handlers
+        self.event_processor = EventProcessor()
+
+
 
     async def __call__(self, scope, receive, send):
         await self.app(scope, receive, send)
     
 
     def setup_routes(self):
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # EVENT PROCESSOR
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+        @self.app.on_event("startup")
+        async def startup_event():
+            # Register handlers
+            # Example: processor.register_handler('info', InfoEventHandler())
+            # Example: processor.register_handler('error', ErrorEventHandler())
+            # register event handlers using self.event_handlers
+            for event_type, handlers in self.event_handlers.items():
+                for handler in handlers:
+                    self.event_processor.register_handler(event_type, handler)
+
+            await self.event_processor.start()
+
+
+        @self.app.on_event("shutdown")
+        async def shutdown_event():
+            await self.event_processor.stop()
+
+
+        @self.app.post("/events/")
+        async def create_event(event: dict):
+            await self.event_processor.add_event(event)
+            return {"message": "Event added successfully"}
+
 
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         # GET / ROUTE
@@ -177,6 +212,29 @@ class AIStudio:
                                                     "name": user.get("name", username),
                                                     "prompt": prompt,})
         
+
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        # POST /upload_resource ROUTE
+        #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+        @self.app.post("/upload_resource")
+        async def upload_resource(request: Request, 
+                                  file: UploadFile = File(...), 
+                                  ai_name: str = Form(...),
+                                  conversation_id: str = Form(...)):
+            access_token = request.cookies.get("access_token")
+            user = self.credentials_manager.get_user_by_token(access_token)
+            if user is None:
+                raise HTTPException(status_code=401, detail="Unauthorized: Invalid credentials")
+
+            username = user.get("username", access_token)  # Get username from user info or use access token
+
+            resource_entry = await self.user_data_store.add_resource_file(username, ai_name, conversation_id, file, attributes = {})
+            event = {"type": "resource_uploaded", "resource_entry": resource_entry}
+            await self.event_processor.add_event(event)
+            return JSONResponse(status_code=200, content={"message": "File uploaded successfully",
+                                                          "resource_entry": resource_entry})
+
 
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         # POST /call_prompt_tool ROUTE

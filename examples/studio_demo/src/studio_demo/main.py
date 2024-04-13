@@ -12,10 +12,27 @@ import uvicorn
 import os
 import logging
 from dotenv import load_dotenv
+from mechanician_studio.events import EventHandler
+
+from mechanician_chroma.chroma_ai_tools import ChromaAIToolsProvisioner
 
 
 
 logger = logging.getLogger(__name__)
+
+
+class InfoEventHandler(EventHandler):
+    async def handle(self, event):
+        print(f"RESOURCE UPLOADED HANDLER 1: {event['resource_entry']}")
+
+
+class InfoEventHandler2(EventHandler):
+    async def handle(self, event):
+        print(f"RESOURCE UPLOADED HANDLER 2: {event['resource_entry']}")
+
+class ErrorEventHandler(EventHandler):
+    async def handle(self, event):
+        print(f"ERROR: {event['message']}")
 
 
 ###############################################################################
@@ -37,6 +54,12 @@ def init_studio():
                                         instruction_set_directory="./src/instructions",
                                         ai_instructions_file_name="tmdb_ai_instructions.md",
                                         tool_instructions_file_name="tmdb_ai_tool_instructions.json")
+    
+    contract_tools = ChromaAIToolsProvisioner(collection_name="maritime_contracts",
+                                              data_path="./data/chromadb",
+                                              instruction_set_directory="./src/instructions",
+                                              ai_instructions_file_name="contracts_ai_instructions.md",
+                                              tool_instructions_file_name="contracts_ai_tool_instructions.json")
 
     # Set up the AI provisioner
     ai_connector = OpenAIChatConnectorProvisioner(api_key=os.getenv("OPENAI_API_KEY"), 
@@ -51,6 +74,10 @@ def init_studio():
                             ai_tools_provisioners = [notepad_tools,
                                                      tmdb_tools])
     
+    contract_ai = AIProvisioner(ai_connector_provisioner=ai_connector,
+                                name = "Contracts Copilot AI",
+                                ai_tools_provisioners = [contract_tools])
+    
     # Set up the Prompt Tools provisioners
     crm_connector = CRMConnectorProvisioner(crm_data_directory="./data")
     crm_tools = PromptToolsProvisioner(resource_connector_provisioner = crm_connector,
@@ -58,15 +85,18 @@ def init_studio():
                                        prompt_instructions_directory="./src/instructions",
                                        prompt_tool_instructions_file_name="crm_prompt_tool_instructions.json") 
      
-    chroma_connector = ChromaConnectorProvisioner(collection_name="studio_demo_collection")
+    chroma_connector = ChromaConnectorProvisioner(collection_name="maritime_contracts",)
     chroma_tools = PromptToolsProvisioner(resource_connector_provisioner = chroma_connector,
                                           prompt_template_directory="./templates",
                                           prompt_instructions_directory="./src/instructions",
                                           prompt_tool_instructions_file_name="rag_prompt_tool_instructions.json") 
     
+    event_handlers = {"resource_uploaded": [InfoEventHandler(), InfoEventHandler2()], 
+                      "error": [ErrorEventHandler()]}
     # Set up the Mechanician AI Studio
-    return AIStudio(ai_provisioners=[notepad_only_ai, tmdb_ai],
-                             prompt_tools_provisioners=[crm_tools, chroma_tools])
+    return AIStudio(ai_provisioners=[notepad_only_ai, tmdb_ai, contract_ai],
+                    prompt_tools_provisioners=[crm_tools, chroma_tools],
+                    event_handlers=event_handlers)
 
 
 def run_studio():

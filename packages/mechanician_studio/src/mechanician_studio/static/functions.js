@@ -57,22 +57,63 @@
                 document.getElementById('file_input').click(); // Programmatically click the hidden file input
             });
 
+            // document.getElementById('file_input').addEventListener('change', function(e) {
+            //     // Ensure a file was selected
+            //     if (this.files && this.files[0]) {
+            //         var reader = new FileReader();
+
+            //         reader.onload = function(e) {
+            //             // Place the file content into the input field
+            //             document.getElementById('input').value = e.target.result;
+            //             adjust_textarea_height_and_change_button_color();
+            //             send_prompt(socket, username, get_ai_name(), get_conversation_id());
+            //         };
+
+            //         // Read the text file
+            //         reader.readAsText(this.files[0]);
+            //     }
+            // });
+
+
             document.getElementById('file_input').addEventListener('change', function(e) {
                 // Ensure a file was selected
                 if (this.files && this.files[0]) {
-                    var reader = new FileReader();
-
-                    reader.onload = function(e) {
-                        // Place the file content into the input field
-                        document.getElementById('input').value = e.target.result;
-                        adjust_textarea_height_and_change_button_color();
-                        send_prompt(socket, username, get_ai_name(), get_conversation_id());
+                    var file = this.files[0];
+                    var form_data = new FormData();
+            
+                    // Append the file to the FormData object
+                    form_data.append('file', file);
+                    // Append the AI name retrieved by get_ai_name()
+                    form_data.append('ai_name', get_ai_name());
+                    form_data.append('conversation_id', get_conversation_id());
+            
+                    // Create an instance of XMLHttpRequest
+                    var xhr = new XMLHttpRequest();
+            
+                    // Set up the request
+                    xhr.open('POST', '/upload_resource', true);
+            
+                    // Set up a handler for when the request finishes
+                    xhr.onload = function () {
+                        if (xhr.status === 200) {
+                            // File(s) uploaded successfully, you can perform additional actions here
+                            // get the response from the server
+                            let response = JSON.parse(xhr.responseText);
+                            console.log("RESPONSE")
+                            console.log(response);
+                            console.log("END RESPONSE")
+                            alert(response.resource_entry.filename + ' Uploaded successfully');
+                            adjust_textarea_height_and_change_button_color();
+                        } else {
+                            alert('An error occurred while uploading the file.');
+                        }
                     };
-
-                    // Read the text file
-                    reader.readAsText(this.files[0]);
+            
+                    // Send the data; we don't need FileReader here
+                    xhr.send(form_data);
                 }
             });
+            
 
             return socket;
         }

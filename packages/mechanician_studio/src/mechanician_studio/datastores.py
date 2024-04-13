@@ -5,7 +5,10 @@ import json
 from datetime import datetime
 import re
 import logging
-
+from fastapi import File
+import aiofiles
+# import asyncio
+from pprint import pprint
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -86,6 +89,13 @@ class UserDataStore(ABC):
         """
         pass
 
+    @abstractmethod
+    async def add_resource_file(self, username: str, ai_name: str, conversation_id: str, file: File, attributes: Dict = None):
+        """
+        Abstract method to add a resource file for a given username and AI name.
+        """
+        pass
+
 
 ###############################################################################
 ## UserDataFileStore
@@ -94,7 +104,7 @@ class UserDataStore(ABC):
 class UserDataFileStore(UserDataStore):
 
     def __init__(self, data_dir: str = "./data"):
-        self.DATA_DIR = data_dir
+        self.data_dir = data_dir
 
 
     def _ensure_dir(self, path: str):
@@ -105,19 +115,19 @@ class UserDataFileStore(UserDataStore):
 
 
     def _get_conversation_file_path(self, username: str, ai_name: str, conversation_id: str) -> str:
-        return os.path.join(self.DATA_DIR, f"users/{username}/conversations/{self.sanitize_for_filename(ai_name)}/{conversation_id}.json")
+        return os.path.join(self.data_dir, f"users/{username}/conversations/{self.sanitize_for_filename(ai_name)}/{conversation_id}.json")
 
 
     def _get_ai_instructions_path(self, username: str, ai_name: str) -> str:
-        return os.path.join(self.DATA_DIR, f"users/{username}/instructions/{self.sanitize_for_filename(ai_name)}/ai_instructions.md")
+        return os.path.join(self.data_dir, f"users/{username}/instructions/{self.sanitize_for_filename(ai_name)}/ai_instructions.md")
 
 
     def _get_ai_tool_instructions_path(self, username: str, ai_name: str) -> str:
-        return os.path.join(self.DATA_DIR, f"users/{username}/instructions/{self.sanitize_for_filename(ai_name)}/ai_tool_instructions.json")
+        return os.path.join(self.data_dir, f"users/{username}/instructions/{self.sanitize_for_filename(ai_name)}/ai_tool_instructions.json")
 
 
     def _get_conversation_file_path(self, username: str, ai_name: str, conversation_id: str) -> str:
-        return os.path.join(self.DATA_DIR, f"users/{username}/conversations/{self.sanitize_for_filename(ai_name)}/{conversation_id}.jsonl")
+        return os.path.join(self.data_dir, f"users/{username}/conversations/{self.sanitize_for_filename(ai_name)}/{conversation_id}.jsonl")
 
 
     def get_conversation_history(self, username: str, ai_name: str, conversation_id: str) -> List[Dict]:
@@ -152,7 +162,7 @@ class UserDataFileStore(UserDataStore):
 
     def clear_empty_conversations(self, username: str, ai_name: str):
         logger.info("Clearing empty conversations")
-        conversations_dir = os.path.join(self.DATA_DIR, f"users/{username}/conversations/{self.sanitize_for_filename(ai_name)}")
+        conversations_dir = os.path.join(self.data_dir, f"users/{username}/conversations/{self.sanitize_for_filename(ai_name)}")
         try:
             for filename in os.listdir(conversations_dir):
                 file_path = os.path.join(conversations_dir, filename)
@@ -217,7 +227,7 @@ class UserDataFileStore(UserDataStore):
         :return: The ID of the most recent conversation, or an empty string if there are no conversations.
         """
         sanitized_ai_name = self.sanitize_for_filename(ai_name)
-        conversations_dir = os.path.join(self.DATA_DIR, f"users/{username}/conversations/{sanitized_ai_name}")
+        conversations_dir = os.path.join(self.data_dir, f"users/{username}/conversations/{sanitized_ai_name}")
         
         try:
             # List all conversation files and sort them, assuming filenames are sortable (e.g., based on timestamp)
@@ -243,7 +253,7 @@ class UserDataFileStore(UserDataStore):
         :return: A list of dictionaries, each with conversation_id, timestamp, and description (first user message).
         """
         sanitized_ai_name = self.sanitize_for_filename(ai_name)
-        conversations_dir = os.path.join(self.DATA_DIR, f"users/{username}/conversations/{sanitized_ai_name}")
+        conversations_dir = os.path.join(self.data_dir, f"users/{username}/conversations/{sanitized_ai_name}")
 
         conversation_details = []
 
@@ -362,4 +372,63 @@ class UserDataFileStore(UserDataStore):
         formatted_date = dt.astimezone(current_tz).strftime("%d %B %Y %-I:%M%p").lower()
 
         return formatted_date
+    
+
+    async def add_resource_file(self, username: str, ai_name: str, conversation_id: str, file: File, attributes: Dict = {}):
+        """
+        A method to add or update a resource file for a given username and AI name.
+        """
+        resource_dir = os.path.join(self.data_dir, "users", username, "resources")
+        resource_data_dir = os.path.join(resource_dir, "data")
+        file_path = os.path.join(resource_data_dir, file.filename)
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+
+        # Write the file to the directory asynchronously, overwriting existing file
+        async with aiofiles.open(file_path, "wb") as buffer:
+            while True:
+                data = await file.read(1024)
+                if not data:
+                    break
+                await buffer.write(data)
+
+        # Prepare the resource entry
+        resource_entry = {
+            "file_path": file_path,
+            "filename": file.filename,
+            "file_type": file.content_type,
+            "file_extension": os.path.splitext(file.filename)[1],
+            "ai_name": ai_name,
+            "conversation_id": conversation_id,
+            "timestamp": datetime.now().isoformat(),
+            "username": username,
+            "attributes": attributes
+        }
+
+        # Update or append the entry in resources.jsonl
+        resource_index_file = os.path.join(resource_dir, "resources.jsonl")
+        updated = False
+        new_content = []
+        # make sure the resource_index_file exists
+        if not os.path.exists(resource_index_file):
+            open(resource_index_file, 'a').close()
+
+        async with aiofiles.open(resource_index_file, "r+") as index:
+            async for line in index:
+                existing_entry = json.loads(line)
+                if existing_entry['filename'] == file.filename and existing_entry['username'] == username:
+                    existing_entry.update(resource_entry)  # Update existing entry
+                    updated = True
+                    new_content.append(json.dumps(existing_entry) + "\n")
+                else:
+                    new_content.append(line)
+
+            if not updated:
+                new_content.append(json.dumps(resource_entry) + "\n")  # Append new entry if not found
+
+            # Rewind to start and write updated/new content
+            await index.seek(0)
+            await index.writelines(new_content)
+            await index.truncate()  # Truncate to remove any leftover content
+  
+        return resource_entry
 
