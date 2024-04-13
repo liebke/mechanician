@@ -13,26 +13,14 @@ import os
 import logging
 from dotenv import load_dotenv
 from mechanician_studio.events import EventHandler
-
 from mechanician_chroma.chroma_ai_tools import ChromaAIToolsProvisioner
-
-
+from pprint import pprint
+import traceback
 
 logger = logging.getLogger(__name__)
 
 
-class InfoEventHandler(EventHandler):
-    async def handle(self, event):
-        print(f"RESOURCE UPLOADED HANDLER 1: {event['resource_entry']}")
 
-
-class InfoEventHandler2(EventHandler):
-    async def handle(self, event):
-        print(f"RESOURCE UPLOADED HANDLER 2: {event['resource_entry']}")
-
-class ErrorEventHandler(EventHandler):
-    async def handle(self, event):
-        print(f"ERROR: {event['message']}")
 
 
 ###############################################################################
@@ -91,12 +79,9 @@ def init_studio():
                                           prompt_instructions_directory="./src/instructions",
                                           prompt_tool_instructions_file_name="rag_prompt_tool_instructions.json") 
     
-    event_handlers = {"resource_uploaded": [InfoEventHandler(), InfoEventHandler2()], 
-                      "error": [ErrorEventHandler()]}
     # Set up the Mechanician AI Studio
     return AIStudio(ai_provisioners=[notepad_only_ai, tmdb_ai, contract_ai],
-                    prompt_tools_provisioners=[crm_tools, chroma_tools],
-                    event_handlers=event_handlers)
+                    prompt_tools_provisioners=[crm_tools, chroma_tools])
 
 
 def run_studio():

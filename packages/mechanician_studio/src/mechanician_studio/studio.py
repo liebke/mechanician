@@ -21,6 +21,7 @@ import traceback
 # import aiofiles
 from mechanician_studio.datastores import UserDataStore, UserDataFileStore
 from mechanician_studio.events import EventProcessor, EventHandler
+from mechanician_studio.resource_handlers import TextResourceUploadedEventHandler
 
 logger = logging.getLogger(__name__)
 logger.setLevel(level=logging.INFO)
@@ -56,7 +57,7 @@ class AIStudio:
 
     def __init__(self, 
                  ai_provisioners: List['AIProvisioner'],
-                 event_handlers: Dict[str, List[EventHandler]],
+                 event_handlers: Dict[str, List[EventHandler]]=None,
                  prompt_tools_provisioners=None,
                  credentials_manager: CredentialsManager=None,
                  credentials_file_path="./credentials.json",
@@ -103,8 +104,14 @@ class AIStudio:
         self.sid_to_tokens: Dict[WebSocket, str] = {}
         self.token_to_sids: Dict[str, str] = {}
 
-        self.event_handlers = event_handlers
-        self.event_processor = EventProcessor()
+        if event_handlers is None:
+            self.event_handlers = {"resource_uploaded": [TextResourceUploadedEventHandler()]}
+        elif "resource_uploaded" not in event_handlers:
+            self.event_handlers["resource_uploaded"] = [TextResourceUploadedEventHandler()]
+        else:
+            self.event_handlers = event_handlers
+
+        self.event_processor = EventProcessor(self)
 
 
 
