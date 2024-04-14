@@ -1,1 +1,2 @@
-from .chroma_connector import ChromaConnectorProvisioner, ChromaConnector
+from .chroma_connector import ChromaConnectorProvisioner, ChromaConnector, UserAIChromaConnectorProvisioner
+from .chroma_resource_handlers import ChromaPDFResourceUploadedEventHandler

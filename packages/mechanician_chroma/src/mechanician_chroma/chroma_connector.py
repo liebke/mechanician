@@ -2,6 +2,21 @@
 import chromadb
 from chromadb.utils import embedding_functions
 from mechanician.resources import ResourceConnector, ResourceConnectorProvisioner
+from mechanician_chroma.util import get_collection_name
+
+###############################################################################
+## ChromaUserAIConnectorProvisioner
+###############################################################################
+    
+class UserAIChromaConnectorProvisioner(ResourceConnectorProvisioner):    
+
+        def create_connector(self, context: dict={}):
+            # Use the context to control access to resources provided by the connector.
+            # ...
+            username = context.get("username")
+            ai_name = context.get("ai_name")
+            collection_name = get_collection_name(username, ai_name)
+            return ChromaConnector(collection_name=collection_name)
 
 
 ###############################################################################
@@ -10,7 +25,7 @@ from mechanician.resources import ResourceConnector, ResourceConnectorProvisione
     
 class ChromaConnectorProvisioner(ResourceConnectorProvisioner):
         
-        def __init__(self, collection_name="studio_demo_collection"):
+        def __init__(self, collection_name):
             self.collection_name = collection_name
     
 
@@ -33,7 +48,6 @@ class ChromaConnector(ResourceConnector):
         
 
     def get_collection(self):
-        # chroma_client = chromadb.PersistentClient(path=self.data_path)
         chroma_client = chromadb.HttpClient(host='127.0.0.1', port=8080)
         return chroma_client.get_or_create_collection(name=self.collection_name,
                                                       embedding_function=self.embedding_func,

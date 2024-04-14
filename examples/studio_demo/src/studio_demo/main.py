@@ -5,7 +5,7 @@ from mechanician_arangodb.notepad_store import ArangoNotepadStoreProvisioner
 from arango import ArangoClient
 from mechanician import AIProvisioner
 from mechanician.tools import PromptToolsProvisioner
-from mechanician_chroma import ChromaConnectorProvisioner
+from mechanician_chroma import ChromaConnectorProvisioner, UserAIChromaConnectorProvisioner
 from studio_demo.tmdb_ai_tools import TMDbAIToolsProvisioner
 from studio_demo.crm_connector import CRMConnectorProvisioner
 import uvicorn
@@ -13,7 +13,7 @@ import os
 import logging
 from dotenv import load_dotenv
 from mechanician_chroma.chroma_ai_tools import ChromaAIToolsProvisioner
-from mechanician_chroma.chroma_resource_handlers import PDFResourceUploadedEventHandler
+from mechanician_chroma.chroma_resource_handlers import PDFResourceUploadedEventHandler, ChromaPDFResourceUploadedEventHandler
 from mechanician_studio.resource_handlers import TextResourceUploadedEventHandler
 
 from pprint import pprint
@@ -75,13 +75,16 @@ def init_studio():
                                        prompt_instructions_directory="./src/instructions",
                                        prompt_tool_instructions_file_name="crm_prompt_tool_instructions.json") 
      
-    chroma_connector = ChromaConnectorProvisioner(collection_name="maritime_contracts",)
+    # chroma_connector = ChromaConnectorProvisioner(collection_name="maritime_contracts",)
+    chroma_connector = UserAIChromaConnectorProvisioner()
     chroma_tools = PromptToolsProvisioner(resource_connector_provisioner = chroma_connector,
                                           prompt_template_directory="./templates",
                                           prompt_instructions_directory="./src/instructions",
                                           prompt_tool_instructions_file_name="rag_prompt_tool_instructions.json") 
     
-    event_handlers = {"resource_uploaded": [PDFResourceUploadedEventHandler(), TextResourceUploadedEventHandler()]}
+    # event_handlers = {"resource_uploaded": [PDFResourceUploadedEventHandler(), TextResourceUploadedEventHandler()]}
+    event_handlers = {"resource_uploaded": [ChromaPDFResourceUploadedEventHandler(), TextResourceUploadedEventHandler()]}
+    
 
     # Set up the Mechanician AI Studio
     return AIStudio(ai_provisioners=[notepad_only_ai, tmdb_ai, contract_ai],

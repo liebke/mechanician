@@ -282,7 +282,7 @@
             const template_name = document.getElementById('template').value; // 'this' refers to the template input field
 
                 if(template_name) { // Check if templateName is not empty
-                    const template_url = `/prompt_tools/templates/${template_name}`;
+                    const template_url = `/prompt_tools/templates/${template_name}?ai_name=${get_ai_name()}&conversation_id=${get_conversation_id()}`;
 
                     fetch(template_url)
                         .then(response => response.json())
@@ -296,8 +296,7 @@
         }
 
         function load_prompt_resources(form_data) {
-            let ai_name = document.getElementById('ai_name').value;
-            form_data.append('ai_name', ai_name);
+            form_data.append('ai_name', get_ai_name());
             fetch('/prompt_tools/resources', {
                     method: 'POST',
                     body: form_data, 
@@ -436,6 +435,7 @@
                 e.preventDefault(); // Prevent the default form submission
                 const form_data = new FormData(this); // 'this' refers to the form
                 form_data.append('prompt_template', document.getElementById('prompt_template').value);
+                form_data.append('ai_name', get_ai_name());
                 load_prompt_resources(form_data);
 
                 fetch('/call_prompt_tool', {
@@ -457,6 +457,11 @@
 
             document.getElementById('template').addEventListener('change', function() {
                 load_prompt_template();
+            });
+
+            const ai_name_select = document.getElementById('ai_name');
+            ai_name_select.addEventListener('change', function() {
+                window.location.href = "/prompt_tools?ai_name=" + encodeURIComponent(get_ai_name()) + "&conversation_id=" + encodeURIComponent(get_conversation_id());
             });
 
             load_prompt_template();

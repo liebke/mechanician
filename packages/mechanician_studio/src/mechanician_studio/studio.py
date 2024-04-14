@@ -260,7 +260,8 @@ class AIStudio:
             form_data_dict.pop("function_name", None)
             form_data_dict.pop("prompt_template", None)
             username = user.get("username", access_token)
-            prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(access_token))
+            ai_name = form_data_dict.get("ai_name")
+            prompt_tools=self.get_prompt_tools_instance(username, ai_name, context=self.get_context(access_token, ai_name=ai_name))
             generated_prompt = prompt_tools.generate_prompt(function_name, prompt_template, params=form_data_dict)
             return JSONResponse(content=generated_prompt)
         
@@ -286,7 +287,7 @@ class AIStudio:
             ai_instance=self.get_ai_instance(username=username, 
                                              ai_name=ai_name,
                                              conversation_id=conversation_id,
-                                             context=self.get_context(access_token))
+                                             context=self.get_context(access_token, ai_name=ai_name))
             ai_tools = ai_instance.ai_tools
             response = ai_tools.call_function(function_name, params=form_data_dict)
             return JSONResponse(content=response)
@@ -515,7 +516,7 @@ class AIStudio:
             ai_instance = self.get_ai_instance(username=username, 
                                                ai_name=ai_name,
                                                conversation_id=conversation_id,
-                                               context=self.get_context(access_token))
+                                               context=self.get_context(access_token, ai_name=ai_name))
             ai_instructions=ai_instance.ai_instructions
             ai_tool_instructions=ai_instance.ai_tool_instructions
             response = {"ai_instructions": ai_instructions, "ai_tool_instructions": ai_tool_instructions}
@@ -809,7 +810,7 @@ class AIStudio:
             ai_instance = self.get_ai_instance(username, 
                                                ai_name, 
                                                conversation_id=conversation_id, 
-                                               context=self.get_context(token))
+                                               context=self.get_context(token, ai_name=ai_name))
             if ai_instance is None:
                 return JSONResponse(content={"error": "No AI instance found."})
             
@@ -842,8 +843,8 @@ class AIStudio:
                 return response
 
             token = request.cookies.get("access_token")
-            prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(token))
             ai_name = request.query_params.get("ai_name") or self.ai_names[0]
+            prompt_tools=self.get_prompt_tools_instance(username, ai_name, context=self.get_context(token, ai_name=ai_name))
             conversation_id = request.query_params.get("conversation_id")
             return self.templates.TemplateResponse("prompt_tools.html", 
                                                    {"request": request,
@@ -872,7 +873,7 @@ class AIStudio:
                 logger.error(f"Error validating token: {e}")
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
-
+            ai_name = request.query_params.get("ai_name") or self.ai_names[0]
             username = user_data.get("username", None)
             if username is None:
                 return JSONResponse(content={"error": "No username provided."})
@@ -880,7 +881,7 @@ class AIStudio:
             # get prompt template name from url path
             template_name = request.path_params.get("template_name", None)
             token = request.cookies.get("access_token")
-            prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(token))
+            prompt_tools=self.get_prompt_tools_instance(username, ai_name, context=self.get_context(token, ai_name=ai_name))
             if template_name is None:
                 return JSONResponse(content={"error": "No prompt template name provided."})
             else:
@@ -912,9 +913,9 @@ class AIStudio:
             form_data = await request.form()
             form_data_dict = dict(form_data)
             function_name = form_data_dict.get("function_name", "")
-
+            ai_name = form_data_dict.get("ai_name")
             token = request.cookies.get("access_token")
-            prompt_tools=self.get_prompt_tools_instance(username, context=self.get_context(token))
+            prompt_tools=self.get_prompt_tools_instance(username, ai_name, context=self.get_context(token, ai_name=ai_name))
             if function_name is None:
                 return JSONResponse(content={"error": "No function name provided."})
             else:
@@ -997,12 +998,13 @@ class AIStudio:
         self.active_tasks[sid] = asyncio.create_task(self.generate_text(websocket, data))
 
 
-    def get_context(self, token:str):
+    def get_context(self, token:str, ai_name:str=None):
         user = self.credentials_manager.get_user_by_token(token)
         access_token_data = self.credentials_manager.decode_access_token(token)
         return {"username": user.get("username", ""), 
                 "user_role": user.get("user_role", "User"), 
-                "access_token_data": access_token_data}
+                "access_token_data": access_token_data,
+                "ai_name": ai_name}
     
 
     def merge_client_message_history(self, message_history, client_message_history):
@@ -1035,8 +1037,8 @@ class AIStudio:
         ai_instance = self.get_ai_instance(username=username, 
                                            ai_name=ai_name,
                                            conversation_id=conversation_id,
-                                           context=self.get_context(token))
-        prompt_tools = self.get_prompt_tools_instance(username, context=self.get_context(token))
+                                           context=self.get_context(token, ai_name=ai_name))
+        prompt_tools = self.get_prompt_tools_instance(username, ai_name, context=self.get_context(token, ai_name=ai_name))
         processed_prompt = self.preprocess_prompt(ai_instance, 
                                                   input_text, 
                                                   prompt_tools=prompt_tools)
@@ -1155,10 +1157,10 @@ class AIStudio:
             del self.ai_instances[username]
 
 
-    def get_prompt_tools_instance(self, username, context:dict={}) -> PromptTools:
-        if username not in self.prompt_tools_instances:
-            self.prompt_tools_instances[username] = self.create_prompt_tools_instance(context=context)
-        return self.prompt_tools_instances[username]
+    def get_prompt_tools_instance(self, username:str, ai_name:str, context:dict={}) -> PromptTools:
+        if (username, ai_name) not in self.prompt_tools_instances:
+            self.prompt_tools_instances[(username, ai_name)] = self.create_prompt_tools_instance(context=context)
+        return self.prompt_tools_instances[(username, ai_name)]
     
 
     def clear_prompt_tools_instance(self, username):
