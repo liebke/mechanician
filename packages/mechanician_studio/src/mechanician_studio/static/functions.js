@@ -96,16 +96,14 @@
                     // Set up a handler for when the request finishes
                     xhr.onload = function () {
                         if (xhr.status === 200) {
-                            // File(s) uploaded successfully, you can perform additional actions here
-                            // get the response from the server
                             let response = JSON.parse(xhr.responseText);
                             console.log("RESPONSE")
                             console.log(response);
                             console.log("END RESPONSE")
-                            alert(response.resource_entry.filename + ' Uploaded successfully');
+                            display_system_message(response.resource_entry.filename + ' Uploaded successfully');
                             adjust_textarea_height_and_change_button_color();
                         } else {
-                            alert('An error occurred while uploading the file.');
+                            display_system_message('An error occurred while uploading the file.');
                         }
                     };
             
@@ -252,6 +250,14 @@
             });
         }
 
+        function display_system_message(message) {
+            let sys_message_container = $('<div class="message-container">');
+            sys_message_container.append($('<p class="message-header">').html("System"));
+            current_sys_response = $('<p class="message-text">').text(message);
+            sys_message_container.append(current_sys_response);
+            $('#messages').append(sys_message_container);
+            check_scroll(); // Check scroll after displaying a system message
+        }
         
         function init_web_socket(socket, username) {
             console.log('Initializing WebSocket connection...');
@@ -263,12 +269,13 @@
                 // Send the token to the server to authenticate the WebSocket connection
                 socket.send(JSON.stringify({token: token, ai_name: get_ai_name(), conversation_id: get_conversation_id(), type: 'token'}));
 
-                let sys_message_container = $('<div class="message-container">');
-                sys_message_container.append($('<p class="message-header">').html("System"));
-                current_sys_response = $('<p class="message-text">').text("Connected to " + get_ai_name() + "...");
-                sys_message_container.append(current_sys_response);
-                $('#messages').append(sys_message_container);
-                check_scroll(); // Check scroll after connecting
+                display_system_message("Connected to " + get_ai_name() + "...");
+                // let sys_message_container = $('<div class="message-container">');
+                // sys_message_container.append($('<p class="message-header">').html("System"));
+                // current_sys_response = $('<p class="message-text">').text("Connected to " + get_ai_name() + "...");
+                // sys_message_container.append(current_sys_response);
+                // $('#messages').append(sys_message_container);
+                // check_scroll(); // Check scroll after connecting
             };
 
             socket.onclose = function(e) {
