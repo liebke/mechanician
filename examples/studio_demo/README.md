@@ -56,6 +56,15 @@ mkcert -key-file ./certs/key.pem -cert-file ./certs/cert.pem localhost 127.0.0.1
 docker run -p 8080:8000 chromadb/chroma
 ```
 
+OR
+
+## Run Chroma in Docker (with persistence)
+
+```bash
+git clone https://github.com/chroma-core/chroma.git
+cd chroma
+docker compose up --build
+```
 
 ### Start the Arango Database
 

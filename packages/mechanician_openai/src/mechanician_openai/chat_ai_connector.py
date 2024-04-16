@@ -138,8 +138,7 @@ class OpenAIChatConnector(StreamingAIConnector):
                             futures.append(executor.submit(self.process_tool_call, tc))
                     
                 tool_calls_index = tool_calls_chunk.index
-                tool_calls.append({"index": tool_calls_index, 
-                                   "id": "", 
+                tool_calls.append({"id": "", 
                                    "type": "", 
                                    "function": {"name": "", 
                                                 "arguments": ""}})
@@ -221,7 +220,7 @@ class OpenAIChatConnector(StreamingAIConnector):
             # Append the tool response messages to the message history
             for msg in tool_resp_messages:
                 self.messages.append(msg)
-    
+
             yield None
         
 
