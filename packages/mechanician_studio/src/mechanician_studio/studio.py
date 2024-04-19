@@ -161,6 +161,7 @@ class AIStudio:
                                                        {"request": request})
             username = user.get("username", "")
             user_role = user.get("user_role", "User")
+            dev_ui_active = user.get("dev_ui_active", False)
 
             # get ai_name from query parameter
             ai_name = request.query_params.get("ai_name")
@@ -183,7 +184,8 @@ class AIStudio:
                                                     "username": username,
                                                     "user_role": user_role,
                                                     "conversation_id": conversation_id,
-                                                    "name": user.get("name", username),})
+                                                    "name": user.get("name", username),
+                                                    "dev_ui_active": dev_ui_active})
         
 
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1067,6 +1069,7 @@ class AIStudio:
             while no_content:
                 stream = ai_instance.ai_connector.get_stream()
                 ai_response = ""
+                msg = None
                 for content in ai_instance.ai_connector.process_stream(stream):
                     if self.stop_generation:
                         self.stop_generation = False
@@ -1079,17 +1082,22 @@ class AIStudio:
                         no_content = False
                         # If content is a dictionary, it is a tool call
                         if isinstance(content, dict):
+                            tool_msg = self.format_tool_call_messages(content)
+                            content = tool_msg.get("content", "")
+                            # ai_response += content
+                            self.user_data_store.append_message_to_conversation(username, ai_name, conversation_id, tool_msg)
                             if user.get("dev_ui_active", "False") == "True":
-                                content = self.format_tool_call_messages(content)
-                                ai_response += content
                                 await websocket.send_text(content)
                                 await asyncio.sleep(0)
                         else:
                             await websocket.send_text(content)
                             await asyncio.sleep(0)
                             ai_response += content
-                msg = {"role": "assistant", "content": ai_response}
-                self.user_data_store.append_message_to_conversation(username, ai_name, conversation_id, msg)
+                            msg = {"role": "assistant", "content": ai_response}
+
+                if msg is not None:
+                    self.user_data_store.append_message_to_conversation(username, ai_name, conversation_id, msg)
+
         except asyncio.CancelledError:
             logger.info("Text generation cancelled.")
         except Exception as e:
@@ -1106,8 +1114,7 @@ class AIStudio:
                 tool_calls = content.get("tool_calls")
                 for tool_call in tool_calls:
                     func = tool_call.get("function")
-                    output_str += f"""<b>Function Called</b>: {func.get("name")}\n<b>Arguments</b>: {func.get("arguments")}\n<b>ID</b>: {tool_call.get("id")}\n\n\n"""
-                return output_str
+                    output_str += f"""<b>Function Called</b>: {func.get("name")}\n<b>Arguments</b>: {func.get("arguments")}\n<b>ID</b>: {tool_call.get("id")}\n"""
             elif role == "tool":
                 output_str += f"""<b>Function Response</b>: {content.get("name")}\n"""
                 output_str += f"""<b>ID</b>: {content.get("tool_call_id")}\n"""
@@ -1120,8 +1127,12 @@ class AIStudio:
                     json_resp = json.loads(resp)
                     output_str += f"<pre><code>{json.dumps(json_resp, indent=4)}</code></pre>"
                 output_str += "\n\n\n"
+            else:
+                output_str += f"<b>Unknown Role</b>: {role}\n"
+                output_str += f"<b>Content</b>: {content}\n"
                 
-            return output_str
+            msg = {"role": "tool", "content": output_str}
+            return msg
 
 
     async def stop_text_generation(self, websocket: WebSocket):

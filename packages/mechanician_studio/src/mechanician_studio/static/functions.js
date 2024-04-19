@@ -57,23 +57,6 @@
                 document.getElementById('file_input').click(); // Programmatically click the hidden file input
             });
 
-            // document.getElementById('file_input').addEventListener('change', function(e) {
-            //     // Ensure a file was selected
-            //     if (this.files && this.files[0]) {
-            //         var reader = new FileReader();
-
-            //         reader.onload = function(e) {
-            //             // Place the file content into the input field
-            //             document.getElementById('input').value = e.target.result;
-            //             adjust_textarea_height_and_change_button_color();
-            //             send_prompt(socket, username, get_ai_name(), get_conversation_id());
-            //         };
-
-            //         // Read the text file
-            //         reader.readAsText(this.files[0]);
-            //     }
-            // });
-
 
             document.getElementById('file_input').addEventListener('change', function(e) {
                 // Ensure a file was selected
@@ -97,9 +80,6 @@
                     xhr.onload = function () {
                         if (xhr.status === 200) {
                             let response = JSON.parse(xhr.responseText);
-                            console.log("RESPONSE")
-                            console.log(response);
-                            console.log("END RESPONSE")
                             display_system_message(response.resource_entry.filename + ' Uploaded successfully');
                             adjust_textarea_height_and_change_button_color();
                         } else {
@@ -351,6 +331,11 @@
         }
 
 
+        function get_dev_ui_active() {
+            return document.getElementById('dev_ui_active').value;
+        }
+
+
         function get_conversation_id() {
             return document.getElementById('conversation_id').value;
         }
@@ -457,6 +442,21 @@
                 let message_text_p = $('<p class="message-text">').html(content_with_breaks);
                 user_message_container.append(message_text_p);
                 $('#messages').append(user_message_container);
+            }
+            else if (msg.role == "tool" && get_dev_ui_active() == "True") {
+                if ('content' in msg) {
+                    let content_with_breaks = msg.content.replace(/\n/g, '<br>');
+                    let ai_message_container = $('<div class="message-container">');
+                    ai_message_container.append($('<p class="message-header">').html("Tool"));
+                    current_ai_response = $('<p class="message-text">');
+                    ai_message_container.append(current_ai_response);
+                    $('#messages').append(ai_message_container);
+                    current_ai_response.append(content_with_breaks);
+                }
+                else {
+                    current_ai_response = null;
+                    return;
+                }
             }
             
             // After adding content, scroll to the bottom if the user hasn't manually scrolled up
