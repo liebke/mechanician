@@ -36,8 +36,17 @@ class TextResourceUploadedEventHandler(EventHandler):
             if not file_type.startswith("text/"):
                 return
             
-            with open(file_path, "r") as f:
-                content = f.read()
+            try:
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    content = f.read()
+            except UnicodeDecodeError:
+                try:
+                    # Try to read with a different encoding
+                    with open(file_path, 'r', encoding='latin-1') as f:
+                        content = f.read()
+                except Exception as e:
+                    print(f"Could not read file: {e}")
+
             prompt = f"""The user has uploaded a file called {filename} of type {file_type}. 
             Use the text below to answer questions from the user on the uploaded document.
             ----------------

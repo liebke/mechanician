@@ -37,6 +37,7 @@ class UserCreate(BaseModel):
     password: str
     confirm_password: str
     user_role: str
+    dev_ui_active: str
 
 class UserUpdate(BaseModel):
     name: str
@@ -45,6 +46,7 @@ class UserUpdate(BaseModel):
     new_password: str
     confirm_new_password: str
     user_role: str
+    dev_ui_active: str
 
   
 ###############################################################################
@@ -597,9 +599,10 @@ class AIStudio:
             if user is None:
                 response = RedirectResponse(url='/login', status_code=status.HTTP_303_SEE_OTHER)
                 return response
-            else:
-                username = user.get("username", "anonymous")
-                display_name = user.get("name", username)
+           
+            username = user.get("username", "anonymous")
+            display_name = user.get("name", username)
+            dev_ui_active = user.get("dev_ui_active", "False")
             
             if user.get("user_role", "User") != "Admin":
                 response = RedirectResponse(url='/', status_code=status.HTTP_303_SEE_OTHER)
@@ -614,7 +617,8 @@ class AIStudio:
                                                     "ai_name": ai_name,
                                                     "conversation_id": conversation_id,
                                                     "username": username,
-                                                    "name": display_name})
+                                                    "name": display_name,
+                                                    "dev_ui_active": dev_ui_active})
         
 
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -642,7 +646,9 @@ class AIStudio:
                 raise HTTPException(status_code=400, detail="Passwords do not match")
             
             # Add your user creation logic here
-            attrs = {"user_role": user.user_role, "name": user.name}
+            attrs = {"user_role": user.user_role, 
+                     "name": user.name,
+                     "dev_ui_active": user.dev_ui_active}
             create_status = self.credentials_manager.add_credentials(user.username, user.password, attrs)
             if not create_status:
                 raise HTTPException(status_code=400, detail="User already exists")
@@ -665,6 +671,7 @@ class AIStudio:
                 username = user_data.get("username", "")
                 display_name = user_data.get("name", username)
                 user_role = user_data.get("user_role", "User")
+                dev_ui_active = user_data.get("dev_ui_active", False)
 
             except HTTPException as e:
                 logger.error(f"Error validating token: {e}")
@@ -681,7 +688,8 @@ class AIStudio:
                                                     "ai_name": ai_name,
                                                     "conversation_id": conversation_id,
                                                     "name": display_name,
-                                                    "user_role": user_role})
+                                                    "user_role": user_role,
+                                                    "dev_ui_active": dev_ui_active})
         
 
         #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -710,7 +718,9 @@ class AIStudio:
                 
             update_status = self.credentials_manager.update_user_attributes(user.username,
                                                                             password=user.password,
-                                                                            attributes={"name": user.name})
+                                                                            attributes={"name": user.name,
+                                                                                        "user_role": user.user_role,
+                                                                                        "dev_ui_active": user.dev_ui_active})
             if not update_status:
                 logger.error("User attribute update error")
                 raise HTTPException(status_code=400, detail="User attribute update error")
@@ -1067,9 +1077,17 @@ class AIStudio:
                         break
                     else:
                         no_content = False
-                        await websocket.send_text(content)
-                        await asyncio.sleep(0)
-                        ai_response += content
+                        # If content is a dictionary, it is a tool call
+                        if isinstance(content, dict):
+                            if user.get("dev_ui_active", "False") == "True":
+                                content = self.format_tool_call_messages(content)
+                                ai_response += content
+                                await websocket.send_text(content)
+                                await asyncio.sleep(0)
+                        else:
+                            await websocket.send_text(content)
+                            await asyncio.sleep(0)
+                            ai_response += content
                 msg = {"role": "assistant", "content": ai_response}
                 self.user_data_store.append_message_to_conversation(username, ai_name, conversation_id, msg)
         except asyncio.CancelledError:
@@ -1078,6 +1096,32 @@ class AIStudio:
             logger.error(f"Error processing AI response: {e}")
             await websocket.send_text(json.dumps({"error": str(e)}))
             traceback.print_exc()
+
+
+    def format_tool_call_messages(self, content):
+        output_str = ""
+        if isinstance(content, dict):
+            role = content.get("role", None)
+            if role == "assistant" and "tool_calls" in content:
+                tool_calls = content.get("tool_calls")
+                for tool_call in tool_calls:
+                    func = tool_call.get("function")
+                    output_str += f"""<b>Function Called</b>: {func.get("name")}\n<b>Arguments</b>: {func.get("arguments")}\n<b>ID</b>: {tool_call.get("id")}\n\n\n"""
+                return output_str
+            elif role == "tool":
+                output_str += f"""<b>Function Response</b>: {content.get("name")}\n"""
+                output_str += f"""<b>ID</b>: {content.get("tool_call_id")}\n"""
+                resp = content.get("content")
+                
+                output_str += "<b>Response</b>: \n"
+                if isinstance(resp, dict):
+                    output_str += json.dumps(resp, indent=4)
+                else:
+                    json_resp = json.loads(resp)
+                    output_str += f"<pre><code>{json.dumps(json_resp, indent=4)}</code></pre>"
+                output_str += "\n\n\n"
+                
+            return output_str
 
 
     async def stop_text_generation(self, websocket: WebSocket):

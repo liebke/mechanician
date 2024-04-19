@@ -6,7 +6,78 @@
     <link rel="stylesheet" href="./static/styles.css">
     <link rel="stylesheet" href="./static/form_styles.css">
     <script src="./static/functions.js"></script>
-    <style></style>
+    <style>
+        .input-group {
+            width: 100%; /* Full width of their container */
+            display: flex;
+            justify-content: flex-end; /* Align items to the right */
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .input-group label {
+            font-size: 15px;
+            margin-right: 10px;
+            color: #999;
+            width: 200px; /* Ensure this is wide enough for your longest label */
+            text-align: right;
+            flex-shrink: 0; /* Prevents the label from shrinking */
+        }
+
+        /* Specificity for the switch to avoid impacting other inputs */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 34px;  /* Exact width for the switch */
+            height: 20px;  /* Exact height for the switch */
+            margin-left: 10px; /* Keeps a gap from the label */
+        }
+
+        .switch input {
+            opacity: 0;
+            position: absolute;
+            width: 0;
+            height: 0;
+            z-index: -1; /* Ensures it doesn't affect layout but is clickable */
+        }
+
+        .slider {
+            width: 34px;  /* Exact width for the switch */
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 20px; /* Rounded corners */
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(14px); /* Moves the inner circle to the right when active */
+        }
+    </style>
 </head>
 
 <body>
@@ -55,6 +126,18 @@
             <input type="password" id="confirm_new_password" placeholder="Confirm Password">
         </div>
         
+
+        <div class="input-group">
+            <div style="flex-shrink: 0; width: 200px; text-align: right; font-size: 15px; color: #999; margin-right: 10px;">Dev UI</div>
+            <label class="switch">
+                <input type="checkbox" id="dev_ui">
+                <span class="slider round"></span>
+            </label>
+        </div>
+        
+        
+        
+        
         <button id="update_user_button">Update</button>
     </div>
     
@@ -68,6 +151,9 @@
                 var new_password = $('#new_password').val();
                 var confirm_new_password = $('#confirm_new_password').val();
                 var user_role = $('#user_role').val();
+                var dev_ui = document.getElementById('dev_ui');
+                var dev_ui_active = dev_ui.checked;
+                var dev_ui_active_str = dev_ui_active ? 'True' : 'False';
 
                 if(new_password !== confirm_new_password) {
                     alert("Passwords do not match.");
@@ -83,7 +169,8 @@
                         password: password,
                         new_password: new_password,
                         confirm_new_password: confirm_new_password,
-                        user_role: user_role
+                        user_role: user_role,
+                        dev_ui_active: dev_ui_active_str
                     }),
                     contentType: "application/json; charset=utf-8", // Set the content type to JSON
                     dataType: "json", // Expect JSON in response from the server
@@ -122,6 +209,15 @@
                     update_user();
                 }
             });
+
+            var dev_ui = document.getElementById('dev_ui');
+            var dev_ui_active_str = "{{ dev_ui_active }}"; 
+            if (dev_ui_active_str === 'True') {
+                dev_ui_active = true;
+            } else {
+                dev_ui_active = false;
+            }
+            dev_ui.checked = dev_ui_active; 
 
         });
 

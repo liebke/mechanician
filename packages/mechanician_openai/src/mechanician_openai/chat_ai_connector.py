@@ -217,9 +217,11 @@ class OpenAIChatConnector(StreamingAIConnector):
                 
             # Append the assistant message with tool_calls to the message history
             self.messages.append(assistant_message)
+            yield assistant_message
             # Append the tool response messages to the message history
             for msg in tool_resp_messages:
                 self.messages.append(msg)
+                yield msg
 
             yield None
         

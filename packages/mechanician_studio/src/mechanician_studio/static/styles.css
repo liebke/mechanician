@@ -398,3 +398,9 @@
 #header select::-ms-expand {
 display: none; /* Hide the default arrow in IE */
 }
+
+pre {
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    word-wrap: break-word;       /* Legacy support for some browsers */
+    overflow-wrap: break-word;   /* Preferrable for long words */
+  }
