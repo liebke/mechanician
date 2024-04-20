@@ -250,12 +250,6 @@
                 socket.send(JSON.stringify({token: token, ai_name: get_ai_name(), conversation_id: get_conversation_id(), type: 'token'}));
 
                 display_system_message("Connected to " + get_ai_name() + "...");
-                // let sys_message_container = $('<div class="message-container">');
-                // sys_message_container.append($('<p class="message-header">').html("System"));
-                // current_sys_response = $('<p class="message-text">').text("Connected to " + get_ai_name() + "...");
-                // sys_message_container.append(current_sys_response);
-                // $('#messages').append(sys_message_container);
-                // check_scroll(); // Check scroll after connecting
             };
 
             socket.onclose = function(e) {
@@ -342,15 +336,56 @@
 
         // Function to display a message
         function display_message(msg) {
-            let content_with_breaks = msg.replace(/\n/g, '<br>');
-            if (!current_ai_response) {
-                let ai_message_container = $('<div class="message-container">');
-                ai_message_container.append($('<p class="message-header">').html("AI"));
-                current_ai_response = $('<p class="message-text">');
-                ai_message_container.append(current_ai_response);
-                $('#messages').append(ai_message_container);
+            msg = JSON.parse(msg);
+            if ((msg.role == "assistant" && !('tool_calls' in msg)) || 
+                (msg.role == "assistant" && ('tool_calls' in msg) && get_dev_ui_active() == "True")) {
+                
+                if ('content' in msg) {
+                    content = msg.content;
+                    let content_with_breaks = content.replace(/\n/g, '<br>');
+                    if (!current_ai_response) {
+                        let ai_message_container = $('<div class="message-container">');
+                        ai_message_container.append($('<p class="message-header">').html("AI"));
+                        current_ai_response = $('<p class="message-text">');
+                        ai_message_container.append(current_ai_response);
+                        $('#messages').append(ai_message_container);
+                    }
+                    current_ai_response.append(content_with_breaks);
+                }
+                else {
+                    current_ai_response = null;
+                    return;
+                }
             }
-            current_ai_response.append(content_with_breaks);
+            else if (msg.role == "user") {
+                let user_message_container = $('<div class="message-container">');
+                user_message_container.append($('<p class="message-header">').html("You"));
+                let content_with_breaks = msg.content.replace(/\n/g, '<br>');
+                let message_text_p = $('<p class="message-text">').html(content_with_breaks);
+                user_message_container.append(message_text_p);
+                $('#messages').append(user_message_container);
+            }
+            else if (msg.role == "tool" && get_dev_ui_active() == "True") {
+                if ('content' in msg) {
+                    let content_with_breaks = msg.content.replace(/\n/g, '<br>');
+                    let ai_message_container = $('<div class="message-container">');
+                    ai_message_container.append($('<p class="message-header">').html("Tool"));
+                    current_ai_response = $('<p class="message-text">');
+                    ai_message_container.append(current_ai_response);
+                    $('#messages').append(ai_message_container);
+                    current_ai_response.append(content_with_breaks);
+                }
+                else {
+                    current_ai_response = null;
+                    return;
+                }
+            }
+            
+            // After adding content, scroll to the bottom if the user hasn't manually scrolled up
+            if (!user_has_scrolled) {
+                var content_element = document.getElementById('content');
+                content_element.scrollTop = content_element.scrollHeight;
+            }
             check_scroll(); // Check scroll after receiving a response
         }
 
@@ -420,7 +455,9 @@
 
         // Function to display a message
         function display_stored_message(msg) {
-            if (msg.role == "assistant") {
+            if ((msg.role == "assistant" && !('tool_calls' in msg)) || 
+                (msg.role == "assistant" && ('tool_calls' in msg) && get_dev_ui_active() == "True"))
+            {
                 if ('content' in msg) {
                     let content_with_breaks = msg.content.replace(/\n/g, '<br>');
                     let ai_message_container = $('<div class="message-container">');
@@ -443,7 +480,7 @@
                 user_message_container.append(message_text_p);
                 $('#messages').append(user_message_container);
             }
-            else if (msg.role == "tool" && get_dev_ui_active() == "True") {
+            else if ((msg.role == "tool") && get_dev_ui_active() == "True") {
                 if ('content' in msg) {
                     let content_with_breaks = msg.content.replace(/\n/g, '<br>');
                     let ai_message_container = $('<div class="message-container">');

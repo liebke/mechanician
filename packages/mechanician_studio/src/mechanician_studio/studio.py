@@ -394,7 +394,6 @@ class AIStudio:
                 raise HTTPException(status_code=404, detail="Resource not found")
 
             resource_entry = self.user_data_store.get_resource_entry(username, resource_id)
-            pprint(resource_entry)
             file_path = resource_entry.get("file_path")
             if not file_path:
                 raise HTTPException(status_code=404, detail="Resource not found")
@@ -1087,10 +1086,10 @@ class AIStudio:
                             # ai_response += content
                             self.user_data_store.append_message_to_conversation(username, ai_name, conversation_id, tool_msg)
                             if user.get("dev_ui_active", "False") == "True":
-                                await websocket.send_text(content)
+                                await websocket.send_text(json.dumps(tool_msg))
                                 await asyncio.sleep(0)
                         else:
-                            await websocket.send_text(content)
+                            await websocket.send_text(json.dumps({"role": "assistant", "content": content}))
                             await asyncio.sleep(0)
                             ai_response += content
                             msg = {"role": "assistant", "content": ai_response}
@@ -1108,6 +1107,7 @@ class AIStudio:
 
     def format_tool_call_messages(self, content):
         output_str = ""
+        msg = None
         if isinstance(content, dict):
             role = content.get("role", None)
             if role == "assistant" and "tool_calls" in content:
@@ -1115,6 +1115,10 @@ class AIStudio:
                 for tool_call in tool_calls:
                     func = tool_call.get("function")
                     output_str += f"""<b>Function Called</b>: {func.get("name")}\n<b>Arguments</b>: {func.get("arguments")}\n<b>ID</b>: {tool_call.get("id")}\n"""
+                    msg = {"role": role, 
+                           "tool_calls": tool_calls,
+                           "tool_call_id": tool_call.get("id"),
+                           "content": output_str}
             elif role == "tool":
                 output_str += f"""<b>Function Response</b>: {content.get("name")}\n"""
                 output_str += f"""<b>ID</b>: {content.get("tool_call_id")}\n"""
@@ -1127,11 +1131,14 @@ class AIStudio:
                     json_resp = json.loads(resp)
                     output_str += f"<pre><code>{json.dumps(json_resp, indent=4)}</code></pre>"
                 output_str += "\n\n\n"
+                msg = {"role": role, 
+                       "tool_call_id": content.get("tool_call_id"),
+                       "content": output_str}
             else:
                 output_str += f"<b>Unknown Role</b>: {role}\n"
                 output_str += f"<b>Content</b>: {content}\n"
+                msg = {"role": role, "content": output_str}
                 
-            msg = {"role": "tool", "content": output_str}
             return msg
 
 
