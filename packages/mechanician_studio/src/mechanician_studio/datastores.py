@@ -143,10 +143,6 @@ class UserDataFileStore(UserDataStore):
         os.makedirs(path, exist_ok=True)
 
 
-    def _get_conversation_file_path(self, username: str, ai_name: str, conversation_id: str) -> str:
-        return os.path.join(self.data_dir, f"users/{username}/conversations/{self.sanitize_for_filename(ai_name)}/{conversation_id}.json")
-
-
     def _get_ai_instructions_path(self, username: str, ai_name: str) -> str:
         return os.path.join(self.data_dir, f"users/{username}/instructions/{self.sanitize_for_filename(ai_name)}/ai_instructions.md")
 
@@ -180,7 +176,7 @@ class UserDataFileStore(UserDataStore):
 
 
     def new_conversation(self, username: str, ai_name: str, conversation_id=None) -> str:
-        if conversation_id is None or conversation_id != "":
+        if conversation_id is None or conversation_id == "":
             conversation_id = datetime.now().strftime("%Y%m%d%H%M%S")
             
         # Clear empty conversations before creating a new one
@@ -391,16 +387,20 @@ class UserDataFileStore(UserDataStore):
         :param date_str: A date string in "YYYYMMDDHHMMSS" format.
         :return: A string representing the date in "DD Month YYYY h:MMpm <System Timezone>" format.
         """
-        # Parse the input string into a datetime object
-        dt = datetime.strptime(date_str, "%Y%m%d%H%M%S")
 
-        # Get the current system timezone
-        current_tz = datetime.now().astimezone().tzinfo
+        if date_str:
+            # Parse the input string into a datetime object
+            dt = datetime.strptime(date_str, "%Y%m%d%H%M%S")
 
-        # Convert the datetime object to the desired format with system timezone
-        formatted_date = dt.astimezone(current_tz).strftime("%d %B %Y %-I:%M%p").lower()
+            # Get the current system timezone
+            current_tz = datetime.now().astimezone().tzinfo
 
-        return formatted_date
+            # Convert the datetime object to the desired format with system timezone
+            formatted_date = dt.astimezone(current_tz).strftime("%d %B %Y %-I:%M%p").lower()
+
+            return formatted_date
+        else:
+            return None
     
 
     async def add_resource_file(self, username: str, ai_name: str, conversation_id: str, file: File, attributes: Dict = {}):

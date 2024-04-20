@@ -757,7 +757,6 @@ class AIStudio:
             if sid:
                 self.clear_ai_instance(username)
 
-            # response = RedirectResponse(url='/?new_conversation=true', status_code=status.HTTP_303_SEE_OTHER)
             response = RedirectResponse(url='/?new_conversation=true', status_code=status.HTTP_303_SEE_OTHER)
             return response
         
@@ -1043,6 +1042,11 @@ class AIStudio:
             logger.error("Invalid token. Closing connection.")
             return
         
+        if conversation_id is None or conversation_id == "":
+            conversation_id = self.user_data_store.get_most_recent_conversation_id(token, ai_name)
+            if conversation_id is None or conversation_id == "":
+                conversation_id = self.user_data_store.new_conversation(token, ai_name)
+
         user = self.credentials_manager.get_user_by_token(token)
         username = user.get("username", token)
         ai_instance = self.get_ai_instance(username=username, 
@@ -1083,7 +1087,6 @@ class AIStudio:
                         if isinstance(content, dict):
                             tool_msg = self.format_tool_call_messages(content)
                             content = tool_msg.get("content", "")
-                            # ai_response += content
                             self.user_data_store.append_message_to_conversation(username, ai_name, conversation_id, tool_msg)
                             if user.get("dev_ui_active", "False") == "True":
                                 await websocket.send_text(json.dumps(tool_msg))
@@ -1130,7 +1133,7 @@ class AIStudio:
                 else:
                     json_resp = json.loads(resp)
                     output_str += f"<pre><code>{json.dumps(json_resp, indent=4)}</code></pre>"
-                output_str += "\n\n\n"
+                output_str += "\n"
                 msg = {"role": role, 
                        "tool_call_id": content.get("tool_call_id"),
                        "content": output_str}
