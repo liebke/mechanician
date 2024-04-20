@@ -141,19 +141,6 @@
         word-wrap: break-word; /* To break long words if necessary */
     }
 
-    #prompt, #prompt_template, #prompt_resources {
-        width: 500px;
-        font-size: 14px;
-        height: 300px;
-        margin-top: 10px;
-        padding: 10px;
-        border-radius: 5px;
-        outline: none; /* Remove focus outline */
-        background-color: #222;
-        color: white;
-    }
-
-
     #header {
         display: flex;
         align-items: center;
@@ -188,10 +175,8 @@
         <input type="hidden" id="conversation_id" value="{{ conversation_id }}">
         <div class="select-container">
             <select id="ai_name">
-                <!-- <option value="{{ai_name}}">{{ai_name}}</option> -->
             </select>
         </div>
-        <!-- <div id="title">Prompt Tools</div> -->
 
         <button id="close_button">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -201,7 +186,6 @@
     </div>
 
     <div id="sidebar">
-        <!-- <h1>Mechanician AI Studio</h1> -->
         <h1>Mechanician AI Studio</h1>
         <!-- Additional sidebar content here -->
         <div id="sidebar-button-container" class="sidebar-button-container">
@@ -258,12 +242,8 @@
             // Initial appending of the hidden input
             form.appendChild(hidden_input);
             form_container.appendChild(select_container);
-
-            const prompt_template_title = document.createElement('h1');
-            prompt_template_title.textContent = "Prompt Template";
-            form_container.appendChild(prompt_template_title);
-
-            const prompt_template = document.createElement('textarea');
+            const prompt_template = document.createElement('input');
+            prompt_template.type = 'hidden';
             prompt_template.id = 'prompt_template';
             prompt_template.name = 'prompt_template';
             prompt_template.classList.add('prompt_template');
@@ -289,7 +269,7 @@
                         .then(template_data => {
                             // Process the fetched template data as needed
                             // For example, storing it in a global variable or directly in a hidden form field
-                            document.getElementById('prompt_template').value = template_data; // Assuming you want to display it in an input field with ID 'prompt'
+                            document.getElementById('prompt_template').value = template_data; 
                         })
                         .catch(error => console.error('Error loading template:', error));
                 }
@@ -324,40 +304,37 @@
 
 
             Object.entries(func.parameters.properties).forEach(([key, value]) => {
-                const input_group = document.createElement('div');
-                input_group.classList.add('input-group');
-                const label = document.createElement('label');
-                label.htmlFor = key;
-                label.textContent = value.description;
-                const input = document.createElement('input');
-                input.type = 'text'; // Simplification; you might need to change input types based on `value.type`
-                input.id = key;
-                input.name = key;
-                // Set placeholder to the name of the property or any other dynamic value as needed
-                if (value.default !== undefined) {
-                    input.value = value.default;
+                if (key === 'template') {
+                    const template_name = document.createElement('input');
+                    template_name.type = 'hidden';
+                    template_name.id = 'template';
+                    template_name.name = 'template';
+                    template_name.value = value.default;
+                    form.appendChild(template_name);
                 }
-                input.placeholder = key; // Use the property description as the placeholder text
-                input_group.appendChild(label);
-                input_group.appendChild(input);
-                form.appendChild(input_group);
+                else {
+                    const input_group = document.createElement('div');
+                    input_group.classList.add('input-group');
+                    const label = document.createElement('label');
+                    label.htmlFor = key;
+                    label.textContent = value.description;
+                    const input = document.createElement('input');
+                    input.type = 'text'; // Simplification; you might need to change input types based on `value.type`
+                    input.id = key;
+                    input.name = key;
+                    // Set placeholder to the name of the property or any other dynamic value as needed
+                    if (value.default !== undefined) {
+                        input.value = value.default;
+                    }
+                    input.placeholder = key; // Use the property description as the placeholder text
+                    input_group.appendChild(label);
+                    input_group.appendChild(input);
+                    form.appendChild(input_group);
+                }
             });
 
-            
-            // Create the submit button if not already present (to avoid duplicating it)
-            if (!form.querySelector('button[type="submit"]')) {
-                const submit_button = document.createElement('button');
-                submit_button.type = 'submit';
-                submit_button.id = 'gen_prompt_button';
-                submit_button.textContent = 'Generate Prompt';
-                form.appendChild(submit_button);
-            }
-
-            const resource_title = document.createElement('h1');
-            resource_title.textContent = "Prompt Resources";
-            form.appendChild(resource_title);
-
-            const prompt_resources = document.createElement('textarea');
+            const prompt_resources = document.createElement('input');
+            prompt_resources.type = 'hidden';
             prompt_resources.id = 'prompt_resources';
             prompt_resources.name = 'prompt_resources';
             prompt_resources.classList.add('prompt_resources');
@@ -368,20 +345,15 @@
 
 
             if (!document.getElementById('prompt-form')) {
-                // const prompt_form_container = document.getElementById('form-container');
                 const form_container = document.getElementById('form-container');
                 const prompt_form = document.createElement('form');
                 prompt_form.id = 'prompt-form';
                 prompt_form.action = '/'; // Set the action to submit the form to the root URL '/'
                 prompt_form.method = 'POST'; // Set the method to 'POST'
-                
-                const prompt_title = document.createElement('h1');
-                prompt_title.textContent = "Generated Prompt";
-                form.appendChild(prompt_title);
-
-                const generated_prompt = document.createElement('textarea');
-                generated_prompt.id = 'prompt';
-                generated_prompt.name = 'prompt';
+                const generated_prompt = document.createElement('input');
+                generated_prompt.type = 'hidden';
+                generated_prompt.id = '_prompt';
+                generated_prompt.name = '_prompt';
                 generated_prompt.classList.add('generated-prompt');
                 generated_prompt.readOnly = true;
                 prompt_form.appendChild(generated_prompt);
@@ -390,23 +362,49 @@
                 prompt_submit_button.type = 'submit';
                 prompt_submit_button.id = 'prompt_submit_button';
                 prompt_submit_button.textContent = 'Send Prompt';
-                prompt_form.appendChild(prompt_submit_button);
+                form_container.appendChild(prompt_submit_button);
 
                 // Listen for the form's submit event
-                prompt_form.addEventListener('submit', function(event) {
-                    event.preventDefault(); // Prevent the default form submission
+                prompt_submit_button.addEventListener('click', function(event) {
+                    const form_data = new FormData(document.getElementById('gen-form')); // 'this' refers to the form
+                    form_data.append('prompt_template', document.getElementById('prompt_template').value);
+                    form_data.append('ai_name', get_ai_name());
+                    load_prompt_resources(form_data);
 
-                    // Create a hidden input to store the ai_name value
-                    const ai_name_input = document.createElement('input');
-                    ai_name_input.type = 'hidden';
-                    ai_name_input.name = 'ai_name';
-                    ai_name_input.value = get_ai_name(); // Assuming you have a function to get the ai_name value
+                    fetch('/call_prompt_tool', {
+                        method: 'POST',
+                        body: form_data, 
+                        headers: {
+                            // If you're sending JSON, you'll need this header
+                            // 'Content-Type': 'application/json'
+                        },
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('_prompt').value = data.prompt;
 
-                    // Append the hidden input to the form
-                    prompt_form.appendChild(ai_name_input);
+                        // Create hidden inputs
+                        const ai_name_input = document.createElement('input');
+                        ai_name_input.type = 'hidden';
+                        ai_name_input.name = 'ai_name';
+                        ai_name_input.value = get_ai_name();
 
-                    // Now submit the form
-                    prompt_form.submit();
+                        const conversation_id_input = document.createElement('input');
+                        conversation_id_input.type = 'hidden';
+                        conversation_id_input.name = 'conversation_id';
+                        conversation_id_input.value = get_conversation_id();
+
+                        // Append the hidden inputs to the form
+                        prompt_form.appendChild(ai_name_input);
+                        prompt_form.appendChild(conversation_id_input);
+
+                        // Now submit the form
+                        prompt_form.submit();
+                    })
+                    .catch((error) => {
+                        console.error('Error:', error);
+                    });
+
                 });
 
                 
@@ -431,29 +429,6 @@
                 window.location.href = "/?ai_name=" + encodeURIComponent(get_ai_name()) + "&conversation_id=" + get_conversation_id();
             });
 
-            document.getElementById('gen-form').addEventListener('submit', function(e) {
-                e.preventDefault(); // Prevent the default form submission
-                const form_data = new FormData(this); // 'this' refers to the form
-                form_data.append('prompt_template', document.getElementById('prompt_template').value);
-                form_data.append('ai_name', get_ai_name());
-                load_prompt_resources(form_data);
-
-                fetch('/call_prompt_tool', {
-                    method: 'POST',
-                    body: form_data, // or JSON.stringify(form_data) if your server expects JSON
-                    headers: {
-                        // If you're sending JSON, you'll need this header
-                        // 'Content-Type': 'application/json'
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('prompt').value = data.prompt;
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-            });
 
             document.getElementById('template').addEventListener('change', function() {
                 load_prompt_template();

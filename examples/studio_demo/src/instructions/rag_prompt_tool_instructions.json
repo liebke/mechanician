@@ -11,14 +11,14 @@
               "type": "string",
               "description": "The prompt to respond to."
             },
-              "template": {
-                "type": "string",
-                "default": "chroma_query.md",
-                "description": "The name of the prompt template file to use."
-              }
+            "template": {
+              "type": "string",
+              "default": "chroma_query.md",
+              "description": "The name of the prompt template file to use."
+            }
           },
           "required": [
-            "query"
+            "prompt"
           ]
         }
       }

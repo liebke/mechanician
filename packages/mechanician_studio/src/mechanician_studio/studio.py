@@ -206,7 +206,7 @@ class AIStudio:
 
             form_data = await request.form()
             form_data_dict = dict(form_data)
-            prompt = form_data_dict.get("prompt", "")
+            prompt = form_data_dict.get("_prompt", "")
             ai_name = form_data_dict.get("ai_name")
             new_conversation = request.query_params.get("new_conversation")
             conversation_id = request.query_params.get("conversation_id")
@@ -850,6 +850,11 @@ class AIStudio:
                 username = user_data.get("username", "")
                 display_name = user_data.get("name", username)
                 user_role = user_data.get("user_role", "User")
+                dev_ui_active = user_data.get("dev_ui_active", False)
+                if dev_ui_active == "True":
+                    prompt_template = "dev_prompt_tools.html"
+                else:
+                    prompt_template = "user_prompt_tools.html"
 
             except HTTPException as e:
                 logger.error(f"Error validating token: {e}")
@@ -860,7 +865,7 @@ class AIStudio:
             ai_name = request.query_params.get("ai_name") or self.ai_names[0]
             prompt_tools=self.get_prompt_tools_instance(username, ai_name, context=self.get_context(token, ai_name=ai_name))
             conversation_id = request.query_params.get("conversation_id")
-            return self.templates.TemplateResponse("prompt_tools.html", 
+            return self.templates.TemplateResponse(prompt_template, 
                                                    {"request": request,
                                                     "prompt_tool_instructions": prompt_tools.get_tool_instructions(),
                                                     "username": username,
@@ -1295,6 +1300,3 @@ class AIStudio:
             else:
                 raise ValueError(f"prompt_preprocessor_provisioner must be an instance of or a list of MechanicianToolsProvisioner. Received: {provisioner}")
 
-
-
-    

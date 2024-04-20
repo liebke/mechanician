@@ -15,11 +15,11 @@
                 "type": "string",
                 "description": "The name of the event."
               },
-              "template": {
-                "type": "string",
-                "default": "event_invite.md",
-                "description": "The name of the prompt template file to use."
-              }
+            "template": {
+              "type": "string",
+              "default": "event_invite.md",
+              "description": "The name of the prompt template file to use."
+            }
           },
           "required": [
             "contact", "event"

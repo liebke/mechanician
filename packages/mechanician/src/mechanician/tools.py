@@ -170,7 +170,11 @@ class PromptTools(MechanicianTools):
         resources = response.get("resources")
         prompt_template = PromptTemplate(template_str=prompt_template_str)
         prompt_template.add_resources(resources)
-        prompt = prompt_template.generate_prompt()
+        try:
+            prompt = prompt_template.generate_prompt()
+        except ValueError as e:
+            return {"status": "error", "error": f"Error generating prompt: {e}"}
+        
         return {"status": "success", "prompt": prompt}
     
 

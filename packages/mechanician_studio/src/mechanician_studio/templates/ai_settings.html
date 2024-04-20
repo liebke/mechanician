@@ -227,7 +227,6 @@
                 fetch(ai_settings_url)
                     .then(response => response.json())
                     .then(settings_data => {
-                        console.log(settings_data);
                         document.getElementById('ai_instructions').value = settings_data.ai_instructions;
                         document.getElementById('ai_tool_instructions').value = JSON.stringify(settings_data.ai_tool_instructions, null, 2);
                     })
