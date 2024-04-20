@@ -4,8 +4,8 @@ from mechanician.ai_tools.notepads import UserNotepadAIToolsProvisioner
 from mechanician_arangodb.notepad_store import ArangoNotepadStoreProvisioner
 from arango import ArangoClient
 from mechanician import AIProvisioner
-from mechanician.tools import PromptToolsProvisioner
-from mechanician_chroma import ChromaConnectorProvisioner, UserAIChromaConnectorProvisioner
+from mechanician.tools import PromptToolsProvisioner, PromptPreprocessorProvisioner
+from mechanician_chroma import UserAIChromaConnectorProvisioner
 from studio_demo.tmdb_ai_tools import TMDbAIToolsProvisioner
 from studio_demo.crm_connector import CRMConnectorProvisioner
 import uvicorn
@@ -82,6 +82,10 @@ def init_studio():
                                           prompt_instructions_directory="./src/instructions",
                                           prompt_tool_instructions_file_name="rag_prompt_tool_instructions.json") 
     
+    preprocessors = {"Contracts Copilot AI": PromptPreprocessorProvisioner(resource_connector_provisioner = chroma_connector,
+                                                                           prompt_template_directory="./templates",
+                                                                           prompt_template_name="chroma_query.md")} 
+    
     # event_handlers = {"resource_uploaded": [PDFResourceUploadedEventHandler(), TextResourceUploadedEventHandler()]}
     event_handlers = {"resource_uploaded": [ChromaPDFResourceUploadedEventHandler(), TextResourceUploadedEventHandler()]}
     
@@ -89,7 +93,8 @@ def init_studio():
     # Set up the Mechanician AI Studio
     return AIStudio(ai_provisioners=[notepad_only_ai, tmdb_ai, contract_ai],
                     prompt_tools_provisioners=[crm_tools, chroma_tools],
-                    event_handlers=event_handlers)
+                    event_handlers=event_handlers,
+                    prompt_preprocessor_provisioners=preprocessors)
 
 
 def run_studio():

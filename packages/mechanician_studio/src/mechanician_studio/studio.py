@@ -6,7 +6,7 @@ from typing import Dict
 import json
 import asyncio
 import pkg_resources
-from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit, MechanicianToolsProvisioner
+from mechanician.tools import PromptTools, MechanicianTools, PromptToolKit, MechanicianToolsProvisioner, PromptPreprocessor, PromptPreprocessorProvisioner
 import os
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette.responses import Response, RedirectResponse
@@ -59,6 +59,7 @@ class AIStudio:
     def __init__(self, 
                  ai_provisioners: List['AIProvisioner'],
                  event_handlers: Dict[str, List[EventHandler]]=None,
+                 prompt_preprocessor_provisioners: Dict[str, PromptPreprocessorProvisioner]=None,
                  prompt_tools_provisioners=None,
                  credentials_manager: CredentialsManager=None,
                  credentials_file_path="./credentials.json",
@@ -98,6 +99,7 @@ class AIStudio:
         self.app.mount("/static", StaticFiles(directory=static_files_directory), name="static")
         self.ai_instances: Dict[str, AI] = {}
         self.prompt_tools_instances: Dict[str, PromptTools] = {}
+        self.prompt_preprocessor_instances: Dict[str, PromptPreprocessor] = {}
         self.setup_routes()
         self.setup_websocket_events()
 
@@ -113,6 +115,8 @@ class AIStudio:
             self.event_handlers = event_handlers
 
         self.event_processor = EventProcessor(self)
+
+        self.prompt_preprocessor_provisioners = prompt_preprocessor_provisioners or {}
 
 
 
@@ -895,7 +899,7 @@ class AIStudio:
             if template_name is None:
                 return JSONResponse(content={"error": "No prompt template name provided."})
             else:
-                prompt_template = prompt_tools.get_prompt_template(prompt_template_name=template_name)
+                prompt_template = prompt_tools.get_prompt_template(prompt_template_name=template_name).template_str
                 return JSONResponse(content=prompt_template)
             
 
@@ -1053,14 +1057,20 @@ class AIStudio:
                                            ai_name=ai_name,
                                            conversation_id=conversation_id,
                                            context=self.get_context(token, ai_name=ai_name))
-        prompt_tools = self.get_prompt_tools_instance(username, ai_name, context=self.get_context(token, ai_name=ai_name))
-        processed_prompt = self.preprocess_prompt(ai_instance, 
-                                                  input_text, 
-                                                  prompt_tools=prompt_tools)
-        if processed_prompt.get("status", "noop") == "error":
-            await websocket.send_text(json.dumps(processed_prompt))
-            return
-        prompt = processed_prompt.get("prompt", '')
+        prompt_preprocessor = self.get_prompt_preprocessor_instance(username, 
+                                                                    ai_name, 
+                                                                    context=self.get_context(token, ai_name=ai_name))
+        if prompt_preprocessor is not None:
+            processed_prompt = prompt_preprocessor.preprocess_prompt(input_text)
+            if processed_prompt.get("status", None) == "error":
+                resp = {"role": "assistant", "content": json.dumps(processed_prompt)}
+                await websocket.send_text(json.dumps(resp))
+                return
+            
+            prompt = processed_prompt.get("prompt", '')
+        else:
+            prompt = input_text
+
         if prompt == '':
             return
         try:
@@ -1166,6 +1176,7 @@ class AIStudio:
         if token:
             self.clear_ai_instance(username)
             self.clear_prompt_tools_instance(username)
+            self.clear_prompt_preprocessor_instance(username)
             self.sid_to_tokens.pop(sid, None)
             self.token_to_sids.pop(token, None)
 
@@ -1218,8 +1229,9 @@ class AIStudio:
     
 
     def clear_ai_instance(self, username):
-        if username in self.ai_instances:
-            del self.ai_instances[username]
+        keys = [key for key in self.ai_instances.keys() if key[0] == username]
+        for key in keys:
+            del self.ai_instances[key]
 
 
     def get_prompt_tools_instance(self, username:str, ai_name:str, context:dict={}) -> PromptTools:
@@ -1229,8 +1241,9 @@ class AIStudio:
     
 
     def clear_prompt_tools_instance(self, username):
-        if username in self.prompt_tools_instances:
-            del self.prompt_tools_instances[username]
+        keys = [key for key in self.prompt_tools_instances.keys() if key[0] == username]
+        for key in keys:
+            del self.prompt_tools_instances[key]
 
 
     def create_prompt_tools_instance(self, context:dict={}) -> PromptTools:
@@ -1256,22 +1269,32 @@ class AIStudio:
                 raise ValueError(f"prompt_tools_provisioner must be an instance of or a list of MechanicianToolsProvisioner. Received: {self.prompt_tools_provisioners}")
 
             
-    
-
-    ###############################################################################
-    ## PREPRCOESS_PROMPT
-    ###############################################################################
-
-    def preprocess_prompt(self, ai: 'AI', prompt: str, prompt_tools: 'PromptTools' = None):
-        if prompt.startswith('/call'):
-            parsed_prompt = prompt_tools.parse_command_line(prompt)
-            if parsed_prompt is None:
-                return f"Invalid /call command: {prompt}"
-            tool_resp = prompt_tools.call_function(parsed_prompt.get("function_name"), params=parsed_prompt.get("params"))
-            return tool_resp
-        else:
-            return {"status": "noop", "prompt": prompt}
+    def get_prompt_preprocessor_instance(self, username:str, ai_name:str, context:dict={}) -> PromptPreprocessor:
+        provisioner = self.prompt_preprocessor_provisioners.get(ai_name, None)
+        if provisioner is None:
+            return None
         
+        if (username, ai_name) not in self.prompt_preprocessor_instances:
+            self.prompt_preprocessor_instances[(username, ai_name)] = self.create_prompt_preprocessor_instance(username, ai_name, context=context)
+        return self.prompt_preprocessor_instances[(username, ai_name)]
+    
+    
+    def clear_prompt_preprocessor_instance(self, username):
+        keys = [key for key in self.prompt_preprocessor_instances.keys() if key[0] == username]
+        for key in keys:
+            del self.prompt_preprocessor_instances[key]
+
+
+    def create_prompt_preprocessor_instance(self, username, ai_name, context:dict={}) -> PromptPreprocessor:
+        if self.prompt_preprocessor_provisioners is not None:
+            provisioner = self.prompt_preprocessor_provisioners.get(ai_name, None)
+            if isinstance(provisioner, MechanicianToolsProvisioner):
+                prompt_preprocessor = provisioner.create_tools(context=context)
+                return prompt_preprocessor
+            
+            else:
+                raise ValueError(f"prompt_preprocessor_provisioner must be an instance of or a list of MechanicianToolsProvisioner. Received: {provisioner}")
+
 
 
     

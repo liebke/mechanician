@@ -7,9 +7,9 @@
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "question": {
+                    "prompt": {
                         "type": "string",
-                        "description": "the query to perform."
+                        "description": "the prompt to respond to."
                     }
                 },
                 "required": ["query"]

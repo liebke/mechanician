@@ -7,9 +7,9 @@
         "parameters": {
           "type": "object",
           "properties": {
-            "question": {
+            "prompt": {
               "type": "string",
-              "description": "The question to answer."
+              "description": "The prompt to respond to."
             },
               "template": {
                 "type": "string",

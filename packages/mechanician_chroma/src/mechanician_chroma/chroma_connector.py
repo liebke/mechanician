@@ -55,8 +55,8 @@ class ChromaConnector(ResourceConnector):
 
 
     def chroma_query(self, params):
-        question = params.get("question")
-        results = self.get_collection().query(query_texts=[question],
+        prompt = params.get("prompt")
+        results = self.get_collection().query(query_texts=[prompt],
                                               n_results=20)
         documents = results.get("documents")[0]
         metadatas = results.get("metadatas")[0]
@@ -64,6 +64,10 @@ class ChromaConnector(ResourceConnector):
         for i in range(len(documents)):
             data.append({"source": metadatas[i].get("source"), "text": documents[i]})
 
-        return [{"name": "question", "data": question},
+        return [{"name": "prompt", "data": prompt},
                 {"name": "context", "data": data}]
+    
+
+    def preprocess_prompt(self, prompt):
+        return self.chroma_query({"prompt": prompt})
     

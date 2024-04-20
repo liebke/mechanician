@@ -132,7 +132,6 @@ class PromptTools(MechanicianTools):
         self.instruction_set_directory = prompt_instructions_directory or "src/instructions"
 
 
-
     def has_function(self, function_name:str):
         return self.resource_connector.has_function(function_name)
     
@@ -183,15 +182,54 @@ class PromptTools(MechanicianTools):
                 return None
     
     
-    def get_prompt_template(self, prompt_template_name:str):
+    def get_prompt_template(self, prompt_template_name:str) -> PromptTemplate:
         template = PromptTemplate(template_filename=prompt_template_name, 
                                   template_directory=self.prompt_template_directory)
-        return template.template_str 
+        return template
 
 
     def save_prompt_template(self, prompt_template_name, prompt_template):
         pass
    
+
+###############################################################################
+## PROMPT PREPROCESSOR TOOLS
+###############################################################################
+
+class PromptPreprocessor(PromptTools):
+
+    def __init__(self, 
+                 resource_connector: 'ResourceConnector'=None,
+                 prompt_template_directory="./templates",
+                 prompt_template_name:str=None):
+        
+        super().__init__(resource_connector=resource_connector,
+                         prompt_template_directory=prompt_template_directory,)
+        self.prompt_template_name = prompt_template_name
+
+
+    def preprocess_prompt(self, prompt:str):
+        try:
+            prompt_template = self.get_prompt_template(self.prompt_template_name)            
+            function_name = "preprocess_prompt"
+            params = {"prompt": prompt}
+            response = None
+            if self.resource_connector.has_function(function_name):
+                response = self.resource_connector.query(function_name, params=params)
+            else:
+                return {"status": "error", "message": "ResourceConnector has no preprocess_prompt function"}
+
+            if response.get("status") == "error":
+                raise ValueError(response.get("response"))
+            
+            resources = response.get("resources")
+            # prompt_template = PromptTemplate(template_str=prompt_preprocessor_template)
+            prompt_template.add_resources(resources)
+            processed_prompt = prompt_template.generate_prompt()
+            return {"status": "success", "prompt": processed_prompt}
+        except Exception as e:
+            return {"status": "error", "error": f"Error preprocessing prompt: {e}"}
+    
 
 ###############################################################################
 ## PROMPT TOOL KIT
@@ -346,7 +384,7 @@ class MechanicianToolsProvisioner(ABC):
 
 
 ###############################################################################
-## PROMPT TOOLS FACTORY
+## PROMPT TOOLS PROVISIONER
 ###############################################################################
 
 class PromptToolsProvisioner(MechanicianToolsProvisioner):
@@ -374,3 +412,30 @@ class PromptToolsProvisioner(MechanicianToolsProvisioner):
                            prompt_instructions_directory=self.prompt_instructions_directory)
     
  
+
+###############################################################################
+## PROMPT PREPROCESSOR TOOLS PROVISIONER
+###############################################################################
+
+class PromptPreprocessorProvisioner(MechanicianToolsProvisioner):
+
+    def __init__(self, 
+                 resource_connector_provisioner: ResourceConnectorProvisioner,
+                 prompt_template_directory:str="./templates",
+                 prompt_template_name:str=None):
+        self.resource_connector_provisioner = resource_connector_provisioner
+        self.prompt_template_directory = prompt_template_directory
+        self.prompt_template_name = prompt_template_name
+
+
+    def create_tools(self, context:dict={}) -> MechanicianTools:
+        print(f"Creating Prompt Preprocessor Tools")
+        resource_connector = self.resource_connector_provisioner.create_connector(context)
+        # TODO: prompt_tool_instructions = context.get("prompt_tool_instructions", self.prompt_tool_instructions)
+        # TODO: if prompt_tool_instructions is not None:
+        # TODO:   prompt_tools = PromptTools(resource_connector=resource_connector, prompt_tool_instructions=prompt_tool_instructions)
+        # TODO: else:
+        return PromptPreprocessor(resource_connector=resource_connector,
+                                  prompt_template_directory=self.prompt_template_directory,
+                                  prompt_template_name=self.prompt_template_name)
+    
