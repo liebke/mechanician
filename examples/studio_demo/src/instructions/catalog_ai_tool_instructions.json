@@ -1,0 +1,71 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "create_product_offer",
+            "description": "Creates a new Product Offer in the Product Catalog",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "product": {
+                        "type": "string",
+                        "description": "The product to be offered"
+                    },
+                    "allowance_type": {
+                        "type": "string",
+                        "description": "The type of allowance"
+                    },
+                    "allowance_unit": {
+                        "type": "string",
+                        "description": "The unit of allowance"
+                    },
+                    "base_allowance": {
+                        "type": "number",
+                        "description": "The base allowance"
+                    },
+                    "base_nrc": {
+                        "type": "number",
+                        "description": "The base NRC"
+                    },
+                    "base_rc": {
+                        "type": "number",
+                        "description": "The base RC"
+                    },
+                    "brand": {
+                        "type": "string",
+                        "description": "The brand of the product"
+                    },
+                    "business_id": {
+                        "type": "string",
+                        "description": "The business ID"
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "The category of the product"
+                    },
+                    "commercial_name": {
+                        "type": "string",
+                        "description": "The commercial name of the product"
+                    },
+                    "final_nrc": {
+                        "type": "number",
+                        "description": "The final NRC"
+                    },
+                    "final_rc": {
+                        "type": "number",
+                        "description": "The final RC"
+                    },
+                    "product_line": {
+                        "type": "string",
+                        "description": "The product line"
+                    },
+                    "promo_allowance": {
+                        "type": "number",
+                        "description": "The promotional allowance"
+                    }
+                },
+                "required": ["product", "allowance_type", "allowance_unit", "base_allowance", "base_nrc", "base_rc", "brand", "business_id", "category", "commercial_name", "final_nrc", "final_rc", "product_line", "promo_allowance"]
+            }
+        }
+    }
+]

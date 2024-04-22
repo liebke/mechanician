@@ -33,38 +33,6 @@ class PromptTemplate:
         self.resources = resources
 
 
-    # def generate_prompt(self):
-    #     missing_fields = self._check_template_fields(self.template_str, self.resources)
-    #     if missing_fields:
-    #         error_msg = f"The PromptResources used by the Prompt Template are missing fields: {', '.join(missing_fields)}"
-    #         raise ValueError(error_msg)
-
-    #     resource_collection = {resource.name: resource.data for resource in self.resources}
-
-    #     def replacer(match):
-    #         keys = match.group(1).split('.')
-    #         value = resource_collection
-    #         for key in keys:
-    #             if '[' in key and ']' in key:  # check if key contains an array index
-    #                 key_name, index = key[:-1].split('[')  # split the key into the name and index
-    #                 if isinstance(value, dict):
-    #                     value = value.get(key_name, [])[int(index)]  # get the element at the index
-    #                 elif isinstance(value, list):
-    #                     value = value[int(key_name)]  # get the element at the index
-    #             else:
-    #                 value = value.get(key, '') if isinstance(value, dict) else ''
-    #             if not value:
-    #                 break
-
-    #         # Pretty-print JSON values
-    #         if isinstance(value, (dict, list)):
-    #             return json.dumps(value, indent=4)
-    #         else:
-    #             return str(value)
-
-    #     out = re.sub(r'\{\{([^}]+)\}\}', replacer, self.template_str)
-    #     return out
-
     def generate_prompt(self):
         missing_fields = self._check_template_fields(self.template_str, self.resources)
         if missing_fields:
@@ -99,36 +67,6 @@ class PromptTemplate:
         out = re.sub(r'\{\{\s*([^}]+?)\s*\}\}', replacer, self.template_str)
         return out
 
-
-    # def _check_template_fields(self, template_str: str, resources: list):
-    #     resource_collection = {resource.name: resource.data for resource in resources}
-    #     missing_fields = []
-
-    #     def check_field(field):
-    #         keys = field.split('.')
-    #         value = resource_collection
-    #         for key in keys:
-    #             if '[' in key and ']' in key:  # check if key contains an array index
-    #                 key_name, index = key[:-1].split('[')  # split the key into the name and index
-    #                 if isinstance(value, dict):
-    #                     value = value.get(key_name, [])  # get the value at the key
-    #                 if isinstance(value, list) and len(value) > int(index):
-    #                     value = value[int(index)]  # get the element at the index
-    #                 else:
-    #                     return key
-    #             else:
-    #                 value = value.get(key, '')
-    #             if not value:
-    #                 return key
-    #         return None
-
-    #     matches = re.findall(r'\{\{([^}]+)\}\}', template_str)
-    #     for match in matches:
-    #         missing_field = check_field(match)
-    #         if missing_field is not None:
-    #             missing_fields.append(missing_field)
-
-    #     return missing_fields
 
     def _check_template_fields(self, template_str: str, resources: list):
         resource_collection = {resource.name: resource.data for resource in resources}

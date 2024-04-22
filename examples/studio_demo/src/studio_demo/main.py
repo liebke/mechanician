@@ -16,6 +16,8 @@ from mechanician_chroma.chroma_ai_tools import ChromaAIToolsProvisioner
 from mechanician_chroma.chroma_resource_handlers import PDFResourceUploadedEventHandler, ChromaPDFResourceUploadedEventHandler
 from mechanician_studio.resource_handlers import TextResourceUploadedEventHandler
 
+from studio_demo.product_catalog import ProductCatalogConnectorProvisioner, CatalogAIToolsProvisioner
+
 from pprint import pprint
 import traceback
 
@@ -90,9 +92,29 @@ def init_studio():
     event_handlers = {"resource_uploaded": [ChromaPDFResourceUploadedEventHandler(), TextResourceUploadedEventHandler()]}
     
 
+    ## PRODUCT CATALOG
+    catalog_connector = ProductCatalogConnectorProvisioner(data_directory="./data",
+                                                               product_catalog_filename="product_catalog.csv")
+
+    catalog_tools = PromptToolsProvisioner(resource_connector_provisioner = catalog_connector,
+                                           prompt_template_directory="./templates",
+                                           prompt_instructions_directory="./src/instructions",
+                                           prompt_tool_instructions_file_name="catalog_prompt_tool_instructions.json")
+    
+    catalog_ai_tools = CatalogAIToolsProvisioner(catalog_connector_provisioner=catalog_connector,
+                                                 tool_instructions_file_name="catalog_ai_tool_instructions.json",
+                                                 ai_instructions_file_name="catalog_ai_instructions.md",
+                                                 instruction_set_directory="./src/instructions")
+
+    catalog_ai = AIProvisioner(ai_connector_provisioner=ai_connector,
+                               name = "Offer Managment Copilot",
+                               ai_tools_provisioners = [catalog_ai_tools])
+    
+    ## END PRODUCT CATALOG
+
     # Set up the Mechanician AI Studio
-    return AIStudio(ai_provisioners=[notepad_only_ai, tmdb_ai, contract_ai],
-                    prompt_tools_provisioners=[crm_tools, chroma_tools],
+    return AIStudio(ai_provisioners=[notepad_only_ai, tmdb_ai, contract_ai, catalog_ai],
+                    prompt_tools_provisioners=[crm_tools, chroma_tools, catalog_tools],
                     event_handlers=event_handlers,
                     prompt_preprocessor_provisioners=preprocessors)
 
@@ -106,8 +128,27 @@ def run_studio():
                 ssl_certfile=os.getenv("SSL_CERTFILE"))
 
 
+def test_catalog_connector():
+    try:
+        catalog_connector = ProductCatalogConnectorProvisioner(data_directory="./data",
+                                                               product_catalog_filename="product_catalog.csv")
+        connector = catalog_connector.create_connector()
+        pprint(connector.list_products_by_brand({"brand": "alditalk"}))
+
+        catalog_tools = PromptToolsProvisioner(resource_connector_provisioner = catalog_connector,
+                                               prompt_template_directory="./templates",
+                                               prompt_instructions_directory="./src/instructions",
+                                               prompt_tool_instructions_file_name="catalog_prompt_tool_instructions.json") 
+
+    except Exception as e:
+        traceback.print_exc()
+        logger.error(f"Error: {e}")
+
+
+
 if __name__ == '__main__':
     run_studio()
+    # test_catalog_connector()
 
 
 

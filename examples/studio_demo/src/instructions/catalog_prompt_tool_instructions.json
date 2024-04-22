@@ -1,0 +1,30 @@
+[
+    {
+      "type": "function",
+      "function": {
+        "name": "create_product_offer",
+        "description": "Creates a new Product Offer for a given brand.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "brand": {
+              "type": "string",
+              "description": "The brand of the product to create."
+            },
+            "product_family": {
+              "type": "string",
+              "description": "The family of the product to create."
+            },
+            "template": {
+              "type": "string",
+              "default": "create_product_offer.md",
+              "description": "The name of the prompt template file to use."
+            }
+          },
+          "required": [
+            "brand", "product_family"
+          ]
+        }
+      }
+    }
+  ]

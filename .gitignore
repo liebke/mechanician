@@ -35,3 +35,4 @@ examples/studio_demo/data/chromadb
 examples/studio_demo/data/users
 mechanician_chroma.egg-info
 mechanician_studio_demo.egg-info
+examples/studio_demo/data/_*
