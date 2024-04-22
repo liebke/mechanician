@@ -297,6 +297,7 @@
 
         function load_prompt_resources(form_data) {
             form_data.append('ai_name', get_ai_name());
+            form_data.append('dev_ui_active', 'True')
             fetch('/prompt_tools/resources', {
                     method: 'POST',
                     body: form_data, 

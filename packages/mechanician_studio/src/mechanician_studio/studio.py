@@ -208,6 +208,7 @@ class AIStudio:
             form_data_dict = dict(form_data)
             prompt = form_data_dict.get("_prompt", "")
             ai_name = form_data_dict.get("ai_name")
+            dev_ui_active = user.get("dev_ui_active", False) #or form_data_dict.get("dev_ui_active", False)
             new_conversation = request.query_params.get("new_conversation")
             conversation_id = request.query_params.get("conversation_id")
             if conversation_id is None:
@@ -220,6 +221,7 @@ class AIStudio:
             return self.templates.TemplateResponse("index.html", 
                                                    {"request": request,
                                                     "ai_names": self.ai_names,
+                                                    "dev_ui_active": dev_ui_active,
                                                     "ai_name": ai_name,
                                                     "conversation_id": conversation_id,
                                                     "username": username,
@@ -1132,7 +1134,10 @@ class AIStudio:
                 tool_calls = content.get("tool_calls")
                 for tool_call in tool_calls:
                     func = tool_call.get("function")
-                    output_str += f"""<b>Function Called</b>: {func.get("name")}\n<b>Arguments</b>: {func.get("arguments")}\n<b>ID</b>: {tool_call.get("id")}\n"""
+                    args = "<pre><code>"
+                    args += json.dumps(json.loads(func.get("arguments")), indent=4)
+                    args += "</code></pre>"
+                    output_str += f"""<b>Function Called</b>: {func.get("name")}\n<b>ID</b>: {tool_call.get("id")}\n<b>Arguments</b>:\n{args}\n"""
                     msg = {"role": role, 
                            "tool_calls": tool_calls,
                            "tool_call_id": tool_call.get("id"),

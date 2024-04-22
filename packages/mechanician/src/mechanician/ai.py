@@ -225,6 +225,8 @@ class AIProvisioner(ABC):
                 ai_tools = AIToolKit(tools=ai_tools_instances)
             else:
                 raise ValueError(f"tools must be an instance of AITools or a list of AITools. Received: {ai_tools}")
+        else:
+            ai_tools = None
 
         ai_instructions = context.get("ai_instructions", None)
         # Check if message_history is provided in the context, and use that if available.
