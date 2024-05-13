@@ -1,0 +1,283 @@
+@startuml
+
+package mechanician.ai_connectors {
+    abstract class AIConnector {
+        -messages
+        -instructions
+        -tool_schemas
+        +{abstract} submit_prompt(prompt) : str
+        +get_messages()
+        +set_messages(messages)
+    }
+
+    abstract class StreamingAIConnector {
+        +{abstract} get_stream(prompt)
+        +{abstract} submit_prompt(prompt, role="user")
+    }
+
+    abstract class AIConnectorProvisioner {
+        +{abstract} create_ai_connector(context:dict={})
+    }
+
+    StreamingAIConnector --|> AIConnector
+}
+
+
+package mechanician.tools {
+
+    abstract class MechanicianTools {
+    {abstract} get_tool_instructions()
+    }
+
+    class MechanicianToolKit {
+    get_tool_instructions()
+    }
+
+    class PromptTools {
+    resource_connector: ResourceConnector
+    prompt_template_directory: str
+    tool_instructions_file_name: str
+    instruction_set_directory: str
+    }
+
+    class PromptPreprocessor {
+    prompt_template_name: str
+    preprocess_prompt(prompt: str)
+    }
+
+    class PromptToolKit {
+    generate_prompt(function_name: str, prompt_template_str: str, params: dict)
+    get_prompt_template(prompt_template_name)
+    get_resources(function_name: str, params: dict)
+    save_prompt_template(prompt_template_name, prompt_template)
+    }
+
+    class AITools {
+    get_ai_instructions()
+    }
+
+    class AIToolKit {
+    get_ai_instructions()
+    }
+
+    abstract class MechanicianToolsProvisioner {
+    {abstract} create_tools(context: dict) : MechanicianTools
+    }
+
+    class PromptToolsProvisioner {
+    resource_connector_provisioner: ResourceConnectorProvisioner
+    prompt_template_directory: str
+    prompt_tool_instructions_file_name: str
+    prompt_instructions_directory: str
+    create_tools(context: dict) : MechanicianTools
+    }
+
+    class PromptPreprocessorProvisioner {
+    resource_connector_provisioner: ResourceConnectorProvisioner
+    prompt_template_directory: str
+    prompt_template_name: str
+    create_tools(context: dict) : MechanicianTools
+    }
+
+    MechanicianTools <|-- MechanicianToolKit
+    MechanicianTools <|-- PromptTools
+    PromptTools <|-- PromptPreprocessor
+    PromptTools <|-- PromptToolKit
+    MechanicianTools <|-- AITools
+    AITools <|-- AIToolKit
+    MechanicianToolsProvisioner <|-- PromptToolsProvisioner
+    MechanicianToolsProvisioner <|-- PromptPreprocessorProvisioner
+
+}
+
+package mechanician.ai {
+
+    class AI {
+        - ai_connector: AIConnector
+        - name: string
+        - ai_tools: list
+        - ai_instructions: string
+        - ai_tool_instructions: list
+        - instruction_set_directory: string
+        - tool_instructions_file_name: string
+        - ai_instruction_file_name: string
+        + get_tuning_session(): string
+        + save_tuning_session(tuning_session_dir: string, file_name: string): void
+        + submit_prompt(prompt: string, role: string): string
+        + get_message_history(): string
+    }
+
+    class AIProvisioner <<abstract>> {
+        - ai_connector_provisioner: AIConnectorProvisioner
+        - name: string
+        - ai_tools_provisioners: list
+        - ai_instructions: string
+        - instruction_set_directory: string
+        - ai_instruction_file_name: string
+        + create_ai_instance(context: dict): AI
+    }
+
+    AI "1" -- "1" AIConnector
+    AIProvisioner "1" -- "1" AIConnectorProvisioner
+    AI "1" -- "*" AITools
+    AIProvisioner "0..*" -- "*" MechanicianToolsProvisioner
+    AIProvisioner "0..*" -- "*" MechanicianTools
+
+
+}
+
+
+package mechanician.resources {
+
+    ' Abstract Class Declaration
+    abstract class ResourceConnector {
+        + query(query_name: string, params: dict): dict
+    }
+
+    ' Abstract Class Declaration
+    abstract class ResourceConnectorProvisioner {
+        {abstract} + create_connector(context: dict): ResourceConnector
+    }
+
+    ' Class Declaration
+    class PromptResource {
+        - name: string
+        - data: dict
+        + __init__(name: string, data: dict)
+    }
+
+
+}
+
+
+package mechanician.templates {
+
+    class PromptTemplate {
+        - template_str: string
+        - resources: List[PromptResource]
+        + __init__(template_str: string, template_filename: string, template_directory: string, resources: List[PromptResource])
+        + generate_prompt(): string
+        + read_prompt_template(template_filename: string, template_directory: string): string
+        + add_resource(resource_name: string, resource_data: dict): void
+        + add_resources(resources: List[dict]): void
+    }
+
+    PromptTemplate "1" -- "*" PromptResource : uses >
+
+
+}
+
+
+package mechanician.ai_tools.notepads {
+
+    ' Abstract Classes
+    abstract class NotepadStore {
+        {abstract} + create_note(name: string, value: string): string
+        {abstract} + list_notes(): string
+        {abstract} + get_note(note_name: string): string
+        {abstract} + delete_note(note_name: string): string
+        {abstract} + delete_notepad(): string
+    }
+
+    abstract class NotepadStoreProvisioner {
+        {abstract} + create_notepad_store(notepad_name: string): NotepadStore
+    }
+
+    abstract class MechanicianToolsProvisioner {
+        {abstract} + create_tools(context: dict): AITools
+    }
+
+    ' Concrete Classes
+    class NotepadFileStore {
+        - notepad_name: string
+        - notepad_directory_name: string
+        - notepad_file_path: string
+        - notepad: dict
+        + load_notepad(): void
+        + save_notepad(): void
+        + create_note(name: string, value: string): string
+        + list_notes(): string
+        + get_note(note_name: string): string
+        + delete_note(note_name: string): string
+        + delete_notepad(): string
+    }
+
+    class NotepadAITools {
+        - notepad_store: NotepadStore
+        + get_ai_instructions(): string
+        + get_tool_instructions(): string
+        + create_note(params: dict): string
+        + get_note(params: dict): string
+        + list_notes(params: dict): string
+        + delete_note(params: dict): string
+        + delete_notepad(params: dict): string
+        + get_current_datetime(params: dict): dict
+    }
+
+    class NotepadAIToolsProvisioner {
+        - notepad_store_provisioner: NotepadStoreProvisioner
+        + __init__(notepad_store_provisioner: NotepadStoreProvisioner)
+        + create_tools(context: dict): NotepadAITools
+    }
+
+    class UserNotepadAIToolsProvisioner {
+        + create_tools(context: dict): NotepadAITools
+    }
+
+    class NotepadFileStoreProvisioner {
+        - notepad_directory_name: string
+        + __init__(notepad_directory_name: string)
+        + create_notepad_store(notepad_name: string): NotepadStore
+    }
+
+    NotepadStore <|-- NotepadFileStore
+    NotepadStoreProvisioner <|-- NotepadFileStoreProvisioner
+    MechanicianToolsProvisioner <|-- NotepadAIToolsProvisioner
+    NotepadAIToolsProvisioner <|-- UserNotepadAIToolsProvisioner
+    NotepadStore "1" -- "1" NotepadAITools
+    NotepadStoreProvisioner "1" -- "1" NotepadAIToolsProvisioner
+    AITools <|-- NotepadAITools
+
+
+}
+
+package mechanician_openai.chat_ai_connector {
+
+    class OpenAIChatConnector {
+        - DEFAULT_MODEL_NAME: String = "gpt-4-1106-preview"
+        - DEFAULT_ENDPOINT: String = "https://api.openai.com"
+        - base_url: String
+        - api_key: String
+        - model_name: String
+        - STREAMING: Boolean = true
+        - MAX_THREAD_WORKERS: Integer
+        - stream_printer: SimpleStreamPrinter
+        - client: OpenAI
+        - ai_tool_instructions: JSON
+        - ai_instructions: JSON
+        - tools: AITools
+        - messages: List
+
+        + __init__(model_name: String, api_key: String, base_url: String, stream_printer: SimpleStreamPrinter, max_thread_workers: Integer, client: OpenAI)
+        + submit_prompt(prompt: String, role: String): void
+        + get_stream(): Stream
+        + get_message_history(): List
+        + clean_up(): void
+    }
+
+    class OpenAIChatConnectorProvisioner {
+        - api_key: String
+        - model_name: String
+        - base_url: String
+        - stream_printer: SimpleStreamPrinter
+        - max_thread_workers: Integer
+        - client: OpenAI
+
+        + __init__(model_name: String, api_key: String, base_url: String, stream_printer: SimpleStreamPrinter, max_thread_workers: Integer, client: OpenAI)
+        + create_ai_connector(context: dict): OpenAIChatConnector
+    }
+
+
+}
+
+@enduml

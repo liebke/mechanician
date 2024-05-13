@@ -36,3 +36,6 @@ examples/studio_demo/data/users
 mechanician_chroma.egg-info
 mechanician_studio_demo.egg-info
 examples/studio_demo/data/_*
+out/docs/mechanician/mechanician.png
+examples/studio_demo/certs/rootCA.pem
+packages/mechanician_client/src/mechanician_client.egg-info

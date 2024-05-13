@@ -1,0 +1,55 @@
+[
+    {
+        "type": "function",
+        "function": {
+            "name": "analyze_web_form",
+            "description": "Analyzes a web form",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "url": {
+                        "type": "string",
+                        "description": "The URL of the web form to analzye"
+                    },
+                    "template": {
+                        "type": "string",
+                        "default": "web_form_analyzer.md",
+                        "description": "The name of the prompt template file to use."
+                    }
+                },
+                "required": ["url"]
+            }
+        }
+    },
+
+    {
+        "type": "function",
+        "function": {
+            "name": "analyze_commit_diff",
+            "description": "Analyzes a GitHub commit diff",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "repo": {
+                        "type": "string",
+                        "description": "The repo name to analzye in the form of <owner>/<repo>"
+                    },
+                    "commit_hash": {
+                        "type": "string",
+                        "description": "The commit hash to analzye"
+                    },
+                    "token": {
+                        "type": "string",
+                        "description": "The Github token to use for authentication."
+                    },
+                    "template": {
+                        "type": "string",
+                        "default": "commit_diff_analyzer.md",
+                        "description": "The name of the prompt template file to use."
+                    }
+                },
+                "required": ["repo", "commit_hash"]
+            }
+        }
+    }
+]

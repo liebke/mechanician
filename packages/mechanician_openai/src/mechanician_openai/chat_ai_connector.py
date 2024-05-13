@@ -177,10 +177,15 @@ class OpenAIChatConnector(StreamingAIConnector):
             if not chunk.choices:
                 continue
 
+            if chunk.choices[0].finish_reason is not None:
+                yield {"role": "assistant", 
+                       "content": chunk.choices[0].delta.content, 
+                       "finish_reason": chunk.choices[0].finish_reason}
+            
             if chunk.choices[0].delta.content is not None:
                 # Yield response chunk to include in message history
                 response += chunk.choices[0].delta.content
-                yield chunk.choices[0].delta.content
+                yield {"role": "assistant", "content": chunk.choices[0].delta.content}
 
             if chunk.choices[0].delta.tool_calls is not None:
                 tool_calls, tool_calls_index = self.process_tool_calls_chunk(chunk, tool_calls, tool_calls_index, futures)
@@ -197,7 +202,7 @@ class OpenAIChatConnector(StreamingAIConnector):
                     tc = tool_calls[-1]
                     with ThreadPoolExecutor(max_workers=self.MAX_THREAD_WORKERS) as executor:
                         futures.append(executor.submit(self.process_tool_call, tc))
-                        yield f"Applying tool: {tc['function']['name']}...\n\n"
+                        yield {"role": "assistant", "content": f"Applying tool: {tc['function']['name']}...\n\n"}
 
                 results = [f.result() for f in as_completed(futures)]
 

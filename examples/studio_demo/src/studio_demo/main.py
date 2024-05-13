@@ -18,6 +18,8 @@ from mechanician_studio.resource_handlers import TextResourceUploadedEventHandle
 
 from studio_demo.product_catalog import ProductCatalogConnectorProvisioner, CatalogAIToolsProvisioner
 
+from .web_form_analyzer import WebFormAnalyzerConnectorProvisioner
+
 from pprint import pprint
 import traceback
 
@@ -112,9 +114,19 @@ def init_studio():
     
     ## END PRODUCT CATALOG
 
+    ## WEB FORM ANALYZER
+
+    web_form_analyzer_connector = WebFormAnalyzerConnectorProvisioner()
+    web_form_analyzer_tools = PromptToolsProvisioner(resource_connector_provisioner = web_form_analyzer_connector,
+                                                     prompt_template_directory="./templates",
+                                                     prompt_instructions_directory="./src/instructions",
+                                                     prompt_tool_instructions_file_name="web_form_analyzer_instructions.json")
+
+    ## END WEB FORM ANALYZER
+
     # Set up the Mechanician AI Studio
     return AIStudio(ai_provisioners=[notepad_only_ai, tmdb_ai, contract_ai, catalog_ai],
-                    prompt_tools_provisioners=[crm_tools, chroma_tools, catalog_tools],
+                    prompt_tools_provisioners=[crm_tools, chroma_tools, catalog_tools, web_form_analyzer_tools],
                     event_handlers=event_handlers,
                     prompt_preprocessor_provisioners=preprocessors)
 

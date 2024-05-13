@@ -957,13 +957,16 @@ class AIStudio:
             sid = str(websocket.client)
             try:
                 # Authentication (Assuming this is a separate method for clarity)
-                if not await self.authenticate_websocket(websocket):
+                auth = await self.authenticate_websocket(websocket)
+                if not auth.get("authorized", False):
                     logger.info("Authentication failed")
                     return
                 
                 # Main WebSocket communication loop
                 while True:
-                    await self.handle_incoming_messages(websocket)
+                    await self.handle_incoming_messages(websocket, 
+                                                        ai_name=auth.get("ai_name", None),
+                                                        conversation_id=auth.get("conversation_id", None))
             except WebSocketDisconnect:
                 logger.info("Client disconnected")
                 self.cleanup(sid)
@@ -979,28 +982,46 @@ class AIStudio:
             auth_data = await asyncio.wait_for(websocket.receive_text(), timeout=30)
             auth_data = json.loads(auth_data)
             token = auth_data.get("token", "")
+            ai_name = auth_data.get("ai_name", None)
+            if ai_name is None or ai_name == "":
+                ai_name = self.ai_names[0]
+            conversation_id = auth_data.get("conversation_id", "")
+            new_conversation = auth_data.get("new_conversation", False)
+            if new_conversation:
+                conversation_id = self.user_data_store.new_conversation(token, ai_name)
+
             sid = str(websocket.client)
             self.token_to_sids[token] = sid
             self.sid_to_tokens[sid] = token
             if self.credentials_manager.verify_access_token(token):
                 logger.debug("Token verified")
-                return True
+                resp = {"role": "system",
+                        "ai_name": ai_name,
+                        "conversation_id": conversation_id,
+                        "authorized": True,
+                        "content": f"Authentication successful. You are now connected to \"{ai_name}\".\n\n"}
+                await websocket.send_text(json.dumps(resp))
+                await asyncio.sleep(0)
+                return resp
             else:
                 logger.info("Invalid token. Closing connection.")
                 await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
-                return False
+                return {"authorized": False}
         except asyncio.TimeoutError:
             logger.info("Authentication timeout. Closing connection.")
             await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
-            return False
+            return {"authorized": False}
         except Exception as e:
             logger.error(f"Unexpected error during authentication: {e}")
             await websocket.close(code=status.WS_1008_POLICY_VIOLATION)
             self.cleanup(sid)
-            return False
+            return {"authorized": False}
 
 
-    async def handle_incoming_messages(self, websocket: WebSocket):
+    async def handle_incoming_messages(self, 
+                                       websocket: WebSocket,
+                                       ai_name: str=None,
+                                       conversation_id: str=None):
         """Process incoming WebSocket messages."""
         async for message in websocket.iter_text():
             data = json.loads(message)
@@ -1008,15 +1029,24 @@ class AIStudio:
             if input_type == "stop":
                 await self.stop_text_generation(websocket)
             else:
-                await self.start_text_generation(websocket, data)
+                await self.start_text_generation(websocket, 
+                                                 data,
+                                                 ai_name=ai_name,
+                                                 conversation_id=conversation_id)
 
 
-    async def start_text_generation(self, websocket: WebSocket, data: dict):
+    async def start_text_generation(self, websocket: WebSocket, 
+                                    data: dict,
+                                    ai_name: str=None,
+                                    conversation_id: str=None):
         """Starts the text generation process in a separate task."""
         sid = str(websocket.client)
         if sid in self.active_tasks:
             self.active_tasks[sid].cancel()
-        self.active_tasks[sid] = asyncio.create_task(self.generate_text(websocket, data))
+        self.active_tasks[sid] = asyncio.create_task(self.generate_text(websocket, 
+                                                                        data,
+                                                                        ai_name=ai_name,
+                                                                        conversation_id=conversation_id))
 
 
     def get_context(self, token:str, ai_name:str=None):
@@ -1028,25 +1058,28 @@ class AIStudio:
                 "ai_name": ai_name}
     
 
-    def merge_client_message_history(self, message_history, client_message_history):
-        merged_message_history = []
-        if not message_history:
-            merged_message_history = client_message_history
-        else:
-            only_system_messages = [msg for msg in message_history if msg.get("role", "system") == "system"]
-            if len(only_system_messages) == len(message_history):
-                merged_message_history = message_history + client_message_history
-            else:
-                merged_message_history = message_history
+    # def merge_client_message_history(self, message_history, client_message_history):
+    #     merged_message_history = []
+    #     if not message_history:
+    #         merged_message_history = client_message_history
+    #     else:
+    #         only_system_messages = [msg for msg in message_history if msg.get("role", "system") == "system"]
+    #         if len(only_system_messages) == len(message_history):
+    #             merged_message_history = message_history + client_message_history
+    #         else:
+    #             merged_message_history = message_history
 
-        return merged_message_history
+    #     return merged_message_history
 
 
-    async def generate_text(self, websocket: WebSocket, data: dict):
+    async def generate_text(self, websocket: WebSocket, 
+                            data: dict,
+                            ai_name: str=None,
+                            conversation_id: str=None):
         """The actual text generation logic."""
         input_text = data.get("data", "")
-        ai_name = data.get("ai_name", "")
-        conversation_id = data.get("conversation_id", None)
+        # ai_name = data.get("ai_name", "")
+        # conversation_id = data.get("conversation_id", None)
         sid = str(websocket.client)
         token = self.sid_to_tokens.get(sid, None)
         if token is None:
@@ -1072,6 +1105,7 @@ class AIStudio:
             if processed_prompt.get("status", None) == "error":
                 resp = {"role": "assistant", "content": json.dumps(processed_prompt)}
                 await websocket.send_text(json.dumps(resp))
+                await asyncio.sleep(0)
                 return
             
             prompt = processed_prompt.get("prompt", '')
@@ -1100,19 +1134,35 @@ class AIStudio:
                         break
                     else:
                         no_content = False
-                        # If content is a dictionary, it is a tool call
+                        # If content is a dictionary, it is a tool call or end of stream response
                         if isinstance(content, dict):
-                            tool_msg = self.format_tool_call_messages(content)
-                            content = tool_msg.get("content", "")
-                            self.user_data_store.append_message_to_conversation(username, ai_name, conversation_id, tool_msg)
-                            if user.get("dev_ui_active", "False") == "True":
-                                await websocket.send_text(json.dumps(tool_msg))
+                            if "finish_reason" in content:
+                                print(f"Finish Reason: {content.get('finish_reason')}")
+                                if content.get("finish_reason") == "stop":
+                                    await websocket.send_text(json.dumps({"role": "assistant", 
+                                                                          "content": None, 
+                                                                          "finish_reason": "stop",
+                                                                          "ai_name": ai_name,
+                                                                          "conversation_id": conversation_id}))
+                                    await asyncio.sleep(0)
+                            elif ("tool_call_id" in content) or ("tool_calls" in content): # tool call response or tool call
+                                tool_msg = self.format_tool_call_messages(content)
+                                content = tool_msg.get("content", "")
+                                self.user_data_store.append_message_to_conversation(username, ai_name, conversation_id, tool_msg)
+                                if user.get("dev_ui_active", "False") == "True":
+                                    tool_msg["ai_name"] = ai_name
+                                    tool_msg["conversation_id"] = conversation_id
+                                    await websocket.send_text(json.dumps(tool_msg))
+                                    await asyncio.sleep(0)
+                            else:
+                                # await websocket.send_text(json.dumps({"role": "assistant", "content": content}))
+                                await websocket.send_text(json.dumps(content))
                                 await asyncio.sleep(0)
-                        else:
-                            await websocket.send_text(json.dumps({"role": "assistant", "content": content}))
-                            await asyncio.sleep(0)
-                            ai_response += content
-                            msg = {"role": "assistant", "content": ai_response}
+                                ai_response += content.get("content", "")
+                                msg = {"role": "assistant", 
+                                       "content": ai_response,
+                                       "ai_name": ai_name,
+                                       "conversation_id": conversation_id}
 
                 if msg is not None:
                     self.user_data_store.append_message_to_conversation(username, ai_name, conversation_id, msg)
