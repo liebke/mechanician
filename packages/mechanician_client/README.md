@@ -5,15 +5,16 @@
 
 
 ```bash
+python3 -m mechanician_client.mecha --interactive True --username liebke
 python3 -m mechanician_client.mecha --interactive True --username liebke --ai_name "Notepad Only AI" --conversation_id "20240511120705" --root_ca_cert ../../examples/studio_demo/certs/rootCA.pem
 python3 -m mechanician_client.mecha --interactive True --username liebke --ai_name "Notepad Only AI"
 python3 -m mechanician_client.mecha --interactive True --ai_name "Notepad Only AI"
-echo "please write a limerick about Frodo Baggins" | python3 -m mechanician_client.mecha --username liebke --ai_name "Notepad Only AI" --root_ca_cert ../../examples/studio_demo/certs/rootCA.pem
+echo "please write a limerick about Frodo Baggins" | python3 -m mechanician_client.mecha --username liebke --ai_name "Notepad Only AI" --prompt - --root_ca_cert ../../examples/studio_demo/certs/rootCA.pem
 echo "please write a limerick about Frodo Baggins" | python3 -m mechanician_client.mecha --ai_name "Notepad Only AI" --root_ca_cert ../../examples/studio_demo/certs/rootCA.pem --prompt -
 python3 -m mechanician_client.mecha --ai_name "Notepad Only AI" --root_ca_cert ../../examples/studio_demo/certs/rootCA.pem --prompt "please write a limerick about Frodo Baggins"
 
-echo "what is an ETF?" | python3 -m mechanician_client.mecha --ai_name "Contracts Copilot AI"
-echo "what does FX stand for?" | python3 -m mechanician_client.mecha --ai_name "Contracts Copilot AI"
+echo "what is an ETF?" | python3 -m mechanician_client.mecha --ai_name "Contracts Copilot AI" --prompt -
+echo "what does FX stand for?" | python3 -m mechanician_client.mecha --ai_name "Contracts Copilot AI" --prompt -
 python3 -m mechanician_client.mecha --interactive True --ai_name "Contracts Copilot AI"
 
 python3 -m mechanician_client.mecha --username liebke --prompt_template event_invite.md --root_ca_cert ../../examples/studio_demo/certs/rootCA.pem

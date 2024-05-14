@@ -11,20 +11,16 @@ from pprint import pprint
 
 class MechanicianClient:
 
-    def __init__(self, host='127.0.0.1', port='8000', username=None, password=None,
-                 token=None, ai_name=None, conversation_id=None, interactive=True,
-                 root_ca_cert='./certs/rootCA.pem', prompt=None):
+    def __init__(self, host='127.0.0.1', port='8000',
+                 username=None, password=None,
+                 token=None, root_ca_cert='./certs/rootCA.pem'):
         self.username = username
         self.password = password
-        self.ai_name = ai_name
-        self.conversation_id = conversation_id
-        self.new_conversation = conversation_id == "" or conversation_id is None
         self.ws_url = f'wss://{host}:{port}/ws'
         self.https_base_url = f'https://{host}:{port}'
         self.token_url = f'{self.https_base_url}/token'
         self.root_ca_cert = root_ca_cert
         self.ssl_context = self._setup_ssl_context()
-        self.interactive = interactive
         self.token = token
 
         if username and password:
@@ -92,14 +88,19 @@ class MechanicianClient:
             return None
 
 
-    async def _init_web_socket(self):
+    async def _init_web_socket(self, ai_name:str=None, conversation_id:str=None):
         websocket = await websockets.connect(self.ws_url, ssl=self.ssl_context)
-        await self._authorize_websocket(websocket)
+        await self._authorize_websocket(ai_name=ai_name, conversation_id=conversation_id, websocket=websocket)
         return websocket
 
 
-    async def _authorize_websocket(self, websocket):
-        req = {"token": self.token, "ai_name": self.ai_name, "type": 'token', "conversation_id": self.conversation_id, "new_conversation": self.new_conversation}
+    async def _authorize_websocket(self, ai_name:str=None, conversation_id:str=None, websocket=None):
+        if conversation_id is None:
+            new_conversation = True
+        else:
+            new_conversation = False
+
+        req = {"token": self.token, "ai_name": ai_name, "type": 'token', "conversation_id": conversation_id, "new_conversation": new_conversation}
         await websocket.send(json.dumps(req))
         await asyncio.sleep(0)
         response = await websocket.recv()
@@ -109,7 +110,7 @@ class MechanicianClient:
             exit(1)
 
 
-    async def _run_loop(self, socket, initial_prompt=None):
+    async def _run_loop(self, socket, ai_name:str, conversation_id:str=None, initial_prompt=None):
         try:
             while True:
                 if initial_prompt is None:
@@ -117,19 +118,17 @@ class MechanicianClient:
                 else:
                     prompt_text = initial_prompt
                     initial_prompt = None
-                response = await self._send_message(socket, prompt_text)
-                print("\n\n" if self.interactive else "\n")
-                if not self.interactive:
-                    break
+                response = await self._send_message(socket, ai_name, prompt_text, conversation_id=conversation_id)
+                print("\n\n")
         finally:
             await socket.close()
             exit(0)
 
 
-    async def _send_message(self, socket, prompt_text, print_stream=True):
+    async def _send_message(self, socket, ai_name:str, prompt_text:str, conversation_id:str=None, print_stream=True):
         prompt_text = self._process_prompt(prompt_text)
         if prompt_text:
-            message = json.dumps({"data": prompt_text, "type": 'prompt', "ai_name": self.ai_name, "conversation_id": self.conversation_id})
+            message = json.dumps({"data": prompt_text, "type": 'prompt', "ai_name": ai_name, "conversation_id": conversation_id})
             await socket.send(message)
             await asyncio.sleep(0)
             complete_response = ""
@@ -175,7 +174,7 @@ class MechanicianClient:
             return f"Failed to retrieve prompt template. Status code: {response.status_code}"
 
 
-    def call_prompt_tool(self, ai_name, function_name:str=None, prompt_template:str=None, form_data:dict={}):
+    def call_prompt_tool(self, ai_name:str, function_name:str, prompt_template:str, form_data:dict={}):
         url = f"{self.https_base_url}/call_prompt_tool"
         verify = self.root_ca_cert if os.path.exists(self.root_ca_cert) else False
         form_data['function_name'] = function_name
@@ -192,17 +191,17 @@ class MechanicianClient:
             return f"Failed to retrieve prompt template. Status code: {response.status_code}"
 
 
-    async def submit_prompt(self, client, prompt):
-        socket = await client._init_web_socket()
-        await client._send_message(socket, prompt, print_stream=True)
+    async def submit_prompt(self, ai_name:str, prompt:str, conversation_id:str=None):
+        socket = await client._init_web_socket(ai_name=ai_name, conversation_id=conversation_id)
+        await self._send_message(socket, ai_name, prompt, conversation_id=conversation_id, print_stream=True)
         print("\n")
         await socket.close()
         exit(0)
 
 
-    async def shell(self, initial_prompt=None):
-        socket = await self._init_web_socket()
-        await self._run_loop(socket, initial_prompt=initial_prompt)
+    async def shell(self, ai_name:str, conversation_id:str=None, initial_prompt=None):
+        socket = await self._init_web_socket(ai_name=ai_name, conversation_id=conversation_id)
+        await self._run_loop(socket, ai_name, conversation_id=conversation_id, initial_prompt=initial_prompt)
 
 
     
@@ -230,15 +229,14 @@ if __name__ == "__main__":
     if args.username and args.password is None:
         args.password = getpass.getpass("Enter password: ")
 
+    interactive = args.interactive
     if args.prompt == '-':
-        # interactive = False
         print("Reading prompt from stdin...", file=sys.stderr)
         prompt = sys.stdin.read().strip()
     elif args.prompt is None:
         interactive = True
     else:
         prompt = args.prompt
-        # interactive = False
 
 
     # Convert the list of key=value strings to a dictionary
@@ -255,31 +253,24 @@ if __name__ == "__main__":
         username=args.username,
         password=args.password,
         token=args.token,
-        ai_name=args.ai_name,
-        conversation_id=args.conversation_id,
-        root_ca_cert=args.root_ca_cert,
-        interactive=args.interactive)
+        root_ca_cert=args.root_ca_cert)
 
     
     if args.prompt:
-        if client.interactive:
-            asyncio.run(client.shell(initial_prompt=prompt))
+        if interactive:
+            asyncio.run(client.shell(args.ai_name, conversation_id=args.conversation_id, initial_prompt=prompt))
         else:
-            asyncio.run(client.submit_prompt(client, prompt))
+            asyncio.run(client.submit_prompt(args.ai_name, prompt, conversation_id=args.conversation_id))
     elif args.prompt_template and args.prompt_tool:
-        # print(f"Prompt Tool: {args.prompt_tool}")
-        # print(f"Prompt template Name: {args.prompt_template}")
-        # pprint(form_data)
         template = client.get_prompt_template(args.prompt_template)
-        # pprint(template)
-        prompt = client.call_prompt_tool(args.ai_name, args.prompt_tool, template, form_data).get("prompt", None)
+        prompt = client.call_prompt_tool(args.ai_name, args.prompt_tool, template, form_data=form_data).get("prompt", None)
         if prompt:
-            if client.interactive:
-                asyncio.run(client.shell(initial_prompt=prompt))
+            if interactive:
+                asyncio.run(client.shell(args.ai_name, conversation_id=args.conversation_id, initial_prompt=prompt))
             else:
-                asyncio.run(client.submit_prompt(client, prompt))
+                asyncio.run(client.submit_prompt(args.ai_name, prompt, conversation_id=args.conversation_id))
         else:
             print("Failed to retrieve prompt from server.", file=sys.stderr)
     else:
-        asyncio.run(client.shell())
+        asyncio.run(client.shell(args.ai_name, conversation_id=args.conversation_id))
     
