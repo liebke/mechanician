@@ -13,18 +13,20 @@ class MechanicianClient:
 
     def __init__(self, host='127.0.0.1', port='8000',
                  username=None, password=None,
-                 token=None, root_ca_cert='./certs/rootCA.pem'):
+                 token=None, 
+                 root_ca_cert=None,
+                 no_ssl_verify=False):
         self.username = username
         self.password = password
         self.ws_url = f'wss://{host}:{port}/ws'
         self.https_base_url = f'https://{host}:{port}'
         self.token_url = f'{self.https_base_url}/token'
         self.root_ca_cert = root_ca_cert
-        self.ssl_context = self._setup_ssl_context()
+        self.ssl_context = self._setup_ssl_context(no_ssl_verify=no_ssl_verify)
         self.token = token
 
         if username and password:
-            self.token = self._authenticate()
+            self.token = self._authenticate(no_ssl_verify=no_ssl_verify)
             if self.token:
                 self._save_token(self.token)
         else:
@@ -66,21 +68,29 @@ class MechanicianClient:
             return None
         
 
-    def _setup_ssl_context(self):
-        if os.path.exists(self.root_ca_cert):
-            ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
-            ssl_context.load_verify_locations(self.root_ca_cert)
-        else:
-            print(f"Root CA certificate not found at {self.root_ca_cert}", file=sys.stderr)
-            ssl_context = ssl.create_default_context()  # Assumes no verification
+    def _setup_ssl_context(self, no_ssl_verify=False):
+        ssl_context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
+        if no_ssl_verify:
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
+        else:
+            if self.root_ca_cert is not None and os.path.exists(self.root_ca_cert):
+                ssl_context.load_verify_locations(self.root_ca_cert)
+            else:
+                print(f"Root CA certificate not found at {self.root_ca_cert}", file=sys.stderr)
+        
         return ssl_context
 
 
-    def _authenticate(self):
-        verify_option = self.root_ca_cert if os.path.exists(self.root_ca_cert) else False
-        response = requests.post(self.token_url, data={'username': self.username, 'password': self.password}, verify=verify_option)
+    def _authenticate(self, no_ssl_verify=False):
+        if no_ssl_verify:
+            response = requests.post(self.token_url, data={'username': self.username, 'password': self.password}, verify=False)
+        elif self.root_ca_cert is not None and os.path.exists(self.root_ca_cert):
+            response = requests.post(self.token_url, data={'username': self.username, 'password': self.password}, 
+                                     verify=self.root_ca_cert)
+        else:
+            response = requests.post(self.token_url, data={'username': self.username, 'password': self.password})
+
         if response.status_code == 200:
             return response.json()['access_token']
         else:
@@ -89,25 +99,33 @@ class MechanicianClient:
 
 
     async def _init_web_socket(self, ai_name:str=None, conversation_id:str=None):
-        websocket = await websockets.connect(self.ws_url, ssl=self.ssl_context)
-        await self._authorize_websocket(ai_name=ai_name, conversation_id=conversation_id, websocket=websocket)
-        return websocket
+        try:
+            websocket = await websockets.connect(self.ws_url, ssl=self.ssl_context)
+            await self._authorize_websocket(ai_name=ai_name, conversation_id=conversation_id, websocket=websocket)
+            return websocket
+        except ssl.SSLCertVerificationError as e:
+            print(f"SSL certificate verification failed: {e}", file=sys.stderr)
+            exit(1)
 
 
     async def _authorize_websocket(self, ai_name:str=None, conversation_id:str=None, websocket=None):
-        if conversation_id is None:
-            new_conversation = True
-        else:
-            new_conversation = False
+        try:
+            if conversation_id is None:
+                new_conversation = True
+            else:
+                new_conversation = False
 
-        req = {"token": self.token, "ai_name": ai_name, "type": 'token', "conversation_id": conversation_id, "new_conversation": new_conversation}
-        await websocket.send(json.dumps(req))
-        await asyncio.sleep(0)
-        response = await websocket.recv()
-        fragment = json.loads(response)
-        print({k: fragment[k] for k in ["ai_name", "conversation_id"] if k in fragment}, flush=True, file=sys.stderr)
-        if fragment.get("role", "") == "system" and not fragment.get("authorized", False):
-            print("Unauthorized access. Please check your credentials.\n\n", file=sys.stderr)
+            req = {"token": self.token, "ai_name": ai_name, "type": 'token', "conversation_id": conversation_id, "new_conversation": new_conversation}
+            await websocket.send(json.dumps(req))
+            await asyncio.sleep(0)
+            response = await websocket.recv()
+            fragment = json.loads(response)
+            print({k: fragment[k] for k in ["ai_name", "conversation_id"] if k in fragment}, flush=True, file=sys.stderr)
+            if fragment.get("role", "") == "system" and not fragment.get("authorized", False):
+                print("Unauthorized access. Please check your credentials.\n\n", file=sys.stderr)
+                exit(1)
+        except websockets.exceptions.ConnectionClosedError as e:
+            print(f"Websocket Authentication Failed: code: {e.code}, {e}", file=sys.stderr)
             exit(1)
 
 
@@ -217,9 +235,10 @@ if __name__ == "__main__":
     parser.add_argument("--token", type=str, help="Authentication token")
     parser.add_argument("--ai_name", type=str, help="AI name")
     parser.add_argument("--conversation_id", type=str, help="Conversation ID")
-    parser.add_argument("--root_ca_cert", type=str, default="./certs/rootCA.pem", help="Path to Root CA certificate")
-    parser.add_argument("--interactive", type=bool, default=False, help="Interactive mode (default: False)")
+    parser.add_argument("--root_ca_cert", type=str, help="Path to Root CA certificate")
+    parser.add_argument("--interactive", action="store_false", default=False, help="Interactive mode (default: False)")
     parser.add_argument('--prompt', nargs='?', help='Prompt text to submit, or "-" for stdin')
+    parser.add_argument("--no_ssl_verify", action="store_true", default=False, help="Disable SSL certificate verification (default: False)")
 
     parser.add_argument("--prompt_template", type=str, help="Prompt Template name")
     parser.add_argument("--prompt_tool", type=str, help="Prompt Tool name")
@@ -247,14 +266,14 @@ if __name__ == "__main__":
             key, value = item.split('=')
             form_data[key] = value
 
-
     client = MechanicianClient(
         host=args.host,
         port=args.port,
         username=args.username,
         password=args.password,
         token=args.token,
-        root_ca_cert=args.root_ca_cert)
+        root_ca_cert=args.root_ca_cert,
+        no_ssl_verify=args.no_ssl_verify)
 
     
     if args.prompt:
