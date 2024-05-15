@@ -20,5 +20,12 @@ python3 -m mechanician_client.mecha --interactive True --ai_name "Contracts Copi
 python3 -m mechanician_client.mecha --username liebke --prompt_template event_invite.md --root_ca_cert ../../examples/studio_demo/certs/rootCA.pem
 python3 -m mechanician_client.mecha --interactive true --username liebke --ai_name "Notepad Only AI" --prompt_template event_invite.md --prompt_tool event_invite --data contact=Lobelia event=Eleventy-first --root_ca_cert ../../examples/studio_demo/certs/rootCA.pem
 
+{ echo "Write a concise Git commit message summarizing the following `git diff`\n--------"; git diff; }| python3 -m mechanician_client.mecha --ai_name "Notepad Only AI" --root_ca_cert ../../examples/studio_demo/certs/rootCA.pem --prompt -
+
+{ echo "Write a concise Git commit message summarizing the following `git diff --cached`\n--------"; git diff; }| python3 -m mechanician_client.mecha --ai_name "Notepad Only AI" --root_ca_cert ../../examples/studio_demo/certs/rootCA.pem --prompt -
+
+
+{ echo "Write a concise Git commit message summarizing the following `git diff 3b455fd98ccf75aa79ca16b83baab8608faed29c`\n--------"; git diff; }| python3 -m mechanician_client.mecha --ai_name "Notepad Only AI" --root_ca_cert ../../examples/studio_demo/certs/rootCA.pem --prompt -
+
 ```
 

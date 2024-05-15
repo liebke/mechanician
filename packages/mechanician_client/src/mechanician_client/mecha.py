@@ -105,6 +105,7 @@ class MechanicianClient:
         await asyncio.sleep(0)
         response = await websocket.recv()
         fragment = json.loads(response)
+        print({k: fragment[k] for k in ["ai_name", "conversation_id"] if k in fragment}, flush=True, file=sys.stderr)
         if fragment.get("role", "") == "system" and not fragment.get("authorized", False):
             print("Unauthorized access. Please check your credentials.\n\n", file=sys.stderr)
             exit(1)
