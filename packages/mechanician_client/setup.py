@@ -9,6 +9,15 @@ setup(
         'asyncio',
         'websockets',
         'requests',
+        # for TTS
+        'pyaudio',
+        'openai',
+        # must install portaudio separately: brew install portaudio
+
+        # for STT
+        'openai-whisper', 
+        'sounddevice',
+        'webrtcvad'
     ],
     author='David Edgar Liebke',
     author_email='david@gmail.com',

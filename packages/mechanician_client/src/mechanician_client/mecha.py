@@ -9,13 +9,17 @@ import argparse
 import sys
 from pprint import pprint
 
+from mechanician_client.stt import capture_audio
+from mechanician_client.tts import speak_fragment, close_audio
+
 class MechanicianClient:
 
     def __init__(self, host='127.0.0.1', port='8000',
                  username=None, password=None,
                  token=None, 
                  root_ca_cert=None,
-                 no_ssl_verify=False):
+                 no_ssl_verify=False,
+                 output:str="text"):
         self.username = username
         self.password = password
         self.ws_url = f'wss://{host}:{port}/ws'
@@ -24,6 +28,7 @@ class MechanicianClient:
         self.root_ca_cert = root_ca_cert
         self.ssl_context = self._setup_ssl_context(no_ssl_verify=no_ssl_verify)
         self.token = token
+        self.output = output
 
         if username and password:
             self.token = self._authenticate(no_ssl_verify=no_ssl_verify)
@@ -152,6 +157,7 @@ class MechanicianClient:
             await asyncio.sleep(0)
             complete_response = ""
             try:
+                line = ""
                 while True:
                     fragment_str = await socket.recv()
                     fragment = json.loads(fragment_str)
@@ -159,8 +165,22 @@ class MechanicianClient:
                     if content is not None:
                         complete_response += content
                         if print_stream:
-                            print(content, end="", flush=True)
+                            if self.output == "voice":
+                                print(content, end="", flush=True)
+                                # check if content contains a line break in it somewhere
+                                if '\n' in content:
+                                    line += content
+                                    speak_fragment(line)
+                                    line = ""
+                                else:
+                                    line += content
+                            else:
+                                print(content, end="", flush=True)
                     if fragment.get("finish_reason", "") == "stop":
+                        if self.output == "voice":
+                            speak_fragment(line)
+                            close_audio()
+                            line = ""
                         return complete_response
             except websockets.exceptions.ConnectionClosedError:
                 print("Connection closed unexpectedly. Please check your network connection.", file=sys.stderr)
@@ -244,6 +264,8 @@ if __name__ == "__main__":
     parser.add_argument("--prompt_tool", type=str, help="Prompt Tool name")
     parser.add_argument("--data", nargs='*', help="Arbitrary form data as key=value pairs (e.g., key1=value1 key2=value2)")
 
+    parser.add_argument("--output", type=str, help="Output format (text or voice)")
+
     args = parser.parse_args()
 
     if args.username and args.password is None:
@@ -253,6 +275,9 @@ if __name__ == "__main__":
     if args.prompt == '-':
         print("Reading prompt from stdin...", file=sys.stderr)
         prompt = sys.stdin.read().strip()
+    elif args.prompt == 'voice':
+        prompt = "Your response will be converted to speech, please be concise and clear, and DO NOT include any non-pronounceable characters or words.\n\n"
+        prompt += capture_audio()
     elif args.prompt is None:
         interactive = True
     else:
@@ -273,7 +298,8 @@ if __name__ == "__main__":
         password=args.password,
         token=args.token,
         root_ca_cert=args.root_ca_cert,
-        no_ssl_verify=args.no_ssl_verify)
+        no_ssl_verify=args.no_ssl_verify,
+        output=args.output)
 
     
     if args.prompt:
