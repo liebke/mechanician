@@ -10,14 +10,17 @@ setup(
         'websockets',
         'requests',
         # for TTS
-        'pyaudio',
+        # 'pyaudio',
         'openai',
-        # must install portaudio separately: brew install portaudio
+        # must install portaudio separately: 
+        # * MacOS: brew install portaudio
+        # * Linux: sudo apt-get install portaudio19-dev
+        # * Windows: download from http://www.portaudio.com/download.html
 
         # for STT
         'openai-whisper', 
         'sounddevice',
-        'webrtcvad'
+        # 'webrtcvad' # VOICE ADTIVATION DETECTION, NOT NEEDED
     ],
     author='David Edgar Liebke',
     author_email='david@gmail.com',

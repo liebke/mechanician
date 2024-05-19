@@ -70,6 +70,22 @@ python3 -m mechanician_client.mecha --ai_name "TMDB AI" --no_ssl_verify --prompt
 # Is there going to be a new Star Wars movie coming out?
 
 python3 -m mechanician_client.mecha --ai_name "Contracts Copilot AI" --no_ssl_verify --prompt voice --output voice
+# What does FX stand for?
+# What does SSPP stand for?
+# 1.	What is an out of contract (OOC) vessel charged on a volume discount agreement (VDA) contract?
+# 2.	What vessels does the VDA discount apply to?
+# 3.	What are the Wholesale Partner VDA re-commitment options on 36 and 60month plans?
+# 4.	And what are the re-commitment options on the 1, 6 and 12month plans?
+# 5.	What happens if a partner does not complete the hardware buy-in for Y1 of their VDA?
+# 6.	How much does the XpressSwitch Incentive deduct from the signed TCV over 36m?
+# 7.	How is a Downgrade Fee (DF) calculated?
+# 8.	In the FX Hardware Incentive how many free antennas does a partner receive for a bulk order of 13 units?
+# 9.	An OOC vessel on a legacy 36 month FX plan downgrades to a Pivot 36month plan. Which statement is true?
+#    a.	DF applies and a new 36month contract period starts automatically.
+#    b.	DF applies and vessel remains OOC.
+#    c.	No DF applies and a new 36 month contract period starts automatically.
+#    d.	No DF applies and vessel remains OOC.
+# 10.	My vessel has 6 months contract remaining and moves from legacy to Pivot, to a higher ARPU plan. What else do I need to do to prevent a DF?
 
 
 ```
