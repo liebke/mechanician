@@ -8,63 +8,100 @@ import numpy as np
 from dotenv import load_dotenv
 from pprint import pprint
 
-load_dotenv()
-# Initialize OpenAI client
-client = OpenAI()
-
 # Audio format parameters
-FORMAT = 'int16'  # This is not directly used in sd.OutputStream, instead, use subtype='PCM_16'
+# FORMAT = 'int16'  # This is not directly used in sd.OutputStream, instead, use subtype='PCM_16'
 CHANNELS = 1
 RATE = 22050
 
-# Global queue and playback thread
-q = queue.Queue()
+class TTS():
 
-def tts_stream(q, text_input):
-    response = client.audio.speech.create(
-        model="tts-1",
-        voice="nova",
-        input=text_input,
-        response_format="pcm"
-    )
+    def __init__(self, openai_client:'OpenAI', output_device_id:int=None):
 
-    content = response.content
-    for i in range(0, len(content), 4096):
-        chunk = content[i:i+4096]
-        q.put(np.frombuffer(chunk, dtype=np.int16))  # Convert bytes to int16
+        self.client = openai_client
+        self.output_device_id = output_device_id
+        # Global queue and playback thread
+        self.q = queue.Queue()
+        self.playback_thread = threading.Thread(target=self.play_audio, args=(self.q,))
+        self.playback_thread.start()
 
-def play_audio(q):
-    try:
-        with sd.OutputStream(samplerate=RATE, channels=CHANNELS, dtype=np.int16) as stream:
-            while True:
-                chunk = q.get()
-                if chunk is None:
-                    break
-                stream.write(chunk)
-    except Exception as e:
-        print(f"Error in audio playback: {str(e)}")
+        # self.lock = threading.Lock()
 
-playback_thread = threading.Thread(target=play_audio, args=(q,))
-playback_thread.start()
 
-def speak_fragment(text):
-    if text:
-        tts_thread = threading.Thread(target=tts_stream, args=(q, text))
-        tts_thread.start()
-        tts_thread.join()
+    def tts_stream(self, text_input):
+        response = self.client.audio.speech.create(
+            model="tts-1",
+            voice="nova",
+            input=text_input,
+            response_format="pcm"
+        )
 
-def list_audio_devices():
-    print(f"Number of devices: {len(sd.query_devices())}")
-    for device in sd.query_devices():
-        print(f"Device id {device['index']}, name {device['name']}")
+        content = response.content
+        for i in range(0, len(content), 4096):
+            chunk = content[i:i+4096]
+            self.q.put(np.frombuffer(chunk, dtype=np.int16))  # Convert bytes to int16
 
-def close_audio():
-    q.put(None)
-    playback_thread.join()
+
+    def play_audio(self, q):
+        try:
+            with sd.OutputStream(samplerate=RATE, channels=CHANNELS, dtype=np.int16, device=self.output_device_id) as stream:
+                while True:
+                    chunk = q.get()
+                    if chunk is None:
+                        break
+                    stream.write(chunk)
+        except Exception as e:
+            print(f"Error in audio playback: {str(e)}", file=sys.stderr)
+
+
+    def request_output_device_id(self):
+        print("Select an output device to play response.", file=sys.stderr)
+        print(self.list_output_devices(), file=sys.stderr)
+        self.output_device_id = int(input("Enter the device id: "))
+
+
+    def list_output_devices(self):
+        devices = sd.query_devices()
+        for device in devices:
+            if device['max_output_channels'] > 0:
+                print(f"{device['index']}: {device['name']}")
+
+
+    def speak_fragment(self, text):
+        if text:
+            tts_thread = threading.Thread(target=self.tts_stream, args=(text,))
+            tts_thread.start()
+            tts_thread.join()
+                
+    # def speak_fragment(self, text):
+    #     if text:
+    #         tts_thread = threading.Thread(target=self.tts_stream, args=(text, self.lock))
+    #         tts_thread.daemon = True  # Set the thread as a daemon thread
+    #         tts_thread.start()
+
+
+    def list_audio_devices(self):
+        print(f"Number of devices: {len(sd.query_devices())}")
+        for device in sd.query_devices():
+            print(f"Device id {device['index']}, name {device['name']}")
+
+
+    def close_audio(self):
+        self.q.put(None)
+        self.playback_thread.join()
+
 
 if __name__ == "__main__":
+    load_dotenv()
+    # Initialize OpenAI client
+    client = OpenAI()
+
     # list_audio_devices()
-    speak_fragment("Hello world")
+    tts = TTS(openai_client=client)
+    tts.speak_fragment("Hello world")
+    from time import sleep
+    sleep(1)
+    tts.close_audio()
+    exit(0)
 
 
 # import threading

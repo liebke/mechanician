@@ -9,8 +9,10 @@ import argparse
 import sys
 from pprint import pprint
 
-from mechanician_client.stt import capture_audio
-from mechanician_client.tts import speak_fragment, close_audio
+from mechanician_client.stt import STT # capture_audio
+from mechanician_client.tts import TTS #speak_fragment, close_audio
+from openai import OpenAI
+from dotenv import load_dotenv
 
 class MechanicianClient:
 
@@ -19,7 +21,8 @@ class MechanicianClient:
                  token=None, 
                  root_ca_cert=None,
                  no_ssl_verify=False,
-                 output:str="text"):
+                 output:str="text",
+                 tts=None):
         self.username = username
         self.password = password
         self.ws_url = f'wss://{host}:{port}/ws'
@@ -40,6 +43,13 @@ class MechanicianClient:
         self.socket = None
         if not self.token:
             raise Exception("Failed to retrieve JWT token. Exiting program...")
+        
+        ## TTS
+        self.tts = tts
+        # Initialize OpenAI client
+        # client = OpenAI()
+        # self.tts = TTS(openai_client=client)
+        # self.tts.request_output_device_id()
 
 
     def _save_token(self, token):
@@ -131,6 +141,7 @@ class MechanicianClient:
                 exit(1)
         except websockets.exceptions.ConnectionClosedError as e:
             print(f"Websocket Authentication Failed: code: {e.code}, {e}", file=sys.stderr)
+            await websocket.close()
             exit(1)
 
 
@@ -170,7 +181,7 @@ class MechanicianClient:
                                 # check if content contains a line break in it somewhere
                                 if '\n' in content:
                                     line += content
-                                    speak_fragment(line)
+                                    self.tts.speak_fragment(line)
                                     line = ""
                                 else:
                                     line += content
@@ -178,8 +189,8 @@ class MechanicianClient:
                                 print(content, end="", flush=True)
                     if fragment.get("finish_reason", "") == "stop":
                         if self.output == "voice":
-                            speak_fragment(line)
-                            close_audio()
+                            self.tts.speak_fragment(line)
+                            self.tts.close_audio()
                             line = ""
                         return complete_response
             except websockets.exceptions.ConnectionClosedError:
@@ -247,6 +258,8 @@ class MechanicianClient:
 
 
 if __name__ == "__main__":
+    load_dotenv()
+
     parser = argparse.ArgumentParser(description="Run the Mechanician client.")
     parser.add_argument("--host", type=str, default="127.0.0.1", help="Host IP address")
     parser.add_argument("--port", type=str, default="8000", help="Port number")
@@ -267,9 +280,21 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=str, help="Output format (text or voice)")
 
     args = parser.parse_args()
+    tts = None
+    sst = None
 
     if args.username and args.password is None:
         args.password = getpass.getpass("Enter password: ")
+
+    # Initialize TTS and STT
+    if args.prompt == 'voice':
+        stt = STT()
+        stt.request_input_device_id()
+
+    if args.output == "voice":
+        client = OpenAI()
+        tts = TTS(openai_client=client)
+        tts.request_output_device_id()
 
     interactive = args.interactive
     if args.prompt == '-':
@@ -277,7 +302,7 @@ if __name__ == "__main__":
         prompt = sys.stdin.read().strip()
     elif args.prompt == 'voice':
         prompt = "Your response will be converted to speech, please be concise and clear, and DO NOT include any non-pronounceable characters or words.\n\n"
-        prompt += capture_audio()
+        prompt += stt.capture_audio()
     elif args.prompt is None:
         interactive = True
     else:
@@ -299,7 +324,8 @@ if __name__ == "__main__":
         token=args.token,
         root_ca_cert=args.root_ca_cert,
         no_ssl_verify=args.no_ssl_verify,
-        output=args.output)
+        output=args.output,
+        tts=tts)
 
     
     if args.prompt:
