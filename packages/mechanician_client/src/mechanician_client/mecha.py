@@ -22,7 +22,9 @@ class MechanicianClient:
                  root_ca_cert=None,
                  no_ssl_verify=False,
                  output:str="text",
-                 tts=None):
+                 tts=None,
+                 stt=None,
+                 input:str="text"):
         self.username = username
         self.password = password
         self.ws_url = f'wss://{host}:{port}/ws'
@@ -32,6 +34,7 @@ class MechanicianClient:
         self.ssl_context = self._setup_ssl_context(no_ssl_verify=no_ssl_verify)
         self.token = token
         self.output = output
+        self.input = input
 
         if username and password:
             self.token = self._authenticate(no_ssl_verify=no_ssl_verify)
@@ -46,10 +49,7 @@ class MechanicianClient:
         
         ## TTS
         self.tts = tts
-        # Initialize OpenAI client
-        # client = OpenAI()
-        # self.tts = TTS(openai_client=client)
-        # self.tts.request_output_device_id()
+        self.stt = stt
 
 
     def _save_token(self, token):
@@ -148,8 +148,11 @@ class MechanicianClient:
     async def _run_loop(self, socket, ai_name:str, conversation_id:str=None, initial_prompt=None):
         try:
             while True:
-                if initial_prompt is None:
-                    prompt_text = input("> ").strip()
+                if initial_prompt is None or self.input == "voice":
+                    if self.input == "voice":
+                        prompt_text = self.stt.capture_audio()
+                    else:
+                        prompt_text = input("> ").strip()
                 else:
                     prompt_text = initial_prompt
                     initial_prompt = None
@@ -190,7 +193,6 @@ class MechanicianClient:
                     if fragment.get("finish_reason", "") == "stop":
                         if self.output == "voice":
                             self.tts.speak_fragment(line)
-                            self.tts.close_audio()
                             line = ""
                         return complete_response
             except websockets.exceptions.ConnectionClosedError:
@@ -199,19 +201,38 @@ class MechanicianClient:
 
 
     def _process_prompt(self, prompt_text):
-        if prompt_text.startswith("/"):
-            command = prompt_text.split(" ")[0]
-            if command == "/help":
-                print("Available commands:")
-                print("/help - Display this help message")
-                print("/exit - Exit the program")
-            elif command == "/exit":
-                print("Exiting program...")
-                exit(0)
+        if self.input == "voice":
+            if prompt_text.strip().lower().startswith("slash"):
+                command = prompt_text.strip().lower().split(" ")[1]
+                if command.strip().lower().startswith("help"):
+                    print("Available commands:")
+                    print("slash help - Display this help message")
+                    print("slash exit - Exit the program")
+                elif command.strip().lower().startswith("exit"):
+                    print("Exiting program...")
+                    if self.output == "voice":
+                        self.tts.close_audio()
+                    exit(0)
             else:
-                print("Invalid command. Type '/help' to see available commands.", file=sys.stderr)
+                prompt = "Your response will be converted to speech, please be concise and clear, and DO NOT include any non-pronounceable characters or words.\n\n"
+                prompt += prompt_text
+                return prompt
         else:
-            return prompt_text
+            if prompt_text.startswith("/"):
+                command = prompt_text.split(" ")[0]
+                if command == "/help":
+                    print("Available commands:")
+                    print("/help - Display this help message")
+                    print("/exit - Exit the program")
+                elif command == "/exit" or command == "slash exit":
+                    print("Exiting program...")
+                    if self.output == "voice":
+                        self.tts.close_audio()
+                    exit(0)
+                else:
+                    print("Invalid command. Type '/help' to see available commands.", file=sys.stderr)
+            else:
+                return prompt_text
 
 
     def get_prompt_template(self, template_name):
@@ -269,7 +290,7 @@ if __name__ == "__main__":
     parser.add_argument("--ai_name", type=str, help="AI name")
     parser.add_argument("--conversation_id", type=str, help="Conversation ID")
     parser.add_argument("--root_ca_cert", type=str, help="Path to Root CA certificate")
-    parser.add_argument("--interactive", action="store_false", default=False, help="Interactive mode (default: False)")
+    parser.add_argument("--interactive", action="store_true", default=False, help="Interactive mode (default: False)")
     parser.add_argument('--prompt', nargs='?', help='Prompt text to submit, or "-" for stdin')
     parser.add_argument("--no_ssl_verify", action="store_true", default=False, help="Disable SSL certificate verification (default: False)")
 
@@ -278,16 +299,17 @@ if __name__ == "__main__":
     parser.add_argument("--data", nargs='*', help="Arbitrary form data as key=value pairs (e.g., key1=value1 key2=value2)")
 
     parser.add_argument("--output", type=str, help="Output format (text or voice)")
+    parser.add_argument("--input", type=str, help="Input format (text or voice)")
 
     args = parser.parse_args()
     tts = None
-    sst = None
+    stt = None
 
     if args.username and args.password is None:
         args.password = getpass.getpass("Enter password: ")
 
     # Initialize TTS and STT
-    if args.prompt == 'voice':
+    if args.input == 'voice':
         stt = STT()
         stt.request_input_device_id()
 
@@ -300,9 +322,12 @@ if __name__ == "__main__":
     if args.prompt == '-':
         print("Reading prompt from stdin...", file=sys.stderr)
         prompt = sys.stdin.read().strip()
-    elif args.prompt == 'voice':
-        prompt = "Your response will be converted to speech, please be concise and clear, and DO NOT include any non-pronounceable characters or words.\n\n"
-        prompt += stt.capture_audio()
+    elif args.input == 'voice':
+        if args.interactive is False:
+            prompt = "Your response will be converted to speech, please be concise and clear, and DO NOT include any non-pronounceable characters or words.\n\n"
+            prompt += stt.capture_audio()
+        else:
+            prompt = args.prompt
     elif args.prompt is None:
         interactive = True
     else:
@@ -325,7 +350,9 @@ if __name__ == "__main__":
         root_ca_cert=args.root_ca_cert,
         no_ssl_verify=args.no_ssl_verify,
         output=args.output,
-        tts=tts)
+        tts=tts,
+        stt = stt,
+        input = args.input)
 
     
     if args.prompt:

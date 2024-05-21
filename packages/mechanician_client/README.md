@@ -62,14 +62,14 @@ python3 -m mechanician_client.stt | python3 -m mechanician_client.mecha --userna
 # Is Harrison Ford going to star in any upcoming movies?
 
 
-python3 -m mechanician_client.mecha --username liebke --ai_name "TMDB AI" --no_ssl_verify --prompt voice | tee /dev/tty | ../../packages/mechanician_client/scripts/tts
+python3 -m mechanician_client.mecha --username liebke --ai_name "TMDB AI" --no_ssl_verify --input voice | tee /dev/tty | ../../packages/mechanician_client/scripts/tts
 
 
-python3 -m mechanician_client.mecha --ai_name "TMDB AI" --no_ssl_verify --prompt voice --output voice
+python3 -m mechanician_client.mecha --ai_name "TMDB AI" --no_ssl_verify --input voice --output voice --interactive
 # Is Harrison Ford going to star in any upcoming movies?
 # Is there going to be a new Star Wars movie coming out?
 
-python3 -m mechanician_client.mecha --ai_name "Contracts Copilot AI" --no_ssl_verify --prompt voice --output voice
+python3 -m mechanician_client.mecha --ai_name "Contracts Copilot AI" --no_ssl_verify --prompt input --output voice --interative
 # What does FX stand for?
 # What does SSPP stand for?
 # 1.	What is an out of contract (OOC) vessel charged on a volume discount agreement (VDA) contract?
